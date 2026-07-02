@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>花蓮高商 101–114 學年度 各科兼任行政人數</title>
+<style>
+  :root{
+    --bg:#f7f8fa; --card:#ffffff; --ink:#1f2733; --sub:#68727f;
+    --line:#e4e8ee; --accent:#1e5aa8;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:'Noto Sans TC','Microsoft JhengHei','PingFang TC',sans-serif;
+    line-height:1.6; padding:24px 16px 60px;
+  }
+  .wrap{max-width:960px; margin:0 auto;}
+  header{text-align:center; margin-bottom:20px;}
+  header h1{font-size:1.55rem; letter-spacing:.05em;}
+  header p{color:var(--sub); font-size:.95rem; margin-top:4px;}
+
+  .panel{
+    background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:20px; box-shadow:0 1px 4px rgba(0,0,0,.05); margin-bottom:26px;
+  }
+  .panel h2{font-size:1.1rem; margin-bottom:4px;}
+  .panel .hint{font-size:.83rem; color:var(--sub); margin-bottom:14px;}
+
+  .controls{display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:16px;}
+  .modes{display:flex; border:1px solid var(--line); border-radius:8px; overflow:hidden;}
+  .modes button{
+    border:0; background:transparent; padding:7px 16px; font-size:.9rem; cursor:pointer;
+    font-family:inherit; color:var(--sub);
+  }
+  .modes button.on{background:var(--accent); color:#fff;}
+  #playBtn{
+    border:0; background:var(--accent); color:#fff; border-radius:8px;
+    padding:7px 18px; font-size:.9rem; cursor:pointer; font-family:inherit;
+  }
+  #playBtn.playing{background:#c0392b;}
+  .yearbox{display:flex; align-items:center; gap:10px; flex:1; min-width:220px;}
+  #yearSlider{flex:1; accent-color:var(--accent);}
+  #yearLabel{font-size:1.35rem; font-weight:700; color:var(--accent); min-width:3.6em; text-align:center;}
+
+  #race{position:relative;}
+  .row{
+    position:absolute; left:0; right:0; height:40px;
+    display:flex; align-items:center; gap:10px;
+    transition:transform .9s cubic-bezier(.4,.1,.2,1);
+    cursor:pointer;
+  }
+  .row .dname{
+    width:88px; text-align:right; font-size:.9rem; font-weight:500; flex-shrink:0;
+  }
+  .row .track{flex:1; height:26px; position:relative;}
+  .row .bar{
+    height:100%; border-radius:4px 6px 6px 4px; width:0;
+    transition:width .9s cubic-bezier(.4,.1,.2,1);
+    min-width:2px; opacity:.92;
+  }
+  .row:hover .bar{opacity:1; filter:brightness(1.06);}
+  .row.selected .dname{color:var(--accent); font-weight:700;}
+  .row .val{
+    font-size:.88rem; font-weight:700; width:52px; flex-shrink:0;
+    font-variant-numeric:tabular-nums;
+  }
+  .row .val small{font-weight:400; color:var(--sub); font-size:.75rem;}
+  .row.na .bar{background:repeating-linear-gradient(45deg,#e8eaee,#e8eaee 4px,#f2f3f6 4px,#f2f3f6 8px)!important;}
+  .row.na .dname, .row.na .val{color:#b6bcc6;}
+
+  #detail{margin-top:18px; border-top:1px dashed var(--line); padding-top:14px; display:none;}
+  #detail h3{font-size:.98rem; margin-bottom:8px;}
+  #detail h3 .dot{display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px;}
+  .yr-row{display:flex; gap:8px; margin-bottom:6px; align-items:baseline; flex-wrap:wrap;}
+  .yr-row .y{font-size:.8rem; color:var(--sub); min-width:3.2em; font-variant-numeric:tabular-nums;}
+  .chip{
+    display:inline-flex; align-items:baseline; gap:2px;
+    background:#eef2f8; border:1px solid #dbe4f0; border-radius:20px;
+    padding:2px 11px; font-size:.83rem; margin:2px 3px 2px 0;
+  }
+  .chip b{font-size:.9rem;}
+  .chip .mk{
+    font-size:.7rem; background:#f0ad4e; color:#fff; border-radius:8px;
+    padding:0 6px; margin-left:3px; align-self:center;
+  }
+  #detailClose{
+    float:right; border:0; background:transparent; color:var(--sub);
+    cursor:pointer; font-size:.85rem; font-family:inherit;
+  }
+
+  .heat-scroll{overflow-x:auto;}
+  table.heat{border-collapse:collapse; font-size:.83rem; width:100%; min-width:760px;}
+  table.heat th, table.heat td{
+    padding:6px 4px; text-align:center; border:1px solid #fff;
+    font-variant-numeric:tabular-nums;
+  }
+  table.heat th{color:var(--sub); font-weight:500; font-size:.78rem;}
+  table.heat td.dep{text-align:right; padding-right:10px; font-weight:500; white-space:nowrap; background:transparent;}
+  table.heat td.cell{cursor:pointer; border-radius:4px; min-width:44px;}
+  table.heat td.cell:hover{outline:2px solid var(--accent); outline-offset:-2px;}
+  table.heat td.empty{background:#f0f1f4; color:#c2c7cf; cursor:default;}
+  table.heat td.tot{font-weight:700; background:transparent;}
+  .legend{display:flex; align-items:center; gap:6px; font-size:.75rem; color:var(--sub); margin-top:10px; justify-content:flex-end;}
+  .legend .grad{width:120px; height:10px; border-radius:5px; background:linear-gradient(90deg,#f4f7fb,#1e5aa8);}
+
+  footer{max-width:960px; margin:0 auto; color:var(--sub); font-size:.78rem;}
+  footer li{margin-left:1.4em;}
+  @media (max-width:560px){
+    .row .dname{width:70px; font-size:.8rem;}
+    header h1{font-size:1.2rem;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>花蓮高商 101–114 學年度　各科兼任行政人數</h1>
+  </header>
+
+  <div class="panel">
+    <h2>行政人數變化動畫</h2>
+    <p class="hint">按「播放」看 14 年變化；點任一科的長條可展開該科細目（僅顯示姓氏與職稱）。</p>
+    <div class="controls">
+      <div class="modes">
+        <button id="mCum" class="on">累計</button>
+        <button id="mYear">單年</button>
+      </div>
+      <button id="playBtn">▶ 播放</button>
+      <div class="yearbox">
+        <input type="range" id="yearSlider" min="101" max="114" value="101" step="1">
+        <span id="yearLabel">101</span>
+      </div>
+    </div>
+    <div id="race"></div>
+    <div id="detail">
+      <button id="detailClose">✕ 收合</button>
+      <h3 id="detailTitle"></h3>
+      <div id="detailBody"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>逐年一覽（熱力圖）</h2>
+    <p class="hint">顏色越深代表該年該科兼任行政人數越多；點格子可看細目。</p>
+    <div class="heat-scroll"><table class="heat" id="heat"></table></div>
+    <div class="legend"><span>少</span><span class="grad"></span><span>多</span></div>
+  </div>
+
+  <footer>
+    <ul>
+      <li>資料範圍：101–114 學年度。人數含各處室主任、組長、秘書、特教業務等兼任行政職務。</li>
+      <li>0.5 表示年中交接（僅任職半年，標示「前」＝上半年、「後」＝下半年）；同一職務年中交接、由本科教師接續者，以「／」並列，人數計 1。</li>
+      <li>多媒體設計科自 112 學年度設科。</li>    </ul>
+  </footer>
+</div>
+
+<script>
+const D = {"國文社會":{"101":{"n":2,"p":[{"s":"賴","t":"秘書","m":""},{"s":"呂","t":"教學組長","m":""}]},"102":{"n":3,"p":[{"s":"賴","t":"秘書","m":""},{"s":"呂","t":"教學組長","m":""},{"s":"林","t":"進教學組長","m":""}]},"103":{"n":3,"p":[{"s":"賴","t":"秘書","m":""},{"s":"呂","t":"教務主任","m":""},{"s":"林","t":"教學組長","m":""}]},"104":{"n":4,"p":[{"s":"賴","t":"秘書","m":""},{"s":"呂","t":"教務主任","m":""},{"s":"林","t":"教學組長","m":""},{"s":"廖","t":"實研組長","m":""}]},"105":{"n":5,"p":[{"s":"賴","t":"秘書","m":""},{"s":"呂","t":"教務主任","m":""},{"s":"林","t":"教學組長","m":""},{"s":"吳","t":"進教學組長","m":""},{"s":"邱","t":"進註冊組長","m":""}]},"106":{"n":6,"p":[{"s":"賴","t":"秘書","m":""},{"s":"呂","t":"教務主任","m":""},{"s":"林","t":"教學組長","m":""},{"s":"邱","t":"註冊組長","m":""},{"s":"許","t":"進註冊組長","m":""},{"s":"吳","t":"進學務組長","m":""}]},"107":{"n":6,"p":[{"s":"賴","t":"秘書","m":""},{"s":"呂","t":"教務主任","m":""},{"s":"林","t":"教學組長","m":""},{"s":"邱","t":"註冊組長","m":""},{"s":"許","t":"進註冊組長","m":""},{"s":"吳","t":"進學務組長","m":""}]},"108":{"n":5,"p":[{"s":"賴","t":"秘書","m":""},{"s":"呂","t":"教務主任","m":""},{"s":"邱","t":"教學組長","m":""},{"s":"林","t":"衛保組長","m":""},{"s":"李","t":"進學務組長","m":""}]},"109":{"n":6,"p":[{"s":"賴","t":"教務主任","m":""},{"s":"呂","t":"學務主任","m":""},{"s":"吳","t":"教學組長","m":""},{"s":"林","t":"實研組長","m":""},{"s":"邱","t":"訓育組長","m":""},{"s":"李","t":"進學務組長","m":""}]},"110":{"n":6,"p":[{"s":"邱","t":"秘書","m":""},{"s":"賴","t":"教務主任","m":""},{"s":"呂","t":"學務主任","m":""},{"s":"陳","t":"教學組長","m":""},{"s":"林","t":"實研組長","m":""},{"s":"李","t":"進學務組長","m":""}]},"111":{"n":6,"p":[{"s":"邱","t":"秘書","m":""},{"s":"賴","t":"教務主任","m":""},{"s":"呂","t":"學務主任","m":""},{"s":"陳","t":"教學組長","m":""},{"s":"林","t":"實研組長","m":""},{"s":"李","t":"進學務組長","m":""}]},"112":{"n":5,"p":[{"s":"邱","t":"秘書","m":""},{"s":"賴","t":"教務主任","m":""},{"s":"呂","t":"學務主任","m":""},{"s":"林","t":"實研組長","m":""},{"s":"李","t":"進教學組長","m":""}]},"113":{"n":5,"p":[{"s":"邱","t":"秘書","m":""},{"s":"賴","t":"教務主任","m":""},{"s":"呂","t":"學務主任","m":""},{"s":"林","t":"實研組長","m":""},{"s":"李","t":"進教學組長","m":""}]},"114":{"n":5,"p":[{"s":"邱","t":"教務主任","m":""},{"s":"呂","t":"學務主任","m":""},{"s":"林","t":"教學組長","m":""},{"s":"林","t":"課務組長","m":""},{"s":"李","t":"進教學組長","m":""}]}},"英文應英":{"101":{"n":4,"p":[{"s":"江","t":"圖書主任","m":""},{"s":"王","t":"科主任","m":""},{"s":"張","t":"實習組長","m":""},{"s":"張","t":"訓育組長","m":""}]},"102":{"n":5.5,"p":[{"s":"江","t":"圖書主任","m":"前"},{"s":"王","t":"科主任","m":""},{"s":"林","t":"實研組長","m":""},{"s":"張","t":"訓育組長","m":""},{"s":"李","t":"校務主任","m":""},{"s":"陳","t":"進學務組長","m":""}]},"103":{"n":3,"p":[{"s":"林","t":"實研組長","m":""},{"s":"張","t":"訓育組長","m":""},{"s":"林","t":"科主任","m":""}]},"104":{"n":3,"p":[{"s":"張","t":"訓育組長","m":""},{"s":"林","t":"科主任","m":""},{"s":"康","t":"特教業務","m":""}]},"105":{"n":3,"p":[{"s":"張","t":"設備組長","m":""},{"s":"陳","t":"科主任","m":""},{"s":"康","t":"特教業務","m":""}]},"106":{"n":3,"p":[{"s":"張","t":"設備組長","m":""},{"s":"陳","t":"科主任","m":""},{"s":"蘇","t":"特教業務","m":""}]},"107":{"n":3,"p":[{"s":"張","t":"設備組長","m":""},{"s":"陳","t":"科主任","m":""},{"s":"蘇","t":"特教業務","m":""}]},"108":{"n":2,"p":[{"s":"蘇","t":"特教業務","m":""},{"s":"康","t":"科主任","m":""}]},"109":{"n":2,"p":[{"s":"蘇","t":"實習組長","m":""},{"s":"康","t":"科主任","m":""}]},"110":{"n":3,"p":[{"s":"蘇","t":"實習組長","m":""},{"s":"康","t":"衛保組長","m":""},{"s":"張","t":"科主任","m":""}]},"111":{"n":2,"p":[{"s":"康","t":"衛保組長","m":""},{"s":"林","t":"科主任","m":""}]},"112":{"n":2,"p":[{"s":"康","t":"衛保組長","m":""},{"s":"林","t":"科主任","m":""}]},"113":{"n":2,"p":[{"s":"康","t":"衛保組長","m":""},{"s":"蘇","t":"科主任","m":""}]},"114":{"n":3,"p":[{"s":"康","t":"衛保組長","m":""},{"s":"林","t":"招生組長","m":""},{"s":"蘇","t":"科主任","m":""}]}},"數學自然":{"101":{"n":5,"p":[{"s":"楊","t":"教務主任","m":""},{"s":"高","t":"學務主任","m":""},{"s":"邱","t":"總務主任","m":""},{"s":"洪","t":"設備組長","m":""},{"s":"吳","t":"實研組長","m":""}]},"102":{"n":4,"p":[{"s":"楊","t":"教務主任","m":""},{"s":"高","t":"學務主任","m":""},{"s":"邱","t":"總務主任","m":""},{"s":"林","t":"設備組長","m":""}]},"103":{"n":4,"p":[{"s":"高","t":"學務主任","m":""},{"s":"邱","t":"總務主任","m":""},{"s":"林","t":"設備組長","m":""},{"s":"陳","t":"進教學組長","m":""}]},"104":{"n":4,"p":[{"s":"高","t":"學務主任","m":""},{"s":"邱","t":"總務主任","m":""},{"s":"林","t":"設備組長","m":""},{"s":"陳","t":"進教學組長","m":""}]},"105":{"n":4,"p":[{"s":"高","t":"學務主任","m":""},{"s":"邱","t":"總務主任","m":""},{"s":"施","t":"訓育組長","m":""},{"s":"陳","t":"進學務組長","m":""}]},"106":{"n":4,"p":[{"s":"高","t":"學務主任","m":""},{"s":"邱","t":"總務主任","m":""},{"s":"施","t":"訓育組長","m":""},{"s":"葉","t":"進教學組長","m":""}]},"107":{"n":4,"p":[{"s":"高","t":"學務主任","m":""},{"s":"邱","t":"總務主任","m":""},{"s":"施","t":"訓育組長","m":""},{"s":"葉","t":"進教學組長","m":""}]},"108":{"n":5,"p":[{"s":"林","t":"學務主任","m":""},{"s":"邱","t":"總務主任","m":""},{"s":"施","t":"設備組長","m":""},{"s":"葉","t":"註冊組長","m":""},{"s":"吳","t":"進教務組長","m":""}]},"109":{"n":2,"p":[{"s":"邱","t":"總務主任","m":""},{"s":"吳","t":"進教務組長","m":""}]},"110":{"n":3,"p":[{"s":"邱","t":"總務主任","m":""},{"s":"陳","t":"訓育組長","m":""},{"s":"吳","t":"進教務組長","m":""}]},"111":{"n":3,"p":[{"s":"邱","t":"總務主任","m":""},{"s":"陳","t":"訓育組長","m":""},{"s":"吳","t":"進教務組長","m":""}]},"112":{"n":3,"p":[{"s":"陳","t":"訓育組長","m":""},{"s":"吳","t":"實習組長","m":""},{"s":"吳","t":"進學務組長","m":""}]},"113":{"n":1,"p":[{"s":"陳","t":"訓育組長","m":""}]},"114":{"n":1,"p":[{"s":"陳","t":"訓育組長","m":""}]}},"藝能":{"101":{"n":3,"p":[{"s":"林","t":"輔導主任","m":""},{"s":"田","t":"體育組長","m":""},{"s":"朱","t":"衛保組長","m":""}]},"102":{"n":3,"p":[{"s":"林","t":"輔導主任","m":""},{"s":"田","t":"體育組長","m":""},{"s":"朱","t":"衛保組長","m":""}]},"103":{"n":3,"p":[{"s":"林","t":"輔導主任","m":""},{"s":"田","t":"體育組長","m":""},{"s":"朱","t":"衛保組長","m":""}]},"104":{"n":3,"p":[{"s":"林","t":"輔導主任","m":""},{"s":"田","t":"體育組長","m":""},{"s":"朱","t":"衛保組長","m":""}]},"105":{"n":3,"p":[{"s":"阮","t":"輔導主任","m":""},{"s":"田","t":"體育組長","m":""},{"s":"朱","t":"衛保組長","m":""}]},"106":{"n":2,"p":[{"s":"阮","t":"輔導主任","m":""},{"s":"田","t":"體育組長","m":""}]},"107":{"n":2,"p":[{"s":"阮","t":"輔導主任","m":""},{"s":"田","t":"體育組長","m":""}]},"108":{"n":3,"p":[{"s":"阮","t":"輔導主任","m":""},{"s":"丁","t":"進修主任","m":""},{"s":"田","t":"體育組長","m":""}]},"109":{"n":3,"p":[{"s":"阮","t":"輔導主任","m":""},{"s":"丁","t":"進修主任","m":""},{"s":"田","t":"體育組長","m":""}]},"110":{"n":3,"p":[{"s":"阮","t":"輔導主任","m":""},{"s":"丁","t":"進修主任","m":""},{"s":"田","t":"體育組長","m":""}]},"111":{"n":4,"p":[{"s":"阮","t":"輔導主任","m":""},{"s":"丁","t":"進修主任","m":""},{"s":"朱","t":"設備組長","m":""},{"s":"田","t":"體育組長","m":""}]},"112":{"n":3,"p":[{"s":"阮","t":"輔導主任","m":""},{"s":"朱","t":"設備組長","m":""},{"s":"田","t":"體育組長","m":""}]},"113":{"n":3,"p":[{"s":"阮","t":"輔導主任","m":""},{"s":"朱","t":"設備組長","m":""},{"s":"田","t":"體育組長","m":""}]},"114":{"n":4,"p":[{"s":"阮","t":"輔導主任","m":""},{"s":"丁","t":"進修主任","m":""},{"s":"田","t":"體育組長","m":""},{"s":"林","t":"實研組長","m":""}]}},"商業經營":{"101":{"n":2,"p":[{"s":"李","t":"科主任","m":""},{"s":"洪","t":"進註冊組長","m":""}]},"102":{"n":2.5,"p":[{"s":"李","t":"科主任","m":""},{"s":"洪","t":"進註冊組長","m":""},{"s":"洪","t":"圖書主任","m":"後"}]},"103":{"n":3,"p":[{"s":"洪","t":"圖書主任","m":""},{"s":"許","t":"實習組長","m":""},{"s":"李","t":"科主任","m":""}]},"104":{"n":3,"p":[{"s":"洪","t":"圖書主任","m":""},{"s":"許","t":"實習組長","m":""},{"s":"沈","t":"科主任","m":""}]},"105":{"n":5,"p":[{"s":"洪","t":"圖書主任","m":""},{"s":"許","t":"實習組長","m":""},{"s":"魏","t":"就業組長","m":""},{"s":"沈","t":"科主任","m":""},{"s":"林","t":"實研組長","m":""}]},"106":{"n":5,"p":[{"s":"洪","t":"圖書主任","m":""},{"s":"粘","t":"實習組長","m":""},{"s":"魏","t":"就業組長","m":""},{"s":"林","t":"科主任","m":""},{"s":"林","t":"實研組長","m":""}]},"107":{"n":5,"p":[{"s":"洪","t":"圖書主任","m":""},{"s":"粘","t":"實習組長","m":""},{"s":"魏","t":"就業組長","m":""},{"s":"林","t":"科主任","m":""},{"s":"林","t":"實研組長","m":""}]},"108":{"n":2,"p":[{"s":"洪","t":"圖書主任","m":""},{"s":"林","t":"科主任","m":""}]},"109":{"n":4,"p":[{"s":"洪","t":"圖書主任","m":""},{"s":"洪","t":"註冊組長","m":""},{"s":"林","t":"科主任","m":""},{"s":"許","t":"特教業務","m":""}]},"110":{"n":3,"p":[{"s":"魏","t":"註冊組長","m":""},{"s":"洪","t":"科主任","m":""},{"s":"許","t":"特教業務","m":""}]},"111":{"n":4,"p":[{"s":"魏","t":"註冊組長","m":""},{"s":"林","t":"實習組長","m":""},{"s":"洪","t":"科主任","m":""},{"s":"許","t":"特教業務","m":""}]},"112":{"n":2,"p":[{"s":"林","t":"科主任","m":""},{"s":"許","t":"特教業務","m":""}]},"113":{"n":3,"p":[{"s":"許","t":"註冊組長","m":""},{"s":"粘","t":"實習組長","m":""},{"s":"林","t":"科主任","m":""}]},"114":{"n":2,"p":[{"s":"許","t":"秘書","m":""},{"s":"粘","t":"科主任","m":""}]}},"會計事務":{"101":{"n":1,"p":[{"s":"林","t":"科主任","m":""}]},"102":{"n":1,"p":[{"s":"林","t":"科主任","m":""}]},"103":{"n":4,"p":[{"s":"江曾","t":"實習主任","m":""},{"s":"林","t":"就業組長","m":""},{"s":"傅","t":"科主任","m":""},{"s":"吳","t":"進註冊組長","m":""}]},"104":{"n":4,"p":[{"s":"江曾","t":"實習主任","m":""},{"s":"林","t":"就業組長","m":""},{"s":"傅","t":"科主任","m":""},{"s":"吳","t":"進註冊組長","m":""}]},"105":{"n":3,"p":[{"s":"江曾","t":"實習主任","m":""},{"s":"吳","t":"註冊組長","m":""},{"s":"歐","t":"科主任","m":""}]},"106":{"n":1.5,"p":[{"s":"烏莎斯","t":"衛保組長","m":"前"},{"s":"歐","t":"科主任","m":""}]},"107":{"n":1,"p":[{"s":"黃","t":"科主任","m":""}]},"108":{"n":3,"p":[{"s":"施","t":"設備組長","m":""},{"s":"黃","t":"訓育組長","m":""},{"s":"烏莎斯","t":"科主任","m":""}]},"109":{"n":2,"p":[{"s":"黃","t":"衛保組長","m":""},{"s":"烏莎斯","t":"科主任","m":""}]},"110":{"n":1,"p":[{"s":"黃","t":"科主任","m":""}]},"111":{"n":1,"p":[{"s":"黃","t":"科主任","m":""}]},"112":{"n":3,"p":[{"s":"江曾","t":"總務主任","m":""},{"s":"黃","t":"註冊組長","m":""},{"s":"施","t":"科主任","m":""}]},"113":{"n":2,"p":[{"s":"江曾","t":"總務主任","m":""},{"s":"施","t":"科主任","m":""}]},"114":{"n":3,"p":[{"s":"江曾","t":"總務主任","m":""},{"s":"黃","t":"實習組長","m":""},{"s":"周／烏莎斯","t":"科主任","m":""}]}},"資料處理":{"101":{"n":6,"p":[{"s":"陳","t":"實習主任","m":""},{"s":"陳","t":"註冊組長","m":""},{"s":"許","t":"就業組長","m":""},{"s":"吳","t":"科主任","m":""},{"s":"劉","t":"校務主任","m":""},{"s":"陳","t":"進教學組長","m":""}]},"102":{"n":4,"p":[{"s":"陳","t":"實習主任","m":""},{"s":"陳","t":"註冊組長","m":""},{"s":"張","t":"實習組長","m":""},{"s":"許","t":"就業組長","m":""}]},"103":{"n":3,"p":[{"s":"張","t":"註冊組長","m":""},{"s":"吳","t":"科主任","m":""},{"s":"陳","t":"校務主任","m":""}]},"104":{"n":4,"p":[{"s":"張","t":"註冊組長","m":""},{"s":"江","t":"科主任","m":""},{"s":"陳","t":"校務主任","m":""},{"s":"陳","t":"學務組長","m":""}]},"105":{"n":2,"p":[{"s":"李","t":"校務主任","m":""},{"s":"江","t":"科主任","m":""}]},"106":{"n":3.5,"p":[{"s":"官","t":"實習主任","m":""},{"s":"陳","t":"校務主任","m":""},{"s":"黃","t":"科主任","m":""},{"s":"許","t":"衛保組長","m":"後"}]},"107":{"n":4,"p":[{"s":"官","t":"實習主任","m":""},{"s":"陳","t":"校務主任","m":""},{"s":"黃","t":"科主任","m":""},{"s":"許","t":"衛保組長","m":""}]},"108":{"n":4,"p":[{"s":"官","t":"實習主任","m":""},{"s":"張","t":"實習組長","m":""},{"s":"許","t":"就業組長","m":""},{"s":"黃","t":"科主任","m":""}]},"109":{"n":5,"p":[{"s":"黃","t":"秘書","m":""},{"s":"官","t":"實習主任","m":""},{"s":"吳","t":"設備組長","m":""},{"s":"許","t":"就業組長","m":""},{"s":"陳","t":"科主任","m":""}]},"110":{"n":6,"p":[{"s":"官","t":"實習主任","m":""},{"s":"黃","t":"圖書主任","m":""},{"s":"吳","t":"設備組長","m":""},{"s":"許","t":"就業組長","m":""},{"s":"張","t":"資媒組長","m":""},{"s":"陳","t":"科主任","m":""}]},"111":{"n":5,"p":[{"s":"陳","t":"實習主任","m":""},{"s":"黃","t":"圖書主任","m":""},{"s":"吳","t":"資媒組長","m":""},{"s":"許","t":"就業組長","m":""},{"s":"陳","t":"科主任","m":""}]},"112":{"n":7,"p":[{"s":"陳","t":"實習主任","m":""},{"s":"黃","t":"圖書主任","m":""},{"s":"官","t":"進修主任","m":""},{"s":"陳","t":"教學組長","m":""},{"s":"曹","t":"資媒組長","m":""},{"s":"許","t":"就業組長","m":""},{"s":"陳","t":"科主任","m":""}]},"113":{"n":8,"p":[{"s":"陳","t":"實習主任","m":""},{"s":"黃","t":"圖書主任","m":""},{"s":"官","t":"進修主任","m":""},{"s":"陳","t":"教學組長","m":""},{"s":"曹","t":"資媒組長","m":""},{"s":"許","t":"就業組長","m":""},{"s":"陳","t":"科主任","m":""},{"s":"吳","t":"進學務組長","m":""}]},"114":{"n":8,"p":[{"s":"陳","t":"實習主任","m":""},{"s":"黃","t":"圖書主任","m":""},{"s":"陳","t":"註冊組長","m":""},{"s":"吳","t":"設備組長","m":""},{"s":"曹","t":"資媒組長","m":""},{"s":"許","t":"就業組長","m":""},{"s":"陳","t":"科主任","m":""},{"s":"陳","t":"進學務組長","m":""}]}},"多媒體設計":{"112":{"n":1,"p":[{"s":"蔡","t":"科主任","m":""}]},"113":{"n":2,"p":[{"s":"江","t":"特教業務","m":""},{"s":"蔡","t":"科主任","m":""}]},"114":{"n":2,"p":[{"s":"江","t":"特教業務","m":""},{"s":"黃","t":"科主任","m":""}]}}};
+
+const DEPTS = Object.keys(D);
+const YEARS = []; for (let y = 101; y <= 114; y++) YEARS.push(y);
+const COLORS = {
+  '國文社會':'#c0392b','英文應英':'#2471a3','數學自然':'#1e8449','藝能':'#7d3c98',
+  '商業經營':'#ca6f1e','會計事務':'#148f77','資料處理':'#2c3e50','多媒體設計':'#c2185b'
+};
+
+function yearVal(d, y){ const rec = D[d][String(y)]; return rec ? rec.n : null; }
+function cumVal(d, y){
+  let s = null;
+  for (const yy of YEARS){
+    if (yy > y) break;
+    const v = yearVal(d, yy);
+    if (v !== null) s = (s === null ? 0 : s) + v;
+  }
+  return s;
+}
+function fmt(v){ return v === null ? '' : (v % 1 === 0 ? String(v) : v.toFixed(1)); }
+
+/* ---- bar race ---- */
+const ROW_H = 44;
+const race = document.getElementById('race');
+race.style.height = (DEPTS.length * ROW_H) + 'px';
+const rowEls = {};
+DEPTS.forEach(d => {
+  const el = document.createElement('div');
+  el.className = 'row';
+  el.innerHTML = `<div class="dname">${d}</div>
+    <div class="track"><div class="bar" style="background:${COLORS[d]}"></div></div>
+    <div class="val"></div>`;
+  el.addEventListener('click', () => selectDept(d));
+  race.appendChild(el);
+  rowEls[d] = el;
+});
+
+let mode = 'cum';        // 'cum' | 'year'
+let curYear = 101;
+let playing = false, timer = null;
+let selectedDept = null;
+
+function render(){
+  document.getElementById('yearLabel').textContent = curYear;
+  document.getElementById('yearSlider').value = curYear;
+  const vals = DEPTS.map(d => [d, mode === 'cum' ? cumVal(d, curYear) : yearVal(d, curYear)]);
+  const max = Math.max(1, ...vals.map(([, v]) => v ?? 0));
+  const sorted = [...vals].sort((a, b) => (b[1] ?? -1) - (a[1] ?? -1));
+  const rank = {}; sorted.forEach(([d], i) => rank[d] = i);
+  vals.forEach(([d, v]) => {
+    const el = rowEls[d];
+    el.style.transform = `translateY(${rank[d] * ROW_H}px)`;
+    el.classList.toggle('na', v === null);
+    el.classList.toggle('selected', d === selectedDept);
+    el.querySelector('.bar').style.width = (v === null ? 2 : Math.max(1.2, v / max * 100)) + '%';
+    el.querySelector('.val').innerHTML = v === null ? '<small>未設科</small>' : fmt(v);
+  });
+  if (selectedDept) renderDetail();
+}
+
+function step(){
+  if (curYear >= 114){ stop(); return; }
+  curYear++;
+  render();
+}
+function play(){
+  if (curYear >= 114) curYear = 101;
+  playing = true;
+  document.getElementById('playBtn').textContent = '⏸ 暫停';
+  document.getElementById('playBtn').classList.add('playing');
+  render();
+  timer = setInterval(step, 1150);
+}
+function stop(){
+  playing = false;
+  clearInterval(timer);
+  document.getElementById('playBtn').textContent = '▶ 播放';
+  document.getElementById('playBtn').classList.remove('playing');
+}
+document.getElementById('playBtn').addEventListener('click', () => playing ? stop() : play());
+document.getElementById('yearSlider').addEventListener('input', e => {
+  stop(); curYear = +e.target.value; render();
+});
+document.getElementById('mCum').addEventListener('click', () => setMode('cum'));
+document.getElementById('mYear').addEventListener('click', () => setMode('year'));
+function setMode(m){
+  mode = m;
+  document.getElementById('mCum').classList.toggle('on', m === 'cum');
+  document.getElementById('mYear').classList.toggle('on', m === 'year');
+  render();
+}
+
+/* ---- detail panel ---- */
+function chipHTML(p){
+  return `<span class="chip"><b>${p.s}</b>${p.t}${p.m ? `<span class="mk">${p.m}半年</span>` : ''}</span>`;
+}
+function selectDept(d, y){
+  selectedDept = d;
+  if (y !== undefined){ stop(); curYear = y; }
+  document.getElementById('detail').style.display = 'block';
+  render();
+  document.getElementById('detail').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+function renderDetail(){
+  const d = selectedDept;
+  const t = document.getElementById('detailTitle');
+  const b = document.getElementById('detailBody');
+  const dot = `<span class="dot" style="background:${COLORS[d]}"></span>`;
+  if (mode === 'year'){
+    const rec = D[d][String(curYear)];
+    t.innerHTML = `${dot}${d}．${curYear} 學年度${rec ? `（${fmt(rec.n)} 人）` : ''}`;
+    b.innerHTML = rec ? rec.p.map(chipHTML).join('') : '<span style="color:var(--sub)">尚未設科</span>';
+  } else {
+    t.innerHTML = `${dot}${d}．101–${curYear} 學年度（累計 ${fmt(cumVal(d, curYear) ?? 0)} 人次）`;
+    b.innerHTML = YEARS.filter(y => y <= curYear && D[d][String(y)]).map(y => {
+      const rec = D[d][String(y)];
+      return `<div class="yr-row"><span class="y">${y}</span><span>${rec.p.map(chipHTML).join('')}</span></div>`;
+    }).join('') || '<span style="color:var(--sub)">尚未設科</span>';
+  }
+}
+document.getElementById('detailClose').addEventListener('click', () => {
+  selectedDept = null;
+  document.getElementById('detail').style.display = 'none';
+  render();
+});
+
+/* ---- heatmap ---- */
+(function(){
+  const maxV = Math.max(...DEPTS.flatMap(d => YEARS.map(y => yearVal(d, y) ?? 0)));
+  function bg(v){
+    const r = v / maxV;
+    // #f4f7fb → #1e5aa8
+    const mix = (a, b) => Math.round(a + (b - a) * r);
+    return `rgb(${mix(244,30)},${mix(247,90)},${mix(251,168)})`;
+  }
+  let html = '<tr><th></th>' + YEARS.map(y => `<th>${y}</th>`).join('') + '<th>小計</th></tr>';
+  for (const d of DEPTS){
+    html += `<tr><td class="dep">${d}</td>`;
+    for (const y of YEARS){
+      const v = yearVal(d, y);
+      if (v === null) html += '<td class="cell empty">—</td>';
+      else {
+        const dark = v / maxV > .55;
+        html += `<td class="cell" data-d="${d}" data-y="${y}" style="background:${bg(v)};color:${dark ? '#fff' : 'var(--ink)'}">${fmt(v)}</td>`;
+      }
+    }
+    html += `<td class="tot">${fmt(cumVal(d, 114))}</td></tr>`;
+  }
+  const heat = document.getElementById('heat');
+  heat.innerHTML = html;
+  heat.addEventListener('click', e => {
+    const td = e.target.closest('td.cell:not(.empty)');
+    if (!td) return;
+    setMode('year');
+    selectDept(td.dataset.d, +td.dataset.y);
+    document.getElementById('race').scrollIntoView({behavior:'smooth', block:'center'});
+  });
+})();
+
+render();
+setTimeout(play, 900);
+</script>
+</body>
+</html>
