@@ -65,6 +65,9 @@ html,body{width:100%;height:100%;background:#0d0b09;overflow:hidden;color:var(--
 .tc .ds{font-family:var(--sans);font-size:20px;color:#e2d4b6;line-height:1.4}
 .tc .pn{position:absolute;right:16px;top:12px;z-index:2;font-family:var(--sans);font-size:20px;background:rgba(0,0,0,.55);padding:2px 10px;border-radius:12px}
 .tc.here{outline:5px solid var(--red)}
+.tc .skip{position:absolute;left:16px;top:12px;z-index:2;font-family:var(--sans);font-size:18px;background:#555;color:#eee;padding:2px 10px;border-radius:12px;display:none}
+.lite-on .tc.opt .skip{display:block}
+.lite-on .tc.opt img{opacity:.35}
 .tc.here .pn{background:var(--red)}
 .resume{position:absolute;right:90px;top:110px;font-family:var(--sans);font-size:26px;background:var(--red);color:#fff;border:none;padding:14px 26px;border-radius:40px;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.25)}
 .resume:hover{background:#8f241f}
@@ -254,7 +257,7 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
     <div class="sub in2">春秋棋局：從禮崩樂壞到燭之武退秦師</div>
     <div class="sub2 in3">周禮・晉國內亂・秦晉交易・重耳流亡・唇舌之後</div>
   </div>
-  <label class="lite" id="liteBox"><input type="checkbox" id="lite"><span class="lt">精簡模式</span><span class="ld">略過 5 頁延伸內容：井田、泓之戰、春秋戰國對照、文公治晉、城濮戰術</span></label>
+  <label class="lite" id="liteBox"><input type="checkbox" id="lite"><span class="lt">精簡模式</span><span class="ld">略過序章（禮崩樂壞）與文公治晉、城濮戰術兩頁，直接從故事開始</span></label>
 </section>
 
 <!-- 章節導引 -->
@@ -262,11 +265,11 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
   <div class="head" style="top:70px"><span class="tag">章節導引｜點選跳到該章</span><h2>名與利：春秋棋局</h2></div>
   <button class="resume" id="resume" type="button"></button>
   <div class="tocgrid" id="tocgrid"></div>
-  <div class="tochint">任何一頁按右上角「目錄」或鍵盤 M 都能回到這裡；封面可勾選「精簡模式」（或按 L）略過 5 頁延伸內容</div>
+  <div class="tochint">任何一頁按右上角「目錄」或鍵盤 M 都能回到這裡；封面可勾選「精簡模式」（或按 L）略過序章等延伸內容</div>
 </section>
 
 <!-- ===== 序章：禮崩樂壞 ===== -->
-<section class="s act" id="ch-pro" data-y="680" data-hud="0">
+<section data-opt="1" class="s act" id="ch-pro" data-y="680" data-hud="0">
   <div class="stage">PROLOGUE</div>
   <h1>禮崩樂壞</h1>
   <div class="sub">春秋時代，大家為什麼打來打去？</div>
@@ -275,7 +278,7 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
 </section>
 
 <!-- 周的設計 -->
-<section class="s" data-y="680" data-hud="0">
+<section data-opt="1" class="s" data-y="680" data-hud="0">
   <div class="bg"><img src="img/19_zhou_order.jpg" alt="西周天子在宗廟前接受諸侯朝拜"></div><div class="shade b"></div>
   <div class="txt b">
     <span class="tag in">西周｜約前 1046 — 前 771</span>
@@ -286,7 +289,7 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
 </section>
 
 <!-- 三環圖 -->
-<section class="s paper" data-y="680" data-hud="0">
+<section data-opt="1" class="s paper" data-y="680" data-hud="0">
   <div class="head"><span class="tag">周代社會的骨架</span><h2>撐起「禮」的三根支柱</h2></div>
   <svg class="venn" viewBox="0 0 1920 1080">
     <g class="f"><circle cx="960" cy="420" r="230" fill="var(--jade)"/><text x="960" y="330" class="vt">宗法制</text></g>
@@ -300,7 +303,7 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
 </section>
 
 <!-- 宗法 -->
-<section class="s paper" data-y="680" data-hud="0">
+<section data-opt="1" class="s paper" data-y="680" data-hud="0">
   <div class="head"><span class="tag">支柱一｜宗法制</span><h2>嫡長子繼承：生下來就決定了</h2></div>
   <svg class="tree" viewBox="0 0 1920 1080">
     <path class="ln f" d="M760 365 V420 H460 V475"/>
@@ -322,7 +325,7 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
 </section>
 
 <!-- 封建 -->
-<section class="s paper" data-y="680" data-hud="0">
+<section data-opt="1" class="s paper" data-y="680" data-hud="0">
   <div class="head"><span class="tag">支柱二｜封建制</span><h2>封邦建國：層層分封，層層效忠</h2></div>
   <svg class="pyr" viewBox="0 0 1920 1080">
     <g class="f"><polygon points="560,300 640,300 690,410 510,410" fill="#7a1f1a"/><text x="600" y="372">天子</text></g>
@@ -363,7 +366,7 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
 </section>
 
 <!-- 東遷 -->
-<section class="s" data-y="680" data-hud="0">
+<section data-opt="1" class="s" data-y="680" data-hud="0">
   <div class="bg"><img src="img/20_quanrong.jpg" alt="犬戎攻破鎬京，烽火台燃燒"></div><div class="shade"></div>
   <div class="txt">
     <span class="tag in">前 771 — 前 770</span>
@@ -378,7 +381,7 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
 </section>
 
 <!-- 射王中肩 -->
-<section class="s" data-y="680" data-hud="0">
+<section data-opt="1" class="s" data-y="680" data-hud="0">
   <div class="bg"><img src="img/22_xuge.jpg" alt="繻葛之戰，鄭將祝聃射中周桓王肩膀"></div><div class="shade b"></div>
   <div class="txt b">
     <span class="tag in">前 707｜繻葛之戰</span>
@@ -391,7 +394,7 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
 </section>
 
 <!-- 三柱斷裂 -->
-<section class="s paper" data-y="680" data-hud="0">
+<section data-opt="1" class="s paper" data-y="680" data-hud="0">
   <div class="head"><span class="tag">春秋｜前 770 — 前 476</span><h2>三根支柱，一根根斷了</h2></div>
   <div class="cards">
     <div class="card f" style="border-top-color:var(--red)"><div class="yr">封建崩壞</div><h3>天子管不動</h3><p>周王和鄭國<b>互換人質</b>（前 720），天子降得和諸侯平起平坐；後來還被鄭國射中肩膀。</p><div class="mini">《左傳・隱公三年、桓公五年》</div><div class="crack seal">斷</div></div>
@@ -402,7 +405,7 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
 </section>
 
 <!-- 師出有名 -->
-<section class="s paper" data-y="680" data-hud="0">
+<section data-opt="1" class="s paper" data-y="680" data-hud="0">
   <div class="head"><span class="tag">春秋的遊戲規則</span><h2>春秋無義戰，但要「師出有名」</h2></div>
   <div class="cards" style="top:300px">
     <div class="card f" style="border-top-color:var(--ink)"><div class="yr">孟子的評語</div><p style="color:var(--ink);font-weight:600">「春秋無義戰。彼善於此，則有之矣。<b style="color:var(--red)">征者，上伐下也，</b><b style="color:var(--red)">敵國不相征也</b>。」</p><p style="font-size:26px;margin-top:12px">征伐本是天子的權力，諸侯之間互打，本來就不合禮。</p><div class="mini">《孟子・盡心下》</div></div>
@@ -1152,13 +1155,15 @@ const chIdx=CH.map(c=>S.indexOf(document.getElementById(c[0])));
 CH.forEach(([id,lb,tt,ds,img],k)=>{
   const b=document.createElement('button');b.type='button';b.className='tc';
   const end=k<CH.length-1?chIdx[k+1]:S.length;
-  b.innerHTML=`<img src="img/${img}.jpg" alt=""><span class="pn">第 ${chIdx[k]+1===end?end:(chIdx[k]+1)+"–"+end} 頁</span><span class="in"><span class="lb">${lb}</span><div class="tt">${tt}</div><div class="ds">${ds}</div></span>`;
+  if(S[chIdx[k]].dataset.opt==='1')b.classList.add('opt');
+  b.innerHTML=`<img src="img/${img}.jpg" alt=""><span class="skip">精簡模式略過</span><span class="pn">第 ${chIdx[k]+1===end?end:(chIdx[k]+1)+"–"+end} 頁</span><span class="in"><span class="lb">${lb}</span><div class="tt">${tt}</div><div class="ds">${ds}</div></span>`;
   b.addEventListener('click',e=>{e.stopPropagation();show(chIdx[k]);});
   grid.appendChild(b);
 });
 let last=-1;try{last=+(localStorage.getItem('jin-last')||-1)}catch(e){}
 const resume=document.getElementById('resume');
 function paintToc(){
+  document.getElementById('toc').classList.toggle('lite-on',lite);
   const k=chIdx.filter(i=>i<=last).length-1;
   grid.querySelectorAll('.tc').forEach((b,j)=>b.classList.toggle('here',j===k));
   if(last>TOC+1){resume.hidden=false;resume.textContent=`▶ 從上次停下的地方繼續（第 ${last+1} 頁）`;}else resume.hidden=true;
