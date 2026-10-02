@@ -72,6 +72,12 @@ html,body{width:100%;height:100%;background:#0d0b09;overflow:hidden;color:var(--
 .tochint{position:absolute;left:90px;bottom:60px;font-family:var(--sans);font-size:22px;color:#8a7a62}
 #pg{cursor:pointer;pointer-events:auto;font-size:22px!important;background:rgba(15,12,9,.55);padding:4px 14px;border-radius:16px;color:rgba(255,255,255,.8)}
 #pg:hover{background:var(--red);color:#fff}
+/* ===== 精簡模式 ===== */
+.lite{position:absolute;right:60px;bottom:70px;z-index:8;display:flex;align-items:center;gap:16px;flex-wrap:wrap;width:620px;padding:18px 24px;background:rgba(14,11,8,.78);border:2px solid var(--gold);border-radius:12px;color:#f3e9d4;cursor:pointer;font-family:var(--sans)}
+.lite input{width:34px;height:34px;accent-color:var(--red);cursor:pointer;margin:0}
+.lite .lt{font-size:32px;font-weight:700;color:#ffd77a}
+.lite .ld{flex-basis:100%;font-size:21px;color:#cbb994;line-height:1.5}
+.lite:hover{background:rgba(14,11,8,.9)}
 /* ===== 情節頁：滿版圖 ===== */
 .bg{position:absolute;inset:0;overflow:hidden;background:#222}
 .bg img{width:100%;height:100%;object-fit:cover;transform:scale(1.08);transition:transform 14s ease-out}
@@ -248,6 +254,7 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
     <div class="sub in2">春秋棋局：從禮崩樂壞到燭之武退秦師</div>
     <div class="sub2 in3">周禮・晉國內亂・秦晉交易・重耳流亡・唇舌之後</div>
   </div>
+  <label class="lite" id="liteBox"><input type="checkbox" id="lite"><span class="lt">精簡模式</span><span class="ld">略過 5 頁延伸內容：井田、泓之戰、春秋戰國對照、文公治晉、城濮戰術</span></label>
 </section>
 
 <!-- 章節導引 -->
@@ -255,7 +262,7 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
   <div class="head" style="top:70px"><span class="tag">章節導引｜點選跳到該章</span><h2>名與利：春秋棋局</h2></div>
   <button class="resume" id="resume" type="button"></button>
   <div class="tocgrid" id="tocgrid"></div>
-  <div class="tochint">任何一頁按右上角「目錄」或鍵盤 M，都能回到這裡</div>
+  <div class="tochint">任何一頁按右上角「目錄」或鍵盤 M 都能回到這裡；封面可勾選「精簡模式」（或按 L）略過 5 頁延伸內容</div>
 </section>
 
 <!-- ===== 序章：禮崩樂壞 ===== -->
@@ -334,7 +341,7 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
 </section>
 
 <!-- 井田 -->
-<section class="s paper" data-y="680" data-hud="0">
+<section data-opt="1" class="s paper" data-y="680" data-hud="0">
   <div class="head"><span class="tag">支柱三｜井田制</span><h2>井田：先公後私</h2></div>
   <div class="jt-img f"><img src="img/21_jingtian.jpg" alt="井田示意：九塊田，八家共耕中間的公田"></div>
   <svg class="jing" viewBox="0 0 600 600">
@@ -405,7 +412,7 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
 </section>
 
 <!-- 泓之戰 -->
-<section class="s" data-y="680" data-hud="0">
+<section data-opt="1" class="s" data-y="680" data-hud="0">
   <div class="bg"><img src="img/23_hong.jpg" alt="泓之戰，宋襄公堅持等楚軍渡河列陣"></div><div class="shade r"></div>
   <div class="txt r">
     <span class="tag in">前 638｜泓之戰</span>
@@ -419,7 +426,7 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
 </section>
 
 <!-- 春秋 vs 戰國 -->
-<section class="s paper" data-y="680" data-hud="0">
+<section data-opt="1" class="s paper" data-y="680" data-hud="0">
   <div class="head"><span class="tag">對照</span><h2>春秋 vs 戰國：連藉口都不用了</h2></div>
   <div class="era f">
     <div style="flex:275;background:#8a7a5e">西周<small>約前 1046 — 前 771</small></div>
@@ -779,7 +786,7 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
 </section>
 
 <!-- 26 文公治晉 -->
-<section class="s paper" data-y="635">
+<section data-opt="1" class="s paper" data-y="635">
   <div class="head"><span class="tag">晉國國內局勢</span><h2>晉文公：坐穩，再變強</h2></div>
   <div class="cards">
     <div class="card f"><div class="yr">前 636｜平亂</div><h3>寺人披告密</h3><p>惠公舊臣呂甥、郤芮密謀放火燒宮。來告密的，正是當年<b>斬斷他衣袖的寺人披</b>。文公不計前嫌接見，躲過一劫。</p><div class="mini">《左傳・僖公二十四年》</div></div>
@@ -805,7 +812,7 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
 </section>
 
 <!-- 28 城濮之戰 -->
-<section class="s" data-y="632">
+<section data-opt="1" class="s" data-y="632">
   <div class="bg pan"><img src="img/13_chengpu.jpg" alt="城濮之戰，晉軍戰車拖柴揚塵"></div><div class="shade"></div>
   <div class="txt">
     <span class="tag in">前 632 年四月</span>
@@ -1101,7 +1108,7 @@ function show(i,back){
   s.querySelectorAll('.route-leg').forEach(p=>p.style.strokeDashoffset=back?0:p.getTotalLength());
   void s.offsetWidth;s.classList.add('on');
   const y=+s.dataset.y;hud.classList.toggle('off',s.dataset.hud==='0');now.style.left=pos(y);hud.querySelector('.yr').textContent='前 '+y;
-  document.getElementById('pg').textContent='☰ 目錄｜'+(cur+1)+' / '+S.length;
+  document.getElementById('pg').textContent='☰ 目錄｜'+(cur+1)+' / '+S.length+(lite?'｜精簡':'')+(S[cur].dataset.opt==='1'?'｜延伸':'');
   if(cur>1){try{localStorage.setItem('jin-last',cur)}catch(e){}last=cur;}
   if(typeof paintToc==='function'&&cur===TOC)paintToc();
 }
@@ -1109,18 +1116,22 @@ function revealLeg(s,f){
   if(f.classList.contains('route-leg'))f.style.strokeDashoffset=0;
   const k=f.dataset.leg;if(k!==undefined)s.querySelectorAll(`.f2[data-k="${k}"]`).forEach(p=>{p.style.strokeDashoffset=0;p.style.opacity=1;});
 }
+let lite=false;try{lite=localStorage.getItem('jin-lite')==='1'}catch(e){}
+const isOpt=i=>lite&&S[i]&&S[i].dataset.opt==='1';
 function next(){
   const s=S[cur];const hidden=frags(s).filter(f=>!f.classList.contains('v'));
   if(hidden.length){const f=hidden[0];f.classList.add('v');revealLeg(s,f);
     return;}
-  if(cur<S.length-1)show(cur+1);
+  let j=cur+1;while(isOpt(j))j++;
+  if(j<S.length)show(j);
 }
-function prev(){if(cur>0)show(cur-1,true);}
+function prev(){let j=cur-1;while(j>0&&isOpt(j))j--;if(j>=0&&j!==cur)show(j,true);}
 addEventListener('keydown',e=>{
   if(['ArrowRight','ArrowDown',' ','PageDown','Enter'].includes(e.key)){e.preventDefault();next();}
   else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev();}
   else if(e.key==='Home')show(0);else if(e.key==='End')show(S.length-1,true);
   else if(e.key==='m'||e.key==='M'){show(TOC);}
+  else if(e.key==='l'||e.key==='L'){liteChk.checked=!liteChk.checked;liteChk.dispatchEvent(new Event('change'));}
   else if(e.key==='f'||e.key==='F'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}
 });
 document.getElementById('nav').addEventListener('click',e=>{e.stopPropagation();prev();});
@@ -1154,6 +1165,10 @@ function paintToc(){
 }
 resume.addEventListener('click',e=>{e.stopPropagation();show(last);});
 document.getElementById('pg').addEventListener('click',e=>{e.stopPropagation();show(TOC);});
+const liteBox=document.getElementById('liteBox'),liteChk=document.getElementById('lite');
+liteChk.checked=lite;
+liteBox.addEventListener('click',e=>e.stopPropagation());
+liteChk.addEventListener('change',()=>{lite=liteChk.checked;try{localStorage.setItem('jin-lite',lite?'1':'0')}catch(e){}show(cur);});
 
 stage.addEventListener('click',next);
 S.forEach(s=>s.querySelectorAll('.f2').forEach(g=>{if(g.tagName=='g')g.style.opacity=0;}));
