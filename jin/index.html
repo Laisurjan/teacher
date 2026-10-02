@@ -52,6 +52,26 @@ html,body{width:100%;height:100%;background:#0d0b09;overflow:hidden;color:var(--
 .cmp th{font-size:44px;padding:10px;text-align:left}
 .cmp td{padding:16px 18px;border-top:2px solid #d8c6a2;line-height:1.45;color:var(--ink2)}
 .cmp td:first-child{font-weight:900;color:var(--ink);width:220px}
+/* ===== 章節導引 ===== */
+.tocgrid{position:absolute;left:90px;right:90px;top:250px;display:grid;grid-template-columns:repeat(4,1fr);gap:26px}
+.tc{position:relative;height:330px;border:none;padding:0;cursor:pointer;overflow:hidden;background:#222;color:#fff;text-align:left;font-family:var(--serif);box-shadow:0 8px 22px rgba(60,40,20,.25);transition:transform .25s,box-shadow .25s}
+.tc:hover,.tc:focus-visible{transform:translateY(-6px);box-shadow:0 16px 30px rgba(60,40,20,.35);outline:4px solid var(--gold)}
+.tc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.75;transition:opacity .25s}
+.tc:hover img{opacity:.95}
+.tc::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(14,11,8,.92) 8%,rgba(14,11,8,.15) 70%)}
+.tc .in{position:absolute;left:22px;right:22px;bottom:18px;z-index:2;animation:none}
+.tc .lb{font-family:var(--sans);font-size:20px;letter-spacing:.2em;color:var(--gold)}
+.tc .tt{font-size:42px;font-weight:900;margin:4px 0 2px;white-space:nowrap}
+.tc .ds{font-family:var(--sans);font-size:20px;color:#e2d4b6;line-height:1.4}
+.tc .pn{position:absolute;right:16px;top:12px;z-index:2;font-family:var(--sans);font-size:20px;background:rgba(0,0,0,.55);padding:2px 10px;border-radius:12px}
+.tc.here{outline:5px solid var(--red)}
+.tc.here .pn{background:var(--red)}
+.resume{position:absolute;right:90px;top:110px;font-family:var(--sans);font-size:26px;background:var(--red);color:#fff;border:none;padding:14px 26px;border-radius:40px;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.25)}
+.resume:hover{background:#8f241f}
+.resume[hidden]{display:none}
+.tochint{position:absolute;left:90px;bottom:60px;font-family:var(--sans);font-size:22px;color:#8a7a62}
+#pg{cursor:pointer;pointer-events:auto;font-size:22px!important;background:rgba(15,12,9,.55);padding:4px 14px;border-radius:16px;color:rgba(255,255,255,.8)}
+#pg:hover{background:var(--red);color:#fff}
 /* ===== 情節頁：滿版圖 ===== */
 .bg{position:absolute;inset:0;overflow:hidden;background:#222}
 .bg img{width:100%;height:100%;object-fit:cover;transform:scale(1.08);transition:transform 14s ease-out}
@@ -228,8 +248,16 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
   </div>
 </section>
 
+<!-- 章節導引 -->
+<section class="s paper" id="toc" data-y="680" data-hud="0">
+  <div class="head" style="top:70px"><span class="tag">章節導引｜點選跳到該章</span><h2>名與利：春秋棋局</h2></div>
+  <button class="resume" id="resume" type="button"></button>
+  <div class="tocgrid" id="tocgrid"></div>
+  <div class="tochint">任何一頁按右上角「目錄」或鍵盤 M，都能回到這裡</div>
+</section>
+
 <!-- ===== 序章：禮崩樂壞 ===== -->
-<section class="s act" data-y="680" data-hud="0">
+<section class="s act" id="ch-pro" data-y="680" data-hud="0">
   <div class="stage">PROLOGUE</div>
   <h1>禮崩樂壞</h1>
   <div class="sub">春秋時代，大家為什麼打來打去？</div>
@@ -420,7 +448,7 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
 </section>
 
 <!-- 3 第一幕 -->
-<section class="s act" data-y="672">
+<section class="s act" id="ch-1" data-y="672">
   <div class="stage">STAGE 1</div>
   <h1>驪姬之亂</h1>
   <div class="sub">一個父親，五個兒子，一場宮廷陰謀</div>
@@ -526,7 +554,7 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
 </section>
 
 <!-- 11 第二幕 -->
-<section class="s act" data-y="651">
+<section class="s act" id="ch-2" data-y="651">
   <div class="stage">STAGE 2</div>
   <h1>秦晉交易</h1>
   <div class="sub">秦穆公的算盤，夷吾的空頭支票</div>
@@ -611,7 +639,7 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
 </section>
 
 <!-- 15 第三幕 -->
-<section class="s act" data-y="655">
+<section class="s act" id="ch-3" data-y="655">
   <div class="stage">STAGE 3</div>
   <h1>流亡之路</h1>
   <div class="sub">重耳的八國之旅：誰對他好，誰給他難堪</div>
@@ -725,7 +753,7 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
 </section>
 
 <!-- 24 第四幕 -->
-<section class="s act" data-y="636">
+<section class="s act" id="ch-4" data-y="636">
   <div class="stage">STAGE 4</div>
   <h1>王者歸來</h1>
   <div class="sub">報恩，也報仇</div>
@@ -814,7 +842,7 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
 </section>
 
 <!-- 31 圍鄭 -->
-<section class="s" data-y="630">
+<section class="s" id="ch-siege" data-y="630">
   <div class="bg pan"><img src="img/15_siege.jpg" alt="秦晉大軍夜圍鄭國"></div><div class="shade b"></div>
   <div class="txt b">
     <span class="tag in">前 630 年九月｜魯僖公三十年</span>
@@ -837,7 +865,7 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
 </section>
 
 <!-- 33 三個思考 -->
-<section class="s paper" data-y="630">
+<section class="s paper" id="ch-q" data-y="630">
   <div class="head"><span class="tag">進入課文之前</span><h2>三個思考</h2></div>
   <div class="qs">
     <div class="qq f" data-n="1">秦穆公為什麼一直幫晉國？他得到了什麼？<div class="hint">想想：河外五城、泛舟之役、韓原之戰、懷嬴</div></div>
@@ -847,7 +875,7 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
 </section>
 
 <!-- ===== 尾聲：唇舌之後 ===== -->
-<section class="s act" data-y="630">
+<section class="s act" id="ch-epi" data-y="630">
   <div class="stage">EPILOGUE</div>
   <h1>唇舌之後</h1>
   <div class="sub">燭之武的一席話，鄭國付出了什麼？</div>
@@ -929,7 +957,7 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
 </section>
 
 <!-- 34 出處 -->
-<section class="s paper" data-y="630" data-hud="0">
+<section class="s paper" id="ch-ref" data-y="630" data-hud="0">
   <div class="head" style="top:80px"><span class="tag">史料與圖片說明</span><h2 style="font-size:60px">本簡報的依據</h2></div>
   <div class="refs">
     <h3>主要史料</h3>
@@ -1070,8 +1098,9 @@ function show(i,back){
   s.querySelectorAll('.route-leg').forEach(p=>p.style.strokeDashoffset=back?0:p.getTotalLength());
   void s.offsetWidth;s.classList.add('on');
   const y=+s.dataset.y;hud.classList.toggle('off',s.dataset.hud==='0');now.style.left=pos(y);hud.querySelector('.yr').textContent='前 '+y;
-  document.getElementById('pg').textContent=(cur+1)+' / '+S.length;
-  try{localStorage.setItem('jin-pg',cur)}catch(e){}
+  document.getElementById('pg').textContent='☰ 目錄｜'+(cur+1)+' / '+S.length;
+  if(cur>1){try{localStorage.setItem('jin-last',cur)}catch(e){}last=cur;}
+  if(typeof paintToc==='function'&&cur===TOC)paintToc();
 }
 function revealLeg(s,f){
   if(f.classList.contains('route-leg'))f.style.strokeDashoffset=0;
@@ -1088,9 +1117,41 @@ addEventListener('keydown',e=>{
   if(['ArrowRight','ArrowDown',' ','PageDown','Enter'].includes(e.key)){e.preventDefault();next();}
   else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev();}
   else if(e.key==='Home')show(0);else if(e.key==='End')show(S.length-1,true);
+  else if(e.key==='m'||e.key==='M'){show(TOC);}
   else if(e.key==='f'||e.key==='F'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}
 });
 document.getElementById('nav').addEventListener('click',e=>{e.stopPropagation();prev();});
+/* ===== 章節導引 ===== */
+const CH=[
+ ['ch-pro','序章','禮崩樂壞','周禮三制如何崩壞','19_zhou_order'],
+ ['ch-1','第一幕','驪姬之亂','晉獻公與五個兒子','01_harem'],
+ ['ch-2','第二幕','秦晉交易','秦穆公的算盤','17_mu_baili'],
+ ['ch-3','第三幕','流亡之路','重耳的八國之旅','07_clod'],
+ ['ch-4','第四幕','王者歸來','城濮之戰、踐土之盟','13_chengpu'],
+ ['ch-siege','終幕','秦晉圍鄭','課文的起點','15_siege'],
+ ['ch-epi','尾聲','唇舌之後','弦高犒師、殽之戰','25_xiangao'],
+ ['ch-ref','附錄','史料說明','出處與圖片說明','14_jiantu'],
+];
+const TOC=S.indexOf(document.getElementById('toc'));
+const grid=document.getElementById('tocgrid');
+const chIdx=CH.map(c=>S.indexOf(document.getElementById(c[0])));
+CH.forEach(([id,lb,tt,ds,img],k)=>{
+  const b=document.createElement('button');b.type='button';b.className='tc';
+  const end=k<CH.length-1?chIdx[k+1]:S.length;
+  b.innerHTML=`<img src="img/${img}.jpg" alt=""><span class="pn">第 ${chIdx[k]+1===end?end:(chIdx[k]+1)+"–"+end} 頁</span><span class="in"><span class="lb">${lb}</span><div class="tt">${tt}</div><div class="ds">${ds}</div></span>`;
+  b.addEventListener('click',e=>{e.stopPropagation();show(chIdx[k]);});
+  grid.appendChild(b);
+});
+let last=-1;try{last=+(localStorage.getItem('jin-last')||-1)}catch(e){}
+const resume=document.getElementById('resume');
+function paintToc(){
+  const k=chIdx.filter(i=>i<=last).length-1;
+  grid.querySelectorAll('.tc').forEach((b,j)=>b.classList.toggle('here',j===k));
+  if(last>TOC+1){resume.hidden=false;resume.textContent=`▶ 從上次停下的地方繼續（第 ${last+1} 頁）`;}else resume.hidden=true;
+}
+resume.addEventListener('click',e=>{e.stopPropagation();show(last);});
+document.getElementById('pg').addEventListener('click',e=>{e.stopPropagation();show(TOC);});
+
 stage.addEventListener('click',next);
 S.forEach(s=>s.querySelectorAll('.f2').forEach(g=>{if(g.tagName=='g')g.style.opacity=0;}));
 // 網址 #5 跳到第 5 頁；#5a 為預覽用，直接展開該頁所有內容
