@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow,noarchive">
-<title>流亡十九年：晉文公</title>
+<title>名與利：春秋棋局</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
@@ -27,6 +27,31 @@ html,body{width:100%;height:100%;background:#0d0b09;overflow:hidden;color:var(--
 .s{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .7s ease,visibility 0s .7s;z-index:1}
 .s.on{opacity:1;visibility:visible;transition:opacity .7s ease;z-index:2}
 
+/* ===== 序章 ===== */
+.venn{position:absolute;inset:0;width:100%;height:100%}
+.venn circle{mix-blend-mode:multiply;opacity:.55}
+.venn g:last-child circle{opacity:1;mix-blend-mode:normal}
+.venn .vt{font-family:var(--serif);font-size:54px;font-weight:900;fill:var(--ink);text-anchor:middle}
+.vnote{position:absolute;width:380px;background:#fbf6ea;border:3px solid;border-left-width:12px;padding:18px 22px;font-size:28px;line-height:1.55;color:var(--ink2)}
+.vnote b{font-size:32px;color:var(--ink)}
+.side2{position:absolute;left:1400px;top:300px;width:440px}
+.pyr{position:absolute;inset:0;width:100%;height:100%}
+.pyr text{font-family:var(--serif);font-size:40px;font-weight:900;fill:#fff;text-anchor:middle}
+.pyr text.side{fill:var(--ink2);font-size:28px;font-weight:600;text-anchor:start}
+.jt-img{position:absolute;left:110px;top:300px;width:620px;height:620px;overflow:hidden;border:3px solid #6b5a42}
+.jt-img img{width:100%;height:100%;object-fit:cover}
+.jing{position:absolute;left:780px;top:300px;width:450px;height:450px}
+.jing text{font-family:var(--serif);font-size:72px;font-weight:900;fill:#6b5a42;text-anchor:middle}
+.card{position:relative}
+.crack{position:absolute;right:20px;top:20px;width:90px;height:90px;font-size:50px;opacity:0}
+.card.v .crack{animation:stamp .6s .5s ease both}
+.era{position:absolute;left:110px;right:110px;top:280px;display:flex;height:84px;color:#fff;font-size:34px;font-weight:900}
+.era div{display:flex;align-items:center;justify-content:center;gap:16px}
+.era small{font-family:var(--sans);font-size:20px;font-weight:400;opacity:.9}
+.cmp{position:absolute;left:110px;top:400px;border-collapse:collapse;font-size:32px;width:1700px}
+.cmp th{font-size:44px;padding:10px;text-align:left}
+.cmp td{padding:16px 18px;border-top:2px solid #d8c6a2;line-height:1.45;color:var(--ink2)}
+.cmp td:first-child{font-weight:900;color:var(--ink);width:220px}
 /* ===== 情節頁：滿版圖 ===== */
 .bg{position:absolute;inset:0;overflow:hidden;background:#222}
 .bg img{width:100%;height:100%;object-fit:cover;transform:scale(1.08);transition:transform 14s ease-out}
@@ -93,8 +118,8 @@ h1,h2{font-weight:900;letter-spacing:.06em;line-height:1.2}
 .cover .ttl{position:absolute;right:120px;top:120px;text-align:right;color:#fff6e0}
 .cover h1{font-size:170px;letter-spacing:.12em;text-shadow:0 6px 30px rgba(0,0,0,.6)}
 .cover .ttl .sub{font-size:48px;margin-top:10px;text-shadow:0 3px 12px rgba(0,0,0,.7)}
-.cover .ttl .sub2{font-family:var(--sans);font-size:28px;color:var(--gold);margin-top:22px;letter-spacing:.2em}
-.cover .shade{background:linear-gradient(250deg,rgba(14,11,8,.75) 0%,rgba(14,11,8,.2) 40%,rgba(14,11,8,0) 60%)}
+.cover .ttl .sub2{font-family:var(--sans);font-size:28px;color:#ffd77a;margin-top:22px;letter-spacing:.15em;text-shadow:0 2px 8px rgba(0,0,0,.9)}
+.cover .shade{background:linear-gradient(250deg,rgba(14,11,8,.88) 0%,rgba(14,11,8,.55) 32%,rgba(14,11,8,0) 58%)}
 
 /* ===== 地圖 ===== */
 svg.map{position:absolute;inset:0;width:100%;height:100%}
@@ -170,6 +195,9 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
 .sc .stp{position:absolute;right:16px;top:14px;width:96px;height:96px;font-size:30px;opacity:0}
 .sc.v .stp{animation:stamp .6s .25s ease both}
 .sc.open{border:4px solid var(--red);background:#fff1ec}
+.settle.big .sc{padding:34px 36px}
+.settle.big .who{font-size:46px!important;margin-bottom:10px}
+.settle.big .now2{font-size:38px;line-height:1.55}
 .sc.open .stp{border-color:var(--red);color:var(--red);opacity:0}
 
 /* 提問 */
@@ -194,17 +222,195 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
   <div class="bg pan"><img src="img/00_cover.jpg" alt="年老的重耳站在戰車上，回望遠方的故國城郭"></div>
   <div class="shade"></div>
   <div class="ttl">
-    <h1 class="in">流亡十九年</h1>
-    <div class="sub in2">晉文公的恩與仇</div>
-    <div class="sub2 in3">〈燭之武退秦師〉前情提要</div>
+    <h1 class="in">名與利</h1>
+    <div class="sub in2">春秋棋局：從禮崩樂壞到燭之武退秦師</div>
+    <div class="sub2 in3">周禮・晉國內亂・秦晉交易・重耳流亡・唇舌之後</div>
   </div>
+</section>
+
+<!-- ===== 序章：禮崩樂壞 ===== -->
+<section class="s act" data-y="680" data-hud="0">
+  <div class="stage">PROLOGUE</div>
+  <h1>禮崩樂壞</h1>
+  <div class="sub">春秋時代，大家為什麼打來打去？</div>
+  <div class="yrs">約前 1046 — 前 7 世紀</div>
+  <div class="seal">周<br>禮</div>
+</section>
+
+<!-- 周的設計 -->
+<section class="s" data-y="680" data-hud="0">
+  <div class="bg"><img src="img/19_zhou_order.jpg" alt="西周天子在宗廟前接受諸侯朝拜"></div><div class="shade b"></div>
+  <div class="txt b">
+    <span class="tag in">西周｜約前 1046 — 前 771</span>
+    <h2 class="in">周朝的設計：人人各安其位</h2>
+    <p class="in2">周天子靠三套制度管理天下：<b>宗法</b>決定誰繼承，<b>封建</b>決定誰管哪裡，<b>井田</b>決定土地怎麼分。</p>
+    <p class="f">三者合起來，就是一個字——<b style="font-size:48px">禮</b>。</p>
+  </div>
+</section>
+
+<!-- 三環圖 -->
+<section class="s paper" data-y="680" data-hud="0">
+  <div class="head"><span class="tag">周代社會的骨架</span><h2>撐起「禮」的三根支柱</h2></div>
+  <svg class="venn" viewBox="0 0 1920 1080">
+    <g class="f"><circle cx="960" cy="420" r="230" fill="var(--jade)"/><text x="960" y="330" class="vt">宗法制</text></g>
+    <g class="f"><circle cx="830" cy="640" r="230" fill="var(--red)"/><text x="720" y="720" class="vt">封建制</text></g>
+    <g class="f"><circle cx="1090" cy="640" r="230" fill="var(--gold)"/><text x="1200" y="720" class="vt">井田制</text></g>
+    <g class="f"><circle cx="960" cy="565" r="74" fill="#fbf6ea" stroke="var(--ink)" stroke-width="5"/><text x="960" y="592" class="vt" style="font-size:78px">禮</text></g>
+  </svg>
+  <div class="vnote f" style="left:1250px;top:300px;border-color:var(--jade)"><b>嫡庶分明・穩固宗族</b><br>血緣決定身分</div>
+  <div class="vnote f" style="left:150px;top:760px;border-color:var(--red)"><b>名實相符・安分守己</b><br>層層分封，上下有序</div>
+  <div class="vnote f" style="left:1390px;top:760px;border-color:var(--gold)"><b>土地公有・守望相助</b><br>共耕公田，生活安穩</div>
+</section>
+
+<!-- 宗法 -->
+<section class="s paper" data-y="680" data-hud="0">
+  <div class="head"><span class="tag">支柱一｜宗法制</span><h2>嫡長子繼承：生下來就決定了</h2></div>
+  <svg class="tree" viewBox="0 0 1920 1080">
+    <path class="ln f" d="M760 365 V420 H460 V475"/>
+    <path class="ln f" d="M760 420 H1060 V475"/>
+    <path class="ln f" d="M1060 645 V685 H860 V725"/>
+    <path class="ln f" d="M1060 685 H1260 V725"/>
+  </svg>
+  <div class="pp" style="left:760px;top:270px"><div class="nm">周天子</div></div>
+  <div class="pp green f" style="left:460px;top:475px"><div class="mo">嫡長子</div><div class="nm">繼位天子</div><div class="ds">大宗，代代相傳</div></div>
+  <div class="pp f" style="left:1060px;top:475px"><div class="mo">其他兒子</div><div class="nm">封為諸侯</div><div class="ds">對天子而言是小宗</div></div>
+  <div class="pp green f" style="left:860px;top:725px"><div class="mo">諸侯的嫡長子</div><div class="nm">繼位國君</div><div class="ds">在本國又是大宗</div></div>
+  <div class="pp f" style="left:1260px;top:725px"><div class="mo">諸侯的其他兒子</div><div class="nm">封卿大夫</div><div class="ds">以此類推……</div></div>
+  <div class="side2">
+    <div class="q f" style="color:var(--ink);background:rgba(255,255,255,.5)">立適以長不以賢，<br>立子以貴不以長。</div>
+    <p class="f" style="font-size:30px;line-height:1.6">繼承人看的是<b>嫡庶</b>、<b>長幼</b>，<br>不看誰比較賢能。</p>
+    <div class="fore f" style="font-size:26px;white-space:normal;border-radius:16px;line-height:1.5">驪姬想廢嫡立庶，<br>就是在挑戰這條規矩</div>
+  </div>
+  <div class="src">《公羊傳・隱公元年》；《禮記・大傳》「別子為祖，繼別為宗」</div>
+</section>
+
+<!-- 封建 -->
+<section class="s paper" data-y="680" data-hud="0">
+  <div class="head"><span class="tag">支柱二｜封建制</span><h2>封邦建國：層層分封，層層效忠</h2></div>
+  <svg class="pyr" viewBox="0 0 1920 1080">
+    <g class="f"><polygon points="560,300 640,300 690,410 510,410" fill="#7a1f1a"/><text x="600" y="372">天子</text></g>
+    <g class="f"><polygon points="510,420 690,420 740,530 460,530" fill="#9a2a22"/><text x="600" y="492">諸侯</text><text x="790" y="492" class="side">公・侯・伯・子・男</text></g>
+    <g class="f"><polygon points="460,540 740,540 790,650 410,650" fill="#b3302a"/><text x="600" y="612">卿大夫</text></g>
+    <g class="f"><polygon points="410,660 790,660 840,770 360,770" fill="#c7584e"/><text x="600" y="732">士</text></g>
+    <g class="f"><polygon points="360,780 840,780 890,890 310,890" fill="#d9897f"/><text x="600" y="852">庶人</text></g>
+  </svg>
+  <div class="side2" style="left:1060px;top:290px;width:760px">
+    <p class="f" style="font-size:32px;line-height:1.6">天子把土地和人民<b>分封</b>給親族功臣；諸侯要<b>朝貢</b>，天子有難時<b>出兵勤王</b>。</p>
+    <div class="q f" style="color:var(--ink);background:rgba(255,255,255,.5)">昔周公弔二叔之不咸，故<em style="color:var(--red)">封建親戚以蕃屏周</em>。</div>
+    <p class="f" style="font-size:32px;line-height:1.6;margin-top:16px">最關鍵的規矩：<b style="color:var(--red)">只有天子能發動征伐</b>。</p>
+    <div class="q f" style="color:var(--ink);background:rgba(255,255,255,.5)">天下有道，則<em style="color:var(--red)">禮樂征伐自天子出</em>；<br>天下無道，則禮樂征伐自諸侯出。</div>
+  </div>
+  <div class="src">《左傳・僖公二十四年》；《論語・季氏》</div>
+</section>
+
+<!-- 井田 -->
+<section class="s paper" data-y="680" data-hud="0">
+  <div class="head"><span class="tag">支柱三｜井田制</span><h2>井田：先公後私</h2></div>
+  <div class="jt-img f"><img src="img/21_jingtian.jpg" alt="井田示意：九塊田，八家共耕中間的公田"></div>
+  <svg class="jing" viewBox="0 0 600 600">
+    <g class="f">
+      <rect x="0" y="0" width="600" height="600" fill="#e8d9b5" stroke="#6b5a42" stroke-width="6"/>
+      <path d="M200 0 V600 M400 0 V600 M0 200 H600 M0 400 H600" stroke="#6b5a42" stroke-width="6"/>
+      <text x="100" y="125">私</text><text x="300" y="125">私</text><text x="500" y="125">私</text>
+      <text x="100" y="325">私</text><text x="500" y="325">私</text>
+      <text x="100" y="525">私</text><text x="300" y="525">私</text><text x="500" y="525">私</text>
+    </g>
+    <g class="f"><rect x="203" y="203" width="194" height="194" fill="var(--gold)"/><text x="300" y="325" style="fill:#fff">公</text></g>
+  </svg>
+  <div class="side2" style="left:1300px;top:300px;width:540px">
+    <div class="q f" style="color:var(--ink);background:rgba(255,255,255,.5);font-size:29px">方里而井，井九百畝，其中為公田。八家皆私百畝，<em style="color:var(--red)">同養公田；公事畢，然後敢治私事</em>。</div>
+    <p class="f" style="font-size:30px;line-height:1.6">八家各耕自己的田，<br>但要先合力耕好中間的公田。</p>
+    <p class="f" style="font-size:24px;color:#8a7a62;line-height:1.5">※ 這是孟子描述的理想型，實際是否如此整齊，學者看法不一。</p>
+  </div>
+  <div class="src">《孟子・滕文公上》</div>
+</section>
+
+<!-- 東遷 -->
+<section class="s" data-y="680" data-hud="0">
+  <div class="bg"><img src="img/20_quanrong.jpg" alt="犬戎攻破鎬京，烽火台燃燒"></div><div class="shade"></div>
+  <div class="txt">
+    <span class="tag in">前 771 — 前 770</span>
+    <h2 class="in">第一道裂縫</h2>
+    <p class="in2">周幽王寵愛褒姒，<b>廢掉王后和太子宜臼</b>，改立褒姒之子——天子自己先破壞了宗法。</p>
+    <p class="f">太子的外祖父申侯聯合犬戎攻破鎬京，幽王被殺。</p>
+    <p class="f">宜臼即位為<b>周平王</b>，東遷雒邑——<b>東周、春秋時代開始</b>。</p>
+    <p class="f" style="font-size:30px;color:#d8c9a8">靠著殺父仇人擁立的天子，諸侯還會敬畏嗎？</p>
+    <p class="f" style="font-size:24px;color:#bfae8c">※「烽火戲諸侯」見《史記》，今人多疑其真實性。</p>
+  </div>
+  <div class="src">《史記・周本紀》</div>
+</section>
+
+<!-- 射王中肩 -->
+<section class="s" data-y="680" data-hud="0">
+  <div class="bg"><img src="img/22_xuge.jpg" alt="繻葛之戰，鄭將祝聃射中周桓王肩膀"></div><div class="shade b"></div>
+  <div class="txt b">
+    <span class="tag in">前 707｜繻葛之戰</span>
+    <h2 class="in">鄭國射中了天子</h2>
+    <p class="in2">周桓王率諸侯討伐<b>鄭國</b>，反被打敗——鄭將祝聃一箭<b>射中天子肩膀</b>。</p>
+    <div class="q f" style="width:1300px">公曰：「君子不欲多上人，況敢陵天子乎？」……夜，鄭伯使祭足<em>勞王</em>，且問左右。</div>
+    <p class="f">打贏了不追擊，當晚還派人慰問天子——<b>敢動手，但名分還得顧</b>。</p>
+  </div>
+  <div class="src">《左傳・桓公五年》</div>
+</section>
+
+<!-- 三柱斷裂 -->
+<section class="s paper" data-y="680" data-hud="0">
+  <div class="head"><span class="tag">春秋｜前 770 — 前 476</span><h2>三根支柱，一根根斷了</h2></div>
+  <div class="cards">
+    <div class="card f" style="border-top-color:var(--red)"><div class="yr">封建崩壞</div><h3>天子管不動</h3><p>周王和鄭國<b>互換人質</b>（前 720），天子降得和諸侯平起平坐；後來還被鄭國射中肩膀。</p><div class="mini">《左傳・隱公三年、桓公五年》</div><div class="crack seal">斷</div></div>
+    <div class="card f" style="border-top-color:var(--jade)"><div class="yr">宗法崩壞</div><h3>骨肉相殘</h3><p>庶子殺嫡、旁支奪位，例如晉國的<b>曲沃代翼</b>。整個春秋：</p><p style="font-weight:900;color:var(--red)">「弒君三十六，<br>亡國五十二」</p><div class="mini">《史記・太史公自序》</div><div class="crack seal">斷</div></div>
+    <div class="card f" style="border-top-color:var(--gold)"><div class="yr">井田崩壞</div><h3>私田變多</h3><p>人們開墾私田，公田荒廢。魯國「<b>初稅畝</b>」（前 594）改成按畝收稅，等於承認私田。</p><div class="mini">《左傳・宣公十五年》</div><div class="crack seal">斷</div></div>
+  </div>
+  <div class="punch f"><span>規矩還掛在嘴上，實力已經說了算——這就是「禮崩樂壞」。</span></div>
+</section>
+
+<!-- 師出有名 -->
+<section class="s paper" data-y="680" data-hud="0">
+  <div class="head"><span class="tag">春秋的遊戲規則</span><h2>春秋無義戰，但要「師出有名」</h2></div>
+  <div class="cards" style="top:300px">
+    <div class="card f" style="border-top-color:var(--ink)"><div class="yr">孟子的評語</div><p style="color:var(--ink);font-weight:600">「春秋無義戰。彼善於此，則有之矣。<b style="color:var(--red)">征者，上伐下也，</b><b style="color:var(--red)">敵國不相征也</b>。」</p><p style="font-size:26px;margin-top:12px">征伐本是天子的權力，諸侯之間互打，本來就不合禮。</p><div class="mini">《孟子・盡心下》</div></div>
+    <div class="card f" style="border-top-color:var(--qi)"><div class="yr">霸主出場：齊桓公伐楚（前 656）</div><p style="color:var(--ink);font-weight:600">「爾貢包茅不入，王祭不共，無以縮酒，<b style="color:var(--red)">寡人是徵</b>。」</p><p style="font-size:26px;margin-top:12px">打楚國的理由：你沒向天子進貢祭祀用的茅草——打著<b>「尊王」</b>的旗號。</p><div class="mini">《左傳・僖公四年》</div></div>
+  </div>
+  <div class="punch f" style="font-size:40px"><span>天子管不動了，就由「霸主」代管——但出兵總得找個名目。</span></div>
+</section>
+
+<!-- 泓之戰 -->
+<section class="s" data-y="680" data-hud="0">
+  <div class="bg"><img src="img/23_hong.jpg" alt="泓之戰，宋襄公堅持等楚軍渡河列陣"></div><div class="shade r"></div>
+  <div class="txt r">
+    <span class="tag in">前 638｜泓之戰</span>
+    <h2 class="in">打仗也要講禮</h2>
+    <p class="in2">楚軍渡河到一半，大臣子魚說：快打！宋襄公說：不行，等他們排好陣。</p>
+    <div class="q f">君子不重傷，不禽二毛……寡人雖亡國之餘，<em>不鼓不成列</em>。</div>
+    <p class="f">結果宋軍大敗，宋襄公腿上中箭。</p>
+    <div class="fore f">這位宋襄公，就是後來送重耳八十匹馬的人</div>
+  </div>
+  <div class="src">《左傳・僖公二十二年》</div>
+</section>
+
+<!-- 春秋 vs 戰國 -->
+<section class="s paper" data-y="680" data-hud="0">
+  <div class="head"><span class="tag">對照</span><h2>春秋 vs 戰國：連藉口都不用了</h2></div>
+  <div class="era f">
+    <div style="flex:275;background:#8a7a5e">西周<small>約前 1046 — 前 771</small></div>
+    <div style="flex:295;background:var(--jade)">春秋<small>前 770 — 前 476</small></div>
+    <div style="flex:254;background:var(--red)">戰國<small>前 475 — 前 221</small></div>
+  </div>
+  <table class="cmp">
+    <tr class="f"><th></th><th style="color:var(--jade)">春秋</th><th style="color:var(--red)">戰國</th></tr>
+    <tr class="f"><td>出兵理由</td><td>要找名目：<b>尊王</b>、討不臣、報無禮</td><td>爭地、爭城，不必找理由</td></tr>
+    <tr class="f"><td>戰爭目的</td><td>爭當<b>霸主</b>，讓別國服從</td><td><b>吞併</b>，最後一統天下</td></tr>
+    <tr class="f"><td>打仗方式</td><td>貴族乘車作戰，還講些禮節</td><td>全民皆兵，動輒斬首數萬</td></tr>
+  </table>
+  <div class="q f" style="position:absolute;left:110px;right:110px;bottom:110px;color:var(--ink);background:rgba(255,255,255,.5)">戰國：「爭地以戰，殺人盈野；爭城以戰，殺人盈城。」——《孟子・離婁上》</div>
+  <div class="src">戰國起始一說為前 403 年三家分晉</div>
 </section>
 
 <!-- 2 春秋棋盤 -->
 <section class="s paper" data-y="672" data-map="overview">
   <div class="mapbox"></div>
   <div class="mapcard" style="right:50px;bottom:70px;width:640px">
-    <span class="tag">序幕｜西元前 7 世紀</span>
+    <span class="tag">序章｜西元前 7 世紀</span>
     <h2>春秋的棋盤</h2>
     <p class="f" style="font-size:36px;line-height:1.6;margin-top:24px">周天子東遷之後管不動諸侯<br>北方的<b style="color:var(--jin)">晉</b>、南方的<b style="color:var(--chu)">楚</b>開始爭霸</p>
     <p class="f" style="font-size:36px;line-height:1.6;margin-top:20px">夾在兩強中間的小國——<br><b style="color:var(--zheng);font-size:52px">鄭</b>，就是本課的主角之一</p>
@@ -625,6 +831,7 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
     <h2>鄭國，<br>還有活路嗎？</h2>
     <p class="f" data-leg="0" style="font-size:33px;line-height:1.6;margin-top:24px">晉軍駐<b style="color:var(--jin)">函陵</b>（北）<br>秦軍駐<b>氾南</b>（南）</p>
     <p class="f" style="font-size:33px;line-height:1.6;margin-top:20px;color:var(--red)"><b>兩軍分開紮營</b>——<br>這是破綻，還是巧合？</p>
+    <p class="f" style="font-size:28px;line-height:1.6;margin-top:20px;color:var(--ink2)">出兵的「名」：<b>無禮於晉</b>、<b>貳於楚</b>——<br>這就是春秋的師出有名。</p>
   </div>
   <div class="maplegend">示意圖，位置為約略</div>
 </section>
@@ -639,14 +846,96 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
   </div>
 </section>
 
+<!-- ===== 尾聲：唇舌之後 ===== -->
+<section class="s act" data-y="630">
+  <div class="stage">EPILOGUE</div>
+  <h1>唇舌之後</h1>
+  <div class="sub">燭之武的一席話，鄭國付出了什麼？</div>
+  <div class="yrs">前 630 — 前 624｜建議讀完課文再看</div>
+  <div class="seal">鄭<br>秦</div>
+</section>
+
+<!-- 退兵的條件 -->
+<section class="s paper" data-y="630">
+  <div class="head"><span class="tag">前 630｜秦晉退兵之後</span><h2>退兵，不是免費的</h2></div>
+  <div class="cards">
+    <div class="card f" style="border-top-color:var(--qin)"><div class="yr">秦國</div><h3>留兵駐鄭</h3><p>秦穆公和鄭結盟，派<b>杞子、逢孫、楊孫</b>帶兵留守鄭國都城，名義是「保護」。</p><p style="color:var(--red);font-weight:900;margin-top:8px">秦軍住進了鄭國家裡。</p><div class="mini">《左傳・僖公三十年》「使杞子、逢孫、楊孫戍之」</div></div>
+    <div class="card f" style="border-top-color:var(--jin)"><div class="yr">晉國</div><h3>不打恩人</h3><p>子犯請求追擊秦軍，晉文公不准：</p><p style="color:var(--ink);font-weight:600">「微夫人之力不及此。因人之力而敝之，<b>不仁</b>……吾其還也。」</p><div class="mini">《左傳・僖公三十年》</div></div>
+    <div class="card f" style="border-top-color:var(--zheng)"><div class="yr">鄭國</div><h3>太子換人</h3><p>流亡在晉的鄭公子<b>蘭</b>被迎回立為太子，鄭國藉此向晉求和，晉國才答應。</p><div class="mini">《左傳・僖公三十年》「逆以為大子，以求成于晉」</div></div>
+  </div>
+  <div class="punch f"><span>燭之武保住了鄭國，代價是：讓秦軍駐城，太子由晉國的人選擔任。</span></div>
+</section>
+
+<!-- 蹇叔哭師 -->
+<section class="s qin" data-y="628" data-qm="xiao">
+  <div class="bg"><img src="img/24_jianshu.jpg" alt="蹇叔在城門前哭送秦軍出征"></div><div class="shade b"></div>
+  <div class="txt b">
+    <span class="tag in">前 628 — 前 627</span>
+    <h2 class="in">北門的鑰匙</h2>
+    <p class="in2">前 628 年冬，<b>晉文公過世</b>。駐鄭的杞子立刻密報秦國：</p>
+    <div class="q in2">鄭人使我<em>掌其北門之管</em>，若潛師以來，國可得也。</div>
+    <p class="f">老臣蹇叔反對千里偷襲，秦穆公不聽。蹇叔在城門哭送：</p>
+    <div class="q f">「孟子！吾見師之出，而<em>不見其入</em>也！」</div>
+  </div>
+  <div class="src">《左傳・僖公三十二年》</div>
+</section>
+
+<!-- 弦高犒師 -->
+<section class="s qin" data-y="627" data-qm="xiao">
+  <div class="bg"><img src="img/25_xiangao.jpg" alt="鄭國商人弦高以十二頭牛犒勞秦軍"></div><div class="shade b"></div>
+  <div class="txt b">
+    <span class="tag in">前 627｜弦高犒師</span>
+    <h2 class="in">十二頭牛</h2>
+    <p class="in2">鄭國商人<b>弦高</b>在路上撞見秦軍，拿出自己的四張熟牛皮、<b>十二頭牛</b>，假稱奉國君之命來犒勞：</p>
+    <div class="q f">寡君聞吾子將步師出於敝邑，<em>敢犒從者</em>。</div>
+    <p class="f">同時派人飛報鄭國。鄭穆公一查，駐軍果然「束載、厲兵、秣馬」，當場請他們離開。<br>秦將孟明：「<b>鄭有備矣</b>，不可冀也。」只好滅了滑國回師。</p>
+  </div>
+  <div class="src">《左傳・僖公三十三年》</div>
+</section>
+
+<!-- 殽之戰 -->
+<section class="s qin" data-y="627" data-qm="xiao">
+  <div class="bg"><img src="img/26_xiao.jpg" alt="晉軍穿黑色喪服在殽山伏擊秦軍"></div><div class="shade"></div>
+  <div class="txt">
+    <span class="tag in">前 627 年四月｜殽之戰</span>
+    <h2 class="in">穿著喪服的伏兵</h2>
+    <p class="in2">晉國大臣爭論：該不該打剛幫過我們的秦國？</p>
+    <div class="q f">欒枝曰：「未報秦施而伐其師，其為死君乎？」<br>先軫曰：「<em>秦不哀吾喪而伐吾同姓</em>，秦則無禮，何施之為？」</div>
+    <p class="f">新即位的<b>晉襄公</b>把喪服染黑上陣，在殽山伏擊，秦軍<b>全軍覆沒</b>，三位主將被俘。</p>
+    <div class="fore f">晉文公生前沒對秦動手，他一死，晉國就翻臉了</div>
+  </div>
+  <div class="src">《左傳・僖公三十三年》</div>
+</section>
+
+<!-- 秦穆公 -->
+<section class="s paper" data-y="624">
+  <div class="head"><span class="tag">前 627 — 前 624</span><h2>秦晉之好，到此為止</h2></div>
+  <div class="cards">
+    <div class="card f" style="border-top-color:var(--qin)"><div class="yr">秦穆公認錯</div><p style="color:var(--ink);font-weight:600">秦伯素服郊次，鄉師而哭曰：「<b style="color:var(--red)">孤違蹇叔</b>，以辱二三子，孤之罪也。」</p><p style="font-size:26px;margin-top:10px">穿著素服到郊外迎接敗軍，把罪攬在自己身上，繼續任用孟明。</p><div class="mini">《左傳・僖公三十三年》</div></div>
+    <div class="card f" style="border-top-color:var(--red)"><div class="yr">秦晉世仇</div><p>從此兩國年年交兵。前 624 年，秦穆公渡河後<b>燒掉船隻</b>攻晉，奪回顏面。</p><p style="margin-top:10px">但東進中原的路，始終被晉國擋住——秦國轉而<b>稱霸西戎</b>。</p><div class="mini">《左傳・文公二年、三年》「遂霸西戎，用孟明也」</div></div>
+  </div>
+  <div class="punch f"><span>當年的「秦晉之好」，靠的是利益；利益一變，姻親也成了仇人。</span></div>
+</section>
+
+<!-- 外交的代價 -->
+<section class="s paper" data-y="624">
+  <div class="head"><span class="tag">回到課文</span><h2>外交，從來不是只靠嘴</h2></div>
+  <div class="settle big" style="grid-template-columns:1fr 1fr;top:290px">
+    <div class="sc f" style="min-height:0"><div class="who" style="color:var(--zheng);font-size:38px">燭之武換到的</div><div class="now2">秦軍退兵，鄭國免於滅亡<br>秦晉同盟出現裂痕</div></div>
+    <div class="sc open f" style="min-height:0"><div class="who" style="color:var(--red);font-size:38px">鄭國付出的</div><div class="now2">秦軍駐城、太子由晉擇立<br>三年後險些被駐軍開門滅國</div></div>
+    <div class="sc f" style="min-height:0;grid-column:span 2"><div class="who" style="color:var(--jade);font-size:38px">最後真正救了鄭國的</div><div class="now2">商人弦高自掏腰包、臨機應變，加上鄭國當下的戒備</div></div>
+  </div>
+  <div class="punch f" style="bottom:100px"><span>口才能爭取時間；保住國家，靠的是實力、準備，和願意付出的代價。</span></div>
+</section>
+
 <!-- 34 出處 -->
 <section class="s paper" data-y="630" data-hud="0">
   <div class="head" style="top:80px"><span class="tag">史料與圖片說明</span><h2 style="font-size:60px">本簡報的依據</h2></div>
   <div class="refs">
     <h3>主要史料</h3>
-    <p>《左傳》莊公十六、二十五、二十八年；閔公元年；僖公四、五、六、九、十、十三、十四、十五、十七、二十二、二十三、二十四、二十五、二十七、二十八、三十年；宣公二年；昭公十三年。</p>
-    <p>《史記・晉世家》：驪姬入晉之年、重耳出亡與即位年齡。</p>
-    <p>《史記・周本紀》：周平王東遷。</p>
+    <p>序章：《公羊傳・隱公元年》《禮記・大傳》《論語・季氏》《孟子》〈滕文公上〉〈盡心下〉〈離婁上〉《史記》〈周本紀〉〈太史公自序〉；《左傳》隱公三年、桓公五年、僖公四年、僖公二十二年、宣公十五年。</p>
+    <p>本篇：《左傳》莊公十六、二十五、二十八年；閔公元年；僖公四、五、六、九、十、十三、十四、十五、十七、二十二、二十三、二十四、二十五、二十七、二十八、三十年；宣公二年；昭公十三年；尾聲：僖公三十二、三十三年，文公二、三年。</p>
+    <p>《史記》〈晉世家〉〈秦本紀〉；《國語・晉語二》。</p>
     <h3>史料歧異</h3>
     <p>重耳出亡年齡：《史記》作四十三歲，《左傳・昭公十三年》叔向言「生十七年」而亡。本簡報兩說並列。</p>
     <p>晉惠公許秦之地：《左傳》作「河外列城五」，《史記》作「河西八城」。本簡報從《左傳》。</p>
@@ -682,12 +971,13 @@ const RIV={
 };
 const SEA=[[130,41],[119.0,41],[119.0,40.2],[118.2,39.3],[117.7,38.9],[117.6,38.4],[118.6,37.9],[119.0,37.25],[119.7,37.1],[120.3,37.5],[120.8,37.7],[121.6,37.5],[122.5,37.2],[121.5,36.8],[120.7,36.4],[119.7,35.7],[119.3,35.0],[119.9,34.3],[120.6,33.4],[120.9,32.4],[121.8,31.7],[121.9,30.9],[121.6,30.2],[122,29],[130,29]];
 const C={ // 城邑
+ 滑:[112.8,34.75,'zhou'],殽:[111.5,34.55,'red'],
  梁:[110.45,35.3,'di'],韓原:[110.75,35.75,'red'],
  絳:[111.35,35.65,'jin'],蒲:[110.9,36.75,'jin'],狄:[111.4,38.0,'di'],五鹿:[115.15,36.25,'wei'],衛:[114.55,35.55,'wei'],
  齊:[118.3,36.85,'qi'],曹:[115.6,35.1,'cao'],宋:[115.65,34.42,'song'],鄭:[113.73,34.4,'zheng'],楚:[112.2,30.45,'chu'],
  秦:[107.4,34.5,'qin'],周:[112.45,34.7,'zhou'],城濮:[115.15,35.75,'jin'],
 };
-const CAPNAME={梁:'梁',韓原:'韓原',絳:'晉都・絳',衛:'衛',齊:'齊・臨淄',曹:'曹',宋:'宋・商丘',鄭:'鄭・新鄭',楚:'楚・郢',秦:'秦・雍',周:'周・雒邑',狄:'狄（約略）',蒲:'蒲',五鹿:'五鹿',城濮:'城濮'};
+const CAPNAME={滑:'滑',殽:'殽山',梁:'梁',韓原:'韓原',絳:'晉都・絳',衛:'衛',齊:'齊・臨淄',曹:'曹',宋:'宋・商丘',鄭:'鄭・新鄭',楚:'楚・郢',秦:'秦・雍',周:'周・雒邑',狄:'狄（約略）',蒲:'蒲',五鹿:'五鹿',城濮:'城濮'};
 const STATE={晉:[111.6,37.0,'jin'],秦:[107.9,35.3,'qin'],齊:[118.0,36.2,'qi'],楚:[112.8,31.4,'chu'],鄭:[113.4,33.85,'zheng'],宋:[116.3,33.9,'song'],衛:[114.2,36.2,'wei'],狄:[113.2,38.6,'di']};
 const col=k=>`var(--${k})`;
 const vb=(lon0,lat0,lat1,dx=0)=>{const[x,y]=P(lon0,lat0);const h=(lat0-lat1)*128,w=h*16/9;return `${(x+dx).toFixed(0)} ${y.toFixed(0)} ${w.toFixed(0)} ${h.toFixed(0)}`;};
@@ -733,6 +1023,8 @@ const MAPS={
    if(k==='envoy')return baseMap('130 200 900 612',{...o,cities:['秦','狄','梁','絳'],pulse:'秦',extra:A('秦','狄','#2b2b2b',.12)+A('秦','梁','#2b2b2b',.1)});
    if(k==='grain'){const d=smooth([[107.4,34.5],[108.9,34.35],[109.6,34.55],[110.35,34.62],[110.6,35.5],[111.35,35.65]]);
      return baseMap('130 200 900 612',{...o,cities:['秦','絳'],pulse:'絳',extra:`<path d="${d}" fill="none" stroke="#c08a1e" stroke-width="16" stroke-linecap="round" stroke-dasharray="30 18"/>`+lab(109.0,35.3,'運糧船隊','#8a5a1a')});}
+   if(k==='xiao'){const d=smooth([[107.4,34.5],[109.6,34.45],[110.6,34.5],[111.5,34.55],[112.8,34.75]]);
+     return baseMap('300 380 1100 748',{...o,cities:['秦','殽','滑','鄭','絳'],pulse:'殽',extra:`<path d="${d}" fill="none" stroke="#2b2b2b" stroke-width="12" stroke-linecap="round" stroke-dasharray="26 16"/>`+X(111.5,34.55)});}
    if(k==='hanyuan')return baseMap('130 200 900 612',{...o,cities:['秦','絳','韓原'],pulse:'韓原',extra:A('秦','韓原','#2b2b2b',.1)+X(110.55,35.62)});
  },
 };
@@ -762,9 +1054,9 @@ document.querySelectorAll('.qin').forEach(s=>{
 });
 
 /* ===== 時間軸 ===== */
-const Y0=680,Y1=628,hud=document.getElementById('hud'),bar=hud.querySelector('.bar');
+const Y0=680,Y1=622,hud=document.getElementById('hud'),bar=hud.querySelector('.bar');
 const pos=y=>((Y0-y)/(Y0-Y1)*100)+'%';
-[[672,'驪姬入晉'],[656,'申生死'],[651,'獻公卒'],[645,'韓原'],[636,'文公即位'],[632,'城濮'],[630,'圍鄭']].forEach(([y,t])=>{const d=document.createElement('div');d.className='tk';d.style.left=pos(y);d.innerHTML=`<i>${t}</i>`;bar.appendChild(d);});
+[[672,'驪姬入晉'],[656,'申生死'],[651,'獻公卒'],[645,'韓原'],[636,'文公即位'],[632,'城濮'],[630,'圍鄭'],[627,'殽之戰']].forEach(([y,t])=>{const d=document.createElement('div');d.className='tk';d.style.left=pos(y);d.innerHTML=`<i>${t}</i>`;bar.appendChild(d);});
 const now=document.createElement('div');now.className='now';bar.appendChild(now);
 
 /* ===== 換頁 ===== */
