@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>流亡十九年：晉文公</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f2e8d5; --paper2:#e6d6b8; --ink:#1c1813; --ink2:#4a4034;
+  --red:#b3302a; --gold:#c9a24a; --jade:#2f6b4f;
+  --jin:#2f6b4f; --qin:#2b2b2b; --chu:#b3302a; --zheng:#c08a1e; --qi:#2f5a8c;
+  --song:#6d4f8a; --wei:#6b7d3a; --cao:#8a5a33; --di:#7a6a58; --zhou:#9a7b2f;
+  --serif:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --sans:"Noto Sans TC","Microsoft JhengHei",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:#0d0b09;overflow:hidden;color:var(--ink);font-family:var(--serif)}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center center;overflow:hidden;background:var(--paper)}
+/* 宣紙紋理 */
+#stage::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:radial-gradient(rgba(120,90,50,.08) 1px,transparent 1px),radial-gradient(rgba(120,90,50,.06) 1px,transparent 1px);
+  background-size:7px 7px,13px 13px;background-position:0 0,3px 5px}
+.s{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .7s ease,visibility 0s .7s;z-index:1}
+.s.on{opacity:1;visibility:visible;transition:opacity .7s ease;z-index:2}
+
+/* ===== 情節頁：滿版圖 ===== */
+.bg{position:absolute;inset:0;overflow:hidden;background:#222}
+.bg img{width:100%;height:100%;object-fit:cover;transform:scale(1.08);transition:transform 14s ease-out}
+.s.on .bg img{transform:scale(1.0)}
+.s.on .bg.pan img{animation:pan 16s ease-out forwards}
+@keyframes pan{from{transform:scale(1.12) translateX(2%)}to{transform:scale(1.02) translateX(-1%)}}
+.shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(14,11,8,.9) 0%,rgba(14,11,8,.72) 30%,rgba(14,11,8,0) 58%)}
+.shade.r{background:linear-gradient(270deg,rgba(14,11,8,.9) 0%,rgba(14,11,8,.72) 30%,rgba(14,11,8,0) 58%)}
+.shade.b{background:linear-gradient(0deg,rgba(14,11,8,.92) 0%,rgba(14,11,8,.6) 34%,rgba(14,11,8,0) 60%)}
+.txt{position:absolute;left:110px;top:150px;width:760px;color:#f6eedd}
+.txt.r{left:auto;right:110px}
+.txt.b{top:auto;bottom:120px;width:1500px}
+.trip .txt.b{width:1340px;bottom:90px}
+.trip .txt.b h2{font-size:72px;margin-bottom:14px}
+.trip .txt.b p{font-size:34px;margin-bottom:8px}
+.trip .txt.b .q{margin:12px 0 6px}
+.tag{display:inline-block;font-family:var(--sans);font-size:26px;letter-spacing:.25em;color:var(--gold);border:2px solid var(--gold);padding:4px 16px;margin-bottom:22px}
+h1,h2{font-weight:900;letter-spacing:.06em;line-height:1.2}
+.txt h2{font-size:84px;margin-bottom:26px;text-shadow:0 4px 18px rgba(0,0,0,.5)}
+.txt p{font-size:38px;line-height:1.65;margin-bottom:14px}
+.txt p b{color:#ffd77a}
+.q{font-size:33px;line-height:1.75;border-left:6px solid var(--red);padding:8px 0 8px 26px;margin:26px 0 10px;color:#efe2c4;background:rgba(0,0,0,.18)}
+.q em{font-style:normal;color:#ffb7a8}
+.src{position:absolute;right:40px;bottom:58px;font-family:var(--sans);font-size:22px;color:#e9dcc0;background:rgba(20,16,12,.72);padding:6px 16px;border-radius:4px;z-index:5}
+.paper .src{color:var(--ink2);background:rgba(255,255,255,.55)}
+.fore{display:inline-block;font-family:var(--sans);font-size:26px;background:var(--red);color:#fff;padding:6px 18px;border-radius:30px;margin-top:16px;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+.fore::before{content:"★ 伏筆　"}
+
+/* 逐步出現 */
+.s b,.s em,.fore,.nw{white-space:nowrap}
+.f{opacity:0;transform:translateY(24px);transition:opacity .55s ease,transform .55s ease}
+.f.v{opacity:1;transform:none}
+.s.on .in{animation:rise .9s ease both}
+.s.on .in2{animation:rise .9s .35s ease both}
+.s.on .in3{animation:rise .9s .7s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+
+/* ===== 紙本頁 ===== */
+.paper{color:var(--ink)}
+.paper .head{position:absolute;left:110px;top:96px}
+.paper .head h2{font-size:76px}
+.paper .head .tag{color:var(--red);border-color:var(--red)}
+.cards{position:absolute;left:110px;right:110px;top:330px;display:flex;gap:44px}
+.card{flex:1;background:#fbf6ea;border:2px solid #d8c6a2;border-top:10px solid var(--jade);padding:36px 34px;box-shadow:0 10px 30px rgba(80,60,30,.15)}
+.card .yr{font-family:var(--sans);font-size:26px;color:var(--red);font-weight:700}
+.card h3{font-size:46px;margin:6px 0 16px}
+.card p{font-size:31px;line-height:1.6;color:var(--ink2)}
+.card .mini{font-family:var(--sans);font-size:21px;color:#8a7a62;margin-top:16px}
+.punch{position:absolute;left:110px;right:110px;bottom:110px;font-size:44px;font-weight:900;text-align:center}
+.punch span{background:linear-gradient(transparent 60%,rgba(201,162,74,.45) 60%)}
+
+/* ===== 幕間 ===== */
+.act{background:radial-gradient(ellipse at 50% 45%,#2a221a 0%,#0f0c09 75%);color:#f3e9d4;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.act .stage{font-family:var(--sans);font-size:30px;letter-spacing:.6em;color:var(--gold);margin-bottom:30px}
+.act h1{font-size:150px;letter-spacing:.15em}
+.act .sub{font-size:40px;color:#cbb994;margin-top:30px;letter-spacing:.1em}
+.act .yrs{font-family:var(--sans);font-size:30px;color:#9c8a6c;margin-top:18px}
+.seal{display:inline-flex;align-items:center;justify-content:center;width:120px;height:120px;border:6px solid var(--red);color:var(--red);font-size:44px;font-weight:900;line-height:1.05;border-radius:10px;transform:rotate(-6deg)}
+.act .seal{position:absolute;right:220px;bottom:180px;background:rgba(179,48,42,.08)}
+.s.on.act h1{animation:brush 1.4s ease both}
+@keyframes brush{from{opacity:0;letter-spacing:.6em;filter:blur(10px)}to{opacity:1;letter-spacing:.15em;filter:none}}
+
+/* ===== 封面 ===== */
+.cover .ttl{position:absolute;right:120px;top:120px;text-align:right;color:#fff6e0}
+.cover h1{font-size:170px;letter-spacing:.12em;text-shadow:0 6px 30px rgba(0,0,0,.6)}
+.cover .ttl .sub{font-size:48px;margin-top:10px;text-shadow:0 3px 12px rgba(0,0,0,.7)}
+.cover .ttl .sub2{font-family:var(--sans);font-size:28px;color:var(--gold);margin-top:22px;letter-spacing:.2em}
+.cover .shade{background:linear-gradient(250deg,rgba(14,11,8,.75) 0%,rgba(14,11,8,.2) 40%,rgba(14,11,8,0) 60%)}
+
+/* ===== 地圖 ===== */
+svg.map{position:absolute;inset:0;width:100%;height:100%}
+.map .land{fill:#eadcbf}
+.map .sea{fill:#c9d6d0}
+.map .river{fill:none;stroke:#7fa3b0;stroke-width:6;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
+.map .river.big{stroke-width:11}
+.map .rlabel{font-size:26px;fill:#5d8796;font-style:italic}
+.map .mtn{font-size:24px;fill:#9c8a6c;letter-spacing:.4em}
+.map .dot{stroke:#fff;stroke-width:3}
+.map .cap{font-size:30px;font-weight:700;fill:var(--ink)}
+.map .st{font-size:64px;font-weight:900;opacity:.85}
+.map .route{fill:none;stroke:var(--red);stroke-width:7;stroke-linecap:round;stroke-dasharray:14 12}
+.map .leg{fill:none;stroke:var(--red);stroke-width:8;stroke-linecap:round}
+.map .halo{fill:none;stroke:var(--red);stroke-width:4;opacity:0}
+.s.on .map .halo.pulse{animation:pulse 1.6s ease-out infinite}
+@keyframes pulse{0%{r:14;opacity:.9}100%{r:60;opacity:0}}
+.mapcard{position:absolute;background:rgba(251,246,234,.94);border:2px solid #d8c6a2;box-shadow:0 10px 30px rgba(80,60,30,.18);padding:34px 40px;z-index:4}
+.mapcard .tag{color:var(--red);border-color:var(--red)}
+.mapcard h2{font-size:64px}
+[data-map] .src{right:auto;left:40px}
+.maplegend{position:absolute;font-family:var(--sans);font-size:22px;color:var(--ink2);left:40px;top:30px;background:rgba(255,255,255,.6);padding:6px 14px;border-radius:4px}
+
+/* ===== 時間軸 HUD ===== */
+#hud{position:absolute;left:0;right:0;bottom:0;height:40px;z-index:20;background:rgba(15,12,9,.82);font-family:var(--sans);color:#cdbd9c;transition:opacity .5s}
+#hud.off{opacity:0}
+#hud .bar{position:absolute;left:90px;right:240px;top:19px;height:3px;background:#5a4c3a}
+#hud .tk{position:absolute;top:-6px;width:3px;height:15px;background:#8a7a5e}
+#hud .tk i{position:absolute;top:-1px;left:8px;font-style:normal;font-size:15px;white-space:nowrap;color:#9c8b6b}
+#hud .now{position:absolute;top:-11px;width:24px;height:24px;margin-left:-12px;border-radius:50%;background:var(--red);border:3px solid #ffd77a;transition:left .9s cubic-bezier(.6,.05,.3,1)}
+#hud .yr{position:absolute;right:24px;top:4px;font-size:24px;color:#ffd77a;font-weight:700}
+#pg{position:absolute;right:30px;top:20px;z-index:20;font-family:var(--sans);font-size:20px;color:rgba(255,255,255,.55);text-shadow:0 1px 3px #000}
+
+/* ===== 恩仇簿 ===== */
+.ledger{position:absolute;right:40px;bottom:60px;width:300px;background:rgba(242,232,213,.95);border:3px solid #3a3026;box-shadow:0 10px 30px rgba(0,0,0,.45);padding:16px 18px 10px;z-index:6;font-family:var(--sans)}
+.ledger h4{font-family:var(--serif);font-size:26px;text-align:center;border-bottom:2px solid #3a3026;padding-bottom:6px;margin-bottom:8px;letter-spacing:.3em}
+.ledger .row{display:flex;align-items:center;gap:8px;font-size:18px;padding:3px 0;border-bottom:1px dashed #b9a684}
+.ledger .row:last-child{border-bottom:none}
+.ledger .k{width:34px;height:34px;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-family:var(--serif);font-weight:900;font-size:21px;border-radius:6px}
+.ledger .n{flex:1;color:var(--ink2);line-height:1.3}
+.ledger .m{font-family:var(--serif);font-weight:900;font-size:22px}
+.ledger .m.en{color:var(--jade)} .ledger .m.ch{color:var(--red)}
+.s.on .ledger .row.new{animation:stamp .8s .6s ease both}
+@keyframes stamp{0%{opacity:0;transform:scale(1.6)}60%{opacity:1;transform:scale(.95)}100%{opacity:1;transform:none}}
+.side{position:absolute;right:40px;bottom:60px;width:300px;display:flex;flex-direction:column;gap:12px;z-index:6}
+.side .ledger{position:static;width:auto}
+.minimap{position:relative;width:300px;height:204px;background:rgba(242,232,213,.93);border:3px solid #3a3026;z-index:6;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.trip .src,.qin .src{right:auto;left:40px;top:24px;bottom:auto}
+.trip .txt.b,.trip .txt,.qin .txt.b{max-width:1340px}
+.stop{font-family:var(--sans);font-size:26px;color:#ffd77a;letter-spacing:.2em;margin-bottom:10px}
+
+/* ===== 家族圖 ===== */
+.tree{position:absolute;left:0;top:0;width:100%;height:100%}
+.tree .ln{fill:none;stroke:#6b5a42;stroke-width:4;stroke-dasharray:2000;stroke-dashoffset:2000;transition:stroke-dashoffset 1s ease}
+.tree .v .ln,.tree .ln.v{stroke-dashoffset:0}
+.pp{position:absolute;width:250px;margin-left:-125px;text-align:center}
+.pp .nm{display:inline-block;font-size:46px;font-weight:900;padding:10px 22px;background:#fbf6ea;border:3px solid var(--ink);border-radius:8px;box-shadow:0 6px 16px rgba(80,60,30,.2)}
+.pp .ds{font-family:var(--sans);font-size:23px;color:var(--ink2);margin-top:8px;line-height:1.35}
+.pp.red .nm{border-color:var(--red);color:var(--red)}
+.pp.green .nm{border-color:var(--jade);color:var(--jade);background:#eef5ee}
+.pp.dim .nm{border-style:dashed;color:#7d6f5b}
+.pp.x .nm{position:relative}
+.pp.x.v .nm::after{content:"";position:absolute;left:-10px;right:-10px;top:50%;height:6px;background:var(--red);transform:rotate(-12deg);animation:cut .5s .3s both}
+@keyframes cut{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+.pp .mo{font-family:var(--sans);font-size:21px;color:#8a7a62;margin-bottom:6px}
+
+/* ===== 結算 ===== */
+.settle{position:absolute;left:110px;right:110px;top:300px;display:grid;grid-template-columns:repeat(4,1fr);gap:28px}
+.sc{background:#fbf6ea;border:2px solid #d8c6a2;padding:24px 24px 20px;position:relative;min-height:250px}
+.sc .who{font-size:44px;font-weight:900}
+.sc .then{font-family:var(--sans);font-size:24px;color:var(--ink2);margin:8px 0}
+.sc .now2{font-size:29px;line-height:1.45;margin-top:8px}
+.sc .stp{position:absolute;right:16px;top:14px;width:96px;height:96px;font-size:30px;opacity:0}
+.sc.v .stp{animation:stamp .6s .25s ease both}
+.sc.open{border:4px solid var(--red);background:#fff1ec}
+.sc.open .stp{border-color:var(--red);color:var(--red);opacity:0}
+
+/* 提問 */
+.qs{position:absolute;left:110px;right:110px;top:330px;display:flex;gap:44px}
+.qs .qq{flex:1;background:#fbf6ea;border:3px solid var(--ink);padding:44px 36px;font-size:44px;font-weight:900;line-height:1.5;position:relative}
+.qs .qq::before{content:attr(data-n);position:absolute;left:-22px;top:-30px;width:64px;height:64px;border-radius:50%;background:var(--red);color:#fff;font-size:36px;display:flex;align-items:center;justify-content:center;font-family:var(--sans)}
+.qs .hint{font-family:var(--sans);font-size:24px;font-weight:400;color:#8a7a62;margin-top:20px;line-height:1.5}
+
+/* 出處頁 */
+.refs{position:absolute;left:110px;right:110px;top:250px;columns:2;column-gap:80px;font-size:27px;line-height:1.65;color:var(--ink2)}
+.refs h3{font-size:34px;color:var(--ink);margin:0 0 8px;break-after:avoid}
+.refs p{margin-bottom:16px;break-inside:avoid}
+
+.nav{position:absolute;left:0;top:0;width:25%;height:100%;z-index:15;cursor:w-resize}
+</style>
+</head>
+<body>
+<div id="stage">
+
+<!-- 1 封面 -->
+<section class="s cover" data-y="672" data-hud="0">
+  <div class="bg pan"><img src="img/00_cover.jpg" alt="年老的重耳站在戰車上，回望遠方的故國城郭"></div>
+  <div class="shade"></div>
+  <div class="ttl">
+    <h1 class="in">流亡十九年</h1>
+    <div class="sub in2">晉文公的恩與仇</div>
+    <div class="sub2 in3">〈燭之武退秦師〉前情提要</div>
+  </div>
+</section>
+
+<!-- 2 春秋棋盤 -->
+<section class="s paper" data-y="672" data-map="overview">
+  <div class="mapbox"></div>
+  <div class="mapcard" style="right:50px;bottom:70px;width:640px">
+    <span class="tag">序幕｜西元前 7 世紀</span>
+    <h2>春秋的棋盤</h2>
+    <p class="f" style="font-size:36px;line-height:1.6;margin-top:24px">周天子東遷之後管不動諸侯<br>北方的<b style="color:var(--jin)">晉</b>、南方的<b style="color:var(--chu)">楚</b>開始爭霸</p>
+    <p class="f" style="font-size:36px;line-height:1.6;margin-top:20px">夾在兩強中間的小國——<br><b style="color:var(--zheng);font-size:52px">鄭</b>，就是本課的主角之一</p>
+  </div>
+  <div class="maplegend">示意圖，位置為約略</div>
+  <div class="src">周平王東遷雒邑（前 770）：《史記・周本紀》</div>
+</section>
+
+<!-- 3 第一幕 -->
+<section class="s act" data-y="672">
+  <div class="stage">STAGE 1</div>
+  <h1>驪姬之亂</h1>
+  <div class="sub">一個父親，五個兒子，一場宮廷陰謀</div>
+  <div class="yrs">前 672 — 前 651</div>
+  <div class="seal">晉<br>獻</div>
+</section>
+
+<!-- 4 晉國國內局勢 -->
+<section class="s paper" data-y="669">
+  <div class="head"><span class="tag">晉國國內局勢</span><h2>晉獻公：外面越強，裡面越怕</h2></div>
+  <div class="cards">
+    <div class="card f"><div class="yr">前 678</div><h3>曲沃代翼</h3><p>獻公的父親武公，以旁支「曲沃」吞併正宗的晉君，再獲周天子承認。<b>晉君的位子，本來就是搶來的。</b></p><div class="mini">《左傳・莊公十六年》《史記・晉世家》</div></div>
+    <div class="card f"><div class="yr">前 669</div><h3>盡殺群公子</h3><p>獻公怕同宗的叔伯兄弟奪位，把他們圍在聚邑<b>全部殺光</b>。</p><div class="mini">《左傳・莊公二十五年》「晉侯圍聚，盡殺群公子」</div></div>
+    <div class="card f"><div class="yr">前 661 — 前 655</div><h3>開疆拓土</h3><p>滅耿、霍、魏；又「假道伐虢」，一口氣滅了虢、虞，晉國成為<b>北方大國</b>。</p><div class="mini">《左傳・閔公元年》《左傳・僖公五年》</div></div>
+  </div>
+  <div class="punch f"><span>宗親殺光了，能威脅國君的，只剩下他自己的兒子。</span></div>
+</section>
+
+<!-- 5 家族圖 -->
+<section class="s paper" data-y="666">
+  <div class="head"><span class="tag">人物關係</span><h2>晉獻公的家</h2></div>
+  <svg class="tree" viewBox="0 0 1920 1080">
+    <path class="ln" d="M960 330 V390" style="stroke-dashoffset:0"/>
+    <path class="ln f" d="M960 390 H190 V545"/>
+    <path class="ln f" d="M960 390 H480 V545"/>
+    <path class="ln f" d="M960 390 H790 V545"/>
+    <path class="ln f" d="M960 390 H1090 V545"/>
+    <path class="ln f" d="M960 390 H1390 V545"/>
+    <path class="ln f" d="M960 390 H1710 V545"/>
+  </svg>
+  <div class="pp" style="left:960px;top:240px"><div class="nm" style="font-size:54px">晉獻公</div></div>
+  <div class="pp f" style="left:190px;top:550px"><div class="mo">母：齊姜</div><div class="nm">伯　姬</div><div class="ds">獻公之女，申生之姊<br>嫁<b>秦穆公</b>（秦穆姬）</div></div>
+  <div class="pp f" style="left:480px;top:550px"><div class="mo">母：齊姜</div><div class="nm">申　生</div><div class="ds">太子，仁孝</div></div>
+  <div class="pp green f" style="left:790px;top:550px"><div class="mo">母：大戎狐姬</div><div class="nm">重　耳</div><div class="ds">日後的<b>晉文公</b></div></div>
+  <div class="pp f" style="left:1090px;top:550px"><div class="mo">母：小戎子</div><div class="nm">夷　吾</div><div class="ds">日後的晉惠公</div></div>
+  <div class="pp red f" style="left:1390px;top:550px"><div class="mo">母：驪姬</div><div class="nm">奚　齊</div><div class="ds">驪姬想讓他當太子</div></div>
+  <div class="pp red f" style="left:1710px;top:550px"><div class="mo">母：驪姬之妹</div><div class="nm">卓　子</div></div>
+  <div class="punch f" style="bottom:140px;font-size:38px"><span>伯姬嫁到秦國，「秦晉之好」從這裡開始</span></div>
+  <div class="src">《左傳・莊公二十八年》</div>
+</section>
+
+<!-- 6 驪姬 -->
+<section class="s" data-y="666">
+  <div class="bg"><img src="img/01_harem.jpg" alt="驪姬在晉獻公耳邊低語"></div><div class="shade"></div>
+  <div class="txt">
+    <span class="tag in">前 672 起</span>
+    <h2 class="in">枕邊的聲音</h2>
+    <p class="in2">晉國攻打驪戎，得到美女<b>驪姬</b>。她生下奚齊，想讓兒子當太子。</p>
+    <p class="f">第一步：收買寵臣向獻公進言，把三位公子<b>調離首都</b>——<br>申生去曲沃、重耳去蒲、夷吾去屈。</p>
+  </div>
+  <div class="src">《左傳・莊公二十八年》；得驪姬之年見《史記・晉世家》</div>
+</section>
+
+<!-- 7 胙肉 -->
+<section class="s" data-y="656">
+  <div class="bg"><img src="img/02_poison.jpg" alt="祭肉灑地，獵犬倒下，驪姬假哭"></div><div class="shade b"></div>
+  <div class="txt b">
+    <span class="tag in">前 656</span>
+    <h2 class="in">有毒的祭肉</h2>
+    <p class="in2">驪姬要太子申生祭祀亡母，把祭肉送回給獻公。肉在宮中放了六天，<b>驪姬在裡面下毒</b>。</p>
+    <div class="q f">公祭之地，地墳；與犬，犬斃；與小臣，小臣亦斃。姬泣曰：「<em>賊由大子。</em>」</div>
+  </div>
+  <div class="src">《左傳・僖公四年》</div>
+</section>
+
+<!-- 8 申生 -->
+<section class="s" data-y="656">
+  <div class="bg"><img src="img/03_shensheng.jpg" alt="申生月下獨跪"></div><div class="shade"></div>
+  <div class="txt">
+    <span class="tag in">前 656</span>
+    <h2 class="in">不辯解的太子</h2>
+    <p class="in2">有人勸申生去向父親說明真相，他拒絕了：</p>
+    <div class="q in2">君非姬氏，居不安，食不飽。我辭，姬必有罪。君老矣，吾又不樂。</div>
+    <p class="f">他不願讓年老的父親失去驪姬，最後在新城<b>自縊而死</b>。</p>
+  </div>
+  <div class="src">《左傳・僖公四年》</div>
+</section>
+
+<!-- 9 斬袪 -->
+<section class="s" data-y="655">
+  <div class="bg"><img src="img/04_wall.jpg" alt="重耳翻牆逃走，寺人披斬下他的衣袖"></div><div class="shade b"></div>
+  <div class="txt b">
+    <span class="tag in">前 655</span>
+    <h2 class="in">斬斷的衣袖</h2>
+    <p class="in2">驪姬誣陷：兩位公子都知情！獻公派宦官<b>寺人披</b>到蒲城抓重耳。</p>
+    <div class="q in2" style="width:1100px">公子曰：「君父之命不校。」……踰垣而走，<em>披斬其袪</em>，遂出奔翟。</div>
+    <p class="f">重耳逃往<b>狄</b>，夷吾隔年逃往<b>梁</b>。　<span class="fore" style="margin:0">記住這個斬下衣袖的人</span></p>
+  </div>
+  <div class="src">《左傳・僖公四年、五年、六年》</div>
+</section>
+
+<!-- 10 獻公死後 -->
+<section class="s paper" data-y="651">
+  <div class="head"><span class="tag">前 651｜晉國國內局勢</span><h2>獻公一死，宮廷血洗</h2></div>
+  <svg class="tree" viewBox="0 0 1920 1080"></svg>
+  <div class="pp x f" style="left:400px;top:380px"><div class="nm">奚　齊</div><div class="ds">在居喪之處被大夫里克所殺</div></div>
+  <div class="pp x f" style="left:800px;top:380px"><div class="nm">卓　子</div><div class="ds">再立，又在朝堂上被殺<br>輔政的荀息殉死</div></div>
+  <div class="pp dim f" style="left:1240px;top:380px"><div class="nm">重　耳</div><div class="ds">在狄</div></div>
+  <div class="pp dim f" style="left:1600px;top:380px"><div class="nm">夷　吾</div><div class="ds">在梁，離秦國很近</div></div>
+  <div class="punch f" style="bottom:300px;font-size:58px"><span>晉國，誰來當國君？</span></div>
+  <div class="q f" style="position:absolute;left:300px;right:300px;bottom:110px;color:var(--ink2);background:rgba(255,255,255,.4);font-size:31px">後遺症：驪姬之亂後，晉人盟詛「無畜群公子」，從此晉國不再有公族——國君的其他兒子都送往國外。</div>
+  <div class="src">《左傳・僖公九年》；《左傳・宣公二年》</div>
+</section>
+
+<!-- 11 第二幕 -->
+<section class="s act" data-y="651">
+  <div class="stage">STAGE 2</div>
+  <h1>秦晉交易</h1>
+  <div class="sub">秦穆公的算盤，夷吾的空頭支票</div>
+  <div class="yrs">前 659 — 前 637</div>
+  <div class="seal">秦<br>穆</div>
+</section>
+
+<!-- 秦國視角 1 -->
+<section class="s qin" data-y="655" data-qm="east">
+  <div class="bg"><img src="img/17_mu_baili.jpg" alt="秦穆公迎接百里奚，旁有五張黑羊皮"></div><div class="shade b"></div>
+  <div class="txt b">
+    <span class="tag in">前 659 起｜秦國視角</span>
+    <h2 class="in">秦穆公的野心</h2>
+    <p class="in2">秦穆公即位後，娶了晉獻公的女兒伯姬，這就是<b>「秦晉之好」</b>。</p>
+    <p class="f">他用<b>五張黑公羊皮</b>贖回淪為奴僕的百里奚，委以國政，人稱「五羖大夫」。</p>
+    <p class="f">但秦國想往東走進中原，黃河邊上擋著一個<b>晉國</b>。</p>
+    <div class="fore f">秦穆公的盤算：晉國國君，最好由我來立</div>
+  </div>
+  <div class="src">《史記・秦本紀》；《左傳・僖公五年》</div>
+</section>
+
+<!-- 秦國視角 2 -->
+<section class="s qin" data-y="651" data-qm="envoy">
+  <div class="bg"><img src="img/18_envoy.jpg" alt="左：重耳辭謝秦使；右：夷吾跪獻地圖"></div><div class="shade b"></div>
+  <div class="txt b qtxt">
+    <span class="tag in">前 651｜秦國視角</span>
+    <h2 class="in">挑一個國君</h2>
+    <p class="in2">獻公一死，秦穆公派公子縶分別去狄、梁弔問兩位公子。重耳<b>辭謝</b>，夷吾卻<b>許諾割地</b>。</p>
+    <div class="q f">秦伯謂公孫枝曰：「夷吾其定乎？」……公曰：「<em>忌則多怨，又焉能克？是吾利也。</em>」</div>
+    <p class="f">夷吾猜忌多疑、坐不穩王位——<b>這對秦國反而有利</b>。</p>
+  </div>
+  <div class="src">《國語・晉語二》；《左傳・僖公九年》</div>
+</section>
+
+<!-- 12 夷吾的交易 -->
+<section class="s paper" data-y="650">
+  <div class="head"><span class="tag">前 651 — 前 650</span><h2>空頭支票</h2></div>
+  <div class="cards">
+    <div class="card f" style="border-top-color:var(--qin)"><div class="yr">開價</div><h3>割地給秦</h3><p>夷吾向姊夫<b>秦穆公</b>求助：只要送我回國當國君，就割讓<b>河外五座城</b>。</p><div class="mini">《左傳・僖公十五年》「賂秦伯以河外列城五」</div></div>
+    <div class="card f" style="border-top-color:var(--jin)"><div class="yr">即位</div><h3>晉惠公</h3><p>秦國派兵護送，夷吾即位。然後——<b>「既而不與」</b>，一座城也沒給。</p><div class="mini">《左傳・僖公九年、十五年》</div></div>
+    <div class="card f" style="border-top-color:var(--red)"><div class="yr">滅口</div><h3>殺里克</h3><p>擁立他的功臣里克也被逼死。里克臨死說：</p><p style="color:var(--red);font-weight:900">「欲加之罪，其無辭乎？」</p><div class="mini">《左傳・僖公十年》</div></div>
+  </div>
+  <div class="punch f" style="font-size:38px"><span>燭之武日後對秦穆公說：「許君焦、瑕，朝濟而夕設版焉」——說的就是這筆舊帳</span></div>
+</section>
+
+<!-- 秦國視角 3 -->
+<section class="s paper qin" data-y="647" data-qm="grain">
+  <div class="head"><span class="tag">前 647｜秦國視角</span><h2>晉國鬧饑荒，借不借？</h2></div>
+  <div class="cards" style="right:420px;top:300px;gap:32px">
+    <div class="card f" style="border-top-color:var(--qin)"><div class="yr">大夫子桑（公孫枝）</div><p style="color:var(--ink);font-weight:600">「重施而報，君將何求？重施而不報，其民必攜；攜而討焉，無眾必敗。」</p><p style="font-size:26px;margin-top:10px">借了：他還，我們賺；他不還，晉國人心散，正好討伐。</p></div>
+    <div class="card f" style="border-top-color:var(--qin)"><div class="yr">大夫百里奚</div><p style="color:var(--ink);font-weight:600">「天災流行，國家代有。救災恤鄰，道也。行道有福。」</p><p style="font-size:26px;margin-top:10px">哪個國家沒有天災？救鄰國是道義。</p></div>
+    <div class="card f" style="border-top-color:var(--red)"><div class="yr">秦穆公（回絕丕豹伐晉之請）</div><p style="color:var(--red);font-weight:900;font-size:40px">「其君是惡，<br>其民何罪？」</p><p style="font-size:26px;margin-top:10px">可惡的是晉君，百姓沒有錯。</p></div>
+  </div>
+  <div class="punch f" style="right:420px;font-size:38px"><span>借糧既有道義，也有算計：晉國還不還，秦國都不虧</span></div>
+  <div class="src" style="left:40px;right:auto">《左傳・僖公十三年》</div>
+</section>
+
+<!-- 13 泛舟之役 -->
+<section class="s qin" data-y="647" data-qm="grain">
+  <div class="bg pan"><img src="img/05_grain_boats.jpg" alt="秦國運糧船隊沿河東行"></div><div class="shade b"></div>
+  <div class="txt b">
+    <span class="tag in">前 647 — 前 646</span>
+    <h2 class="in">泛舟之役</h2>
+    <p class="in2">秦國運糧的船隊從雍城一路接到絳城，史稱「泛舟之役」。</p>
+    <p class="f">隔年<b>秦國鬧饑荒</b>，向晉借糧——<b>晉惠公拒絕了</b>。</p>
+  </div>
+  <div class="src">《左傳・僖公十三年、十四年》</div>
+</section>
+
+<!-- 14 韓原之戰 -->
+<section class="s qin" data-y="645" data-qm="hanyuan">
+  <div class="bg"><img src="img/06_hanyuan.jpg" alt="韓原之戰，晉惠公被秦軍俘虜"></div><div class="shade"></div>
+  <div class="txt">
+    <span class="tag in">前 645</span>
+    <h2 class="in">韓原之戰</h2>
+    <p class="in2">秦穆公出兵，<b>俘虜晉惠公</b>。</p>
+    <p class="f">秦穆姬（惠公的姊姊）帶著孩子登臺踩在柴堆上，以死相逼，穆公才放惠公回國。</p>
+    <p class="f">代價：太子<b>圉</b>到秦國當人質，秦穆公把女兒<b>懷嬴</b>嫁給他。</p>
+    <p class="f">前 638 年，子圉丟下懷嬴偷跑回國；惠公死後即位為<b>晉懷公</b>——秦國又被晉國背叛一次。</p>
+  </div>
+  <div class="src">《左傳・僖公十五年、十七年、二十二年、二十三年》</div>
+</section>
+
+<!-- 15 第三幕 -->
+<section class="s act" data-y="655">
+  <div class="stage">STAGE 3</div>
+  <h1>流亡之路</h1>
+  <div class="sub">重耳的八國之旅：誰對他好，誰給他難堪</div>
+  <div class="yrs">前 655 — 前 636</div>
+  <div class="seal">重<br>耳</div>
+</section>
+
+<!-- 16 路線總覽 -->
+<section class="s paper" data-y="655" data-map="route">
+  <div class="mapbox"></div>
+  <div class="mapcard" style="right:50px;bottom:70px;width:540px">
+    <span class="tag">闖關地圖</span>
+    <h2>十九年，八個國家</h2>
+    <p style="font-size:30px;line-height:1.6;margin-top:24px;color:var(--ink2)">按 → 一站一站走<br>右下角的<b style="color:var(--red)">「恩仇簿」</b><br>會記下每一國怎麼對他</p>
+  </div>
+  <div class="maplegend">示意圖，位置為約略</div>
+  <div class="src">路線依《左傳・僖公二十三年》</div>
+</section>
+
+<!-- 17 狄 -->
+<section class="s paper trip" data-y="644" data-stop="狄" data-led="狄|en|母親出身戎狄，收留十二年">
+  <div class="head" style="width:1300px"><span class="tag">第 1 站｜狄｜約前 655 — 前 644</span><h2>一住十二年</h2></div>
+  <div style="position:absolute;left:110px;top:310px;width:1260px;font-size:36px;line-height:1.7">
+    <p class="f">狄人把俘來的女子季隗嫁給重耳。十二年後他要離開，對季隗說：</p>
+    <div class="q f" style="color:var(--ink);background:rgba(255,255,255,.45)">「待我二十五年，不來而後嫁。」<br>對曰：「我二十五年矣，又如是而嫁，<em style="color:var(--red)">則就木焉</em>。請待子。」</div>
+    <p class="f" style="font-size:32px;color:var(--ink2)">（我都二十五歲了，再等二十五年就進棺材了！我等你。）</p>
+    <p class="f" style="margin-top:24px">為什麼離開？晉惠公派寺人披又來<b style="color:var(--red)">刺殺</b>，只好遠走齊國。</p>
+  </div>
+  <div class="src">《左傳・僖公二十三年、二十四年》；因刺殺而離狄見《史記・晉世家》</div>
+</section>
+
+<!-- 18 衛 五鹿 -->
+<section class="s trip" data-y="644" data-stop="衛" data-led="衛|ch|不以禮相待">
+  <div class="bg"><img src="img/07_clod.jpg" alt="五鹿野人給重耳一塊土"></div><div class="shade b"></div>
+  <div class="txt b">
+    <div class="stop in">第 2 站｜衛</div>
+    <h2 class="in">一塊土</h2>
+    <p class="in2">衛文公不以禮相待。一行人餓到向鄉下人討飯，對方卻遞來<b>一塊土</b>。</p>
+    <p class="f">重耳氣得要拿鞭子打人，舅舅<b>子犯</b>（狐偃）攔住他：</p>
+    <div class="q f">「天賜也。」稽首受而載之。</div>
+    <p class="f" style="font-size:32px">土就是土地——這是上天要把國家交給你。</p>
+  </div>
+  <div class="src">《左傳・僖公二十三年》</div>
+</section>
+
+<!-- 19 齊 -->
+<section class="s trip" data-y="643" data-stop="齊" data-led="齊|en|嫁宗女，送馬八十匹">
+  <div class="bg"><img src="img/08_drunk.jpg" alt="齊姜與子犯把醉倒的重耳抬上車"></div><div class="shade"></div>
+  <div class="txt">
+    <div class="stop in">第 3 站｜齊</div>
+    <h2 class="in">被灌醉的公子</h2>
+    <p class="in2">齊桓公把宗室女齊姜嫁給他，送馬二十乘（八十匹）。重耳過得太舒服，<b>不想走了</b>。</p>
+    <div class="q f">姜氏曰：「行也！<em>懷與安，實敗名。</em>」公子不可。</div>
+    <p class="f">齊姜和子犯合謀把他灌醉，<b>抬上車</b>送出齊國。醒來的重耳拿著戈追打子犯。</p>
+  </div>
+  <div class="src">《左傳・僖公二十三年》</div>
+</section>
+
+<!-- 20 曹 -->
+<section class="s trip" data-y="642" data-stop="曹" data-led="曹|ch|曹共公偷看他洗澡">
+  <div class="bg"><img src="img/09_peep.jpg" alt="曹共公隔著簾子偷看重耳洗澡"></div><div class="shade b"></div>
+  <div class="txt b">
+    <div class="stop in">第 4 站｜曹</div>
+    <h2 class="in">偷窺的國君</h2>
+    <p class="in2">曹共公聽說重耳<b>「駢脅」</b>——肋骨長成一整片，竟趁他洗澡時隔著簾子偷看。</p>
+    <div class="q f">曹共公聞其駢脅，欲觀其裸。浴，<em>薄而觀之</em>。</div>
+    <p class="f">只有大夫<b>僖負羈</b>偷偷送來一盤飯，飯裡藏著玉璧。重耳收下飯，退回玉璧。</p>
+    <div class="fore f">僖負羈這份情，後來有回報</div>
+  </div>
+  <div class="src">《左傳・僖公二十三年》</div>
+</section>
+
+<!-- 21 宋、鄭 -->
+<section class="s trip" data-y="641" data-stop="鄭" data-led="宋|en|宋襄公送馬八十匹;鄭|ch|鄭文公不以禮相待">
+  <div class="bg"><img src="img/16_zheng.jpg" alt="鄭文公冷落重耳，叔詹跪地勸諫"></div><div class="shade b"></div>
+  <div class="txt b">
+    <div class="stop in">第 5、6 站｜宋、鄭</div>
+    <h2 class="in">鄭國的閉門羹</h2>
+    <p class="in2">宋襄公剛打了敗仗，仍送他馬二十乘。到了<b>鄭國</b>，鄭文公卻不以禮相待。</p>
+    <p class="f">大夫<b>叔詹</b>勸諫：這位公子有天助，又是同宗，應該好好招待。鄭文公不聽。</p>
+    <div class="fore f">課文第一句：「以其無禮於晉」</div>
+  </div>
+  <div class="src">《左傳・僖公二十三年》</div>
+</section>
+
+<!-- 22 楚 -->
+<section class="s trip" data-y="637" data-stop="楚" data-led="楚|en|設宴款待──許下「退避三舍」">
+  <div class="bg"><img src="img/10_chu_feast.jpg" alt="楚成王宴請重耳"></div><div class="shade b"></div>
+  <div class="txt b">
+    <div class="stop in">第 7 站｜楚</div>
+    <h2 class="in">退避三舍</h2>
+    <p class="in2">楚成王設宴，問：「公子若回到晉國，拿什麼報答我？」</p>
+    <div class="q f">若以君之靈，得反晉國，晉、楚治兵，遇於中原，<em>其辟君三舍</em>。</div>
+    <p class="f" style="font-size:33px">萬一兩國打仗，我先退兵三舍（一舍三十里，共九十里）。<br>楚將<b>子玉</b>聽了，請求殺掉重耳；楚成王不准。</p>
+  </div>
+  <div class="src">《左傳・僖公二十三年》</div>
+</section>
+
+<!-- 23 秦 -->
+<section class="s trip" data-y="637" data-stop="秦" data-led="秦|en|嫁女五人，出兵送他回國">
+  <div class="bg"><img src="img/11_huaiying.jpg" alt="懷嬴捧匜為重耳倒水洗手"></div><div class="shade b"></div>
+  <div class="txt b">
+    <div class="stop in">第 8 站｜秦</div>
+    <h2 class="in">一盆水的教訓</h2>
+    <p class="in2">秦穆公氣晉懷公逃跑，改押寶重耳，<b>把五名宗室女子嫁給他</b>，其中包括懷公的前妻懷嬴。</p>
+    <p class="f">懷嬴捧水讓他洗手，重耳洗完隨手一甩，濺了她一身。懷嬴大怒：</p>
+    <div class="q f">「秦、晉匹也，<em>何以卑我？</em>」公子懼，降服而囚。</div>
+    <p class="f" style="font-size:32px">重耳立刻脫去上衣自囚謝罪——他需要秦國。</p>
+  </div>
+  <div class="src">《左傳・僖公二十三年》</div>
+</section>
+
+<!-- 24 第四幕 -->
+<section class="s act" data-y="636">
+  <div class="stage">STAGE 4</div>
+  <h1>王者歸來</h1>
+  <div class="sub">報恩，也報仇</div>
+  <div class="yrs">前 636 — 前 632</div>
+  <div class="seal">晉<br>文</div>
+</section>
+
+<!-- 25 投璧 -->
+<section class="s" data-y="636">
+  <div class="bg pan"><img src="img/12_jade_river.jpg" alt="重耳渡黃河，投璧於河"></div><div class="shade r"></div>
+  <div class="txt r">
+    <span class="tag in">前 636</span>
+    <h2 class="in">投璧於河</h2>
+    <p class="in2">秦軍護送重耳渡黃河。子犯奉上玉璧說：我跟著您犯了太多錯，請讓我離開。</p>
+    <div class="q f">公子曰：「所不與舅氏同心者，有如白水！」<em>投其璧于河。</em></div>
+    <p class="f">重耳即位，是為<b>晉文公</b>，並派人在高梁殺了晉懷公。</p>
+    <p class="f" style="font-size:30px;color:#d8c9a8">流亡十九年，即位時六十二歲（《史記》）；<br>另一說據《左傳・昭公十三年》，為十七歲出亡。</p>
+  </div>
+  <div class="src">《左傳・僖公二十四年》《史記・晉世家》</div>
+</section>
+
+<!-- 26 文公治晉 -->
+<section class="s paper" data-y="635">
+  <div class="head"><span class="tag">晉國國內局勢</span><h2>晉文公：坐穩，再變強</h2></div>
+  <div class="cards">
+    <div class="card f"><div class="yr">前 636｜平亂</div><h3>寺人披告密</h3><p>惠公舊臣呂甥、郤芮密謀放火燒宮。來告密的，正是當年<b>斬斷他衣袖的寺人披</b>。文公不計前嫌接見，躲過一劫。</p><div class="mini">《左傳・僖公二十四年》</div></div>
+    <div class="card f"><div class="yr">前 635｜立威</div><h3>勤王、示信</h3><p>護送逃難的周襄王回京，得到南陽土地；圍原城約定三天，到期就撤軍：「<b>信，國之寶也</b>」。</p><div class="mini">《左傳・僖公二十五年》</div></div>
+    <div class="card f"><div class="yr">前 633｜強兵</div><h3>作三軍</h3><p>在被廬大閱兵，擴編為上、中、下三軍，由<b>郤縠、狐偃、欒枝、先軫</b>等人分掌三軍。</p><div class="mini">《左傳・僖公二十七年》</div></div>
+  </div>
+  <div class="punch f"><span>晉國準備好了。下一步：和楚國一決勝負。</span></div>
+</section>
+
+<!-- 27 城濮前因：地圖 -->
+<section class="s paper" data-y="632" data-map="chengpu">
+  <div class="mapbox"></div>
+  <div class="mapcard" style="right:60px;top:60px;width:720px">
+    <span class="tag">前 633 — 前 632</span>
+    <h2>城濮之戰</h2>
+    <p class="f" data-leg="0" style="font-size:31px;line-height:1.55;margin-top:22px"><b style="color:var(--chu)">①</b> 楚國圍攻親晉的<b>宋</b>國，宋向晉求救</p>
+    <p class="f" data-leg="1" style="font-size:31px;line-height:1.55;margin-top:14px"><b style="color:var(--jin)">②</b> 晉國不直接救宋，改打楚的盟國<b>曹、衛</b>，俘虜曹共公——<span style="color:var(--red)">報仇</span>；下令不准侵犯僖負羈家——<span style="color:var(--jade)">報恩</span></p>
+    <p class="f" data-leg="2" style="font-size:31px;line-height:1.55;margin-top:14px"><b style="color:var(--chu)">③</b> 楚將子玉被激怒，撤宋圍北上追擊</p>
+    <p class="f" data-leg="3" style="font-size:31px;line-height:1.55;margin-top:14px"><b style="color:var(--jin)">④</b> 晉軍<b>退避三舍</b>，到城濮才迎戰——<span style="color:var(--jade)">還楚成王的人情</span></p>
+  </div>
+  <div class="q f" style="position:absolute;right:60px;bottom:90px;width:720px;font-size:29px;color:var(--ink);background:rgba(251,246,234,.94)">先軫曰：「報施救患，取威定霸，於是乎在矣。」</div>
+  <div class="src">《左傳・僖公二十七年、二十八年》</div>
+</section>
+
+<!-- 28 城濮之戰 -->
+<section class="s" data-y="632">
+  <div class="bg pan"><img src="img/13_chengpu.jpg" alt="城濮之戰，晉軍戰車拖柴揚塵"></div><div class="shade"></div>
+  <div class="txt">
+    <span class="tag in">前 632 年四月</span>
+    <h2 class="in">決戰城濮</h2>
+    <p class="in2">晉、宋、齊、秦聯軍，對上楚與陳、蔡等國。</p>
+    <p class="f"><b>胥臣</b>把戰馬披上虎皮，先衝垮陳、蔡軍。</p>
+    <p class="f"><b>欒枝</b>讓戰車拖著樹枝揚起塵土假裝逃跑，引楚軍追擊，再左右夾擊。</p>
+    <p class="f">楚軍大敗，子玉自殺。</p>
+  </div>
+  <div class="src">《左傳・僖公二十八年》「胥臣蒙馬以虎皮」「欒枝使輿曳柴而偽遁」</div>
+</section>
+
+<!-- 29 踐土之盟 -->
+<section class="s" data-y="632">
+  <div class="bg"><img src="img/14_jiantu.jpg" alt="踐土之盟，周王使者策命晉文公"></div><div class="shade r"></div>
+  <div class="txt r">
+    <span class="tag in">前 632 年五月｜踐土之盟</span>
+    <h2 class="in">霸主誕生</h2>
+    <p class="in2">周襄王親臨，冊命晉文公為<b>「侯伯」</b>（諸侯之長），賜弓矢、車服。</p>
+    <p class="f">那鄭國呢？戰前，鄭文公<b>派兵支援楚國</b>；楚軍一敗，他嚇得趕緊轉向晉國求和。</p>
+    <div class="fore f">課文第一句：「且貳於楚也」</div>
+  </div>
+  <div class="src">《左傳・僖公二十八年》</div>
+</section>
+
+<!-- 30 恩仇結算 -->
+<section class="s paper" data-y="631">
+  <div class="head"><span class="tag">恩仇簿・結算</span><h2>帳，一筆一筆還</h2></div>
+  <div class="settle">
+    <div class="sc f"><div class="who" style="color:var(--wei)">衛</div><div class="then">當年：不以禮相待</div><div class="now2">前 632 遭晉攻打</div><div class="stp seal">已<br>報</div></div>
+    <div class="sc f"><div class="who" style="color:var(--cao)">曹</div><div class="then">當年：偷看洗澡</div><div class="now2">國君被俘<br>僖負羈家受保護</div><div class="stp seal">已<br>報</div></div>
+    <div class="sc f"><div class="who" style="color:var(--song)">宋</div><div class="then">當年：送馬八十匹</div><div class="now2">晉國出兵解宋之圍</div><div class="stp seal" style="color:var(--jade);border-color:var(--jade)">已<br>還</div></div>
+    <div class="sc f"><div class="who" style="color:var(--chu)">楚</div><div class="then">當年：設宴款待</div><div class="now2">戰場上退避三舍<br>（但還是打敗了它）</div><div class="stp seal" style="color:var(--jade);border-color:var(--jade)">已<br>還</div></div>
+    <div class="sc f"><div class="who" style="color:var(--qin)">秦</div><div class="then">當年：送他回國</div><div class="now2">兩國聯手作戰<br>但晉惠公許的五城沒兌現</div><div class="stp seal" style="color:#777;border-color:#777">待<br>續</div></div>
+    <div class="sc open f" style="grid-column:span 3"><div class="who" style="color:var(--zheng)">鄭</div><div class="then">當年：不以禮相待（無禮於晉）＋ 城濮之戰助楚（貳於楚）</div><div class="now2" style="font-size:40px;font-weight:900;color:var(--red)">兩筆帳，都還沒算。</div><div class="stp seal">未<br>清</div></div>
+  </div>
+</section>
+
+<!-- 31 圍鄭 -->
+<section class="s" data-y="630">
+  <div class="bg pan"><img src="img/15_siege.jpg" alt="秦晉大軍夜圍鄭國"></div><div class="shade b"></div>
+  <div class="txt b">
+    <span class="tag in">前 630 年九月｜魯僖公三十年</span>
+    <h2 class="in" style="font-size:64px;line-height:1.45">晉侯、秦伯圍鄭，以其<span class="nw" style="color:#ffd77a">無禮於晉</span>，<br>且<span class="nw" style="color:#ffd77a">貳於楚</span>也。晉軍函陵，秦軍氾南。</h2>
+  </div>
+  <div class="src">〈燭之武退秦師〉，《左傳・僖公三十年》</div>
+</section>
+
+<!-- 32 圍城地圖 -->
+<section class="s paper" data-y="630" data-map="siege">
+  <div class="mapbox"></div>
+  <div class="mapcard" style="left:60px;top:110px;width:640px">
+    <span class="tag">前 630</span>
+    <h2>鄭國，<br>還有活路嗎？</h2>
+    <p class="f" data-leg="0" style="font-size:33px;line-height:1.6;margin-top:24px">晉軍駐<b style="color:var(--jin)">函陵</b>（北）<br>秦軍駐<b>氾南</b>（南）</p>
+    <p class="f" style="font-size:33px;line-height:1.6;margin-top:20px;color:var(--red)"><b>兩軍分開紮營</b>——<br>這是破綻，還是巧合？</p>
+  </div>
+  <div class="maplegend">示意圖，位置為約略</div>
+</section>
+
+<!-- 33 三個思考 -->
+<section class="s paper" data-y="630">
+  <div class="head"><span class="tag">進入課文之前</span><h2>三個思考</h2></div>
+  <div class="qs">
+    <div class="qq f" data-n="1">秦穆公為什麼一直幫晉國？他得到了什麼？<div class="hint">想想：河外五城、泛舟之役、韓原之戰、懷嬴</div></div>
+    <div class="qq f" data-n="2">晉文公是個怎樣的人？<div class="hint">想想：一塊土、灌醉、懷嬴的水、退避三舍、寺人披</div></div>
+    <div class="qq f" data-n="3">如果你是鄭國，你會派誰、去找誰、說什麼？<div class="hint">想想：秦和晉，真的是一條心嗎？</div></div>
+  </div>
+</section>
+
+<!-- 34 出處 -->
+<section class="s paper" data-y="630" data-hud="0">
+  <div class="head" style="top:80px"><span class="tag">史料與圖片說明</span><h2 style="font-size:60px">本簡報的依據</h2></div>
+  <div class="refs">
+    <h3>主要史料</h3>
+    <p>《左傳》莊公十六、二十五、二十八年；閔公元年；僖公四、五、六、九、十、十三、十四、十五、十七、二十二、二十三、二十四、二十五、二十七、二十八、三十年；宣公二年；昭公十三年。</p>
+    <p>《史記・晉世家》：驪姬入晉之年、重耳出亡與即位年齡。</p>
+    <p>《史記・周本紀》：周平王東遷。</p>
+    <h3>史料歧異</h3>
+    <p>重耳出亡年齡：《史記》作四十三歲，《左傳・昭公十三年》叔向言「生十七年」而亡。本簡報兩說並列。</p>
+    <p>晉惠公許秦之地：《左傳》作「河外列城五」，《史記》作「河西八城」。本簡報從《左傳》。</p>
+    <p>城濮之戰「拖柴偽遁」：《左傳》為「輿曳柴」，即戰車拖曳樹枝。</p>
+    <h3>圖片</h3>
+    <p>情節插圖為 AI 生成的情境示意圖，依史料內容繪製，服飾、器物力求貼近先秦，但並非歷史寫真。地圖為示意圖，城邑位置為約略。</p>
+  </div>
+</section>
+
+<div id="hud"><div class="bar"></div><div class="yr"></div></div>
+<div id="pg"></div>
+<div class="nav" id="nav"></div>
+</div>
+
+<script>
+/* ===== 縮放到視窗 ===== */
+const stage=document.getElementById('stage');
+function fit(){const k=Math.min(innerWidth/1920,innerHeight/1080);stage.style.transform=`translate(-50%,-50%) scale(${k})`;}
+addEventListener('resize',fit);fit();
+
+/* ===== 地圖資料（經緯度 → 座標，示意） ===== */
+const P=(lon,lat)=>[(lon-105.6)*118,(40.2-lat)*128];
+const pt=(lon,lat)=>P(lon,lat).map(v=>v.toFixed(1)).join(',');
+const line=a=>'M'+a.map(([x,y])=>pt(x,y)).join(' L');
+const smooth=a=>{const q=a.map(([x,y])=>P(x,y));let d=`M${q[0]}`;for(let i=1;i<q.length;i++){const m=[(q[i-1][0]+q[i][0])/2,(q[i-1][1]+q[i][1])/2];d+=` Q${q[i-1]} ${m}`;}return d+` L${q[q.length-1]}`;};
+const RIV={
+ 河:[[110.9,40.2],[111.2,38.6],[110.6,37.5],[110.5,36.5],[110.6,35.5],[110.3,34.6],[111.2,34.75],[112.4,34.85],[113.5,34.95],[114.3,35.4],[114.9,35.9],[115.4,36.8],[116.2,37.8],[117.2,38.6],[117.7,39.0]],
+ 渭:[[105.6,34.6],[107.4,34.4],[108.9,34.35],[109.6,34.55],[110.3,34.6]],
+ 汾:[[111.6,38.3],[112.3,37.6],[111.8,36.5],[111.35,35.65],[110.6,35.5]],
+ 漢:[[105.6,33.1],[109,32.7],[111.3,32.4],[112.2,31.4],[113.4,30.8],[114.3,30.6]],
+ 江:[[105.6,29.4],[108.5,30.3],[110.5,30.9],[111.3,30.5],[112.3,30.2],[113.2,29.6],[114.3,30.55],[116,29.8],[117.5,30.8],[119,31.9],[120.5,31.8]],
+ 淮:[[113.2,32.4],[115,32.45],[116.5,32.75],[118.4,33.2],[119.6,33.7]],
+};
+const SEA=[[130,41],[119.0,41],[119.0,40.2],[118.2,39.3],[117.7,38.9],[117.6,38.4],[118.6,37.9],[119.0,37.25],[119.7,37.1],[120.3,37.5],[120.8,37.7],[121.6,37.5],[122.5,37.2],[121.5,36.8],[120.7,36.4],[119.7,35.7],[119.3,35.0],[119.9,34.3],[120.6,33.4],[120.9,32.4],[121.8,31.7],[121.9,30.9],[121.6,30.2],[122,29],[130,29]];
+const C={ // 城邑
+ 梁:[110.45,35.3,'di'],韓原:[110.75,35.75,'red'],
+ 絳:[111.35,35.65,'jin'],蒲:[110.9,36.75,'jin'],狄:[111.4,38.0,'di'],五鹿:[115.15,36.25,'wei'],衛:[114.55,35.55,'wei'],
+ 齊:[118.3,36.85,'qi'],曹:[115.6,35.1,'cao'],宋:[115.65,34.42,'song'],鄭:[113.73,34.4,'zheng'],楚:[112.2,30.45,'chu'],
+ 秦:[107.4,34.5,'qin'],周:[112.45,34.7,'zhou'],城濮:[115.15,35.75,'jin'],
+};
+const CAPNAME={梁:'梁',韓原:'韓原',絳:'晉都・絳',衛:'衛',齊:'齊・臨淄',曹:'曹',宋:'宋・商丘',鄭:'鄭・新鄭',楚:'楚・郢',秦:'秦・雍',周:'周・雒邑',狄:'狄（約略）',蒲:'蒲',五鹿:'五鹿',城濮:'城濮'};
+const STATE={晉:[111.6,37.0,'jin'],秦:[107.9,35.3,'qin'],齊:[118.0,36.2,'qi'],楚:[112.8,31.4,'chu'],鄭:[113.4,33.85,'zheng'],宋:[116.3,33.9,'song'],衛:[114.2,36.2,'wei'],狄:[113.2,38.6,'di']};
+const col=k=>`var(--${k})`;
+const vb=(lon0,lat0,lat1,dx=0)=>{const[x,y]=P(lon0,lat0);const h=(lat0-lat1)*128,w=h*16/9;return `${(x+dx).toFixed(0)} ${y.toFixed(0)} ${w.toFixed(0)} ${h.toFixed(0)}`;};
+function baseMap(vb,opt={}){
+  let s=`<svg class="map" viewBox="${vb}" preserveAspectRatio="xMidYMid meet"><rect class="land" x="-500" y="-500" width="3000" height="2500"/>`;
+  s+=`<path class="sea" d="${line(SEA)} Z"/>`;
+  for(const[k,v]of Object.entries(RIV))s+=`<path class="river ${k=='河'||k=='江'?'big':''}" d="${smooth(v)}"/>`;
+  s+=`<text class="rlabel" x="${P(112.6,35.15)[0]}" y="${P(112.6,35.15)[1]}">黃河</text><text class="rlabel" x="${P(108.3,34.2)[0]}" y="${P(108.3,34.2)[1]}">渭水</text><text class="rlabel" x="${P(116.5,30.0)[0]}" y="${P(116.5,30.0)[1]}">長江</text><text class="rlabel" x="${P(110.2,32.3)[0]}" y="${P(110.2,32.3)[1]}">漢水</text>`;
+  s+=`<text class="mtn" x="${P(113.4,37.3)[0]}" y="${P(113.4,37.3)[1]}" transform="rotate(70 ${P(113.4,37.3)})">太行山</text>`;
+  s+=`<text class="mtn" x="${P(107.6,33.7)[0]}" y="${P(107.6,33.7)[1]}">秦　嶺</text>`;
+  if(opt.states!==false)for(const[k,[x,y,c]]of Object.entries(STATE)){const[X,Y]=P(x,y);s+=`<text class="st" x="${X}" y="${Y}" fill="${col(c)}" text-anchor="middle" opacity=".22" style="font-size:${opt.big||110}px">${k}</text>`;}
+  s+=opt.extra||'';
+  for(const k of (opt.cities||Object.keys(C))){const[x,y,c]=C[k];const[X,Y]=P(x,y);
+    s+=`<circle class="halo ${opt.pulse==k?'pulse':''}" cx="${X}" cy="${Y}" r="14"/><circle class="dot" cx="${X}" cy="${Y}" r="${opt.r||12}" fill="${col(c)}"/><text class="cap" x="${X+18}" y="${Y-14}" style="font-size:${opt.fs||30}px">${CAPNAME[k]||k}</text>`;}
+  return s+'</svg>';
+}
+const ROUTE=['蒲','狄','五鹿','齊','曹','宋','鄭','楚','秦','絳'];
+function curve(a,b,bend=.18){const[x1,y1]=P(...C[a]);const[x2,y2]=P(...C[b]);const mx=(x1+x2)/2-(y2-y1)*bend,my=(y1+y2)/2+(x2-x1)*bend;return `M${x1},${y1} Q${mx},${my} ${x2},${y2}`;}
+const DEF=(c,id)=>`<marker id="${id}" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="${c}"/></marker>`;
+
+const MAPS={
+ overview:()=>baseMap(vb(104.2,39.6,29.8),{cities:['絳','秦','齊','楚','鄭','宋','衛','曹','周'],pulse:'鄭'}),
+ route:()=>{let legs='';for(let i=0;i<ROUTE.length-1;i++)legs+=`<path class="leg route-leg f" d="${curve(ROUTE[i],ROUTE[i+1],i==8?-.2:.12)}" stroke="#b3302a"/>`;
+   return baseMap(vb(104.2,39.6,29.8),{cities:ROUTE.concat(['衛']),extra:legs});},
+ chengpu:()=>{const ex=`<defs>${DEF('#b3302a','ah-r')}${DEF('#2f6b4f','ah-g')}</defs>`+
+   `<path class="leg f2" data-k="0" d="${curve('楚','宋',.1)}" stroke="#b3302a" marker-end="url(#ah-r)"/>`+
+   `<path class="leg f2" data-k="1" d="M${P(111.35,35.65)} Q${P(113.2,36.4)} ${P(114.5,35.6)} T${P(115.55,35.15)}" stroke="#2f6b4f" marker-end="url(#ah-g)"/>`+
+   `<path class="leg f2" data-k="2" d="M${P(115.6,34.5)} Q${P(115.95,34.9)} ${P(115.7,35.25)}" stroke="#b3302a" marker-end="url(#ah-r)"/>`+
+   `<path class="leg f2" data-k="3" d="M${P(115.5,35.25)} Q${P(115.2,35.45)} ${P(115.17,35.68)}" stroke="#2f6b4f" stroke-dasharray="12 10" marker-end="url(#ah-g)"/>`;
+   return baseMap(vb(110.6,37.0,30.0),{cities:['絳','衛','曹','宋','鄭','楚','城濮','周'],pulse:'城濮',extra:ex,big:150});},
+ siege:()=>{const[X,Y]=P(113.73,34.4);
+   const ex=`<g transform="translate(${X},${Y}) scale(.3)"><rect x="-38" y="-30" width="76" height="60" fill="#c08a1e" opacity=".25" stroke="#c08a1e" stroke-width="8"/>`+
+   `<g class="f2" data-k="0"><circle cx="0" cy="-150" r="44" fill="#2f6b4f" opacity=".85"/><text x="0" y="-140" fill="#fff" font-size="36" font-weight="900" text-anchor="middle">晉</text><text x="56" y="-160" font-size="26" fill="#2f6b4f" font-weight="700">函陵</text></g>`+
+   `<g class="f2" data-k="0"><circle cx="110" cy="80" r="44" fill="#2b2b2b" opacity=".9"/><text x="110" y="92" fill="#fff" font-size="36" font-weight="900" text-anchor="middle">秦</text><text x="164" y="80" font-size="26" fill="#2b2b2b" font-weight="700">氾南</text></g></g>`;
+   return baseMap(vb(111.1,35.6,33.4),{cities:['鄭'],extra:ex,states:false,r:6,fs:18});},
+ mini:stop=>{const i=ROUTE.indexOf(stop==='衛'?'五鹿':stop);let legs='';for(let j=0;j<i;j++)legs+=`<path class="leg" d="${curve(ROUTE[j],ROUTE[j+1],.12)}" stroke="#b3302a" stroke-width="10"/>`;
+   return baseMap('100 240 1600 1080',{cities:ROUTE.slice(0,9),pulse:stop==='衛'?'五鹿':stop,extra:legs,states:false,r:24,fs:64});},
+ qmini:k=>{const A=(a,b,c,bend=.15)=>`<path d="${curve(a,b,bend)}" fill="none" stroke="${c}" stroke-width="12" stroke-linecap="round" stroke-dasharray="26 16"/>`;
+   const X=(lon,lat)=>{const[x,y]=P(lon,lat);return `<g stroke="#b3302a" stroke-width="14" stroke-linecap="round"><path d="M${x-28},${y-28} L${x+28},${y+28} M${x+28},${y-28} L${x-28},${y+28}"/></g>`;};
+   const lab=(lon,lat,t,c='#3a3026')=>{const[x,y]=P(lon,lat);return `<text x="${x}" y="${y}" font-size="40" font-weight="900" fill="${c}" text-anchor="middle">${t}</text>`;};
+   const o={states:false,r:18,fs:46};
+   if(k==='east')return baseMap('130 200 900 612',{...o,cities:['秦','絳','周'],pulse:'秦',extra:A('秦','周','#2b2b2b',-.12)+X(110.4,34.7)+lab(111.4,36.6,'晉','#2f6b4f')+lab(113.3,34.2,'中原 →','#9a7b2f')});
+   if(k==='envoy')return baseMap('130 200 900 612',{...o,cities:['秦','狄','梁','絳'],pulse:'秦',extra:A('秦','狄','#2b2b2b',.12)+A('秦','梁','#2b2b2b',.1)});
+   if(k==='grain'){const d=smooth([[107.4,34.5],[108.9,34.35],[109.6,34.55],[110.35,34.62],[110.6,35.5],[111.35,35.65]]);
+     return baseMap('130 200 900 612',{...o,cities:['秦','絳'],pulse:'絳',extra:`<path d="${d}" fill="none" stroke="#c08a1e" stroke-width="16" stroke-linecap="round" stroke-dasharray="30 18"/>`+lab(109.0,35.3,'運糧船隊','#8a5a1a')});}
+   if(k==='hanyuan')return baseMap('130 200 900 612',{...o,cities:['秦','絳','韓原'],pulse:'韓原',extra:A('秦','韓原','#2b2b2b',.1)+X(110.55,35.62)});
+ },
+};
+
+document.querySelectorAll('[data-map]').forEach(s=>{s.querySelector('.mapbox').innerHTML=MAPS[s.dataset.map]();});
+/* 路線、戰圖的線段長度設定 */
+function prepLegs(root){root.querySelectorAll('path.leg').forEach(p=>{const L=p.getTotalLength();p.style.strokeDasharray=p.classList.contains('route-leg')||p.classList.contains('f2')?L:'';if(p.style.strokeDasharray){p.style.strokeDashoffset=L;p.style.transition='stroke-dashoffset 1.1s ease';}});}
+document.querySelectorAll('[data-map]').forEach(prepLegs);
+
+/* ===== 恩仇簿 ===== */
+const NAMECOL={狄:'di',衛:'wei',齊:'qi',曹:'cao',宋:'song',鄭:'zheng',楚:'chu',秦:'qin'};
+let led=[];
+document.querySelectorAll('.trip').forEach(s=>{
+  const add=s.dataset.led.split(';').map(x=>x.split('|'));
+  const rows=led.map(r=>[...r,false]).concat(add.map(r=>[...r,true]));
+  led=led.concat(add);
+  const box=document.createElement('div');box.className='ledger';
+  box.innerHTML='<h4>恩仇簿</h4>'+rows.map(([k,t,n,isNew])=>`<div class="row ${isNew?'new':''}"><div class="k" style="background:var(--${NAMECOL[k]})">${k}</div><div class="n">${n}</div><div class="m ${t}">${t=='en'?'恩':'仇'}</div></div>`).join('');
+  const side=document.createElement('div');side.className='side';
+  const mm=document.createElement('div');mm.className='minimap';mm.innerHTML=MAPS.mini(s.dataset.stop);
+  side.appendChild(mm);side.appendChild(box);s.appendChild(side);
+});
+
+document.querySelectorAll('.qin').forEach(s=>{
+  const side=document.createElement('div');side.className='side';
+  side.innerHTML='<div class="minimap">'+MAPS.qmini(s.dataset.qm)+'</div>';s.appendChild(side);
+});
+
+/* ===== 時間軸 ===== */
+const Y0=680,Y1=628,hud=document.getElementById('hud'),bar=hud.querySelector('.bar');
+const pos=y=>((Y0-y)/(Y0-Y1)*100)+'%';
+[[672,'驪姬入晉'],[656,'申生死'],[651,'獻公卒'],[645,'韓原'],[636,'文公即位'],[632,'城濮'],[630,'圍鄭']].forEach(([y,t])=>{const d=document.createElement('div');d.className='tk';d.style.left=pos(y);d.innerHTML=`<i>${t}</i>`;bar.appendChild(d);});
+const now=document.createElement('div');now.className='now';bar.appendChild(now);
+
+/* ===== 換頁 ===== */
+const S=[...document.querySelectorAll('.s')];let cur=0;
+function frags(s){return [...s.querySelectorAll('.f')];}
+function show(i,back){
+  i=Math.max(0,Math.min(S.length-1,i));
+  S[cur].classList.remove('on');cur=i;const s=S[cur];
+  frags(s).forEach(f=>f.classList.toggle('v',!!back));
+  s.querySelectorAll('.f2').forEach(p=>{p.style.strokeDashoffset=back?0:(p.getTotalLength?p.getTotalLength():0);p.style.opacity=back?1:(p.tagName=='g'?0:1);});
+  s.querySelectorAll('.route-leg').forEach(p=>p.style.strokeDashoffset=back?0:p.getTotalLength());
+  void s.offsetWidth;s.classList.add('on');
+  const y=+s.dataset.y;hud.classList.toggle('off',s.dataset.hud==='0');now.style.left=pos(y);hud.querySelector('.yr').textContent='前 '+y;
+  document.getElementById('pg').textContent=(cur+1)+' / '+S.length;
+  try{localStorage.setItem('jin-pg',cur)}catch(e){}
+}
+function revealLeg(s,f){
+  if(f.classList.contains('route-leg'))f.style.strokeDashoffset=0;
+  const k=f.dataset.leg;if(k!==undefined)s.querySelectorAll(`.f2[data-k="${k}"]`).forEach(p=>{p.style.strokeDashoffset=0;p.style.opacity=1;});
+}
+function next(){
+  const s=S[cur];const hidden=frags(s).filter(f=>!f.classList.contains('v'));
+  if(hidden.length){const f=hidden[0];f.classList.add('v');revealLeg(s,f);
+    return;}
+  if(cur<S.length-1)show(cur+1);
+}
+function prev(){if(cur>0)show(cur-1,true);}
+addEventListener('keydown',e=>{
+  if(['ArrowRight','ArrowDown',' ','PageDown','Enter'].includes(e.key)){e.preventDefault();next();}
+  else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev();}
+  else if(e.key==='Home')show(0);else if(e.key==='End')show(S.length-1,true);
+  else if(e.key==='f'||e.key==='F'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}
+});
+document.getElementById('nav').addEventListener('click',e=>{e.stopPropagation();prev();});
+stage.addEventListener('click',next);
+S.forEach(s=>s.querySelectorAll('.f2').forEach(g=>{if(g.tagName=='g')g.style.opacity=0;}));
+// 網址 #5 跳到第 5 頁；#5a 為預覽用，直接展開該頁所有內容
+const m=location.hash.match(/^#(\d+)(a?)/);show(m?(+m[1]-1):0,!!(m&&m[2]));
+</script>
+</body>
+</html>
