@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>國文課文複習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f5f0e6; --card:#fffdf8; --ink:#2a2622; --mute:#7a7066; --line:#ddd3c2;
+  --seal:#a8322a; --seal-soft:#f3dfd9; --done:#4d7358; --shadow:0 1px 2px rgba(60,40,20,.06),0 8px 24px rgba(60,40,20,.07);
+  --serif:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --paper:#1b1917; --card:#252220; --ink:#ece5d8; --mute:#a0958a; --line:#3a3531;
+    --seal:#e0786c; --seal-soft:#3a2522; --done:#8fbf9c; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:inherit}
+
+header{max-width:1240px;margin:0 auto;padding:28px 16px 12px;display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:14px;margin-right:auto}
+.stamp{width:52px;height:52px;flex:none;border-radius:8px;background:var(--seal);color:#fff8f0;font-family:var(--serif);font-weight:900;font-size:17px;line-height:1.15;display:grid;place-items:center;text-align:center;letter-spacing:.05em}
+h1{font-family:var(--serif);font-weight:900;font-size:clamp(24px,4vw,34px);margin:0;letter-spacing:.06em;line-height:1.2}
+.sub{color:var(--mute);font-size:14px;margin:2px 0 0}
+nav.jump{display:flex;gap:8px;flex-wrap:wrap}
+nav.jump a{text-decoration:none;font-size:14px;font-weight:500;padding:6px 14px;border:1px solid var(--line);border-radius:999px;background:var(--card)}
+nav.jump a:hover{border-color:var(--seal);color:var(--seal)}
+
+main{max-width:1240px;margin:0 auto;padding:8px 16px 64px;display:grid;gap:24px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:980px){
+  main{grid-template-columns:minmax(0,1.65fr) minmax(320px,1fr);align-items:start}
+  .stage{position:sticky;top:16px}
+}
+
+/* 播放區 */
+.stage{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+.screen{background:#000;display:flex;align-items:center;justify-content:center}
+.box{position:relative;width:100%;aspect-ratio:1280/890;overflow:hidden;background:#000}
+.box iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.cover{position:absolute;inset:0;width:100%;height:100%;border:0;background:radial-gradient(ellipse at 50% 40%,#3a2f2a,#171311);color:#f5ecdc;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(8px,2vw,18px)}
+.cv-lesson{font-family:var(--serif);font-weight:900;font-size:clamp(28px,6vw,60px);letter-spacing:.2em;text-indent:.2em}
+.cv-play{width:clamp(56px,9vw,84px);aspect-ratio:1;border-radius:50%;background:#a8322a;display:grid;place-items:center;font-size:clamp(20px,3.4vw,32px);padding-left:.15em;transition:transform .15s}
+.cover:hover .cv-play{transform:scale(1.08)}
+.cv-t{font-size:clamp(14px,2vw,18px);opacity:.8}
+.screen:fullscreen{width:100vw;height:100vh}
+.screen:fullscreen .box{width:min(100vw,calc(100vh * 1280 / 890))}
+.info{padding:14px 16px 16px}
+.now-lesson{font-size:13px;color:var(--seal);font-weight:700;letter-spacing:.08em}
+.now-title{font-family:var(--serif);font-weight:700;font-size:clamp(18px,2.6vw,23px);margin:2px 0 10px;line-height:1.35}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{border:1px solid var(--line);background:transparent;border-radius:8px;padding:7px 12px;font-size:14px;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn:hover:not(:disabled){border-color:var(--seal);color:var(--seal)}
+.btn:disabled{opacity:.35;cursor:default}
+.spacer{flex:1}
+.hint{margin:10px 0 0;font-size:13px;color:var(--mute)}
+@media (min-width:700px),(orientation:landscape){.hint{display:none}}
+[hidden]{display:none!important}
+
+/* 課文清單 */
+.book{margin-bottom:26px;scroll-margin-top:12px}
+.book h2{font-family:var(--serif);font-weight:900;font-size:15px;letter-spacing:.3em;color:var(--mute);margin:0 0 10px;display:flex;align-items:center;gap:12px}
+.book h2::after{content:"";flex:1;height:1px;background:var(--line)}
+.lesson{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:14px;overflow:hidden}
+.lesson-head{padding:14px 16px 10px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.lesson-head .no{font-size:13px;color:var(--mute)}
+.lesson-head h3{font-family:var(--serif);font-weight:900;font-size:21px;margin:0;letter-spacing:.05em}
+.lesson-head .author{font-size:13px;color:var(--mute)}
+.lesson-head .count{margin-left:auto;font-size:12px;color:var(--mute);font-variant-numeric:tabular-nums}
+.eps{list-style:none;margin:0;padding:0 8px 8px}
+.ep{width:100%;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;text-align:left;background:transparent;border:0;border-radius:9px;padding:10px 10px;min-height:48px}
+.ep:hover{background:var(--paper)}
+.ep .code{font-size:12px;font-variant-numeric:tabular-nums;color:var(--mute);border:1px solid var(--line);border-radius:6px;padding:2px 7px;white-space:nowrap}
+.ep .t{font-size:16px;font-weight:500}
+.ep .d{font-size:13px;color:var(--mute);font-variant-numeric:tabular-nums;white-space:nowrap}
+.ep.seen .d::before{content:"✓ ";color:var(--done);font-weight:700}
+.ep.cur{background:var(--seal-soft)}
+.ep.cur .code{background:var(--seal);border-color:var(--seal);color:#fff8f0}
+.ep.cur .t{color:var(--seal);font-weight:700}
+.empty{margin:0;padding:4px 16px 16px;font-size:14px;color:var(--mute)}
+footer{max-width:1240px;margin:0 auto;padding:0 16px 40px;font-size:13px;color:var(--mute)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="stamp">溫故<br>知新</div>
+    <div>
+      <h1>國文課文複習</h1>
+      <p class="sub">上課講過的文言文，隨時回來再聽一次。</p>
+    </div>
+  </div>
+  <nav class="jump" id="jump" aria-label="冊別"></nav>
+</header>
+
+<main>
+  <section class="stage" aria-label="影片播放">
+    <div class="screen" id="screen"><div class="box" id="box"></div></div>
+    <div class="info">
+      <div class="now-lesson" id="nowLesson"></div>
+      <div class="now-title" id="nowTitle"></div>
+      <div class="tools">
+        <button class="btn" id="prev">← 上一段</button>
+        <button class="btn" id="next">下一段 →</button>
+        <span class="spacer"></span>
+        <button class="btn" id="fs">⛶ 全螢幕</button>
+        <a class="btn" id="open" target="_blank" rel="noopener">在 Loom 開啟 ↗</a>
+      </div>
+      <p class="hint">字太小時，按影片右下角的全螢幕再把手機橫放。</p>
+    </div>
+  </section>
+
+  <section id="list" aria-label="課文清單"></section>
+</main>
+
+<footer>已看過的段落會在這台裝置上打勾（只存在你的瀏覽器裡）。</footer>
+
+<script>
+// st：開頭要略過的秒數（Loom 開始錄影提示與 iPad 桌面等準備畫面）
+const BOOKS = [
+  {book:"第三冊", lessons:[
+    {no:"第一課", title:"岳陽樓記", author:"范仲淹", eps:[
+      {c:"3-1-1", t:"記類文體與范仲淹生平", id:"71909b40f62d43439b1ebc383ab959a6", s:876,  st:4},
+      {c:"3-1-2", t:"作者題解、第一段",     id:"1b6c334b3a92481398d2de7d8b7bdd55", s:740,  st:2},
+      {c:"3-1-3", t:"第二段",               id:"8eb9e7628d1c4736ade8ab94b75c7d50", s:1024, st:1},
+      {c:"3-1-4", t:"第三段",               id:"aa377b9c00434ae5a8ac46dc2cb21ca0", s:726,  st:1},
+      {c:"3-1-5", t:"第四段",               id:"8f5cb6a74d364eb9921ce21546094122", s:1136, st:2},
+      {c:"3-1-6", t:"第五段和習題",         id:"6cfadba4cd3b4e938e9640088160bd0f", s:1511, st:2}
+    ]}
+  ]},
+  {book:"第二冊", lessons:[
+    {no:"第五課", title:"種樹郭橐駝傳", author:"柳宗元", eps:[
+      {c:"2-5-1", t:"柳宗元補充講義",   id:"e5daba75154a45a6b0ea98abfef0a975", s:1627, st:2},
+      {c:"2-5-2", t:"作者題解、第一段", id:"b9167fab1cb044c58bfbaa54325f427d", s:628,  st:3},
+      {c:"2-5-3", t:"第二段",           id:"881fdd96b13d42a3a11d248a9f9e11d1", s:594,  st:3},
+      {c:"2-5-4", t:"第三段",           id:"ebcb2945e678402eb21a6d03926fdaf3", s:1728, st:2},
+      {c:"2-5-5", t:"第四到五段",       id:"7f4516763a61459c8f186eb7c17530f1", s:939,  st:2},
+      {c:"2-5-6", t:"課本習題",         id:"39e5cdef78ec44d0ae8386feb2b89ab8", s:634,  st:1}
+    ]}
+  ]},
+  {book:"第一冊", lessons:[
+    {no:"第六課", title:"桃花源記", author:"陶淵明", eps:[
+      {c:"1-6-1", t:"講義與作者題解", id:"c0d15c5ad20b48da9b495d78511a90d9", s:767,  st:3},
+      {c:"1-6-2", t:"第一段課文",     id:"973b9b28bf384807a44ab7abe4e7e40e", s:918,  st:1},
+      {c:"1-6-3", t:"第二段前半",     id:"c8e9eaef896c4fdcb694ef0606ba87d6", s:946,  st:1},
+      {c:"1-6-4", t:"第二段後半",     id:"72c9d9826c8a4386983cec9b5996498b", s:1042, st:1},
+      {c:"1-6-5", t:"第三段",         id:"ad85311a2dcc412f81b33108443a1ce6", s:612,  st:1},
+      {c:"1-6-6", t:"詩記比較和習題", id:"717e94e00d8048baaa8ca4b699ecb7ac", s:1007, st:4}
+    ]},
+    {no:"第七課", title:"論語選", author:"論孟選", eps:[
+      {c:"1-7-1", t:"論孟選國學常識講義", id:"c9671930eb614419a2d428a68460b11a", s:1117, st:4},
+      {c:"1-7-2", t:"論孟選作者題解",     id:"98c7c368a99149bba3a66600d7d6aac8", s:705,  st:5},
+      {c:"1-7-3", t:"盍各言爾志",         id:"9fe13da6c4d94c1987566ef43e8d6d9a", s:926,  st:2},
+      {c:"1-7-4", t:"博施濟眾",           id:"feada5711de444eb985ed9ef28371f0d", s:615,  st:2},
+      {c:"1-7-5", t:"課本習題講解",       id:"a58d3bc79b6a46a2925e3e77141b1fee", s:734,  st:1}
+    ]},
+    {no:"第二課", title:"世說新語選", author:"劉義慶", eps:[
+      {c:"1-2-1",   t:"小說流變",               id:"08f837fb9d5e43a1aa42b6b11deb16ed", s:847,  st:7},
+      {c:"1-2-2",   t:"世說新語作者題解",       id:"b451fee16630458f89c15aaf3ad2b8bc", s:297,  st:8},
+      {c:"1-2-3",   t:"支公好鶴",               id:"fdd31bf2f08649f48517dc839f280bf0", s:1473, st:1},
+      {c:"1-2-4-1", t:"絕妙好辭之一",           id:"90573d02aced44d397fc5be8494d8fe3", s:701,  st:2},
+      {c:"1-2-4-2", t:"絕妙好辭之二（含析字）", id:"65837f57c84a426eb9b04262000347ea", s:1077, st:3},
+      {c:"1-2-5",   t:"雪夜訪戴",               id:"2de1521d42b241cea58d1be32ac42da5", s:1089, st:2},
+      {c:"1-2-6",   t:"課本習題講解",           id:"fd4c585759da4296b2bc9bd322a373f3", s:892,  st:1}
+    ]}
+  ]}
+];
+
+const $ = id => document.getElementById(id);
+const ALL = [];
+BOOKS.forEach(b => b.lessons.forEach(l => l.eps.forEach(e => ALL.push(Object.assign(e, {lesson:l, book:b.book})))));
+
+const KEY = "guowen-seen";
+let seen = {};
+try { seen = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
+const saveSeen = () => { try { localStorage.setItem(KEY, JSON.stringify(seen)); } catch (e) {} };
+
+const mins = s => Math.round(s / 60) + " 分";
+let cur = -1;
+
+function renderList() {
+  $("jump").innerHTML = BOOKS.map((b, i) => `<a href="#book${i}">${b.book}</a>`).join("");
+  $("list").innerHTML = BOOKS.map((b, i) => `
+    <div class="book" id="book${i}">
+      <h2>${b.book}</h2>
+      ${b.lessons.map(l => `
+        <article class="lesson">
+          <div class="lesson-head">
+            ${l.no ? `<span class="no">${l.no}</span>` : ""}
+            <h3>${l.title}</h3>
+            <span class="author">${l.author}</span>
+            ${l.eps.length ? `<span class="count">${l.eps.length} 段・共 ${mins(l.eps.reduce((a, e) => a + e.s, 0))}</span>` : ""}
+          </div>
+          ${l.eps.length ? `<ul class="eps">${l.eps.map(e => `
+            <li><button class="ep" data-i="${ALL.indexOf(e)}">
+              <span class="code">${e.c}</span><span class="t">${e.t}</span><span class="d">${mins(e.s)}</span>
+            </button></li>`).join("")}</ul>` : `<p class="empty">影片準備中，上傳後會出現在這裡。</p>`}
+        </article>`).join("")}
+    </div>`).join("");
+}
+
+function mark() {
+  document.querySelectorAll(".ep").forEach(b => {
+    const e = ALL[+b.dataset.i];
+    b.classList.toggle("cur", +b.dataset.i === cur);
+    b.classList.toggle("seen", !!seen[e.c]);
+  });
+}
+
+function play(i, auto) {
+  cur = i;
+  const e = ALL[i];
+  // 首次進頁面先顯示自製封面，點了才載入 Loom（部分影片的 Loom 預覽縮圖方向是歪的，正片正常）
+  $("box").innerHTML = auto
+    ? `<iframe src="https://www.loom.com/embed/${e.id}?hide_owner=true&hide_share=true&hide_title=true&hideEmbedTopBar=true&autoplay=1${e.st ? "&t=" + e.st : ""}" title="${e.c} ${e.t}" allow="autoplay; fullscreen" allowfullscreen></iframe>`
+    : `<button class="cover" id="cover"><span class="cv-lesson">${e.lesson.title}</span><span class="cv-play" aria-hidden="true">▶</span><span class="cv-t">${e.c}　${e.t}</span></button>`;
+  if (!auto) $("cover").onclick = () => play(i, true);
+  $("nowLesson").textContent = `${e.book}・${e.lesson.title}`;
+  $("nowTitle").textContent = `${e.c}　${e.t}`;
+  $("open").href = "https://www.loom.com/share/" + e.id;
+  $("prev").disabled = i === 0;
+  $("next").disabled = i === ALL.length - 1;
+  if (auto) { seen[e.c] = 1; saveSeen(); history.replaceState(null, "", "#" + e.c); }
+  mark();
+}
+
+renderList();
+$("list").addEventListener("click", ev => {
+  const b = ev.target.closest(".ep");
+  if (!b) return;
+  play(+b.dataset.i, true);
+  if (window.matchMedia("(max-width:979px)").matches) document.querySelector(".stage").scrollIntoView({block:"start"});
+});
+$("prev").onclick = () => cur > 0 && play(cur - 1, true);
+$("next").onclick = () => cur < ALL.length - 1 && play(cur + 1, true);
+
+const screen = $("screen");
+if (!screen.requestFullscreen) $("fs").hidden = true;
+$("fs").onclick = () => document.fullscreenElement ? document.exitFullscreen() : screen.requestFullscreen();
+
+const fromHash = ALL.findIndex(e => e.c === decodeURIComponent(location.hash.slice(1)));
+play(fromHash >= 0 ? fromHash : 0, false);
+</script>
+</body>
+</html>
