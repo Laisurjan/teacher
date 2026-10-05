@@ -88,9 +88,7 @@ main{max-width:1240px;margin:0 auto;padding:8px 16px 64px;display:grid;gap:24px;
 .ep.cur .t{color:var(--seal);font-weight:700}
 .empty{margin:0;padding:4px 16px 16px;font-size:14px;color:var(--mute)}
 footer{max-width:1240px;margin:0 auto;padding:0 16px 40px;font-size:13px;color:var(--mute)}
-.tlink{border:0;background:none;padding:0 0 0 10px;font-size:12px;color:var(--mute);opacity:.55}
-.tlink:hover{opacity:1;text-decoration:underline}
-.tform{margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tform{margin-top:28px;display:flex;gap:8px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
 .tform input{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 10px;width:150px}
 .stats{margin-top:16px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;color:var(--ink)}
 .stats h2{font-family:var(--serif);font-size:18px;margin:0 0 4px}
@@ -138,14 +136,13 @@ footer{max-width:1240px;margin:0 auto;padding:0 16px 40px;font-size:13px;color:v
 
 <footer>
   <span>已看過的段落會在這台裝置上打勾（只存在你的瀏覽器裡）。</span>
-  <button class="tlink" id="tOpen">教師</button>
-  <form class="tform" id="tForm" hidden>
-    <input type="password" id="tPw" placeholder="密碼" autocomplete="current-password" aria-label="教師密碼">
-    <button class="btn" type="submit">查看觀看數</button>
-    <span id="tMsg"></span>
-  </form>
   <section class="stats" id="stats" hidden></section>
-</footer>
+  <form class="tform" id="tForm">
+    <span id="tMsg"></span>
+    <input type="password" id="tPw" placeholder="管理者密碼" autocomplete="current-password" aria-label="管理者密碼">
+    <button class="btn" type="submit" aria-label="送出">→</button>
+  </form>
+  </footer>
 
 <script>
 // st：開頭要略過的秒數（Loom 開始錄影提示與 iPad 桌面等準備畫面）
@@ -293,7 +290,6 @@ if (!screen.requestFullscreen) $("fs").hidden = true;
 $("fs").onclick = () => document.fullscreenElement ? document.exitFullscreen() : screen.requestFullscreen();
 
 // 教師統計：密碼交給 Firebase 驗證，網頁原始碼裡沒有密碼
-$("tOpen").onclick = () => { $("tForm").hidden = !$("tForm").hidden; if (!$("tForm").hidden) $("tPw").focus(); };
 $("tForm").onsubmit = async ev => {
   ev.preventDefault();
   const msg = $("tMsg");
