@@ -88,6 +88,19 @@ main{max-width:1240px;margin:0 auto;padding:8px 16px 64px;display:grid;gap:24px;
 .ep.cur .t{color:var(--seal);font-weight:700}
 .empty{margin:0;padding:4px 16px 16px;font-size:14px;color:var(--mute)}
 footer{max-width:1240px;margin:0 auto;padding:0 16px 40px;font-size:13px;color:var(--mute)}
+.tlink{border:0;background:none;padding:0 0 0 10px;font-size:12px;color:var(--mute);opacity:.55}
+.tlink:hover{opacity:1;text-decoration:underline}
+.tform{margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tform input{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 10px;width:150px}
+.stats{margin-top:16px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;color:var(--ink)}
+.stats h2{font-family:var(--serif);font-size:18px;margin:0 0 4px}
+.stats .sum{margin:0 0 12px;color:var(--mute)}
+.stats .scroll{overflow-x:auto}
+.stats table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+.stats th,.stats td{padding:6px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.stats th:first-child,.stats td:first-child{text-align:left}
+.stats th{font-weight:500;color:var(--mute);font-size:12px}
+.stats tr.grp td{font-family:var(--serif);font-weight:700;background:var(--paper)}
 </style>
 </head>
 <body>
@@ -123,7 +136,16 @@ footer{max-width:1240px;margin:0 auto;padding:0 16px 40px;font-size:13px;color:v
   <section id="list" aria-label="課文清單"></section>
 </main>
 
-<footer>已看過的段落會在這台裝置上打勾（只存在你的瀏覽器裡）。</footer>
+<footer>
+  <span>已看過的段落會在這台裝置上打勾（只存在你的瀏覽器裡）。</span>
+  <button class="tlink" id="tOpen">教師</button>
+  <form class="tform" id="tForm" hidden>
+    <input type="password" id="tPw" placeholder="密碼" autocomplete="current-password" aria-label="教師密碼">
+    <button class="btn" type="submit">查看觀看數</button>
+    <span id="tMsg"></span>
+  </form>
+  <section class="stats" id="stats" hidden></section>
+</footer>
 
 <script>
 // st：開頭要略過的秒數（Loom 開始錄影提示與 iPad 桌面等準備畫面）
@@ -186,6 +208,28 @@ try { seen = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
 const saveSeen = () => { try { localStorage.setItem(KEY, JSON.stringify(seen)); } catch (e) {} };
 
 const mins = s => Math.round(s / 60) + " 分";
+
+// 匿名播放次數：每日每段一份文件，只送「哪一段、哪一天」，不含任何個人資料。
+// 資料庫規則只允許 +1，讀取需教師登入；這裡的 key 是公開識別碼，不是密碼。
+const FB_KEY = "AIzaSyBS3Y8Vj4-Ty-jmM2oGEWzZ3kXCgpbGOfE";
+const FB_DOCS = "projects/hlbh-admin-duty/databases/(default)/documents";
+const FS = "https://firestore.googleapis.com/v1/";
+const twDate = (back = 0) => new Date(Date.now() + 8 * 3600e3 - back * 864e5).toISOString().slice(0, 10);
+const LOCK_KEY = "guowen-tlock";
+const counted = new Set();
+function count(c) {
+  if (counted.has(c)) return; // 同一次開啟網頁，同一段只算一次
+  counted.add(c);
+  const d = twDate();
+  fetch(`${FS}${FB_DOCS}:commit?key=${FB_KEY}`, {
+    method: "POST", keepalive: true, headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({writes: [{
+      update: {name: `${FB_DOCS}/counts/${d}_${c}`, fields: {c: {stringValue: c}, d: {stringValue: d}}},
+      updateMask: {fieldPaths: ["c", "d"]},
+      updateTransforms: [{fieldPath: "n", increment: {integerValue: "1"}}]
+    }]})
+  }).catch(() => {});
+}
 let cur = -1;
 
 function renderList() {
@@ -230,7 +274,7 @@ function play(i, auto) {
   $("open").href = "https://www.loom.com/share/" + e.id;
   $("prev").disabled = i === 0;
   $("next").disabled = i === ALL.length - 1;
-  if (auto) { seen[e.c] = 1; saveSeen(); history.replaceState(null, "", "#" + e.c); }
+  if (auto) { seen[e.c] = 1; saveSeen(); history.replaceState(null, "", "#" + e.c); count(e.c); }
   mark();
 }
 
@@ -247,6 +291,72 @@ $("next").onclick = () => cur < ALL.length - 1 && play(cur + 1, true);
 const screen = $("screen");
 if (!screen.requestFullscreen) $("fs").hidden = true;
 $("fs").onclick = () => document.fullscreenElement ? document.exitFullscreen() : screen.requestFullscreen();
+
+// 教師統計：密碼交給 Firebase 驗證，網頁原始碼裡沒有密碼
+$("tOpen").onclick = () => { $("tForm").hidden = !$("tForm").hidden; if (!$("tForm").hidden) $("tPw").focus(); };
+$("tForm").onsubmit = async ev => {
+  ev.preventDefault();
+  const msg = $("tMsg");
+  // 連錯 5 次，這台裝置鎖 15 分鐘；真正擋暴力破解的是 Firebase 伺服器端（連續失敗會暫時拒絕登入）
+  let lock = {n: 0, until: 0};
+  try { lock = JSON.parse(localStorage.getItem(LOCK_KEY)) || lock; } catch (e) {}
+  if (Date.now() < lock.until) { msg.textContent = `嘗試次數過多，請 ${Math.ceil((lock.until - Date.now()) / 6e4)} 分鐘後再試。`; return; }
+  const saveLock = () => { try { localStorage.setItem(LOCK_KEY, JSON.stringify(lock)); } catch (e) {} };
+  msg.textContent = "讀取中…";
+  try {
+    const login = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FB_KEY}`, {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({email: "teacher@review.hlbh", password: $("tPw").value, returnSecureToken: true})
+    });
+    if (!login.ok) {
+      const err = ((await login.json()).error || {}).message || "";
+      lock.n++;
+      if (lock.n >= 5 || err.startsWith("TOO_MANY_ATTEMPTS")) { lock = {n: 0, until: Date.now() + 15 * 6e4}; msg.textContent = "嘗試次數過多，已暫時鎖定，請 15 分鐘後再試。"; }
+      else msg.textContent = `密碼不正確（還可再試 ${5 - lock.n} 次）。`;
+      saveLock();
+      return;
+    }
+    lock = {n: 0, until: 0}; saveLock();
+    const {idToken} = await login.json();
+    const rows = [];
+    let page = "";
+    do {
+      const r = await fetch(`${FS}${FB_DOCS}/counts?pageSize=300${page ? "&pageToken=" + page : ""}`, {headers: {Authorization: "Bearer " + idToken}});
+      if (!r.ok) throw new Error(r.status);
+      const j = await r.json();
+      (j.documents || []).forEach(d => rows.push({c: d.fields.c.stringValue, d: d.fields.d.stringValue, n: +d.fields.n.integerValue}));
+      page = j.nextPageToken || "";
+    } while (page);
+    $("tPw").value = "";
+    msg.textContent = "";
+    renderStats(rows);
+  } catch (e) {
+    msg.textContent = "讀取失敗，請稍後再試。";
+  }
+};
+
+function renderStats(rows) {
+  const t0 = twDate(), t7 = twDate(6);
+  const by = {};
+  rows.forEach(r => {
+    const o = by[r.c] || (by[r.c] = {all: 0, today: 0, week: 0});
+    o.all += r.n;
+    if (r.d === t0) o.today += r.n;
+    if (r.d >= t7) o.week += r.n;
+  });
+  const sum = k => ALL.reduce((a, e) => a + (by[e.c] ? by[e.c][k] : 0), 0);
+  const body = BOOKS.map(b => b.lessons.map(l => {
+    const tot = k => l.eps.reduce((a, e) => a + (by[e.c] ? by[e.c][k] : 0), 0);
+    return `<tr class="grp"><td>${b.book}・${l.title}</td><td>${tot("today")}</td><td>${tot("week")}</td><td>${tot("all")}</td></tr>` +
+      l.eps.map(e => { const o = by[e.c] || {all: 0, today: 0, week: 0};
+        return `<tr><td>${e.c}　${e.t}</td><td>${o.today}</td><td>${o.week}</td><td>${o.all}</td></tr>`; }).join("");
+  }).join("")).join("");
+  $("stats").innerHTML = `<h2>播放次數</h2>
+    <p class="sum">今天 ${sum("today")} 次・近 7 天 ${sum("week")} 次・累計 ${sum("all")} 次（學生點開某一段播放算 1 次，匿名，不代表看完）</p>
+    <div class="scroll"><table><thead><tr><th>段落</th><th>今天</th><th>近 7 天</th><th>累計</th></tr></thead><tbody>${body}</tbody></table></div>`;
+  $("stats").hidden = false;
+  $("stats").scrollIntoView({block: "start"});
+}
 
 const fromHash = ALL.findIndex(e => e.c === decodeURIComponent(location.hash.slice(1)));
 play(fromHash >= 0 ? fromHash : 0, false);
