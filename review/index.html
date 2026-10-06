@@ -145,7 +145,7 @@ footer{max-width:1240px;margin:0 auto;padding:0 16px 40px;font-size:13px;color:v
 </main>
 
 <footer>
-  <span>已看過的段落會在這台裝置上打勾（只存在你的瀏覽器裡）。</span>
+  <span>已看過的段落會在這台裝置上打勾，並記住每段看到哪裡，下次接著看（只存在你的瀏覽器裡）。</span>
   <section class="stats" id="stats" hidden></section>
   <form class="tform" id="tForm">
     <span id="tMsg"></span>
@@ -239,6 +239,50 @@ function count(c) {
 }
 let cur = -1;
 
+// 播放進度：Loom 播放器支援 player.js 協定（postMessage），可讀寫播放時間。
+// 每段看到哪裡只存在這台裝置的瀏覽器，下次點開從那裡接著看。
+// 開頭略過（st）也改由這裡跳一次，不用網址的 t 參數，免得播放器之後又跳回開頭。
+const POS_KEY = "guowen-pos";
+const LOOM = "https://www.loom.com";
+let pos = {};
+try { pos = JSON.parse(localStorage.getItem(POS_KEY) || "{}"); } catch (e) {}
+let posAt = 0;
+const savePos = () => { posAt = Date.now(); try { localStorage.setItem(POS_KEY, JSON.stringify(pos)); } catch (e) {} };
+const clock = s => Math.floor(s / 60) + ":" + String(Math.floor(s % 60)).padStart(2, "0");
+// 接著看時往回退 3 秒；快看完（剩不到 15 秒）或才剛開始就當作從頭
+const resumeAt = e => { const p = pos[e.c] || 0; return p > e.st + 10 && p < e.s - 15 ? p - 3 : e.st; };
+let need = null, tries = 0, ready = false, readyTimer = 0;
+const tell = (method, value) => {
+  const f = $("box").querySelector("iframe");
+  if (f && f.contentWindow) f.contentWindow.postMessage(JSON.stringify({context: "player.js", version: "0.0.11", method, value, listener: "gw"}), LOOM);
+};
+window.addEventListener("message", ev => {
+  const f = $("box").querySelector("iframe");
+  if (!f || ev.source !== f.contentWindow || ev.origin !== LOOM) return;
+  let m;
+  try { m = typeof ev.data === "string" ? JSON.parse(ev.data) : ev.data; } catch (e) { return; }
+  if (!m || m.context !== "player.js") return;
+  const e = ALL[cur];
+  if (m.event === "ready") {
+    if (ready) return;
+    ready = true; clearInterval(readyTimer);
+    ["timeupdate", "ended"].forEach(n => tell("addEventListener", n));
+    if (need) tell("setCurrentTime", need);
+  } else if (m.event === "timeupdate" && m.value) {
+    const t = m.value.seconds;
+    if (need !== null) {
+      // 只在剛開始播的頭幾次回報內補跳；之後學生自己拉時間軸，網頁不再干涉
+      if (t >= need - 1 || ++tries > 3) need = null;
+      else { tell("setCurrentTime", need); return; }
+    }
+    if (t > e.s - 15) delete pos[e.c]; else pos[e.c] = Math.floor(t);
+    if (Date.now() - posAt > 3000) savePos();
+  } else if (m.event === "ended") {
+    delete pos[e.c]; savePos();
+  }
+});
+window.addEventListener("pagehide", savePos);
+
 function renderList() {
   $("jump").innerHTML = BOOKS.map((b, i) => `<a href="#book${i}">${b.book}</a>`).join("");
   $("list").innerHTML = BOOKS.map((b, i) => `
@@ -269,13 +313,24 @@ function mark() {
 }
 
 function play(i, auto) {
+  if (cur >= 0) savePos();
   cur = i;
   const e = ALL[i];
+  const from = resumeAt(e);
+  clearInterval(readyTimer);
   // 首次進頁面先顯示自製封面，點了才載入 Loom（部分影片的 Loom 預覽縮圖方向是歪的，正片正常）
   $("box").innerHTML = auto
-    ? `<iframe src="https://www.loom.com/embed/${e.id}?hide_owner=true&hide_share=true&hide_title=true&hideEmbedTopBar=true&autoplay=1${e.st ? "&t=" + e.st : ""}" title="${e.c} ${e.t}" allow="autoplay; fullscreen" allowfullscreen></iframe>`
-    : `<button class="cover" id="cover"><span class="cv-lesson">${e.lesson.title}</span><span class="cv-play" aria-hidden="true">▶</span><span class="cv-t">${e.c}　${e.t}</span></button>`;
+    ? `<iframe src="${LOOM}/embed/${e.id}?hide_owner=true&hide_share=true&hide_title=true&hideEmbedTopBar=true&autoplay=1" title="${e.c} ${e.t}" allow="autoplay; fullscreen" allowfullscreen></iframe>`
+    : `<button class="cover" id="cover"><span class="cv-lesson">${e.lesson.title}</span><span class="cv-play" aria-hidden="true">▶</span><span class="cv-t">${e.c}　${e.t}${from > e.st ? `・從 ${clock(from)} 接著看` : ""}</span></button>`;
   if (!auto) $("cover").onclick = () => play(i, true);
+  else {
+    need = from || null; tries = 0; ready = false;
+    // 播放器載入後才收得到訊息，重複敲門直到它回 ready（最多 30 秒）
+    let n = 0;
+    $("box").querySelector("iframe").onload = () => {
+      readyTimer = setInterval(() => { if (ready || ++n > 60) clearInterval(readyTimer); else tell("addEventListener", "ready"); }, 500);
+    };
+  }
   $("nowLesson").textContent = `${e.book}・${e.lesson.title}`;
   $("nowTitle").textContent = `${e.c}　${e.t}`;
   $("open").href = "https://www.loom.com/share/" + e.id;
@@ -289,7 +344,8 @@ renderList();
 $("list").addEventListener("click", ev => {
   const b = ev.target.closest(".ep");
   if (!b) return;
-  play(+b.dataset.i, true);
+  // 正在播的那一段再點一次不重新載入，免得進度被打斷
+  if (+b.dataset.i !== cur || !$("box").querySelector("iframe")) play(+b.dataset.i, true);
   if (window.matchMedia("(max-width:979px)").matches) document.querySelector(".stage").scrollIntoView({block:"start"});
 });
 $("prev").onclick = () => cur > 0 && play(cur - 1, true);
