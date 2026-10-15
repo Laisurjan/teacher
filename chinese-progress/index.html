@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>資二乙 國文這一路</title>
+<!--
+  動畫設計對照迪士尼 12 法則：
+  1 擠壓與伸展：點落地壓扁、起跳拉長；數字換值時彈一下
+  2 預備動作：每段移動前先往下蹲；最後一跳前先蹲低、鏡頭推近、停頓
+  3 演出布局：高潮時其他線變暗、鏡頭推近最後一欄，只留一個焦點
+  4 姿勢對姿勢：每次段考是一個關鍵姿勢（按一下推進一次），中間由補間完成
+  5 跟隨與重疊：PR 標籤、HUD 晚點到位並帶回彈；卡片內數字晚於卡片落定
+  6 漸快漸慢：所有移動都用 ease 曲線
+  7 弧形：線段與點的軌跡都走弧線
+  8 次要動作：PR 上升時冒紅色火花（台股慣例：漲紅）；超越時灰點閃光、畫面微震；名次同步跳動
+  9 時間掌握：高一慢、掙扎；最後一跳快、乾脆
+  10 誇張：落點衝過頭再彈回；鏡頭放大讓差距看得見（數值本身不誇大）
+  11 立體感：點有陰影與高光
+  12 吸引力：暖色主角、圓潤造型、深色舞台；「從…到…」前小後大、前灰後亮
+  資料：只有全班層級的數字（現在班上 14 位同學計算），其他班不標班名。
+  操作：→／空白鍵／簡報筆 下一步，← 上一步，F 全螢幕，Home 回到開頭。動畫進行中按下一步＝直接跳到這一步的結尾。
+-->
+<style>
+:root{--bg:#0e1628;--ink:#f4f1ea;--dim:#8b93a7;--mute:#5d6680;--us:#ffb627;--good:#ff5c5c}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--ink);overflow:hidden;user-select:none;
+  font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-serif}
+.page{position:fixed;inset:0;opacity:0;pointer-events:none;transition:opacity .6s}
+.page.on{opacity:1}
+/* 「從…到…」：前者灰小、後者亮大 */
+.from{color:var(--mute);font-size:.62em;font-weight:700}
+.to{color:var(--us);font-size:1.35em;font-weight:900}
+.arrow{color:var(--mute);font-size:.6em;margin:0 .15em}
+/* 標題 */
+#title{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4vh}
+#title h1{font-size:clamp(52px,7.4vw,150px);font-weight:900;letter-spacing:.04em;display:flex}
+#title h1 span{display:inline-block;transform-origin:50% 100%}
+#title h1 .hl{color:var(--us)}
+#title p{font-size:clamp(24px,2.8vw,54px);color:var(--dim)}
+/* 圖表 */
+#chart{display:flex;flex-direction:column;padding:3vh 4vw 2vh}
+.top{display:flex;align-items:center;gap:2vw;min-height:19vh;position:relative;z-index:2;background:var(--bg);box-shadow:0 12px 18px -6px var(--bg)}
+.stage{position:relative;z-index:1;overflow:hidden}
+.cap{flex:1;font-size:clamp(26px,3vw,58px);font-weight:800;line-height:1.35;transition:opacity .25s}
+.cap em{font-style:normal;color:var(--us)}
+.cap b{font-style:normal;color:var(--good)}
+.hud{display:flex;gap:1.2vw;opacity:0}
+.stat{background:#16213a;border:2px solid #2b3858;border-radius:18px;padding:1.2vh 1.3vw;text-align:center;min-width:9.5vw;transition:border-color .4s}
+.stat b{display:block;font-size:clamp(14px,1.15vw,24px);color:var(--dim);font-weight:700}
+.stat .v{display:inline-block;font-size:clamp(36px,4vw,84px);font-weight:900;line-height:1.1;font-variant-numeric:tabular-nums;transform-origin:50% 80%;transition:color .4s}
+.stat .v small{font-size:.45em;margin:0 .1em}
+.stat.hot{border-color:var(--us)}
+.stat.hot .v{color:var(--us)}
+.stage{flex:1;min-height:0}
+svg{width:100%;height:100%;overflow:visible;display:block}
+.xl{fill:var(--dim);font-size:24px;text-anchor:middle}
+.xl.yr{fill:var(--ink);font-size:25px;font-weight:700}
+.lbl{font-weight:800;paint-order:stroke;stroke:var(--bg);stroke-width:8px;stroke-linejoin:round}
+/* 數字卡 */
+#cards{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5vh}
+#cards h2{font-size:clamp(30px,3.4vw,64px);color:var(--dim)}
+.row{display:flex;gap:3vw;width:90vw;justify-content:center;align-items:stretch}
+.card{flex:1;max-width:30vw;background:#18233d;border:3px solid var(--us);border-radius:30px;padding:5vh 2vw;text-align:center;opacity:0;
+  display:flex;flex-direction:column;justify-content:center}
+.num{font-size:clamp(64px,8vw,160px);font-weight:900;color:var(--us);line-height:1.05;font-variant-numeric:tabular-nums;display:inline-block;transform-origin:50% 90%}
+.num small{font-size:.42em;color:var(--ink)}
+.num .from{font-size:.5em}
+.desc{margin-top:2.5vh;font-size:clamp(22px,2.3vw,44px);line-height:1.4;font-weight:700}
+/* 結尾 */
+#ending{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:3vh}
+#ending .rows{display:grid;grid-template-columns:auto auto auto auto;align-items:baseline;column-gap:.35em;row-gap:1.2vh;font-size:clamp(40px,5vw,100px);font-weight:900;line-height:1.3}
+#ending .rows>span{opacity:0}
+#ending .k{text-align:right;color:var(--ink);font-size:.62em;padding-right:.4em}
+#ending .rows .from{text-align:right;color:var(--ink);font-size:.55em}
+#ending .post{font-size:clamp(26px,2.9vw,56px);font-weight:800;margin-top:2vh;opacity:0}
+#ending .post b{color:var(--good);font-size:1.5em}
+#ending .rows .to{text-align:left}
+#ending .pre{font-size:clamp(22px,2.4vw,46px);color:var(--dim);font-weight:700;margin-bottom:2vh;opacity:0}
+#ending .rows>span{display:inline-block}
+#ending .rows .to{transform-origin:20% 85%}
+#finale{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:4.5vh}
+#finale .big{font-size:clamp(46px,6vw,124px);font-weight:900;line-height:1.3;display:flex;flex-direction:column}
+#finale .big span{display:inline-block;opacity:0;transform-origin:50% 100%}
+#finale .big .hl{color:var(--us)}
+#finale .s{font-size:clamp(24px,2.7vw,52px);color:var(--ink);font-weight:700;opacity:0}
+#finale .next{font-size:clamp(26px,2.9vw,56px);font-weight:800;line-height:1.5;border:3px solid var(--us);border-radius:26px;
+  padding:2.2vh 3vw;background:#1b2440;opacity:0}
+#finale .next b{color:var(--us)}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:5}
+.foot{position:fixed;right:2vw;bottom:1.4vh;font-size:15px;color:#4d5873}
+.hint{position:fixed;left:2vw;bottom:1.4vh;font-size:15px;color:#4d5873}
+</style>
+</head>
+<body>
+
+<section class="page on" id="title">
+  <h1 id="tt"></h1>
+  <p id="ts">高一上 → 高二上　七次段考</p>
+</section>
+
+<section class="page" id="chart">
+  <div class="top">
+    <div class="cap" id="cap"></div>
+    <div class="hud" id="hud">
+      <div class="stat" id="stRank"><b>九班名次</b><span class="v"><small>第</small><span id="hRank">8</span></span></div>
+      <div class="stat" id="stPr"><b>全班 PR 中位數</b><span class="v" id="hPr">39</span></div>
+      <div class="stat" id="stHalf"><b>贏過年級一半</b><span class="v"><span id="hHalf">6</span><small>人</small></span></div>
+    </div>
+  </div>
+  <div class="stage" id="stage"><svg id="svg" viewBox="0 0 1600 760" preserveAspectRatio="xMidYMid meet"></svg></div>
+</section>
+
+<section class="page" id="cards">
+  <h2>這一次，不只是平均變高</h2>
+  <div class="row">
+    <div class="card"><div><span class="num"><span data-to="10">0</span><small> / 14</small></span></div><div class="desc">人，站得比<br>高一時的自己更前面</div></div>
+    <div class="card"><div><span class="num"><span class="from">4</span><span class="arrow">→</span><span data-to="8" data-from="4">4</span></span></div><div class="desc">60 分以上的人數<br>（上一次 → 這一次）</div></div>
+    <div class="card"><div><span class="num"><span data-to="6">0</span><small> 人</small></span></div><div class="desc">考出自己<br>兩年來最好的位置</div></div>
+  </div>
+</section>
+
+<section class="page" id="ending">
+  <div class="pre">高二第一次段考，這是你們的成績單：</div>
+  <div class="rows">
+    <span class="k">大幅拉升分數</span><span class="from">幾達</span><span class="arrow"></span><span class="to">年級平均</span>
+    <span class="k">九個班</span><span class="from">第</span><span class="arrow"></span><span class="to">5 名</span>
+    <span class="k">全班 PR 中位數</span><span class="from"></span><span class="arrow"></span><span class="to">55</span>
+  </div>
+  <div class="post">比上一次，一口氣往上跳了 <b>30</b></div>
+</section>
+
+<section class="page" id="finale">
+  <div class="big"><span>你們證明了：</span><span class="hl">努力，是看得見的。</span></div>
+  <div class="s">這不是運氣，是你們一點一點做出來的。</div>
+  <div class="next">下一次 → <b>第二次期中考</b><br>老師期待你們更多<b>亮眼的表現</b>！</div>
+</section>
+<canvas id="fx"></canvas>
+
+<div class="hint" id="hint">→／空白鍵 下一步　← 上一步　F 全螢幕</div>
+<div class="foot">以現在班上 14 位同學計算・灰線為其他班（不標班名）</div>
+
+<script>
+'use strict';
+// ================= 資料（全班層級，不含個人） =================
+// 與年級平均的差距（分）；本班＝現在 14 人，其他班＝當次全班。來源：國文成績統整_114-1至115-1.xlsx
+const XL = [['高一上','一段'],['高一上','二段'],['高一上','期末'],['高一下','一段'],['高一下','二段'],['高一下','期末'],['高二上','一段']];
+const US = [-5.5,-12.1,-8.6,-18.1,-14.8,-5.8,-0.3298];
+const RANK = [8,9,9,9,9,9,5];
+const PRM  = [39,20,29,12,20,25,55];   // 全班 PR 中位數（四捨五入）
+const HALF = [6,2,4,2,4,5,8];
+const OTH = [ // 八個班，順序不對外顯示
+  [6.8,4.1,2,9.3,12.3,6.4,0.0988],[-2.1,-5.6,-3.5,2,-4,0.3,-2.6959],[11.3,7.6,10.5,6.6,9.9,7.6,13.24],[11,6.6,5.8,7.7,3.2,2.2,9.82],
+  [2.8,9.1,9,2.3,6.3,4.8,2.2416],[-1,-1.6,1,6,2.8,1.3,-2.3834],[-1.3,-3.9,-2.4,-5.1,-3,-3.4,-5.1702],[-6.7,-1.5,-3.9,-2.1,-2.7,-3.3,-5.3298]];
+const N = US.length, LI = N-1;
+const CAPP = ['高一上第一次段考：全班 PR 中位數 39。',
+  '高一上第二次段考：PR 20。',
+  '高一上期末：PR 29。',
+  '高一下第一次段考：PR 12。',
+  '高一下第二次：PR 12 → <b>20</b>，開始往上。',
+  '高一下期末：PR 再到 <b>25</b>。'];
+// 步驟：0 標題｜1 舞台｜2–7 逐次段考（第 0–5 點）｜8 最後一跳｜9 放大差距｜10 連升回顧｜11–13 數字卡｜14 前後對照｜15 收尾
+const SP=i=>2+i, S_LEAP=8, S_BR=9, S_GLOW=10, S_CARD=11, S_END=14, S_FIN=15, LAST=15;
+const CAPS = {1:'每一條灰線是一個班。白色虛線，是<em>全年級的平均</em>。',
+  [S_LEAP]:'高二上第一次：PR <em>55</em>，只差平均 0.3 分──一口氣<em>超過 4 個班</em>！',
+  [S_BR]:'放大最後一次：我們<em>勝過四個班</em>的平均分數！',
+  [S_GLOW]:'從高一下開始，PR 12 → 20 → 25 → <em>55</em>：<b>連續三次往上</b>。'};
+
+// ================= 幾何 =================
+const L=150,R=1480,T=60,B=640,YMAX=16,YMIN=-22;
+const px=i=>L+(R-L)*i/(N-1), py=v=>T+(YMAX-v)/(YMAX-YMIN)*(B-T), val=y=>YMAX-(y-T)/(B-T)*(YMAX-YMIN);
+const FULL={x:0,y:0,w:1600,h:760};
+const ZW=640, ZOOM={x:1200,w:ZW,h:ZW*760/1600}; ZOOM.y=py(-2.6)-ZOOM.h/2;
+const ZW2=330, ZOOM2={x:px(LI)-ZW2*.28,w:ZW2,h:ZW2*760/1600}; ZOOM2.y=py(-2.7)-ZOOM2.h*.5;
+const cam={...FULL}; let k=1;
+const NS='http://www.w3.org/2000/svg', svg=document.getElementById('svg');
+function el(tag,a,p=svg,txt){const e=document.createElementNS(NS,tag);for(const n in a)e.setAttribute(n,a[n]);if(txt!=null)e.textContent=txt;p.appendChild(e);return e}
+
+// ================= 補間引擎 =================
+const E={io:t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2, out:t=>1-Math.pow(1-t,3), in:t=>t*t*t, out4:t=>1-Math.pow(1-t,4),
+  back:t=>{const c=1.9;return 1+(c+1)*Math.pow(t-1,3)+c*Math.pow(t-1,2)},
+  elastic:t=>t===0||t===1?t:Math.pow(2,-9*t)*Math.sin((t*10-.75)*2*Math.PI/3)+1, lin:t=>t};
+let TOKEN=0;
+class Cancel extends Error{}
+window.addEventListener('unhandledrejection',e=>{if(e.reason instanceof Cancel)e.preventDefault()});
+function tw(ms,fn,ease=E.io){const tk=TOKEN;return new Promise((res,rej)=>{const t0=performance.now();
+  (function f(t){if(tk!==TOKEN)return rej(new Cancel());const p=Math.min(1,Math.max(0,(t-t0)/ms));fn(ease(p),p);p<1?requestAnimationFrame(f):res()})(t0)})}
+function wait(ms){const tk=TOKEN;return new Promise((res,rej)=>setTimeout(()=>tk===TOKEN?res():rej(new Cancel()),ms))}
+function later(ms,fn){const tk=TOKEN;setTimeout(()=>{if(tk===TOKEN)fn()},ms)}
+const lerp=(a,b,t)=>a+(b-a)*t;
+
+// ================= 舞台 =================
+const gGrid=el('g',{}),gOth=el('g',{}),gAvg=el('g',{}),gGlow=el('g',{}),gUs=el('g',{}),gEnd=el('g',{}),gBr=el('g',{}),gFx=el('g',{}),gLab=el('g',{}),gDot=el('g',{});
+const cols=XL.map((x,i)=>{const g=el('g',{opacity:.35},gGrid);
+  el('line',{x1:px(i),x2:px(i),y1:T-20,y2:B,stroke:'#2a3654','stroke-width':1.5,'vector-effect':'non-scaling-stroke'},g);
+  el('text',{x:px(i),y:B+46,class:'xl yr'},g,x[0]);el('text',{x:px(i),y:B+80,class:'xl'},g,x[1]);return g});
+function colOn(n){cols.forEach((c,i)=>c.setAttribute('opacity',i<=n?1:.35))}
+const othPaths=OTH.map(o=>el('path',{d:o.map((v,i)=>(i?'L':'M')+px(i)+' '+py(v)).join(' '),fill:'none',stroke:'#56607a','stroke-width':3,
+  'stroke-linejoin':'round','vector-effect':'non-scaling-stroke',opacity:0},gOth));
+const avgLine=el('line',{x1:L-20,x2:R+260,y1:py(0),y2:py(0),stroke:'#f4f1ea','stroke-width':3,'stroke-dasharray':'12 9','vector-effect':'non-scaling-stroke',opacity:0},gAvg);
+
+// 本班線段：弧形；最後一段是起跳斜坡，不超過終點高度
+function segD(i,head=true){const x0=px(i),y0=py(US[i]),x1=px(i+1),y1=py(US[i+1]),dx=x1-x0;
+  const c=i===LI-1?`C${x0+dx*.45} ${y0+12} ${x1-dx*.35} ${y1} ${x1} ${y1}`:`C${x0+dx*.35} ${y0-16} ${x1-dx*.35} ${y1-16} ${x1} ${y1}`;
+  return (head?`M${x0} ${y0} `:'')+c}
+const glow=el('path',{d:segD(3)+' '+segD(4,false)+' '+segD(5,false),fill:'none',stroke:'#ff5c5c','stroke-width':26,'stroke-linecap':'round',
+  'stroke-linejoin':'round','vector-effect':'non-scaling-stroke',opacity:0},gGlow);
+const segs=[];for(let i=0;i<LI;i++){const p=el('path',{d:segD(i),fill:'none',stroke:'#ffb627','stroke-width':9,'stroke-linecap':'round'},gUs);
+  p._len=p.getTotalLength();p.style.strokeDasharray=p._len;segs.push(p)}
+function segP(i,p){segs[i].style.strokeDashoffset=segs[i]._len*(1-p)}
+
+// ---- 螢幕尺寸固定的元件（鏡頭推近時不跟著變大）----
+const SC=[];
+function sc(node,x,y,o={}){const it=Object.assign({node,x,y,s:1,sx:1,sy:1,op:1,dy:0},o);SC.push(it);return it}
+const avgLab={node:el('text',{class:'lbl',fill:'#f4f1ea','font-size':24,opacity:0},gLab,'年級平均')};
+
+// 本班的點（陰影＋高光）
+const dotG=el('g',{},gDot);
+el('ellipse',{cx:3,cy:20,rx:15,ry:5,fill:'#000',opacity:.35},dotG);
+el('circle',{r:16,fill:'#ffb627',stroke:'#fff3d6','stroke-width':3},dotG);
+el('circle',{cx:-5,cy:-6,r:5,fill:'#fff',opacity:.75},dotG);
+const dot=sc(dotG,px(0),py(US[0]),{s:0});
+
+// 每個點：下方差距、上方 PR 標籤（上升＝綠色並標出升幅）
+const labs=US.map((v,i)=>{const g=el('g',{},gLab);const last=i===LI;
+  el('text',{x:last?-30:0,y:last?52:58,'text-anchor':last?'end':'middle',class:'lbl',fill:'#ffb627','font-size':last?40:28},g,(v>0?'+':'')+(Math.round(v*10)/10));
+  return sc(g,px(i),py(v),{s:0})});
+const prTags=PRM.map((p,i)=>{const g=el('g',{},gLab);const up=i>0&&p>PRM[i-1], d=i>0?p-PRM[i-1]:0, last=i===LI;
+  const txt='PR '+p, w=(last?46:32)*0.62*txt.length+30+(up?(last?70:60):0), h=last?60:46;
+  el('rect',{x:-w/2,y:-h/2,width:w,height:h,rx:h/2,fill:up?'#3b1519':'#16213a',stroke:up?'#ff5c5c':'#3a4766','stroke-width':3},g);
+  el('text',{x:up?-w/2+16:0,y:(last?15:10),'text-anchor':up?'start':'middle','font-size':last?42:30,'font-weight':900,fill:up?'#ffffff':'#8b93a7'},g,txt);
+  if(up)el('text',{x:w/2-14,y:(last?13:9),'text-anchor':'end','font-size':last?28:22,'font-weight':900,fill:'#ff5c5c'},g,'▲'+d);
+  return Object.assign(sc(g,px(i),py(US[i])),{s:0,off:last?-78:-62,up})});
+
+// 最後一欄其他班的端點
+const ends=OTH.map(o=>{const g=el('g',{},gEnd);const c=el('circle',{r:10,fill:'#56607a',stroke:'#0e1628','stroke-width':3},g);const it=sc(g,px(LI),py(o[LI]),{s:0});it.c=c;return it});
+const beaten=OTH.map((o,i)=>({i,v:o[LI]})).filter(b=>b.v<US[LI]).sort((a,b)=>a.v-b.v);
+const above=OTH.map(o=>o[LI]).filter(v=>v>US[LI]).sort((a,b)=>a-b)[0];
+
+// 差距括號
+const brs=beaten.slice().sort((a,b)=>b.v-a.v).map((b,j)=>{const g=el('g',{opacity:0},gBr);
+  const a={stroke:'#ffb627','stroke-width':4,'vector-effect':'non-scaling-stroke'};
+  const guide=el('line',{y1:py(b.v),y2:py(b.v),stroke:'#8b93a7','stroke-width':2,'stroke-dasharray':'3 6','vector-effect':'non-scaling-stroke'},g);
+  const line=el('line',{...a,y1:py(US[LI]),y2:py(US[LI])},g),t1=el('line',{...a,y1:py(US[LI]),y2:py(US[LI])},g),t2=el('line',{...a,y1:py(US[LI]),y2:py(US[LI])},g);
+  const lg=el('g',{},gLab);el('text',{x:0,y:10,class:'lbl',fill:'#ffb627','font-size':32},lg,'多 '+(US[LI]-b.v).toFixed(1)+' 分');
+  return {g,guide,line,t1,t2,v:b.v,off:70+j*140,lab:sc(lg,0,py(b.v),{s:0})}});
+const tease=(()=>{const g=el('g',{opacity:0},gBr);const line=el('line',{y1:py(US[LI]),y2:py(above),stroke:'#ffd36b','stroke-width':3,'stroke-dasharray':'6 6','vector-effect':'non-scaling-stroke'},g);
+  const lg=el('g',{},gLab);el('text',{x:0,y:-4,class:'lbl',fill:'#ffd36b','font-size':32},lg,'緊追第四名，分差不到 0.5 分');
+  return {g,line,lab:sc(lg,0,py(above),{s:0})}})();
+
+function layout(){svg.setAttribute('viewBox',`${cam.x} ${cam.y} ${cam.w} ${cam.h}`);k=cam.w/1600;
+  segs.forEach(p=>p.setAttribute('stroke-width',9*k));
+  avgLab.node.setAttribute('transform',`translate(${cam.x+14*k} ${py(0)-14*k}) scale(${k})`);
+  brs.forEach(b=>{const x=px(LI)+b.off*k;for(const n of [b.line])n.setAttribute('x1',x),n.setAttribute('x2',x);
+    for(const n of [b.t1,b.t2])n.setAttribute('x1',x-10*k),n.setAttribute('x2',x+10*k);
+    b.guide.setAttribute('x1',px(LI)+12*k);b.guide.setAttribute('x2',x-10*k);b.lab.x=x+14*k});
+  {const x=px(LI)+40*k;tease.line.setAttribute('x1',x);tease.line.setAttribute('x2',x);tease.lab.x=x+14*k}
+  prTags.forEach(t=>{t.dyBase=t.off});
+  for(const it of SC){const dy=(it.dy+(it.dyBase||0))*k;
+    it.node.setAttribute('transform',`translate(${it.x} ${it.y+dy}) scale(${k*it.s*it.sx} ${k*it.s*it.sy})`);it.node.setAttribute('opacity',it.op)}}
+
+// ================= HUD =================
+const hud=document.getElementById('hud'),hR=document.getElementById('hRank'),hP=document.getElementById('hPr'),hH=document.getElementById('hHalf');
+const hudV={r:RANK[0],p:PRM[0],h:HALF[0]};
+function bump(n){n.animate([{transform:'scale(1)'},{transform:'scale(1.35,.72)'},{transform:'scale(.9,1.14)'},{transform:'scale(1.04,.97)'},{transform:'scale(1)'}],{duration:520,easing:'ease-out'})}
+function shake(n){n.animate([{transform:'translateX(0)'},{transform:'translateX(-9px) rotate(-3deg)'},{transform:'translateX(8px) rotate(2deg)'},{transform:'translateX(-5px)'},{transform:'translateX(0)'}],{duration:480})}
+function hudShow(r,p,h){hudV.r=r;hudV.p=p;hudV.h=h;hR.textContent=r;hP.textContent=Math.round(p);hH.textContent=Math.round(h);
+  document.getElementById('stRank').classList.toggle('hot',r<8);document.getElementById('stPr').classList.toggle('hot',p>=50);document.getElementById('stHalf').classList.toggle('hot',h>=7)}
+function hudTo(i,ms=700){const a={...hudV},b={r:RANK[i],p:PRM[i],h:HALF[i]};
+  if(b.r!==a.r)bump(hR.parentNode);
+  if(b.p!==Math.round(a.p))later(120,()=>bump(hP));if(b.h!==Math.round(a.h))later(240,()=>bump(hH.parentNode));
+  return tw(ms,t=>hudShow(b.r,lerp(a.p,b.p,t),lerp(a.h,b.h,t)),E.out)}
+function hudVisible(on,anim){hud.style.opacity=on?1:0;if(on&&anim)hud.animate([{opacity:0,transform:'translateX(60px) scaleX(.9)'},
+  {opacity:1,transform:'translateX(-10px) scaleX(1.03)',offset:.7},{opacity:1,transform:'none'}],{duration:650,easing:'ease-out'})}
+
+// ================= 小效果 =================
+const cap=document.getElementById('cap');
+function caption(html,anim=true){if(!anim){cap.innerHTML=html;cap.style.opacity=1;return}
+  cap.style.opacity=0;later(230,()=>{cap.innerHTML=html;cap.style.opacity=1})}
+function sparks(x,y,n=14,color='#ffd36b',dist=90){for(let j=0;j<n;j++){const c=el('circle',{r:5,fill:color},gFx);const a=Math.PI*2*j/n+Math.random()*.4,d=dist*(.6+Math.random()*.6);
+  const t0=performance.now();(function f(t){const p=Math.min(1,(t-t0)/700),e=E.out(p);c.setAttribute('cx',x+Math.cos(a)*d*e*k);c.setAttribute('cy',y+(Math.sin(a)*d*e+40*p*p)*k);
+    c.setAttribute('r',5*k*(1-p));p<1?requestAnimationFrame(f):c.remove()})(t0)}}
+function quake(a=6){document.getElementById('stage').animate([{transform:'translate(0,0)'},{transform:`translate(${a}px,-${a/2}px)`},{transform:`translate(-${a}px,${a/2}px)`},{transform:'translate(0,0)'}],{duration:220})}
+function pop(it,to=1,ms=520){return tw(ms,t=>{it.s=to*E.back(t);layout()},E.lin)}
+function squash(it,ms=420,amt=.4){return tw(ms,t=>{const w=Math.sin(t*Math.PI)*(1-t);it.sx=1+amt*w;it.sy=1-amt*w;layout()},E.lin)}
+async function showPR(i){const t=prTags[i];await pop(t,1,560);
+  if(t.up){sparks(px(i),py(US[i])+t.off*k,12,'#ff5c5c',70);squash(t,380,.25)}}
+
+// ================= 彩帶 =================
+const fx=document.getElementById('fx'),fctx=fx.getContext('2d');let parts=[],fxRun=false,rainUntil=0;
+const FXC=['#ffb627','#ff5c5c','#ffd36b','#ffffff','#ff8a5c'];
+function fxSize(){fx.width=innerWidth*devicePixelRatio;fx.height=innerHeight*devicePixelRatio}
+addEventListener('resize',fxSize);fxSize();
+function confettiBurst(n=160){const W=innerWidth,H=innerHeight;   // 從左右下角噴出，走拋物線
+  for(let j=0;j<n;j++){const left=j%2===0;
+    parts.push({x:left?W*.06:W*.94,y:H*.96,vx:(left?1:-1)*(5+Math.random()*11),vy:-(15+Math.random()*11),
+      r:Math.random()*Math.PI,vr:(Math.random()-.5)*.35,w:9+Math.random()*10,h:5+Math.random()*6,c:FXC[j%FXC.length],life:0})}
+  fxLoop()}
+function confettiRain(ms=60000){rainUntil=performance.now()+ms;fxLoop()}
+function confettiStop(){parts=[];rainUntil=0;fctx.clearRect(0,0,fx.width,fx.height)}
+function fxLoop(){if(fxRun)return;fxRun=true;(function f(){const W=innerWidth,H=innerHeight,d=devicePixelRatio;
+  if(performance.now()<rainUntil&&parts.length<140&&Math.random()<.5)
+    parts.push({x:Math.random()*W,y:-20,vx:(Math.random()-.5)*1.2,vy:1+Math.random()*1.5,r:Math.random()*Math.PI,vr:(Math.random()-.5)*.15,
+      w:8+Math.random()*8,h:5+Math.random()*5,c:FXC[Math.floor(Math.random()*FXC.length)],life:0,slow:1});
+  fctx.clearRect(0,0,fx.width,fx.height);
+  parts=parts.filter(q=>q.y<H+40&&q.life<900);
+  for(const q of parts){q.life++;q.vy+=q.slow?.012:.38;q.vx*=q.slow?1:.985;if(q.slow)q.vx+=Math.sin((q.life+q.x)/40)*.03;
+    q.x+=q.vx;q.y+=q.vy;q.r+=q.vr;const sq=Math.abs(Math.cos(q.r*2));                // 翻轉時的擠壓
+    fctx.save();fctx.translate(q.x*d,q.y*d);fctx.rotate(q.r);fctx.fillStyle=q.c;fctx.fillRect(-q.w/2*d,-q.h/2*d*sq,q.w*d,q.h*d*sq);fctx.restore()}
+  if(parts.length||performance.now()<rainUntil)requestAnimationFrame(f);else fxRun=false})()}
+
+// ================= 狀態：每一步結束時的樣子 =================
+const pages={title:document.getElementById('title'),chart:document.getElementById('chart'),cards:document.getElementById('cards'),ending:document.getElementById('ending'),finale:document.getElementById('finale')};
+const cards=[...document.querySelectorAll('.card')];
+function setPage(s){pages.title.classList.toggle('on',s===0);pages.chart.classList.toggle('on',s>=1&&s<=S_GLOW);
+  pages.cards.classList.toggle('on',s>=S_CARD&&s<S_END);pages.ending.classList.toggle('on',s===S_END);pages.finale.classList.toggle('on',s===S_FIN);document.getElementById('hint').style.opacity=s===0?1:0}
+function atOf(s){return s>=S_LEAP?LI:s>=2?s-2:-1}
+function setState(s){
+  gFx.replaceChildren();setPage(s);
+  Object.assign(cam,s===S_LEAP?ZOOM:s===S_BR?ZOOM2:FULL);
+  const at=atOf(s);
+  segs.forEach((p,i)=>segP(i,i<at?1:0));colOn(s>=1?Math.max(at,-1):-1);
+  if(at>=0){dot.x=px(at);dot.y=py(US[at]);dot.s=1}else dot.s=0;dot.sx=dot.sy=1;dot.dy=0;
+  labs.forEach((l,i)=>{l.s=i<=at?1:0});prTags.forEach((t,i)=>{t.s=i<=at&&!(s===S_BR&&i===LI)?1:0;t.sx=t.sy=1});  // 放大差距時只留一個焦點
+  const zoomed=s===S_LEAP||s===S_BR;
+  othPaths.forEach((p,i)=>p.setAttribute('opacity',s<1||s>S_GLOW?0:zoomed&&beaten.some(b=>b.i===i)?.22:zoomed?.45:.6));
+  ends.forEach((e,i)=>{e.s=zoomed?1:0;e.c.setAttribute('fill',beaten.some(b=>b.i===i)?'#2e3650':'#56607a')});
+  brs.forEach(b=>{b.g.setAttribute('opacity',s===S_BR?1:0);b.line.setAttribute('y2',py(b.v));b.t2.setAttribute('y1',py(b.v));b.t2.setAttribute('y2',py(b.v));b.lab.s=s===S_BR?1:0});
+  tease.g.setAttribute('opacity',s===S_BR?1:0);tease.lab.s=s===S_BR?1:0;
+  glow.setAttribute('opacity',s===S_GLOW?.35:0);
+  avgLine.setAttribute('opacity',s>=1?.85:0);avgLab.node.setAttribute('opacity',s>=1?1:0);
+  hudVisible(at>=0&&s<=S_GLOW,false);if(at>=0)hudShow(RANK[at],PRM[at],HALF[at]);
+  if(s>=2&&s<S_LEAP)caption(CAPP[at],false);else if(CAPS[s])caption(CAPS[s],false);
+  cards.forEach((c,i)=>{c.style.opacity=s>=S_CARD+i?1:0;const n=c.querySelector('[data-to]');n.textContent=n.dataset.to});
+  document.querySelectorAll('#ending .pre,#ending .rows>span,#ending .post').forEach(e=>e.style.opacity=s===S_END?1:0);
+  document.querySelectorAll('#finale .big span,#finale .s,#finale .next').forEach(e=>e.style.opacity=s===S_FIN?1:0);
+  confettiStop();if(s===S_FIN)confettiRain();
+  if(s===0)document.querySelectorAll('#tt span,#ts').forEach(e=>e.style.opacity=1);
+  layout();
+}
+
+// ================= 每一步的動畫 =================
+document.getElementById('tt').innerHTML=[...'資二乙　國文這一路'].map(c=>`<span class="${'國文'.includes(c)?'hl':''}">${c==='　'?'&nbsp;':c}</span>`).join('');
+async function firstPoint(){                                    // 第一次段考：點從上方落下
+  caption(CAPP[0]);hudShow(RANK[0],PRM[0],HALF[0]);hudVisible(true,true);colOn(0);
+  dot.x=px(0);dot.y=py(US[0]);dot.s=1;
+  await tw(560,t=>{dot.dy=-170*(1-t);dot.sx=.8;dot.sy=1.3;layout()},E.in);dot.sx=dot.sy=1;
+  squash(dot,420,.45);pop(labs[0]);await wait(200);await showPR(0);
+}
+async function walk(i){                                          // 第 i 點 → 第 i+1 點
+  const p=segs[i],len=p._len,dn=10,j=i+1,low=j===3;
+  caption(CAPP[j]);colOn(j);
+  await tw(220,t=>{dot.dy=dn*t;dot.sx=1+.2*t;dot.sy=1-.2*t;layout()},E.out);                 // 預備：往下蹲
+  await tw(low?1500:1200,t=>{segP(i,t);const q=p.getPointAtLength(len*t);dot.x=q.x;dot.y=q.y;
+    dot.dy=dn*(1-t);const st=Math.sin(t*Math.PI)*.22;dot.sx=1-st*.6;dot.sy=1+st;layout()},E.io); // 弧線移動＋伸展
+  dot.sx=dot.sy=1;squash(dot,440,.38);                                                   // 落地擠壓
+  pop(labs[j]);
+  await wait(180);showPR(j);await hudTo(j);
+}
+async function leap(){
+  const i=LI-1,p=segs[i],len=p._len,z0={...cam};
+  caption('高二上，第一次段考……');colOn(LI);
+  ends.forEach((e,j)=>later(500+j*60,()=>pop(e,1,400).catch(()=>{})));
+  othPaths.forEach(o=>o.setAttribute('opacity',.45));
+  await tw(1500,t=>{for(const kk of ['x','y','w','h'])cam[kk]=lerp(z0[kk],ZOOM[kk],t);
+    dot.dy=16*t;dot.sx=1+.35*t;dot.sy=1-.38*t;layout()},E.io);                                    // 鏡頭推近＋蹲低蓄力
+  await wait(420);
+  const passed=new Set();let rank=RANK[LI-1];const a={p:hudV.p,h:hudV.h};
+  await tw(1050,t=>{segP(i,t);const q=p.getPointAtLength(len*t);dot.x=q.x;dot.y=q.y;dot.dy=16*(1-Math.min(1,t*4));
+    const st=Math.sin(Math.min(1,t*1.2)*Math.PI);dot.sx=1-.3*st;dot.sy=1+.5*st;                  // 起跳拉長
+    const v=Math.min(val(q.y),US[LI]);
+    for(const b of beaten){if(!passed.has(b.i)&&v>=b.v){passed.add(b.i);rank--;                    // 超越
+      const e=ends[b.i];e.c.setAttribute('fill','#ffffff');
+      pop(e,1.9,260).then(()=>{e.c.setAttribute('fill','#2e3650');return tw(300,u=>{e.s=1.9-.9*u;layout()},E.out)}).catch(()=>{});
+      othPaths[b.i].setAttribute('opacity',.22);sparks(px(LI),py(b.v),10,'#ffffff',60);quake(5);
+      hudV.r=rank;hR.textContent=rank;bump(hR.parentNode);document.getElementById('stRank').classList.add('hot')}}
+    hudShow(hudV.r,lerp(a.p,PRM[LI],t),lerp(a.h,HALF[LI],t));layout()},E.out4);                    // 快、乾脆
+  hudShow(RANK[LI],PRM[LI],HALF[LI]);bump(hP);later(120,()=>bump(hH.parentNode));
+  await tw(170,t=>{dot.dy=-30*t;dot.sx=.85;dot.sy=1.2;layout()},E.out);                            // 衝過頭
+  sparks(px(LI),py(US[LI]),22,'#ffd36b',120);
+  await tw(700,t=>{dot.dy=-30*(1-E.elastic(t));dot.sx=dot.sy=1;layout()},E.lin);                   // 彈回
+  squash(dot,380,.3);caption(CAPS[S_LEAP]);pop(labs[LI],1,600);await wait(250);await showPR(LI);
+}
+async function brackets(){
+  caption(CAPS[S_BR]);const z0={...cam};tw(300,t=>{prTags[LI].s=1-t;layout()},E.in).catch(()=>{});
+  await tw(1100,t=>{for(const kk of ['x','y','w','h'])cam[kk]=lerp(z0[kk],ZOOM2[kk],t);layout()},E.io);
+  for(const b of brs){b.g.setAttribute('opacity',1);const y0=py(US[LI]),y1=py(b.v);
+    await tw(560,t=>{const y=lerp(y0,y1,E.back(t));b.line.setAttribute('y2',y);b.t2.setAttribute('y1',y);b.t2.setAttribute('y2',y);layout()},E.lin);
+    pop(b.lab,1,480);sparks(px(LI)+b.off*k,y1,8,'#ffd36b',45);await wait(260)}
+  await wait(500);tease.g.setAttribute('opacity',1);await pop(tease.lab,1,500);
+}
+async function enter(s){
+  if(s===0){setState(0);const sp=[...document.querySelectorAll('#tt span')];
+    sp.forEach((e,i)=>e.animate([{transform:'translateY(-70vh) scale(.8,1.4)',opacity:0},{transform:'translateY(0) scale(1.35,.65)',opacity:1,offset:.62},
+      {transform:'translateY(-14px) scale(.94,1.08)',offset:.8},{transform:'none',opacity:1}],{duration:900,delay:i*70,easing:'cubic-bezier(.5,0,.75,0)',fill:'backwards'}));
+    document.getElementById('ts').animate([{opacity:0,transform:'translateY(20px)'},{opacity:1,transform:'none'}],{duration:700,delay:sp.length*70+700,fill:'backwards'});return}
+  if(s===1){setState(0);setPage(1);caption(CAPS[1]);avgLine.setAttribute('opacity',.85);avgLab.node.setAttribute('opacity',1);colOn(-1);
+    await Promise.all(othPaths.map((o,i)=>wait(i*110).then(()=>tw(600,t=>o.setAttribute('opacity',.6*t),E.out))));return}
+  if(s===SP(0)){await firstPoint();return}
+  if(s>SP(0)&&s<S_LEAP){await walk(s-3);return}
+  if(s===S_LEAP){await leap();return}
+  if(s===S_BR){await brackets();return}
+  if(s===S_GLOW){caption(CAPS[S_GLOW]);const z0={...cam};ends.forEach(e=>{e.s=0});brs.forEach(b=>{b.g.setAttribute('opacity',0);b.lab.s=0});
+    tease.g.setAttribute('opacity',0);tease.lab.s=0;
+    await tw(1300,t=>{for(const kk of ['x','y','w','h'])cam[kk]=lerp(z0[kk],FULL[kk],t);layout()},E.io);
+    othPaths.forEach(o=>o.setAttribute('opacity',.6));
+    await tw(700,t=>glow.setAttribute('opacity',.35*t),E.out);
+    for(const i of [4,5,6]){prTags[i].sx=prTags[i].sy=1;await tw(380,t=>{prTags[i].s=1+.35*Math.sin(t*Math.PI);layout()},E.lin)}  // 依序點亮三次上升
+    return}
+  if(s>=S_CARD&&s<S_END){setPage(s);const c=cards[s-S_CARD],n=c.querySelector('[data-to]'),num=c.querySelector('.num');
+    const from=+(n.dataset.from||0),to=+n.dataset.to;n.textContent=from;
+    c.animate([{opacity:0,transform:'translateY(50px) scale(.82,1.12)'},{opacity:1,transform:'translateY(-10px) scale(1.07,.93)',offset:.6},
+      {opacity:1,transform:'translateY(0) scale(.98,1.02)',offset:.8},{opacity:1,transform:'none'}],{duration:700,easing:'ease-out'});c.style.opacity=1;
+    await wait(380);await tw(1100,t=>{n.textContent=Math.round(lerp(from,to,t))},E.out);bump(num);return}
+  if(s===S_END){setPage(S_END);confettiStop();
+    const pre=document.querySelector('#ending .pre'),cells=[...document.querySelectorAll('#ending .rows>span')];const ls=[0,4,8].map(i=>cells.slice(i,i+4));
+    pre.style.opacity=1;pre.animate([{opacity:0,transform:'translateY(16px)'},{opacity:1,transform:'none'}],{duration:700});await wait(1300);
+    for(const [kk,f,a,t] of ls){kk.style.opacity=1;kk.animate([{opacity:0},{opacity:1}],{duration:300});
+      f.style.opacity=1;f.animate([{opacity:0,transform:'translateX(-30px)'},{opacity:1,transform:'none'}],{duration:450,easing:'ease-out'});await wait(450);
+      a.style.opacity=1;a.animate([{opacity:0,transform:'translateX(-20px)'},{opacity:1,transform:'none'}],{duration:300});await wait(380);
+      t.style.opacity=1;t.animate([{opacity:0,transform:'translateY(-90px) scale(.7,1.5)'},{opacity:1,transform:'translateY(0) scale(1.45,.6)',offset:.55},
+        {transform:'translateY(-10px) scale(.92,1.1)',offset:.75},{opacity:1,transform:'none'}],{duration:650,easing:'cubic-bezier(.5,0,.75,0)'});
+      await wait(820)}
+    const post=document.querySelector('#ending .post');post.style.opacity=1;
+    post.animate([{opacity:0,transform:'scale(.8,1.15)'},{opacity:1,transform:'scale(1.06,.95)',offset:.65},{opacity:1,transform:'none'}],{duration:650,easing:'ease-out'});
+    await wait(300);confettiBurst(180);return}
+  if(s===S_FIN){setPage(S_FIN);confettiStop();
+    const sp=[...document.querySelectorAll('#finale .big span')],sub=document.querySelector('#finale .s'),nx=document.querySelector('#finale .next');
+    for(const e of sp){e.style.opacity=1;e.animate([{opacity:0,transform:'translateY(-60px) scale(.85,1.3)'},{opacity:1,transform:'translateY(0) scale(1.18,.82)',offset:.6},
+      {transform:'translateY(-6px) scale(.97,1.03)',offset:.8},{opacity:1,transform:'none'}],{duration:800,easing:'ease-out'});await wait(900)}
+    confettiBurst(220);confettiRain();await wait(700);
+    sub.style.opacity=1;sub.animate([{opacity:0,transform:'translateY(20px)'},{opacity:1,transform:'none'}],{duration:700});await wait(1100);
+    nx.style.opacity=1;nx.animate([{opacity:0,transform:'scale(.8,1.15)'},{opacity:1,transform:'scale(1.06,.95)',offset:.65},{opacity:1,transform:'none'}],{duration:650,easing:'ease-out'});
+    return}
+}
+
+// ================= 操作 =================
+let step=0,busy=false;
+async function run(s){const tk=++TOKEN;busy=true;try{await enter(s)}catch(e){if(!(e instanceof Cancel))console.error(e)}finally{if(tk===TOKEN)busy=false}}
+let lastKey=0;
+function next(){const now=performance.now();if(now-lastKey<250)return;lastKey=now;
+  if(busy){TOKEN++;busy=false;setState(step);return}   // 動畫中按下：先直接到這一步的結尾
+  if(step>=LAST)return;step++;if(step>=2)setState(step-1);run(step)}
+function prev(){const now=performance.now();if(now-lastKey<250)return;lastKey=now;TOKEN++;busy=false;if(step>0)step--;setState(step)}
+document.addEventListener('keydown',e=>{if(e.repeat)return;
+  if(['ArrowRight',' ','PageDown','Enter','ArrowDown'].includes(e.key)){e.preventDefault();next()}
+  else if(['ArrowLeft','PageUp','Backspace','ArrowUp'].includes(e.key)){e.preventDefault();prev()}
+  else if(e.key==='f'||e.key==='F'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}
+  else if(e.key==='Home'){TOKEN++;busy=false;step=0;setState(0)}});
+document.addEventListener('click',e=>e.clientX<innerWidth/4?prev():next());
+setState(0);run(0);
+</script>
+</body>
+</html>
