@@ -20,7 +20,8 @@
   11 立體感：點有陰影與高光
   12 吸引力：暖色主角、圓潤造型、深色舞台；「從…到…」前小後大、前灰後亮
   資料：只有全班層級的數字（現在班上 14 位同學計算），其他班不標班名。
-  操作：→／空白鍵／簡報筆 下一步，← 上一步，F 全螢幕，Home 回到開頭。動畫進行中按下一步＝直接跳到這一步的結尾。
+  音效：卡通式配樂，Web Audio 即時合成，每個動作對到一個聲音（對照表見〈音效〉段開頭）。
+  操作：→／空白鍵／簡報筆 下一步，← 上一步，F 全螢幕，M 音效開關，Home 回到開頭。動畫進行中按下一步＝直接跳到這一步的結尾。
 -->
 <style>
 :root{--bg:#0e1628;--ink:#f4f1ea;--dim:#8b93a7;--mute:#5d6680;--us:#ffb627;--good:#ff5c5c}
@@ -91,6 +92,8 @@ svg{width:100%;height:100%;overflow:visible;display:block}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:5}
 .foot{position:fixed;right:2vw;bottom:1.4vh;font-size:15px;color:#4d5873}
 .hint{position:fixed;left:2vw;bottom:1.4vh;font-size:15px;color:#4d5873}
+#toast{position:fixed;top:3vh;left:50%;transform:translateX(-50%);background:#16213a;border:2px solid #2b3858;border-radius:14px;
+  padding:.6em 1.2em;font-size:22px;color:var(--ink);opacity:0;transition:opacity .3s;pointer-events:none;z-index:9}
 </style>
 </head>
 <body>
@@ -138,7 +141,8 @@ svg{width:100%;height:100%;overflow:visible;display:block}
 </section>
 <canvas id="fx"></canvas>
 
-<div class="hint" id="hint">→／空白鍵 下一步　← 上一步　F 全螢幕</div>
+<div class="hint" id="hint">先按 F 全螢幕（同時開啟音效）　→／空白鍵 下一步　← 上一步　M 音效開關</div>
+<div id="toast"></div>
 <div class="foot">以現在班上 14 位同學計算・灰線為其他班（不標班名）</div>
 
 <script>
@@ -189,6 +193,63 @@ function tw(ms,fn,ease=E.io){const tk=TOKEN;return new Promise((res,rej)=>{const
 function wait(ms){const tk=TOKEN;return new Promise((res,rej)=>setTimeout(()=>tk===TOKEN?res():rej(new Cancel()),ms))}
 function later(ms,fn){const tk=TOKEN;setTimeout(()=>{if(tk===TOKEN)fn()},ms)}
 const lerp=(a,b,t)=>a+(b-a)*t;
+
+// ================= 音效：卡通配樂式，Web Audio 即時合成（不載入音檔）=================
+// 對應動作：預備＝吱一聲下蹲、移動＝滑音哨、落地＝咚＋彈簧 boing、超越＝木琴＋重擊、
+// 蓄力＝定音鼓滾奏、起跳＝上滑哨、高潮＝銅管 fanfare＋鈸、彩帶＝拉炮。下降段只用中性滑音，不做「哀號」音（不強調高一落後）。
+// 瀏覽器規定要先有一次按鍵／點擊才能出聲：在標題頁先按 F 全螢幕，標題動畫會帶音效重播一次。M＝音效開關。
+const SFX=(()=>{let ctx=null,master=null,bus=null,nb=null,muted=false;
+  function init(){if(ctx)return false;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return false;ctx=new AC();
+    const comp=ctx.createDynamicsCompressor();comp.threshold.value=-12;comp.ratio.value=5;comp.connect(ctx.destination);
+    master=ctx.createGain();master.gain.value=1;master.connect(comp);
+    nb=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate);const d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+    cut();return true}
+  function unlock(){const first=init();if(ctx&&ctx.state!=='running')ctx.resume();return first}
+  function cut(){if(!ctx)return;if(bus){const b=bus;b.gain.setTargetAtTime(0,ctx.currentTime,.02);setTimeout(()=>b.disconnect(),400)}   // 跳步／倒退時切掉殘響
+    bus=ctx.createGain();bus.connect(master)}
+  const ok=()=>ctx&&!muted;
+  function env(g,t,vol,att,dur){g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+att);g.gain.exponentialRampToValueAtTime(.0001,t+dur)}
+  function tone(f,dur,{type='sine',vol=.3,to=null,at=0,att=.006,lp=null,vib=0,vd=.03,wob=0}={}){if(!ok())return;
+    const t=ctx.currentTime+at,o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.setValueAtTime(f,t);
+    if(to)o.frequency.exponentialRampToValueAtTime(to,t+dur);
+    if(vib||wob){const l=ctx.createOscillator(),lg=ctx.createGain();l.frequency.value=vib||wob;lg.gain.setValueAtTime(f*(wob?.28:vd),t);
+      if(wob)lg.gain.exponentialRampToValueAtTime(.01,t+dur);l.connect(lg);lg.connect(o.frequency);l.start(t);l.stop(t+dur+.05)}
+    env(g,t,vol,Math.min(att,dur*.9),dur);let n=o;
+    if(lp){const fl=ctx.createBiquadFilter();fl.type='lowpass';fl.frequency.value=lp;o.connect(fl);n=fl}
+    n.connect(g);g.connect(bus);o.start(t);o.stop(t+dur+.05)}
+  function noise(dur,{vol=.3,type='bandpass',f=1000,to=null,q=1,at=0,att=.004}={}){if(!ok())return;
+    const t=ctx.currentTime+at,s=ctx.createBufferSource(),fl=ctx.createBiquadFilter(),g=ctx.createGain();s.buffer=nb;s.loop=true;
+    fl.type=type;fl.Q.value=q;fl.frequency.setValueAtTime(f,t);if(to)fl.frequency.exponentialRampToValueAtTime(to,t+dur);
+    env(g,t,vol,Math.min(att,dur*.9),dur);s.connect(fl);fl.connect(g);g.connect(bus);s.start(t,Math.random());s.stop(t+dur+.05)}
+  const P=[0,2,4,7,9,12,14,16,19,21,24,26,28],N=n=>523.25*Math.pow(2,n/12),pv=v=>N(0)*Math.pow(2,v/14);
+  const S={
+    thud(v=.7,at=0){tone(190,.3,{vol:v,to:42,at});noise(.07,{vol:v*.6,type:'lowpass',f:1200,at})},
+    boing(f=330,v=.32,at=0){tone(f,.55,{vol:v,wob:16,type:'sine',at,to:f*1.15})},                        // 彈簧
+    squeak(){tone(1100,.14,{vol:.2,to:620,type:'sine'})},                                                   // 預備下蹲
+    pop(f=600,at=0){tone(f,.1,{vol:.4,to:f*2.4,at})},
+    tick(f=1200,v=.16){tone(f,.045,{type:'square',vol:v,lp:4500})},
+    xylo(f,v=.38,at=0){tone(f,.5,{type:'triangle',vol:v,at});tone(f*4,.12,{vol:v*.25,at})},
+    coin(at=0){tone(988,.1,{type:'square',vol:.17,lp:6000,at});tone(1319,.55,{type:'square',vol:.17,at:at+.09,lp:6000})},
+    whistle(f0,f1,dur,at=0){tone(f0,dur,{vol:.3,to:f1,att:.04,vib:7,vd:.025,at})},                         // 滑音哨
+    whoosh(dur=.5,up=true,v=.35){noise(dur,{vol:v,f:up?350:2600,to:up?3200:320,q:1.3,att:dur*.5})},
+    sparkle(n=6,at=0){for(let j=0;j<n;j++)tone(N(P[6+Math.floor(Math.random()*6)]),.25,{vol:.14,at:at+j*.045})},
+    cymbal(v=.35,at=0){noise(1.6,{vol:v,type:'highpass',f:5500,at});noise(.25,{vol:v*.7,type:'bandpass',f:3200,q:.6,at})},
+    roll(dur){const n=Math.floor(dur/.05);for(let j=0;j<n;j++){const x=j/n;
+        tone(95+x*25,.09,{vol:.12+.5*x*x,to:70,at:j*dur/n});noise(.05,{vol:.05+.25*x*x,type:'lowpass',f:500+x*600,at:j*dur/n})}},
+    jump(dur){S.whistle(380,1900,dur);S.whoosh(dur,true,.3)},
+    pass(n){S.thud(.75);S.xylo(N(P[4+n*2]),.45);S.sparkle(3,.05)},
+    zip(dur){noise(dur,{vol:.32,f:4200,to:700,q:3});tone(1500,dur,{vol:.12,to:420,type:'sawtooth',lp:2500})},
+    tease(){for(let j=0;j<8;j++)S.xylo(N(j%2?9:7),.22,j*.08)},
+    swell(){[0,4,7,12].forEach(n=>tone(N(n-12),1.6,{vol:.14,att:.7,type:'triangle'}))},
+    fanfare(big=false){const seq=[0,4,7];seq.forEach((n,j)=>tone(N(n),.2,{type:'sawtooth',vol:.17,lp:2400,at:j*.11}));
+      const t=seq.length*.11;[0,4,7,12].concat(big?[-12,16]:[]).forEach(n=>tone(N(n),big?1.8:1.1,{type:'sawtooth',vol:.12,lp:2800,at:t,vib:5.5,vd:.008}));
+      S.cymbal(big?.4:.28,t)},
+    popper(){noise(.14,{vol:.7,type:'highpass',f:1800});S.thud(.5);for(let j=0;j<14;j++)noise(.03,{vol:.2,type:'highpass',f:4000,at:.08+Math.random()*.6})},
+    slam(n=0,at=0){S.thud(.8,at);[0,4,7].forEach(k=>tone(N(k+P[n]),.45,{type:'sawtooth',vol:.11,lp:2600,at}))},
+    chime(at=0){[0,4,7,12].forEach((n,j)=>tone(N(n+12),1,{vol:.16,at:at+j*.08}))},
+    ding(f=1047){tone(f,1.1,{vol:.3});tone(f*2.76,.45,{vol:.07})},
+  };
+  return Object.assign(S,{unlock,cut,N,P,pv,toggle(){muted=!muted;if(muted)cut();return !muted}})})();
 
 // ================= 舞台 =================
 const gGrid=el('g',{}),gOth=el('g',{}),gAvg=el('g',{}),gGlow=el('g',{}),gUs=el('g',{}),gEnd=el('g',{}),gBr=el('g',{}),gFx=el('g',{}),gLab=el('g',{}),gDot=el('g',{});
@@ -268,7 +329,7 @@ function shake(n){n.animate([{transform:'translateX(0)'},{transform:'translateX(
 function hudShow(r,p,h){hudV.r=r;hudV.p=p;hudV.h=h;hR.textContent=r;hP.textContent=Math.round(p);hH.textContent=Math.round(h);
   document.getElementById('stRank').classList.toggle('hot',r<8);document.getElementById('stPr').classList.toggle('hot',p>=50);document.getElementById('stHalf').classList.toggle('hot',h>=7)}
 function hudTo(i,ms=700){const a={...hudV},b={r:RANK[i],p:PRM[i],h:HALF[i]};
-  if(b.r!==a.r)bump(hR.parentNode);
+  if(b.r!==a.r){bump(hR.parentNode);SFX.tick(1400)}
   if(b.p!==Math.round(a.p))later(120,()=>bump(hP));if(b.h!==Math.round(a.h))later(240,()=>bump(hH.parentNode));
   return tw(ms,t=>hudShow(b.r,lerp(a.p,b.p,t),lerp(a.h,b.h,t)),E.out)}
 function hudVisible(on,anim){hud.style.opacity=on?1:0;if(on&&anim)hud.animate([{opacity:0,transform:'translateX(60px) scaleX(.9)'},
@@ -284,8 +345,8 @@ function sparks(x,y,n=14,color='#ffd36b',dist=90){for(let j=0;j<n;j++){const c=e
 function quake(a=6){document.getElementById('stage').animate([{transform:'translate(0,0)'},{transform:`translate(${a}px,-${a/2}px)`},{transform:`translate(-${a}px,${a/2}px)`},{transform:'translate(0,0)'}],{duration:220})}
 function pop(it,to=1,ms=520){return tw(ms,t=>{it.s=to*E.back(t);layout()},E.lin)}
 function squash(it,ms=420,amt=.4){return tw(ms,t=>{const w=Math.sin(t*Math.PI)*(1-t);it.sx=1+amt*w;it.sy=1-amt*w;layout()},E.lin)}
-async function showPR(i){const t=prTags[i];await pop(t,1,560);
-  if(t.up){sparks(px(i),py(US[i])+t.off*k,12,'#ff5c5c',70);squash(t,380,.25)}}
+async function showPR(i){const t=prTags[i];SFX.pop(t.up?720:520);await pop(t,1,560);
+  if(t.up){SFX.coin();SFX.sparkle(4,.1);sparks(px(i),py(US[i])+t.off*k,12,'#ff5c5c',70);squash(t,380,.25)}}
 
 // ================= 彩帶 =================
 const fx=document.getElementById('fx'),fctx=fx.getContext('2d');let parts=[],fxRun=false,rainUntil=0;
@@ -317,7 +378,7 @@ function setPage(s){pages.title.classList.toggle('on',s===0);pages.chart.classLi
   pages.cards.classList.toggle('on',s>=S_CARD&&s<S_END);pages.ending.classList.toggle('on',s===S_END);pages.finale.classList.toggle('on',s===S_FIN);document.getElementById('hint').style.opacity=s===0?1:0}
 function atOf(s){return s>=S_LEAP?LI:s>=2?s-2:-1}
 function setState(s){
-  gFx.replaceChildren();setPage(s);
+  SFX.cut();gFx.replaceChildren();setPage(s);
   Object.assign(cam,s===S_LEAP?ZOOM:s===S_BR?ZOOM2:FULL);
   const at=atOf(s);
   segs.forEach((p,i)=>segP(i,i<at?1:0));colOn(s>=1?Math.max(at,-1):-1);
@@ -344,94 +405,102 @@ function setState(s){
 document.getElementById('tt').innerHTML=[...'資二乙　國文這一路'].map(c=>`<span class="${'國文'.includes(c)?'hl':''}">${c==='　'?'&nbsp;':c}</span>`).join('');
 async function firstPoint(){                                    // 第一次段考：點從上方落下
   caption(CAPP[0]);hudShow(RANK[0],PRM[0],HALF[0]);hudVisible(true,true);colOn(0);
-  dot.x=px(0);dot.y=py(US[0]);dot.s=1;
+  dot.x=px(0);dot.y=py(US[0]);dot.s=1;SFX.whistle(1700,SFX.pv(US[0]),.56);              // 落下哨音
   await tw(560,t=>{dot.dy=-170*(1-t);dot.sx=.8;dot.sy=1.3;layout()},E.in);dot.sx=dot.sy=1;
-  squash(dot,420,.45);pop(labs[0]);await wait(200);await showPR(0);
+  SFX.thud(.8);SFX.boing(260);squash(dot,420,.45);pop(labs[0]);await wait(200);await showPR(0);
 }
 async function walk(i){                                          // 第 i 點 → 第 i+1 點
   const p=segs[i],len=p._len,dn=10,j=i+1,low=j===3;
-  caption(CAPP[j]);colOn(j);
+  caption(CAPP[j]);colOn(j);SFX.squeak();
   await tw(220,t=>{dot.dy=dn*t;dot.sx=1+.2*t;dot.sy=1-.2*t;layout()},E.out);                 // 預備：往下蹲
-  await tw(low?1500:1200,t=>{segP(i,t);const q=p.getPointAtLength(len*t);dot.x=q.x;dot.y=q.y;
+  const up=US[j]>US[i],ms=low?1500:1200;SFX.whistle(SFX.pv(US[i]),SFX.pv(US[j]),ms/1000);SFX.whoosh(ms/1000,up,.16);
+  await tw(ms,t=>{segP(i,t);const q=p.getPointAtLength(len*t);dot.x=q.x;dot.y=q.y;
     dot.dy=dn*(1-t);const st=Math.sin(t*Math.PI)*.22;dot.sx=1-st*.6;dot.sy=1+st;layout()},E.io); // 弧線移動＋伸展
-  dot.sx=dot.sy=1;squash(dot,440,.38);                                                   // 落地擠壓
+  dot.sx=dot.sy=1;squash(dot,440,.38);SFX.thud(.7);SFX.boing(up?340:240,.26);            // 落地擠壓
   pop(labs[j]);
   await wait(180);showPR(j);await hudTo(j);
 }
 async function leap(){
   const i=LI-1,p=segs[i],len=p._len,z0={...cam};
-  caption('高二上，第一次段考……');colOn(LI);
-  ends.forEach((e,j)=>later(500+j*60,()=>pop(e,1,400).catch(()=>{})));
+  caption('高二上，第一次段考……');colOn(LI);SFX.roll(1.92);                                       // 蓄力：定音鼓滾奏
+  ends.forEach((e,j)=>later(500+j*60,()=>{SFX.tick(700+j*60,.1);pop(e,1,400).catch(()=>{})}));
   othPaths.forEach(o=>o.setAttribute('opacity',.45));
   await tw(1500,t=>{for(const kk of ['x','y','w','h'])cam[kk]=lerp(z0[kk],ZOOM[kk],t);
     dot.dy=16*t;dot.sx=1+.35*t;dot.sy=1-.38*t;layout()},E.io);                                    // 鏡頭推近＋蹲低蓄力
   await wait(420);
-  const passed=new Set();let rank=RANK[LI-1];const a={p:hudV.p,h:hudV.h};
+  const passed=new Set();let rank=RANK[LI-1];const a={p:hudV.p,h:hudV.h};SFX.jump(1.05);
   await tw(1050,t=>{segP(i,t);const q=p.getPointAtLength(len*t);dot.x=q.x;dot.y=q.y;dot.dy=16*(1-Math.min(1,t*4));
     const st=Math.sin(Math.min(1,t*1.2)*Math.PI);dot.sx=1-.3*st;dot.sy=1+.5*st;                  // 起跳拉長
     const v=Math.min(val(q.y),US[LI]);
     for(const b of beaten){if(!passed.has(b.i)&&v>=b.v){passed.add(b.i);rank--;                    // 超越
       const e=ends[b.i];e.c.setAttribute('fill','#ffffff');
       pop(e,1.9,260).then(()=>{e.c.setAttribute('fill','#2e3650');return tw(300,u=>{e.s=1.9-.9*u;layout()},E.out)}).catch(()=>{});
-      othPaths[b.i].setAttribute('opacity',.22);sparks(px(LI),py(b.v),10,'#ffffff',60);quake(5);
+      othPaths[b.i].setAttribute('opacity',.22);SFX.pass(passed.size);sparks(px(LI),py(b.v),10,'#ffffff',60);quake(5);
       hudV.r=rank;hR.textContent=rank;bump(hR.parentNode);document.getElementById('stRank').classList.add('hot')}}
     hudShow(hudV.r,lerp(a.p,PRM[LI],t),lerp(a.h,HALF[LI],t));layout()},E.out4);                    // 快、乾脆
   hudShow(RANK[LI],PRM[LI],HALF[LI]);bump(hP);later(120,()=>bump(hH.parentNode));
   await tw(170,t=>{dot.dy=-30*t;dot.sx=.85;dot.sy=1.2;layout()},E.out);                            // 衝過頭
-  sparks(px(LI),py(US[LI]),22,'#ffd36b',120);
+  sparks(px(LI),py(US[LI]),22,'#ffd36b',120);SFX.fanfare();SFX.boing(420,.3);
   await tw(700,t=>{dot.dy=-30*(1-E.elastic(t));dot.sx=dot.sy=1;layout()},E.lin);                   // 彈回
   squash(dot,380,.3);caption(CAPS[S_LEAP]);pop(labs[LI],1,600);await wait(250);await showPR(LI);
 }
 async function brackets(){
   caption(CAPS[S_BR]);const z0={...cam};tw(300,t=>{prTags[LI].s=1-t;layout()},E.in).catch(()=>{});
+  SFX.whoosh(1.1,true,.25);
   await tw(1100,t=>{for(const kk of ['x','y','w','h'])cam[kk]=lerp(z0[kk],ZOOM2[kk],t);layout()},E.io);
-  for(const b of brs){b.g.setAttribute('opacity',1);const y0=py(US[LI]),y1=py(b.v);
+  let bi=0;for(const b of brs){b.g.setAttribute('opacity',1);const y0=py(US[LI]),y1=py(b.v);SFX.zip(.5);later(470,()=>SFX.xylo(SFX.N(SFX.P[5+bi++])));
     await tw(560,t=>{const y=lerp(y0,y1,E.back(t));b.line.setAttribute('y2',y);b.t2.setAttribute('y1',y);b.t2.setAttribute('y2',y);layout()},E.lin);
     pop(b.lab,1,480);sparks(px(LI)+b.off*k,y1,8,'#ffd36b',45);await wait(260)}
-  await wait(500);tease.g.setAttribute('opacity',1);await pop(tease.lab,1,500);
+  await wait(500);tease.g.setAttribute('opacity',1);SFX.tease();await pop(tease.lab,1,500);
 }
 async function enter(s){
   if(s===0){setState(0);const sp=[...document.querySelectorAll('#tt span')];
     sp.forEach((e,i)=>e.animate([{transform:'translateY(-70vh) scale(.8,1.4)',opacity:0},{transform:'translateY(0) scale(1.35,.65)',opacity:1,offset:.62},
       {transform:'translateY(-14px) scale(.94,1.08)',offset:.8},{transform:'none',opacity:1}],{duration:900,delay:i*70,easing:'cubic-bezier(.5,0,.75,0)',fill:'backwards'}));
+    sp.forEach((e,i)=>{if(e.textContent.trim())later(i*70+558,()=>{SFX.thud(.35);SFX.xylo(SFX.N(SFX.P[i]),.3)})});  // 每個字落地：咚＋木琴往上爬
+    later(sp.length*70+700,()=>SFX.chime());
     document.getElementById('ts').animate([{opacity:0,transform:'translateY(20px)'},{opacity:1,transform:'none'}],{duration:700,delay:sp.length*70+700,fill:'backwards'});return}
-  if(s===1){setState(0);setPage(1);caption(CAPS[1]);avgLine.setAttribute('opacity',.85);avgLab.node.setAttribute('opacity',1);colOn(-1);
-    await Promise.all(othPaths.map((o,i)=>wait(i*110).then(()=>tw(600,t=>o.setAttribute('opacity',.6*t),E.out))));return}
+  if(s===1){setState(0);setPage(1);caption(CAPS[1]);avgLine.setAttribute('opacity',.85);avgLab.node.setAttribute('opacity',1);colOn(-1);SFX.whoosh(.7,false,.22);
+    await Promise.all(othPaths.map((o,i)=>wait(i*110).then(()=>{SFX.xylo(SFX.N(SFX.P[i])/2,.22);return tw(600,t=>o.setAttribute('opacity',.6*t),E.out)})));return}
   if(s===SP(0)){await firstPoint();return}
   if(s>SP(0)&&s<S_LEAP){await walk(s-3);return}
   if(s===S_LEAP){await leap();return}
   if(s===S_BR){await brackets();return}
   if(s===S_GLOW){caption(CAPS[S_GLOW]);const z0={...cam};ends.forEach(e=>{e.s=0});brs.forEach(b=>{b.g.setAttribute('opacity',0);b.lab.s=0});
     tease.g.setAttribute('opacity',0);tease.lab.s=0;
+    SFX.whoosh(1.3,false,.25);
     await tw(1300,t=>{for(const kk of ['x','y','w','h'])cam[kk]=lerp(z0[kk],FULL[kk],t);layout()},E.io);
-    othPaths.forEach(o=>o.setAttribute('opacity',.6));
+    othPaths.forEach(o=>o.setAttribute('opacity',.6));SFX.swell();
     await tw(700,t=>glow.setAttribute('opacity',.35*t),E.out);
-    for(const i of [4,5,6]){prTags[i].sx=prTags[i].sy=1;await tw(380,t=>{prTags[i].s=1+.35*Math.sin(t*Math.PI);layout()},E.lin)}  // 依序點亮三次上升
+    for(const i of [4,5,6]){prTags[i].sx=prTags[i].sy=1;SFX.xylo(SFX.N(SFX.P[i+1]),.4);if(i===6)SFX.coin(.15);await tw(380,t=>{prTags[i].s=1+.35*Math.sin(t*Math.PI);layout()},E.lin)}  // 依序點亮三次上升
     return}
   if(s>=S_CARD&&s<S_END){setPage(s);const c=cards[s-S_CARD],n=c.querySelector('[data-to]'),num=c.querySelector('.num');
     const from=+(n.dataset.from||0),to=+n.dataset.to;n.textContent=from;
     c.animate([{opacity:0,transform:'translateY(50px) scale(.82,1.12)'},{opacity:1,transform:'translateY(-10px) scale(1.07,.93)',offset:.6},
       {opacity:1,transform:'translateY(0) scale(.98,1.02)',offset:.8},{opacity:1,transform:'none'}],{duration:700,easing:'ease-out'});c.style.opacity=1;
-    await wait(380);await tw(1100,t=>{n.textContent=Math.round(lerp(from,to,t))},E.out);bump(num);return}
+    SFX.whoosh(.42,true,.3);later(420,()=>{SFX.thud(.55);SFX.boing(300,.22)});
+    await wait(380);let shown=from;await tw(1100,t=>{const v=Math.round(lerp(from,to,t));if(v!==shown){shown=v;SFX.tick(700+v*70,.14)}n.textContent=v},E.out);  // 數字跳一下響一下
+    bump(num);SFX.ding(SFX.N(12+(s-S_CARD)*4));SFX.sparkle(5,.05);return}
   if(s===S_END){setPage(S_END);confettiStop();
     const pre=document.querySelector('#ending .pre'),cells=[...document.querySelectorAll('#ending .rows>span')];const ls=[0,4,8].map(i=>cells.slice(i,i+4));
-    pre.style.opacity=1;pre.animate([{opacity:0,transform:'translateY(16px)'},{opacity:1,transform:'none'}],{duration:700});await wait(1300);
-    for(const [kk,f,a,t] of ls){kk.style.opacity=1;kk.animate([{opacity:0},{opacity:1}],{duration:300});
-      f.style.opacity=1;f.animate([{opacity:0,transform:'translateX(-30px)'},{opacity:1,transform:'none'}],{duration:450,easing:'ease-out'});await wait(450);
+    pre.style.opacity=1;SFX.chime();pre.animate([{opacity:0,transform:'translateY(16px)'},{opacity:1,transform:'none'}],{duration:700});await wait(1300);
+    let row=0;for(const [kk,f,a,t] of ls){kk.style.opacity=1;SFX.tick(600);kk.animate([{opacity:0},{opacity:1}],{duration:300});
+      f.style.opacity=1;SFX.whoosh(.35,true,.18);f.animate([{opacity:0,transform:'translateX(-30px)'},{opacity:1,transform:'none'}],{duration:450,easing:'ease-out'});await wait(450);
       a.style.opacity=1;a.animate([{opacity:0,transform:'translateX(-20px)'},{opacity:1,transform:'none'}],{duration:300});await wait(380);
+      SFX.whistle(1500,700,.36);const r=row++;later(360,()=>SFX.slam(r*2));                                 // 從天而降、重重落地
       t.style.opacity=1;t.animate([{opacity:0,transform:'translateY(-90px) scale(.7,1.5)'},{opacity:1,transform:'translateY(0) scale(1.45,.6)',offset:.55},
         {transform:'translateY(-10px) scale(.92,1.1)',offset:.75},{opacity:1,transform:'none'}],{duration:650,easing:'cubic-bezier(.5,0,.75,0)'});
       await wait(820)}
     const post=document.querySelector('#ending .post');post.style.opacity=1;
     post.animate([{opacity:0,transform:'scale(.8,1.15)'},{opacity:1,transform:'scale(1.06,.95)',offset:.65},{opacity:1,transform:'none'}],{duration:650,easing:'ease-out'});
-    await wait(300);confettiBurst(180);return}
+    SFX.fanfare();await wait(300);SFX.popper();confettiBurst(180);return}
   if(s===S_FIN){setPage(S_FIN);confettiStop();
     const sp=[...document.querySelectorAll('#finale .big span')],sub=document.querySelector('#finale .s'),nx=document.querySelector('#finale .next');
-    for(const e of sp){e.style.opacity=1;e.animate([{opacity:0,transform:'translateY(-60px) scale(.85,1.3)'},{opacity:1,transform:'translateY(0) scale(1.18,.82)',offset:.6},
+    let si=0;for(const e of sp){e.style.opacity=1;const r=si++;later(480,()=>SFX.slam(r*3));e.animate([{opacity:0,transform:'translateY(-60px) scale(.85,1.3)'},{opacity:1,transform:'translateY(0) scale(1.18,.82)',offset:.6},
       {transform:'translateY(-6px) scale(.97,1.03)',offset:.8},{opacity:1,transform:'none'}],{duration:800,easing:'ease-out'});await wait(900)}
-    confettiBurst(220);confettiRain();await wait(700);
-    sub.style.opacity=1;sub.animate([{opacity:0,transform:'translateY(20px)'},{opacity:1,transform:'none'}],{duration:700});await wait(1100);
-    nx.style.opacity=1;nx.animate([{opacity:0,transform:'scale(.8,1.15)'},{opacity:1,transform:'scale(1.06,.95)',offset:.65},{opacity:1,transform:'none'}],{duration:650,easing:'ease-out'});
+    SFX.popper();SFX.fanfare(true);confettiBurst(220);confettiRain();await wait(700);
+    sub.style.opacity=1;later(500,()=>SFX.chime());sub.animate([{opacity:0,transform:'translateY(20px)'},{opacity:1,transform:'none'}],{duration:700});await wait(1100);
+    nx.style.opacity=1;SFX.boing(330,.25);SFX.ding(1319);nx.animate([{opacity:0,transform:'scale(.8,1.15)'},{opacity:1,transform:'scale(1.06,.95)',offset:.65},{opacity:1,transform:'none'}],{duration:650,easing:'ease-out'});
     return}
 }
 
@@ -443,12 +512,17 @@ function next(){const now=performance.now();if(now-lastKey<250)return;lastKey=no
   if(busy){TOKEN++;busy=false;setState(step);return}   // 動畫中按下：先直接到這一步的結尾
   if(step>=LAST)return;step++;if(step>=2)setState(step-1);run(step)}
 function prev(){const now=performance.now();if(now-lastKey<250)return;lastKey=now;TOKEN++;busy=false;if(step>0)step--;setState(step)}
+const toast=document.getElementById('toast');let toastT=0;
+function say(t){toast.textContent=t;toast.style.opacity=1;clearTimeout(toastT);toastT=setTimeout(()=>toast.style.opacity=0,1400)}
 document.addEventListener('keydown',e=>{if(e.repeat)return;
+  const first=SFX.unlock();
+  if(e.key==='m'||e.key==='M'){say(SFX.toggle()?'🔊 音效開':'🔇 音效關');return}
+  if(first&&step===0&&!['ArrowRight',' ','PageDown','Enter','ArrowDown'].includes(e.key))run(0);   // 第一次按鍵（例如 F）：標題帶音效重播
   if(['ArrowRight',' ','PageDown','Enter','ArrowDown'].includes(e.key)){e.preventDefault();next()}
   else if(['ArrowLeft','PageUp','Backspace','ArrowUp'].includes(e.key)){e.preventDefault();prev()}
   else if(e.key==='f'||e.key==='F'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}
   else if(e.key==='Home'){TOKEN++;busy=false;step=0;setState(0)}});
-document.addEventListener('click',e=>e.clientX<innerWidth/4?prev():next());
+document.addEventListener('click',e=>{SFX.unlock();e.clientX<innerWidth/4?prev():next()});
 setState(0);run(0);
 </script>
 </body>
