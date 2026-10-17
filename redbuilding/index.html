@@ -369,6 +369,17 @@ body.quake .screen.on,body.quake .ov.on .box{animation:quake .7s}
 .scoretbl tr.day td{background:rgba(235,189,96,.1);color:var(--gold);font-weight:800}
 .scorewrap{max-height:60vh;overflow:auto;border:1px solid var(--line)}
 @media (max-width:640px){.scoreform{grid-template-columns:1fr 1fr}.scoreform .btn{grid-column:1/-1}}
+#unlock .box{max-width:640px;display:grid;grid-template-columns:200px 1fr;gap:18px;align-items:end;border-color:var(--gold);box-shadow:0 0 50px rgba(235,189,96,.55);position:relative}
+#unlock .ufig{position:relative}
+#unlock .ufig::before{content:"";position:absolute;inset:5% -25% 0;background:radial-gradient(circle,rgba(255,200,90,.6),transparent 65%);animation:glow 1.6s ease-in-out infinite alternate}
+#unlock .ufig img{position:relative;width:120%;margin-left:-10%;-webkit-mask-image:linear-gradient(to bottom,#000 80%,transparent);mask-image:linear-gradient(to bottom,#000 80%,transparent);animation:slidein .5s}
+#unlock .ukick{font-weight:900;letter-spacing:6px;color:var(--red);font-size:15px}
+#unlock h3{font:900 clamp(28px,4vw,40px)/1.2 var(--serif);margin:6px 0 10px}
+#unlock p{margin:0 0 12px;font-size:17px;color:#e2d4ba}
+#unlock .ubtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+#unlock .unote{font-size:14px;color:var(--muted)}
+@keyframes glow{from{opacity:.55;transform:scale(.95)}to{opacity:1;transform:scale(1.05)}}
+@media (max-width:640px){#unlock .box{grid-template-columns:110px 1fr;gap:12px}}
 </style>
 </head>
 <body>
@@ -421,6 +432,7 @@ body.quake .screen.on,body.quake .ov.on .box{animation:quake .7s}
 <div class="ov" id="fb"><div class="box frame" id="fbBox"></div></div>
 <div class="ov" id="zhao"><div class="box frame" id="zhaoBox"></div></div>
 <div class="ov" id="settle"><div class="box settle frame" id="settleBox"></div></div>
+<div class="ov" id="unlock"><div class="box unlock frame" id="unlockBox"></div></div>
 
 <script>
 "use strict";
@@ -1863,11 +1875,29 @@ function finish(reason, how) {
       <div style="overflow-x:auto"><table class="cmp"><thead><tr><th>事件</th><th>你的選擇</th><th>原著鳳姐的做法</th><th>較好的做法</th></tr></thead><tbody>${rows || `<tr><td colspan="4">這一輪很快就出局了，再挑戰一次吧！</td></tr>`}</tbody></table></div></div>`
     : `<div class="sec frame"><h2>探春解對照</h2><p class="explain">你的選擇和原著做法比一比。讀課文時，留意標示的段落。</p>
       <div style="overflow-x:auto"><table class="cmp"><thead><tr><th>事件</th><th>你的選擇</th><th>原著（探春解）</th></tr></thead><tbody>${rows || `<tr><td colspan="3">這一輪還沒遇到課文裡的事件就出局了，再挑戰一次吧！</td></tr>`}</tbody></table></div></div>`}
-    <div class="endbtns"><button class="btn" id="again">再玩一次</button><button class="btn ghost" id="home2">回首頁</button></div>`;
+    <div class="endbtns"><button class="btn" id="again">再玩一次</button>${key === "win" ? `<button class="btn" id="goFeng">挑戰王熙鳳模式</button>` : ""}<button class="btn ghost" id="home2">回首頁</button></div>`;
   setupScore(key, E, T, SC.total);
   $("again").onclick = startGame;
   $("home2").onclick = () => { renderHome(); show("home"); };
   show("end");
+  // 探春模式乾淨通關：跳出解鎖困難模式的泡泡框
+  if (key === "win") {
+    $("goFeng").onclick = () => startGame(true, "feng");
+    setTimeout(showUnlock, 900);
+  }
+}
+function showUnlock() {
+  if (!$("end").classList.contains("on")) return;
+  $("unlockBox").innerHTML = `<div class="ufig"><img src="art/feng.webp" alt="王熙鳳"></div><div>
+    <div class="ukick">困難模式解鎖！</div>
+    <h3 class="gild">王熙鳳模式</h3>
+    <p>你沒有留下任何把柄，漂亮地撐過了這一年。現在，換你坐上璉二奶奶的位子：權力更大、錢來得更快，可是人心掉得更快、心力也會被耗盡，還有婆婆邢夫人隨時找碴。</p>
+    <p class="unote">記得先把這一輪的成績登記好，再去挑戰。</p>
+    <div class="ubtns"><button class="btn" id="uScore" type="button">先去登記成績</button><button class="btn ghost" id="uFeng" type="button">直接挑戰王熙鳳模式</button></div></div>`;
+  $("unlock").classList.add("on");
+  AU.win();
+  $("uScore").onclick = () => { $("unlock").classList.remove("on"); $("scoreForm").scrollIntoView({behavior: "smooth", block: "center"}); setTimeout(() => $("sCls").focus(), 500); };
+  $("uFeng").onclick = () => { $("unlock").classList.remove("on"); startGame(true, "feng"); };
 }
 let FIXED_IDS = new Set(Object.values(FIXED).flat());
 function chart() {
@@ -1938,7 +1968,7 @@ function setupScore(key, E, T, score) {
 }
 
 // ----- 管理者：Google 登入、成績列表、刪除、下載 -----
-let aToken = "", aRows = [], aSel = new Set(), aArm = false;
+let aToken = "", aRows = [], aSel = new Set(), aArm = false, aAuth = null, aMod = null, aUnlocked = false;
 async function adminLogin() {
   const msg = $("aMsg");
   msg.textContent = "登入中…";
@@ -1947,13 +1977,14 @@ async function adminLogin() {
     const [{initializeApp, getApps}, A] = await Promise.all([import(`https://www.gstatic.com/firebasejs/${V}/firebase-app.js`), import(`https://www.gstatic.com/firebasejs/${V}/firebase-auth.js`)]);
     const app = getApps()[0] || initializeApp({apiKey: FB_KEY, authDomain: "hlbh-admin-duty.firebaseapp.com", projectId: "hlbh-admin-duty"});
     const auth = A.getAuth(app), prov = new A.GoogleAuthProvider();
+    aAuth = auth; aMod = A;
     prov.setCustomParameters({prompt: "select_account"});
     const cred = await A.signInWithPopup(auth, prov);
     const email = (cred.user.email || "").toLowerCase();
     if (!ADMINS.includes(email)) { await A.signOut(auth); msg.textContent = `${email} 沒有管理權限。`; return; }
     aToken = await cred.user.getIdToken();
-    // 管理者登入的裝置，王熙鳳模式直接解鎖（方便老師示範）
-    try { localStorage.setItem("rb-pass", "1"); } catch (e) {}
+    // 管理者登入的裝置，王熙鳳模式直接解鎖（方便老師示範）；登出時收回，除非原本就有學生通關解鎖
+    try { aUnlocked = localStorage.getItem("rb-pass") !== "1"; localStorage.setItem("rb-pass", "1"); } catch (e) {}
     $("fengBox").innerHTML = `<button class="btn" id="startFeng" type="button">挑戰王熙鳳模式</button>`;
     $("fengBox").classList.remove("lockbox");
     $("startFeng").onclick = () => startGame(true, "feng");
@@ -1993,7 +2024,7 @@ function renderScores() {
       <td><b>${r.score ?? ""}</b></td><td>${esc(r.endT || r.end)}</td><td>${esc(r.type || "")}</td><td>${r.m}</td><td>${r.s}</td><td>${r.f}</td><td>${r.h}</td><td>${r.en ?? ""}</td><td>${r.dirt ?? ""}</td></tr>`;
   }
   box.innerHTML = `<div class="abtns"><button type="button" id="aCsv" ${aRows.length ? "" : "disabled"}>下載成績（CSV，Excel 可開）</button><button type="button" id="aReload">重新整理</button>
-      <button type="button" class="warn" id="aDel" ${aSel.size ? "" : "disabled"}>${aArm ? `再按一次，確定刪除 ${aSel.size} 筆` : `刪除勾選的 ${aSel.size} 筆`}</button><button type="button" id="aStats">查看全班統計</button></div>
+      <button type="button" class="warn" id="aDel" ${aSel.size ? "" : "disabled"}>${aArm ? `再按一次，確定刪除 ${aSel.size} 筆` : `刪除勾選的 ${aSel.size} 筆`}</button><button type="button" id="aStats">查看全班統計</button><button type="button" id="aOut">登出</button></div>
     <p style="color:var(--muted);font-size:14px;margin:0 0 8px">共 ${aRows.length} 筆，依時間新到舊排列；勾日期那一列可整天勾選。</p>
     <div class="scorewrap"><table class="scoretbl"><thead><tr><th></th><th>時間</th><th>班級</th><th>座號</th><th>姓名</th><th>模式</th><th>分數</th><th>結局</th><th>理財類型</th><th>月</th><th>庫銀</th><th>體面</th><th>人心</th><th>心力</th><th>把柄</th></tr></thead><tbody>${body || `<tr><td colspan="15">目前沒有成績。</td></tr>`}</tbody></table></div><div id="aStatBox"></div>`;
   box.querySelectorAll("[data-id]").forEach(c => c.onchange = () => { c.checked ? aSel.add(c.dataset.id) : aSel.delete(c.dataset.id); aArm = false; renderScores(); });
@@ -2002,7 +2033,17 @@ function renderScores() {
   $("aCsv").onclick = downloadCsv;
   $("aReload").onclick = loadScores;
   $("aDel").onclick = deleteSel;
+  $("aOut").onclick = adminLogout;
   $("aStats").onclick = async () => { const rows = await fetchStats(aToken).catch(() => null); if (rows) { renderStats(rows); $("aStatBox").appendChild($("stats")); } };
+}
+async function adminLogout() {
+  try { if (aMod && aAuth) await aMod.signOut(aAuth); } catch (e) {}
+  if (aUnlocked) { try { localStorage.removeItem("rb-pass"); } catch (e) {} }
+  aToken = ""; aRows = []; aSel = new Set(); aArm = false; aUnlocked = false;
+  $("aBox").hidden = true; $("aBox").innerHTML = "";
+  $("aLogin").hidden = false; $("aMsg").textContent = "已登出。";
+  $("stats").hidden = true; document.querySelector(".foot details").appendChild($("stats"));
+  renderHome();
 }
 async function deleteSel() {
   if (!aArm) { aArm = true; return renderScores(); }
