@@ -1853,7 +1853,7 @@ function finish(reason, how) {
       <div class="quote"><cite>原文・第39回（平兒）</cite>「這幾年拿著這一項銀子，翻出有幾百來了。……只他這梯己利錢，一年不到，上千的銀子呢。」</div>
       <p class="explain">放利錢看似「開源」，其實是拿別人的錢冒險。原著中，這些借券在第105回賈府被抄家時成了罪狀之一。真正的開源，是探春那樣讓資源動起來，而不是挪用別人應得的錢。</p></div>` : ""}
     <div class="sec frame"><h2>本輪分數：<span class="gild" style="font-size:1.4em">${SC.total}</span> 分</h2>
-      <p class="explain">基本分 40・撐過 ${SC.months} 個月 ${SC.surv}／48・庫銀 ${SC.money}／6・體面人心 ${SC.fh}／6${SC.dirt ? `・${MODE === "feng" ? "把柄" : "污點"} ${SC.dirt}` : ""}</p></div>
+      <p class="explain">基本分 40・撐過 ${SC.months} 個月 ${SC.surv}／30・庫銀 ${SC.money}／12・體面人心 ${SC.fh}／18${SC.dirt ? `・${MODE === "feng" ? "把柄" : "污點"} ${SC.dirt}` : ""}</p></div>
     <div class="sec frame"><h2>登記成績</h2><p class="explain">輸入班級、座號、姓名後送出，老師就看得到你這一輪的結果。每一輪結束都可以登記一次。</p>
       <form class="scoreform" id="scoreForm" autocomplete="off"><input id="sCls" maxlength="10" placeholder="班級（例：資二乙）" required><input id="sNo" type="number" inputmode="numeric" min="1" max="99" placeholder="座號" required><input id="sName" maxlength="12" placeholder="姓名" required><button class="btn">送出成績</button></form><p id="sMsg"></p></div>
     <div class="sec frame"><h2>這一年的帳</h2>${chart()}</div>
@@ -1885,16 +1885,19 @@ function chart() {
 }
 
 // ===== 換算分數（滿分 100）=====
-// 基本分 40（玩完一輪就有）＋每撐完一個月 4 分＋庫銀 6＋體面人心 6；
-// 探春模式有污點扣 5，王熙鳳模式每個把柄扣 3（最多扣 15）。中途出局也拿得到分數，撐越久越高。
+// 基本分 40（玩完一輪就有）＋每撐完一個月 2.5 分（最多 30）＋庫銀 12＋體面人心 18；
+// 探春模式有污點扣 5，王熙鳳模式每個把柄扣 3（最多扣 15）。中途出局也拿得到分數；
+// 撐滿一年只是 70 分起跳，帳要翻倍、體面人心都接近滿分才拿得到 100。
 const DONE_KEYS = new Set(["win", "f_win", "taint", "f_taint", "meh", "f_meh"]);
 function calcScore(key) {
   const months = DONE_KEYS.has(key) ? 12 : Math.max(0, G.m - 1);
   const p = {
     base: 40,
-    surv: months * 4,
-    money: Math.round(6 * Math.max(0, Math.min(1, G.s / START.s))),
-    fh: Math.round(6 * (G.f + G.h) / 200),
+    surv: Math.round(months * 2.5),
+    // 庫銀：達到起始金額 7 分，賺到起始金額的兩倍才拿滿 12 分
+    money: Math.round(G.s <= 0 ? 0 : G.s < START.s ? 7 * G.s / START.s : 7 + 5 * Math.min(1, (G.s - START.s) / START.s)),
+    // 體面人心：兩項平均 30 以下 0 分，平均 100 才拿滿 18 分
+    fh: Math.round(18 * Math.max(0, (G.f + G.h) / 2 - 30) / 70),
     dirt: MODE === "feng" ? -Math.min(15, 3 * G.dirtLog.length) : G.taint ? -5 : 0
   };
   p.total = Math.max(0, Math.min(100, p.base + p.surv + p.money + p.fh + p.dirt));
