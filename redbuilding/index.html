@@ -1,0 +1,2496 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>大觀園理家記</title>
+<meta name="description" content="扮演賈探春代理榮國府家務，撐過一年不破產：〈賈探春敏慧興利〉課前引導遊戲。">
+<meta property="og:title" content="大觀園理家記：你能撐過一年嗎？">
+<meta property="og:description" content="王熙鳳病倒，榮國府交給三姑娘探春。亂花錢會破產，亂省錢會眾叛親離，還有趙姨娘隨時殺到。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#100b09;--panel:#1d1512;--panel2:#271c17;--ink:#f3e7d0;--muted:#b9a68a;--line:#4a3527;
+  --gold:#ebbd60;--gold2:#a8742a;--red:#ec4b3e;--red2:#8f1d16;--jade:#4cc3a6;--violet:#b39af0;
+  --serif:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --sans:system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--ink);font:18px/1.7 var(--sans);-webkit-tap-highlight-color:transparent;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;z-index:-2;background:
+  radial-gradient(ellipse 60% 50% at 10% 0%,rgba(190,40,28,.38),transparent 70%),
+  radial-gradient(ellipse 55% 45% at 100% 100%,rgba(30,120,105,.28),transparent 70%),
+  radial-gradient(ellipse 40% 35% at 90% 10%,rgba(235,189,96,.14),transparent 70%),var(--bg)}
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.07;background:
+  repeating-linear-gradient(135deg,var(--gold) 0 1px,transparent 1px 22px)}
+.embers{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.embers i{position:absolute;bottom:-10px;width:4px;height:4px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px 2px rgba(235,189,96,.7);opacity:0;animation:rise linear infinite}
+@keyframes rise{0%{transform:translateY(0) translateX(0);opacity:0}10%{opacity:.9}100%{transform:translateY(-105vh) translateX(40px);opacity:0}}
+button{font:inherit;color:inherit;cursor:pointer}
+h1,h2,h3{font-family:var(--serif);margin:0;line-height:1.35}
+.gild{background:linear-gradient(180deg,#fff6dc 0%,#f2c96e 48%,#b8772a 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 10px rgba(235,189,96,.35))}
+.screen{display:none;min-height:100dvh;position:relative;z-index:1}
+.screen.on{display:block}
+.wrap{max-width:900px;margin:0 auto;padding:32px 20px 48px}
+.btn{position:relative;overflow:hidden;border:0;padding:14px 30px;min-height:56px;font-weight:800;font-size:19px;letter-spacing:2px;color:#fff;
+  background:linear-gradient(135deg,#ff5a49,#a11f17);clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%);
+  box-shadow:0 0 22px rgba(236,75,62,.45);text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.btn::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);transform:skewX(-20deg);animation:shine 3.2s infinite}
+@keyframes shine{0%,60%{left:-60%}100%{left:130%}}
+.btn:active{transform:translateY(2px)}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--line);clip-path:none;border-radius:4px}
+.btn.ghost::after{display:none}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.chip{display:inline-block;font-size:14px;padding:1px 10px;border:1px solid var(--gold2);color:var(--gold);font-weight:700;background:rgba(235,189,96,.08);border-radius:3px}
+.frame{position:relative;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.45),inset 0 0 0 1px rgba(235,189,96,.06)}
+.frame::before,.frame::after{content:"";position:absolute;width:18px;height:18px;border:2px solid var(--gold);pointer-events:none;z-index:2}
+.frame::before{top:-1px;left:-1px;border-right:0;border-bottom:0}
+.frame::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+.av{flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;color:#fff;font:900 20px/1 var(--serif);border:2px solid var(--gold2);overflow:hidden;background:#2a1d18}
+.av img{width:100%;height:100%;object-fit:cover;object-position:50% 0;transform:scale(2.1);transform-origin:50% 8%}
+
+/* 首頁 */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:10px;max-width:1080px;margin:0 auto;padding:4vh 24px 24px;min-height:92dvh}
+.hero .art{position:relative;align-self:end;text-align:center}
+.hero .art::before{content:"";position:absolute;left:50%;top:45%;width:110%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(circle,rgba(235,189,96,.35),rgba(236,75,62,.12) 45%,transparent 70%)}
+.hero .art img{position:relative;width:100%;max-width:440px;filter:drop-shadow(0 0 18px rgba(235,189,96,.35))}
+.ring{position:absolute;left:50%;top:42%;width:95%;aspect-ratio:1;transform:translate(-50%,-50%);border:1px dashed rgba(235,189,96,.35);border-radius:50%;animation:spin 40s linear infinite}
+.ring::after{content:"";position:absolute;inset:8%;border:1px solid rgba(235,189,96,.18);border-radius:50%}
+@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.seal{display:inline-grid;place-items:center;width:72px;height:72px;border:3px solid var(--red);color:var(--red);font:900 26px/1 var(--serif);border-radius:8px;transform:rotate(-6deg);margin-bottom:12px;writing-mode:vertical-rl;box-shadow:0 0 16px rgba(236,75,62,.5),inset 0 0 10px rgba(236,75,62,.3)}
+#home h1{font-size:clamp(46px,7vw,84px);font-weight:900;letter-spacing:6px}
+.kicker{font:700 15px var(--sans);letter-spacing:6px;color:var(--gold);margin-bottom:4px}
+#home .sub{color:var(--muted);margin:12px 0 30px;font-size:19px}
+.modes{display:grid;gap:14px;max-width:420px}
+#fengBox .btn{width:100%}
+.lockbox{border:1px dashed var(--line);padding:12px;color:var(--muted);font-size:16px;text-align:center}
+.foot{font-size:14px;color:var(--muted);text-align:center;padding:0 20px 30px}
+.foot details{margin-top:12px}
+.foot summary{cursor:pointer}
+#tForm{display:flex;gap:8px;justify-content:center;margin-top:10px}
+#tForm input{font:inherit;font-size:16px;padding:8px 10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);width:180px}
+#tForm button{border:1px solid var(--line);background:var(--panel2);padding:8px 14px;font-size:16px}
+#stats{text-align:left;margin:16px auto 0;max-width:560px}
+#stats table{border-collapse:collapse;width:100%;font-size:15px}
+#stats td,#stats th{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left}
+#stats td:not(:first-child),#stats th:not(:first-child){text-align:right}
+
+/* 前情提要 */
+.story{max-width:1120px;margin:0 auto;padding:3vh 20px 24px;display:flex;flex-direction:column;min-height:100dvh}
+.story .pg{flex:1;display:flex;flex-direction:column;justify-content:flex-start;gap:14px;animation:fadein .5s}
+@keyframes fadein{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.story .num{font:900 48px/1 var(--serif);color:transparent;-webkit-text-stroke:1px var(--gold);opacity:.7}
+.story h2{font-size:clamp(32px,5vw,48px);font-weight:900}
+.story p{font-size:21px;margin:0;color:#e9dcc3}
+.story .nav{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-top:20px}
+.dots{display:flex;gap:8px}
+.dots i{width:22px;height:4px;background:var(--line)}
+.dots i.on{background:var(--gold);box-shadow:0 0 8px var(--gold)}
+.team{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.pcard{padding:14px;display:flex;gap:14px;align-items:center}
+.pcard .av{width:72px;height:72px}
+.pcard b{font-family:var(--serif);font-size:19px;color:var(--gold)}
+.pcard small{display:block;color:var(--muted);font-size:15px;line-height:1.5}
+
+/* 遊戲主畫面 */
+.game{display:grid;grid-template-columns:1fr 290px;gap:20px;max-width:1240px;margin:0 auto;padding:18px;min-height:100dvh;align-content:start}
+.side{order:2;padding:18px;display:flex;flex-direction:column;gap:14px;align-self:start;position:sticky;top:18px}
+.month{font:900 28px var(--serif)}
+.month small{font:600 15px var(--sans);color:var(--muted);margin-left:6px}
+.stat .lab{display:flex;justify-content:space-between;align-items:baseline;font-size:15px;color:var(--muted);font-weight:700}
+.stat .val{font:900 23px var(--serif);color:var(--ink)}
+.bar{height:12px;background:#0c0807;border:1px solid var(--line);margin-top:4px;transform:skewX(-20deg);overflow:hidden}
+.bar>i{display:block;height:100%;transition:width .6s}
+.bar.s>i{background:linear-gradient(90deg,#a8742a,#ffd57a);box-shadow:0 0 10px rgba(235,189,96,.8)}
+.bar.f>i{background:linear-gradient(90deg,#1f7a68,#6ff0d0);box-shadow:0 0 10px rgba(76,195,166,.8)}
+.bar.h>i{background:linear-gradient(90deg,#8f1d16,#ff6a5a);box-shadow:0 0 10px rgba(236,75,62,.8)}
+.bar>i.low{animation:blink .9s infinite}
+@keyframes blink{50%{opacity:.3}}
+.comp{display:flex;gap:8px;align-items:center;font-size:15px;color:var(--muted);font-weight:700}
+.comp i{width:16px;height:16px;transform:rotate(45deg);border:2px solid var(--red);margin:0 2px}
+.comp i.on{background:var(--red);box-shadow:0 0 10px var(--red)}
+.flow{font-size:15px;background:rgba(0,0,0,.3);border-left:3px solid var(--gold2);padding:8px 10px;line-height:1.6}
+.flow b{font-variant-numeric:tabular-nums}
+.neg{color:#ff7a6c}.pos{color:#6fe3c6}
+.advs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.adv{border:1px solid var(--line);background:rgba(0,0,0,.25);padding:8px;display:flex;gap:8px;align-items:center;text-align:left;font-size:15px;min-height:48px}
+.adv:hover:not(:disabled){border-color:var(--gold);box-shadow:0 0 12px rgba(235,189,96,.3)}
+.adv .av{width:36px;height:36px;font-size:15px}
+.adv em{font-style:normal;color:var(--muted);font-size:13px;display:block;line-height:1.2}
+.adv:disabled{opacity:.35}
+.adv.free{border-color:#2f6b62;box-shadow:inset 0 0 0 1px rgba(76,195,166,.35)}
+.adv.free em{color:#6fe3c6}
+.sidehead{font-weight:700;font-size:14px;color:var(--gold);letter-spacing:3px}
+
+.main{display:flex;flex-direction:column;gap:14px;min-width:0}
+.ev{display:grid;grid-template-columns:1fr 230px;padding:22px 0 0 24px;margin-top:40px;animation:fadein .4s}
+.ev .body{padding-bottom:22px;min-width:0}
+.ev .pic{position:relative;align-self:stretch;margin-top:-62px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;min-height:200px}
+.ev .pic::before{content:"";position:absolute;left:50%;bottom:0;width:120%;aspect-ratio:1;transform:translateX(-50%);border-radius:50%;background:radial-gradient(circle,var(--glow,rgba(235,189,96,.35)),transparent 65%)}
+.ev .pic img{position:relative;width:100%;max-height:330px;object-fit:cover;object-position:top;animation:slidein .5s ease-out}
+@keyframes slidein{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
+.ev .pic .glyph{position:relative;font:900 140px/1 var(--serif);color:transparent;-webkit-text-stroke:2px var(--gold);opacity:.5;margin-bottom:24px}
+.ev .top{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-bottom:10px}
+.ev .who{font-weight:800;color:var(--gold);font-family:var(--serif);font-size:19px}
+.ev h2{font-size:clamp(26px,3vw,34px);font-weight:900;margin-bottom:8px}
+.ev .txt{font-size:20px;margin:0;color:#ecdfc6}
+.opts{display:grid;gap:10px}
+.opt{display:flex;gap:14px;align-items:flex-start;width:100%;text-align:left;background:linear-gradient(90deg,rgba(39,28,23,.95),rgba(29,21,18,.95));border:1px solid var(--line);border-left:4px solid var(--gold2);padding:14px 16px;min-height:60px;font-size:19px;line-height:1.5;transition:transform .15s,border-color .15s,box-shadow .15s;color:var(--ink)}
+.opt:hover:not(:disabled){transform:translateX(6px);border-color:var(--gold);box-shadow:0 0 18px rgba(235,189,96,.25)}
+.opt .k{flex:none;width:28px;height:28px;transform:rotate(45deg);border:2px solid var(--gold);display:grid;place-items:center;margin:3px 4px 0}
+.opt .k b{transform:rotate(-45deg);font:900 15px var(--serif);color:var(--gold)}
+.opt:disabled{opacity:.45;cursor:not-allowed}
+.opt .lock{display:block;font-size:14px;color:var(--muted)}
+.tag{display:inline-block;font-size:13px;font-weight:700;padding:1px 8px;margin:6px 6px 0 0;border:1px solid}
+.tag.wan{color:var(--gold);border-color:var(--gold2)}.tag.chai{color:var(--violet);border-color:#6c5ba7}
+.tag.ping{color:var(--jade);border-color:#2f6b62}.tag.yu{color:#ff8a7c;border-color:var(--red2)}
+.note{display:flex;gap:12px;align-items:center;background:rgba(0,0,0,.35);border-left:3px solid var(--jade);padding:10px 14px;font-size:17px}
+.note .av{width:42px;height:42px}
+.note b{font-family:var(--serif);color:var(--gold)}
+.note.yu{border-color:var(--red)}.note.dai,.note.chai{border-color:var(--violet)}.note.wan{border-color:var(--gold)}
+
+/* 浮層 */
+.ov{position:fixed;inset:0;background:rgba(5,3,2,.72);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:16px;z-index:10}
+.ov.on{display:flex}
+.box{max-width:660px;width:100%;max-height:92dvh;overflow-y:auto;overflow-x:hidden;padding:24px;animation:pop .25s ease-out}
+@keyframes pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+.box h3{font-size:26px;font-weight:900;margin-bottom:6px}
+.deltas{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.deltas span{font-weight:800;font-size:16px;padding:3px 10px;background:rgba(0,0,0,.35);border:1px solid var(--line)}
+.quote{position:relative;background:rgba(235,189,96,.07);border:1px solid rgba(235,189,96,.3);padding:14px 16px;margin:12px 0;font-family:var(--serif);font-size:18px;line-height:1.85;color:#f1e3c4}
+.quote cite{display:block;font:800 14px var(--sans);color:var(--gold);font-style:normal;margin-bottom:4px;letter-spacing:2px}
+.explain{font-size:17px;color:#d6c7ab;margin:8px 0 16px}
+.box .btn{width:100%}
+#zhao .box{display:grid;grid-template-columns:240px 1fr;gap:18px;max-width:800px;border-color:var(--red);box-shadow:0 0 40px rgba(236,75,62,.55);animation:pop .25s ease-out,pulse 1.2s infinite}
+/* 選項的框（::before）在晃，文字留在原位 */
+#zhao .opt{position:relative;z-index:0;background:transparent;border-color:transparent;transition:none}
+#zhao .opt:hover:not(:disabled){transform:none;box-shadow:none}
+#zhao .opt::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(60,24,20,.95),rgba(29,21,18,.95));border:1px solid var(--red2);border-left:4px solid var(--red);animation:jitter .16s linear infinite}
+#zhao .opt:hover::before{border-color:var(--red);box-shadow:0 0 18px rgba(236,75,62,.45)}
+#zhao .opt:disabled::before{animation:none}
+@keyframes jitter{0%,100%{transform:translate(0,0)}25%{transform:translate(calc(var(--amp,1)*1px),calc(var(--amp,1)*-.6px)) rotate(calc(var(--amp,1)*.08deg))}50%{transform:translate(calc(var(--amp,1)*-1px),calc(var(--amp,1)*.5px))}75%{transform:translate(calc(var(--amp,1)*.6px),calc(var(--amp,1)*.9px)) rotate(calc(var(--amp,1)*-.08deg))}}
+#zhao .zpic{align-self:end;position:relative}
+#zhao .zpic::before{content:"";position:absolute;inset:10% -20% 0;background:radial-gradient(circle,rgba(236,75,62,.6),transparent 65%)}
+#zhao .zpic img{position:relative;width:118%;margin-left:-9%;animation:slidein .4s}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+@keyframes pulse{50%{box-shadow:0 0 70px rgba(236,75,62,.8)}}
+.timer{height:10px;background:#0c0807;border:1px solid var(--red2);overflow:hidden;margin:10px 0 16px;transform:skewX(-20deg)}
+.timer i{display:block;height:100%;background:linear-gradient(90deg,#8f1d16,#ff6a5a);box-shadow:0 0 10px var(--red);width:100%}
+.hint{outline:2px solid var(--gold);outline-offset:2px;box-shadow:0 0 20px rgba(235,189,96,.5)}
+.settle table{width:100%;border-collapse:collapse;font-size:17px;margin:10px 0 16px}
+.settle td{padding:6px 4px;border-bottom:1px solid var(--line)}
+.settle td:last-child{text-align:right;font-variant-numeric:tabular-nums;font-weight:800}
+
+/* 結局 */
+#end .wrap{max-width:960px}
+.endhead{display:grid;grid-template-columns:1fr 260px;align-items:end;gap:16px;padding:10px 0 0}
+.endhead .kind{font-weight:800;color:var(--red);letter-spacing:6px}
+.endhead.win .kind{color:var(--gold)}
+.endhead h1{font-size:clamp(36px,6vw,60px);font-weight:900;margin:6px 0}
+.endhead p{color:#e2d4ba;font-size:19px;margin:6px 0 20px}
+.endhead img{width:100%;filter:drop-shadow(0 0 16px rgba(235,189,96,.35))}
+.endhead.lose img{filter:drop-shadow(0 0 16px rgba(80,120,200,.35))}
+.sec{padding:20px 22px;margin-top:16px}
+.sec h2{font-size:24px;margin-bottom:10px;color:var(--gold)}
+.type{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center}
+.type .big{width:96px;height:96px;display:grid;place-items:center;background:linear-gradient(135deg,#ff5a49,#8f1d16);color:#fff;font:900 42px var(--serif);transform:rotate(45deg) scale(.8);box-shadow:0 0 24px rgba(236,75,62,.6)}
+.type .big span{transform:rotate(-45deg)}
+.type h3{font-size:30px;font-weight:900}
+.kv{display:grid;grid-template-columns:7em 1fr;gap:6px 12px;margin-top:12px;font-size:17px}
+.kv dt{color:var(--muted);font-weight:700}
+.kv dd{margin:0}
+.cmp{width:100%;border-collapse:collapse;font-size:16px}
+.cmp th,.cmp td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+.cmp th{color:var(--muted);font-size:14px}
+.cmp .ok{color:var(--jade);font-weight:800}
+.cmp .q{font-family:var(--serif);color:#cbbb9e;font-size:15px;margin-top:4px}
+.endbtns{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:24px}
+.chart text{font:13px var(--sans);fill:var(--muted)}
+
+/* 身分註記、插話、反應、聲音、晃動 */
+.opt.special{border-color:var(--gold);border-left-color:var(--jade);background:linear-gradient(90deg,rgba(76,195,166,.18),rgba(39,28,23,.95));box-shadow:0 0 18px rgba(76,195,166,.35);animation:fadein .4s}
+.maxed{font-weight:800;color:#6fe3c6;text-shadow:0 0 10px rgba(76,195,166,.7);margin:4px 0 8px}
+.stat.max .bar{box-shadow:0 0 14px rgba(255,255,255,.35)}
+.stat.max .lab span:first-child{color:#6fe3c6}
+.relwrap{padding:8px;background:rgba(0,0,0,.25)}
+.relmap{width:100%;display:block}
+.relmap .rn{font:900 22px var(--serif);fill:#f3e7d0;text-anchor:middle}
+.relmap .rr{font:600 15px var(--sans);fill:#cdbb9c;text-anchor:middle}
+.relmap .rl{font:700 15px var(--sans);fill:#ebbd60;text-anchor:middle}
+.relmap .rg{font:900 28px var(--serif);fill:#ebbd60;text-anchor:middle}
+.relmap .rgen{font:700 14px var(--sans);fill:#6f5f4b;writing-mode:horizontal-tb}
+.box.wide{max-width:min(1200px,96vw)}
+.relbtn{border:1px solid var(--gold2);background:rgba(235,189,96,.08);color:var(--gold);padding:8px;font-weight:800;letter-spacing:2px}
+.relbtn:hover{box-shadow:0 0 12px rgba(235,189,96,.35)}
+.defn{font-size:18px!important;background:rgba(235,189,96,.08);border-left:3px solid var(--gold);padding:10px 14px;color:#e9dcc3}
+.defn b{color:var(--gold)}
+.sayov{position:fixed;inset:0;z-index:12;display:none;align-items:flex-end;justify-content:center;padding:16px 16px 0;background:rgba(5,3,2,.4)}
+.sayov.on{display:flex}
+.saybox{display:grid;grid-template-columns:280px 1fr;gap:8px;max-width:860px;width:100%;align-items:end;padding:0 24px 0 0;animation:popin .45s cubic-bezier(.2,1.4,.4,1) both;overflow:visible}
+.saypic{align-self:end;position:relative}
+.saypic::before{content:"";position:absolute;left:0;right:0;bottom:0;height:80%;background:radial-gradient(circle at 50% 60%,rgba(235,189,96,.35),transparent 65%)}
+.saypic img{position:relative;display:block;width:100%;margin-top:-120px;-webkit-mask-image:linear-gradient(to bottom,#000 82%,transparent);mask-image:linear-gradient(to bottom,#000 82%,transparent)}
+.saypic .glyph{display:block;font:900 120px/1 var(--serif);color:transparent;-webkit-text-stroke:2px var(--gold);text-align:center;padding:30px 0}
+.saytext{padding:22px 0}
+.sayhead{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:6px}
+.sayhead .who{font:900 24px var(--serif);color:var(--gold)}
+.sayhead .how{font-size:14px;color:var(--muted);font-weight:700}
+.saytext p{font:600 21px/1.75 var(--serif);margin:0 0 16px;color:#f1e3c4}
+.saytext .btn{min-height:48px;padding:10px 26px}
+.bar{position:relative}
+.bar .mark,.htrack .mark{position:absolute;top:-3px;bottom:-3px;width:0;border-left:3px solid #fff;box-shadow:0 0 6px 1px rgba(255,255,255,.9);z-index:1}
+.gap{display:block;font-size:13px;color:var(--muted);margin-top:4px}
+.flow .gap{display:inline;margin:0}
+.schart{background:rgba(0,0,0,.28);border:1px solid var(--line);padding:10px 12px;margin:10px 0}
+.stitle{font-weight:800;color:var(--gold);font-size:15px;margin-bottom:6px}
+.stitle small{font-weight:600;color:var(--muted);margin-left:8px}
+.hrow{display:grid;grid-template-columns:3em 1fr 7.5em;gap:8px;align-items:center;margin:6px 0;font-size:15px}
+.htrack{position:relative;height:18px;background:#0c0807;border:1px solid var(--line)}
+.htrack i{display:block;height:100%;transform-origin:left;animation:growx .7s ease-out both}
+.htrack i.inc{background:linear-gradient(90deg,#1f7a68,#6ff0d0)}
+.htrack i.exp{background:linear-gradient(90deg,#8f1d16,#ff6a5a)}
+.hrow em{font-style:normal;font-weight:800;text-align:right;font-variant-numeric:tabular-nums}
+.hrow em small{display:block;font-weight:600;color:var(--muted);font-size:12px}
+@keyframes growx{from{transform:scaleX(0)}to{transform:none}}
+.vbars{position:relative;display:flex;align-items:flex-end;gap:4px;padding-top:4px}
+.vbars .base{position:absolute;left:0;right:0;border-top:2px dashed rgba(235,189,96,.8);z-index:1}
+.vcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-width:0;height:100%}
+.vcol i{display:block;width:70%;max-width:34px;transform-origin:bottom;animation:growy .6s ease-out both}
+.vcol i.up{background:linear-gradient(180deg,#6ff0d0,#1f7a68)}
+.vcol i.down{background:linear-gradient(180deg,#ff6a5a,#8f1d16)}
+.vcol em{font-style:normal;font-size:11px;color:#e2d4ba;font-variant-numeric:tabular-nums}
+.vcol span{font-size:11px;color:var(--muted);height:18px;line-height:18px}
+@keyframes growy{from{transform:scaleY(0)}to{transform:none}}
+.debts{background:rgba(143,29,22,.18);border:1px solid var(--red2);padding:8px 10px}
+.tour{position:fixed;inset:0;z-index:40;display:none}
+.tour.on{display:block}
+.tour .hole{position:fixed;border-radius:4px;box-shadow:0 0 0 9999px rgba(5,3,2,.8),0 0 24px 4px rgba(235,189,96,.6);outline:2px solid var(--gold);transition:all .3s ease;pointer-events:none}
+.tour .tip{position:fixed;width:min(400px,92vw);padding:18px 20px;transition:top .3s ease,left .3s ease;animation:pop .25s ease-out}
+.tour .tip h3{font-size:24px;color:var(--gold);margin:2px 0 6px}
+.tour .tip p{font-size:17px;line-height:1.75;margin:0 0 14px;color:#f1e3c4}
+.tour .tip p b{color:#ffd57a}
+.tstep{font-size:13px;font-weight:700;color:var(--muted);letter-spacing:2px}
+.tbtns{display:flex;gap:10px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+.tbtns .btn{min-height:44px;padding:8px 22px;font-size:17px}
+.tlink{background:none;border:0;color:var(--muted);text-decoration:underline;margin-right:auto;font-size:15px}
+.sidebtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rels{display:flex;flex-wrap:wrap;gap:6px}
+.relx{font-size:13px;font-weight:700;padding:2px 8px;border:1px solid var(--line);color:var(--muted)}
+.relx.bad{color:#ff7a6c;border-color:var(--red2);background:rgba(143,29,22,.2)}
+.relx.good{color:#6fe3c6;border-color:#2f6b62;background:rgba(76,195,166,.12)}
+.angry{font-weight:800;color:#ff7a6c;text-shadow:0 0 10px rgba(236,75,62,.6);margin:4px 0 8px}
+.drow{display:grid;grid-template-columns:1fr auto;gap:0 8px;font-size:14px;padding:4px 0;border-top:1px dashed rgba(236,75,62,.3)}
+.drow b{color:#ff7a6c}
+.sec.taint{border-color:var(--red2);background:linear-gradient(180deg,rgba(143,29,22,.25),var(--panel))}
+.sec.taint h2{color:#ff7a6c}
+.debts.usury{background:rgba(235,189,96,.1);border-color:var(--gold2)}
+.debts.usury .drow b{color:#6fe3c6}
+.drow em{grid-column:1/-1;font-style:normal;font-size:12px;color:var(--muted)}
+.role{display:inline-block;font-size:14px;color:#d8c7a6;background:rgba(0,0,0,.35);border:1px solid var(--line);padding:0 8px;border-radius:3px}
+.note.pop{animation:popin .5s cubic-bezier(.2,1.5,.4,1) both;font-size:18px}
+.note.pop .av{width:58px;height:58px}
+.note .say{display:block;font-size:13px;color:var(--muted);font-weight:700;letter-spacing:1px}
+@keyframes popin{from{opacity:0;transform:translateX(60px) scale(.9)}to{opacity:1;transform:none}}
+.react{display:flex;gap:12px;align-items:center;margin:4px 0 12px;font-size:17px;color:#e2d4ba;animation:popin .45s both}
+.react .av{width:60px;height:60px}
+.react b{color:var(--gold);font-family:var(--serif)}
+.snd{position:fixed;bottom:10px;left:10px;z-index:30;border:1px solid var(--gold2);background:rgba(16,11,9,.85);color:var(--gold);padding:6px 12px;font-size:14px;font-weight:700;border-radius:3px}
+.stat.money{position:relative}
+.stat.money.danger .val{color:#ff6a5a;animation:blink .7s infinite}
+.float{position:absolute;right:0;top:-6px;font:900 22px var(--serif);color:#ff6a5a;text-shadow:0 0 10px rgba(236,75,62,.9);pointer-events:none;animation:floatup 1.4s ease-out forwards}
+.float.up{color:#6fe3c6;text-shadow:0 0 10px rgba(76,195,166,.9)}
+@keyframes floatup{from{opacity:1;transform:translateY(0) scale(1.3)}to{opacity:0;transform:translateY(-46px) scale(1)}}
+body.quake .screen.on,body.quake .ov.on .box{animation:quake .7s}
+@keyframes quake{10%{transform:translate(-10px,4px) rotate(-1deg)}20%{transform:translate(9px,-6px) rotate(1deg)}30%{transform:translate(-8px,6px)}40%{transform:translate(8px,-3px) rotate(-.6deg)}50%{transform:translate(-6px,5px)}60%{transform:translate(5px,-4px)}70%{transform:translate(-4px,2px)}85%{transform:translate(2px,-1px)}}
+#zhao.on::before{content:"";position:fixed;inset:0;pointer-events:none;box-shadow:inset 0 0 180px 50px rgba(236,75,62,.75);animation:vign .5s infinite alternate}
+@keyframes vign{from{opacity:.45}to{opacity:1}}
+.scene{overflow:hidden;height:38vh;margin-bottom:6px}
+.scene img{width:100%;height:100%;object-fit:cover;object-position:50% 25%;display:block;animation:kenburns 14s ease-out both;transform-origin:50% 25%}
+@keyframes kenburns{from{transform:scale(1.12)}to{transform:scale(1)}}
+.duo{display:flex;justify-content:center;align-items:flex-end;gap:0;height:40vh}
+.duo figure{margin:0;position:relative;height:100%;text-align:center}
+.duo img{height:100%;-webkit-mask-image:linear-gradient(to bottom,#000 80%,transparent);mask-image:linear-gradient(to bottom,#000 80%,transparent)}
+.duo figcaption{position:absolute;bottom:6px;left:0;right:0;font:900 18px var(--serif);color:var(--gold);text-shadow:0 2px 6px #000}
+.duo .vs{font:900 44px var(--serif);color:var(--red);text-shadow:0 0 16px rgba(236,75,62,.8);align-self:center}
+@media (max-width:860px){
+  .hero{grid-template-columns:1fr;text-align:center;padding-top:3vh;min-height:auto}
+  .hero .art{order:-1;max-width:300px;margin:0 auto}
+  .modes{margin:0 auto}
+  .game{grid-template-columns:1fr;padding:10px}
+  .side{order:0;position:static;display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px}
+  .side .month,.side .flow,.side .advwrap,.side .comp,.side .relbtn,.side .debts,.side .rels,.side .sidebtns{grid-column:1/-1}
+  .advs{grid-template-columns:repeat(4,1fr)}
+  .adv{flex-direction:column;text-align:center;gap:2px;padding:6px}
+  .ev{grid-template-columns:1fr 130px;padding:18px 0 0 16px;margin-top:30px}
+  .ev .pic{margin-top:-46px;min-height:150px}
+  .ev .pic .glyph{font-size:90px}
+  #zhao .box{grid-template-columns:100px 1fr;gap:12px}
+  .endhead{grid-template-columns:1fr 140px}
+  .saybox{grid-template-columns:130px 1fr;padding-right:14px}
+  .saypic img{margin-top:-50px}
+  .saytext p{font-size:18px}
+  .type{grid-template-columns:1fr;text-align:center}
+  .type .big{margin:0 auto}
+  .kv{grid-template-columns:1fr}
+}
+/* 立繪底部淡出，避免半身像的硬切邊 */
+.hero .art img,.ev .pic img,.endhead img,#zhao .zpic img{-webkit-mask-image:linear-gradient(to bottom,#000 78%,transparent);mask-image:linear-gradient(to bottom,#000 78%,transparent)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+.bar.e>i{background:linear-gradient(90deg,#3d3a8f,#9a8cff);box-shadow:0 0 10px rgba(154,140,255,.7)}
+.debts.dirt{background:rgba(70,20,70,.3);border-color:#7a3a7a}
+.debts.dirt .drow em{color:#d9a0d9}
+.prbtn{width:100%;margin-top:6px;border:1px solid var(--gold2);background:rgba(235,189,96,.08);color:var(--gold);font-weight:800;padding:10px;font-size:16px}
+.prbtn:hover:not(:disabled){border-color:var(--gold);box-shadow:0 0 12px rgba(235,189,96,.3)}
+.prbtn:disabled{opacity:.4}
+.prfx{color:var(--muted);font-size:14px}
+#zhao .zpic.xing::before{background:radial-gradient(circle,rgba(150,90,200,.55),transparent 65%)}
+.dirtlist{margin:8px 0;padding-left:20px;line-height:1.8}
+.dirtlist b{color:#ff8a7c;margin-right:6px}
+.sidenote{margin:6px 0 0;font-size:13px;color:var(--muted)}
+.gl{font-size:.78em;color:var(--muted);font-weight:400}
+.glline{font-size:15px;color:var(--muted);margin:-4px 0 10px}
+.glline b{color:var(--gold);font-weight:700}
+.scoreform{display:grid;grid-template-columns:2fr 1fr 2fr auto;gap:10px;align-items:center}
+.scoreform input{background:#0c0807;border:1px solid var(--line);color:var(--ink);padding:10px 12px;font-size:18px;min-width:0}
+.scoreform input:focus{outline:none;border-color:var(--gold)}
+#sMsg{margin:10px 0 0;font-weight:700}
+#sMsg.ok{color:var(--jade)}#sMsg.bad{color:#ff7a6c}
+.admin{margin-top:14px;text-align:left}
+.admin .abtns{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.admin .abtns button{border:1px solid var(--gold2);background:rgba(235,189,96,.08);color:var(--gold);padding:8px 14px;font-weight:700;font-size:15px}
+.admin .abtns button:disabled{opacity:.4}
+.admin .abtns button.warn{border-color:var(--red2);color:#ff8a7c;background:rgba(143,29,22,.18)}
+.scoretbl{width:100%;border-collapse:collapse;font-size:14px}
+.scoretbl th,.scoretbl td{border-bottom:1px solid var(--line);padding:6px 6px;text-align:left;white-space:nowrap}
+.scoretbl tr.day td{background:rgba(235,189,96,.1);color:var(--gold);font-weight:800}
+.scorewrap{max-height:60vh;overflow:auto;border:1px solid var(--line)}
+@media (max-width:640px){.scoreform{grid-template-columns:1fr 1fr}.scoreform .btn{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<div class="embers" id="embers"></div>
+<button class="snd" id="snd" type="button">♪ 聲音：開</button>
+
+<!-- 首頁 -->
+<section class="screen on" id="home">
+  <div class="hero">
+    <div>
+      <div class="seal">理家</div>
+      <div class="kicker">紅樓夢・榮國府</div>
+      <h1 class="gild">大觀園理家記</h1>
+      <p class="sub">王熙鳳病倒了，榮國府交到三姑娘手上。<br>你能撐過這一年嗎？</p>
+      <div class="modes">
+        <button class="btn" id="startTan">探春模式：開始理家</button>
+        <div id="fengBox" class="lockbox">王熙鳳模式（困難）<br>探春模式通關後解鎖</div>
+      </div>
+    </div>
+    <div class="art"><div class="ring"></div><img src="art/tan.webp" alt="賈探春"></div>
+  </div>
+  <div class="foot">〈賈探春敏慧興利〉課前引導遊戲・事件皆取自《紅樓夢》原著<br>音樂：DJARTMUSIC、FASSounds、Tunetank（Pixabay）
+    <details><summary>教師專區</summary>
+      <div class="admin"><button class="btn" id="aLogin" type="button">管理者：以學校 Google 帳號登入（查看、下載成績）</button>
+        <p id="aMsg"></p><div id="aBox" hidden></div></div>
+      <p style="margin:16px 0 6px;color:var(--muted);font-size:14px">或以原本的教師密碼查看全班統計：</p>
+      <form id="tForm" autocomplete="off"><input id="tPw" type="password" placeholder="管理者密碼"><button>查看</button></form>
+      <p id="tMsg"></p><div id="stats" hidden></div>
+    </details>
+  </div>
+</section>
+
+<!-- 前情提要 -->
+<section class="screen" id="intro"><div class="story">
+  <div class="pg" id="pg"></div>
+  <div class="nav"><button class="btn ghost" id="skip">跳過</button><div class="dots" id="dots"></div><button class="btn" id="next">下一頁</button></div>
+</div></section>
+
+<!-- 遊戲 -->
+<section class="screen" id="game"><div class="game">
+  <aside class="side frame" id="side"></aside>
+  <main class="main" id="main"></main>
+</div></section>
+
+<!-- 結局 -->
+<section class="screen" id="end"><div class="wrap" id="endWrap"></div></section>
+
+<div class="tour" id="tour"><div class="hole" id="tHole"></div><div class="tip frame" id="tTip"></div></div>
+<div class="sayov" id="say"><div class="saybox frame"><div class="saypic" id="sayPic"></div><div class="saytext"><div class="sayhead" id="sayWho"></div><p id="sayTxt"></p><button class="btn" id="sayOk" type="button">知道了</button></div></div></div>
+<div class="ov" id="fb"><div class="box frame" id="fbBox"></div></div>
+<div class="ov" id="zhao"><div class="box frame" id="zhaoBox"></div></div>
+<div class="ov" id="settle"><div class="box settle frame" id="settleBox"></div></div>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const rnd = a => a[Math.floor(Math.random() * a.length)];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+
+// ===== 人物 =====
+const P = {
+  tan: {n: "探春", c: "#a8322a"}, wan: {n: "李紈", c: "#8a7a52"}, chai: {n: "寶釵", c: "#6c5ba7"}, ping: {n: "平兒", c: "#2f6b62"},
+  zhao: {n: "趙姨娘", c: "#5c3d2e"}, wu: {n: "吳新登媳婦", c: "#76695c"}, feng: {n: "王熙鳳", c: "#b0452f"}, yu: {n: "寶玉", c: "#c0504d"},
+  dai: {n: "黛玉", c: "#4f6f8f"}, jia: {n: "賈母", c: "#7b5a2a"}, wang: {n: "王夫人", c: "#6b6b6b"}, po: {n: "婆子們", c: "#8c6d4f"},
+  lin: {n: "林之孝家的", c: "#76695c"}, lai: {n: "賴家", c: "#9a7b3c"}, liu: {n: "劉姥姥", c: "#8f6a3a"}, eun: {n: "太監", c: "#4b4b6b"},
+  wu2: {n: "烏進孝", c: "#6e5a3a"}, xing: {n: "邢岫煙", c: "#7d8fa6"}, mai: {n: "麝月", c: "#b06a7a"}, fang: {n: "芳官", c: "#c06f3a"},
+  si: {n: "司棋", c: "#7a5a8a"}, ying: {n: "迎春", c: "#8aa07a"}, dun: {n: "債主", c: "#7a2a22"}
+};
+// 人物身分註記：讓學生看懂人物關係
+const ROLE = {
+  tan: "主角・庶出的三姑娘", wan: "寶玉的寡嫂・理家三人之一", chai: "薛家表姊・理家三人之一", ping: "王熙鳳的心腹丫鬟",
+  zhao: "探春的生母・賈政的妾", wu: "管事媳婦・丈夫管銀庫", feng: "璉二奶奶・原本的當家", yu: "探春的哥哥（嫡出）",
+  dai: "林家表妹・寄住賈府", jia: "老太太・全府輩分最高", wang: "探春的嫡母・賈政的正室", po: "園中的老媽媽",
+  lin: "大管家林之孝的妻子", lai: "賴大一家・榮國府大總管", liu: "鄉下的窮親戚", eun: "宮裡派來的太監",
+  wu2: "田莊的莊頭", xing: "邢夫人的姪女・寄住賈府", mai: "寶玉的丫鬟", fang: "學戲的女孩・戲班解散後分到寶玉房裡當丫頭",
+  si: "迎春的大丫鬟", ying: "二姑娘・探春的堂姊", dun: "上門討債的人"
+};
+// 人物小辭典：事件內文、結果裡第一次出現的配角，後面自動加小字註明身分
+const GLOSS = {
+  "芳官": "學戲的女孩，戲班解散後分到寶玉房裡當丫頭", "乾娘": "府裡派來照管學戲女孩的婆子", "鶯兒": "寶釵的丫鬟", "春燕": "怡紅院的小丫頭",
+  "柳家的": "大觀園廚房的管事媳婦", "五兒": "廚房柳家的女兒", "司棋": "迎春的大丫鬟", "晴雯": "寶玉的丫鬟", "麝月": "寶玉的丫鬟", "襲人": "寶玉的大丫鬟",
+  "林之孝家的": "大管家林之孝的妻子", "林之孝": "榮國府的大管家", "吳新登媳婦": "管事媳婦，丈夫管銀庫", "趙國基": "趙姨娘的弟弟，府裡的奴僕",
+  "賈環": "趙姨娘生的兒子，探春的弟弟", "賈蘭": "李紈的兒子", "賴嬤嬤": "大總管賴大的母親", "賴大": "榮國府的大總管", "邢岫煙": "邢夫人的姪女，寄住賈府",
+  "迎春": "賈赦的女兒，二姑娘", "湘雲": "賈母娘家的姪孫女", "王太醫": "太醫院的大夫", "鴛鴦": "賈母的大丫鬟", "劉姥姥": "鄉下的窮親戚",
+  "賈珍": "寧國府的當家，尤氏的丈夫", "賈蓉": "賈珍的兒子，秦可卿的丈夫", "賈薔": "寧國府的子弟", "代儒": "賈家私塾的老師，賈瑞的祖父",
+  "秦可卿": "賈蓉的妻子，和鳳姐最知心", "秦氏": "即秦可卿", "王信": "王熙鳳娘家的家人", "王子騰": "王熙鳳的叔叔，朝中大官",
+  "秋桐": "賈赦賞給賈璉的丫鬟", "興兒": "賈璉的小廝", "旺兒媳婦": "鳳姐的心腹管事媳婦", "旺兒": "鳳姐的心腹男僕", "鮑二": "府裡的男僕",
+  "張華": "尤二姐原先的未婚夫", "雲老爺": "長安節度使，和賈府交好的地方大官", "淨虛": "饅頭庵的老尼", "張金哥": "張財主的女兒", "金哥": "張財主的女兒",
+  "李衙內": "長安知府的小舅子", "守備": "地方上的武官", "夏太監": "宮裡的太監", "烏進孝": "寧國府田莊的莊頭", "來升": "寧國府的大總管",
+  "賈芸": "賈家遠房的子侄", "紅玉": "寶玉房裡的小丫頭", "尤二姐": "尤氏的妹妹", "尤氏": "寧國府的大奶奶", "賈赦": "大老爺，賈母的長子",
+  "賈政": "二老爺，賈母的次子", "邢夫人": "賈赦的正室", "賈瑞": "賈家遠房子弟", "賈璉": "王熙鳳的丈夫"
+};
+const GLOSS_RE = new RegExp(Object.keys(GLOSS).sort((a, b) => b.length - a.length).join("|"), "g");
+// 回傳加了註記的文字；skip 是事件主角（標題已經寫了身分）
+function gloss(txt, skip) {
+  const seen = new Set(skip ? [P[skip] ? P[skip].n : ""] : []);
+  return String(txt).replace(GLOSS_RE, nm => {
+    if (seen.has(nm)) return nm;
+    seen.add(nm);
+    return `${nm}<span class="gl">（${GLOSS[nm]}）</span>`;
+  });
+}
+// 結果標題字大，不在標題裡插註記，改在下面列一行
+function glossList(txt, skip) {
+  const out = [], seen = new Set(skip ? [P[skip] ? P[skip].n : ""] : []);
+  String(txt).replace(GLOSS_RE, nm => { if (!seen.has(nm)) { seen.add(nm); out.push(`<b>${nm}</b>：${GLOSS[nm]}`); } return nm; });
+  return out.join("　");
+}
+const whoTag = k => `<span class="who">${P[k].n}</span><span class="role">${ROLE[k]}</span>`;
+// 立繪：art/*.webp 是動作版（事件卡），art/face/*.webp 是表情平靜的頭像版；其他人用名字首字
+const ART = new Set(["tan", "chai", "dai", "yu", "zhao", "feng", "wan", "ping", "po", "xingf", "jia", "qin", "wanger", "you", "lian", "er", "rui", "jing", "yuan"]);
+const av = (k, cls = "av") => ART.has(k) ? `<span class="${cls}"><img src="art/face/${k}.webp" alt="${P[k].n}"></span>`
+  : `<span class="${cls}" style="background:${P[k].c}">${P[k].n.slice(0, 1)}</span>`;
+const GLOW = {xingf: "rgba(150,90,200,.5)", zhao: "rgba(236,75,62,.55)", dai: "rgba(179,154,240,.4)", chai: "rgba(179,154,240,.35)", ping: "rgba(76,195,166,.4)", wan: "rgba(200,190,170,.3)"};
+
+// ===== 消費類型 =====
+const TYPES = {
+  face: {n: "面子撐場型", ch: "面", hong: "「咱們這樣人家」的賈府：寧可賠錢也不能丟臉", life: "請客搶著付、追限定款、怕被看不起", tip: "買之前問自己一句：這是「需要」，還是「想被看見」？"},
+  dup: {n: "重複付費型", ch: "重", hong: "頭油脂粉「錢費兩起，東西又白丟一半」", life: "好幾個串流、遊戲月費，忘了哪些還在扣", tip: "每個月看一次扣款紀錄，把沒在用的訂閱退掉。"},
+  emerg: {n: "預備金挪用型", ch: "急", hong: "姑娘的月銀本是應急錢，卻變成買脂粉的零花", life: "存款被手搖飲、轉蛋一點一點吃掉", tip: "應急的錢另外放一個戶頭，沒有急事不動它。"},
+  debt: {n: "以債養債型", ch: "債", hong: "王熙鳳拿月錢放利錢、典當老太太的東西", life: "分期付款、先買後付，一期接一期", tip: "分期前把「總共要付多少」算出來，再決定買不買。"},
+  tight: {n: "過度緊縮型", ch: "緊", hong: "「一枝花也不許掐」的監管者", life: "省到推掉所有聚會，連必要的都不買", tip: "存錢也要留一筆讓自己開心的預算，才撐得久。"},
+  open: {n: "開源經營型", ch: "探", hong: "探春：觀摩別人、活化資產、讓對的人做對的事", life: "打工、接案、二手轉賣，讓資源動起來", tip: "你最接近探春！下一步是養成記帳習慣。"},
+  zong: {n: "心軟縱容型", ch: "軟", hong: "被趙姨娘一鬧就掏錢", life: "朋友開口借錢，不好意思拒絕", tip: "練習一句拒絕的話：「這筆我真的沒辦法，但我可以幫你想別的辦法。」"}
+};
+
+// ===== 事件 =====
+// e：s 庫銀、f 體面、h 人心、c 告狀；inc／exp 每月收入／支出增減；k 消費類型加分；set 旗標；later [事件, 幾個月後]
+//    debt [債名, 到期要還多少, 幾個月後到期]：記進欠帳簿，到期債主上門；12 月後才到期的，年終一次扣掉
+// best：原著做法（探春解）；r 結果；q 原文；qs 出處；n 補充說明
+const EV = {
+  funeral: {who: "wu", src: "第55回", t: "趙國基的喪葬銀",
+    x: "趙姨娘的兄弟趙國基死了。管事的吳新登媳婦只報了死訊，不說往年給多少，垂手站著，等著看你這新主子出醜。",
+    ping: "平兒悄悄說：往年給多少，帳房的舊帳都查得到，奶奶當家時也是先翻帳的。",
+    o: [
+      {t: "照襲人的娘的例，給四十兩", e: {s: -40, h: -8, f: -3, k: {face: 1, zong: 1}}, r: "下人們私下議論：「三姑娘偏袒自己娘家。」", n: "襲人的娘是「外頭的」，按例給四十兩；趙國基是家裡的奴才，例只有二十兩。"},
+      {t: "給一百兩，盡盡孝心", e: {s: -100, h: -10, c: 1, k: {face: 2, zong: 2}}, r: "有人把這事告到王夫人那裡：拿公中的錢貼補娘家。", n: "代理家務的人最怕被說徇私。公中的錢不是探春的私房錢。"},
+      {t: "先請她把舊帳拿來查", best: 1, e: {s: -20, h: 8, f: 3, k: {open: 1}}, r: "舊帳一翻：家裡的二十兩、外頭的四十兩。吳新登媳婦滿面通紅地退下。", n: "探春先查舊例：家裡奴僕的喪葬銀是二十兩，外頭的是四十兩。趙國基是家裡的奴才，照例只給二十兩。", q: "探春看時，兩個家裡的賞過皆二十兩，兩個外頭的皆賞過四十兩。……探春便說：「給他二十兩銀子。把這帳留下，我們細看看。」", qs: "第55回"},
+      {t: "隨口說：就照往年辦吧", e: {s: -20, h: -8, f: -3}, r: "錢沒給錯，但下人們笑你「連往年多少都不知道」，從此不把你放在眼裡。", n: "管理者要先掌握事實再做決定，這就是探春的「敏」。"}
+    ]},
+  school: {who: "wu", src: "第55回", t: "學裡的八兩",
+    x: "媳婦來回：賈環、賈蘭在學裡吃點心、買紙筆，每人一年另有八兩銀子。可是爺們的用度，各屋的月錢早就領過了。",
+    ping: "平兒說：這一項奶奶舊年就說要免，因年下忙，就忘了。",
+    o: [
+      {t: "照發，讀書的事不能省", e: {k: {dup: 2}}, r: "同一筆用度，月錢領一次、學裡又領一次。", n: "這就是「重複付費」：同樣的東西付了兩次錢。"},
+      {t: "免了這一項", best: 1, e: {exp: -3, s: 16, h: -2, f: 2, k: {open: 1}}, r: "平兒笑說：「早就該免。」", n: "爺們的花用，各房月錢裡早就有了，學裡又另發八兩，等於同一筆錢付兩次，所以探春把它免了。", q: "探春道：「凡爺們的使用，都是各屋領了月錢的。……怎麼學裡每人又多這八兩？原來上學去的是為這八兩銀子！從今兒起，把這一項蠲了。」", qs: "第55回"},
+      {t: "加到十二兩，表示重視讀書", e: {exp: 1, f: 3, k: {face: 2}}, r: "老爺們聽了高興，帳上卻又多一筆。"},
+      {t: "改由學裡統一採買紙筆", e: {exp: -1, h: -2, k: {dup: 1}}, r: "多了一個買辦經手，省得不多。", n: "多一層經手人，就多一層抽成。下個月的頭油脂粉就是例子。"}
+    ]},
+  rouge: {who: "ping", src: "課文第1段", t: "頭油脂粉的二兩",
+    x: "姑娘們每月已有二兩月銀，買辦每月又另領錢替她們買頭油脂粉。可是各屋竟有一半，都是自己再拿錢去買。",
+    ping: "平兒說：買辦買的都是使不得的東西，誰買了好的來，買辦就說他要奪這差事，所以大家只能將就。",
+    o: [
+      {t: "加錢，叫買辦買好的", e: {exp: 6, f: 2, k: {face: 1, dup: 1}}, r: "錢多了，東西還是一樣差。", n: "問題不在錢少，而在採買制度：買辦和府裡辦事的人互相牽制，誰都不敢買好貨。"},
+      {t: "換一個買辦", e: {s: -10, h: -6, k: {dup: 1}}, r: "新買辦買來的，依然是那一樣的。", n: "就算換成府裡的人當買辦，買回來的還是一樣差的東西。問題出在制度，不在人。", q: "若使了官中的人，依然是那一樣的。", qs: "課文第1段"},
+      {t: "把買辦這筆公費廢掉", best: 1, e: {exp: -8, h: 3, k: {open: 1}}, r: "省下一筆，姑娘們用月銀自己買合用的。", n: "探春說：同一筆錢花了兩次，東西又有一半不能用，算起來反而多浪費一倍，不如把買辦這筆錢取消。", q: "探春道：「因此我心中不自在。錢費兩起，東西又白丟一半，通算起來，反費了兩折子，不如竟把買辦的每月蠲了為是。」", qs: "課文第1段"},
+      {t: "公費照發，姑娘們想要好的就自己再買", e: {k: {dup: 2, emerg: 1}}, r: "一份錢花兩次，月銀也被吃掉。", q: "姑娘們的每月這二兩，原不是為買這些的，原為的是一時當家的奶奶、太太或不在，或不得閒，姑娘們偶然一時可巧要幾個錢使，省得找人去。", qs: "課文第1段（平兒）", n: "月銀本來是應急錢，就像現在的緊急預備金。"}
+    ]},
+  lai: {who: "lai", src: "第45回・課文第1段", t: "到賴大家作客",
+    x: "賴嬤嬤的孫子做了官，賴家請老太太和姑娘們去吃酒。賴家花園雖小，卻收拾得極好。這一天你可以多做一件事。",
+    ping: "平兒說：賴家那園子還沒咱們一半大，可人家打理得有聲有色。",
+    o: [
+      {t: "專心看戲吃酒，難得輕鬆", e: {f: 3, h: 2, k: {face: 1}}, r: "玩得盡興，什麼也沒帶回來。"},
+      {t: "和賴家的女兒聊聊園子怎麼管", best: 1, e: {set: "learned", k: {open: 2}}, r: "你得知一個驚人的數字：那小園子包給人管，一年還剩二百兩！", q: "誰知那麼個園子，除他們帶的花、吃的筍菜魚蝦之外，一年還有人包了去，年終足有二百兩銀子剩。從那日我才知道，一個破荷葉，一根枯草根子，都是值錢的。", qs: "課文第2段", n: "觀摩別人的做法，是探春改革的起點。"},
+      {t: "開口向賴家借三百兩周轉", e: {s: 300, f: -8, debt: ["賴家借款", 360, 6], k: {debt: 3}}, r: "錢是有了。只是主子向奴才借錢，傳出去可不好聽，半年後還得連本帶利還三百六十兩。"},
+      {t: "送賴嬤嬤一份厚禮", e: {s: -40, f: 5, h: 2, k: {face: 2}}, r: "賴嬤嬤笑得合不攏嘴。"}
+    ]},
+  garden: {who: "tan", src: "課文第2段", t: "大觀園要怎麼辦",
+    x: "大觀園花木極多，每年要付花兒匠、山子匠、打掃人的工錢，卻一文收入也沒有。",
+    ping: "平兒說：奶奶也有這心，只是姑娘們住在園裡，叫人去監管、圖省錢，這話斷不好出口。",
+    o: [
+      {t: "把花果拿去市上賣錢", e: {inc: 20, f: -15, c: 1, k: {open: 1}}, r: "有人告到太太跟前：公府千金叫人沿街賣花！", n: "意思是：像賈府這樣的大戶人家，若拿花果去賣錢，會被人說小氣、有失身分。", q: "若此時也出脫生發銀子，自然小器，不是咱們這樣人家的事。", qs: "課文第2段"},
+      {t: "派兩個專人監管，看緊一草一木", e: {exp: 5, h: -10, later: ["guard", 2], k: {tight: 2}}, r: "監管的人一來，姑娘們連摘朵花都要看人臉色。", n: "寶釵說：交給專人去賺錢，那人一定連一朵花、一顆果子都不准大家碰；姑娘們不好意思說，丫頭們就天天和他吵。", q: "若果真交與人弄錢去的，那人自然是一枝花也不許掐，一個果子也不許動了，姑娘們分中自然不敢，天天與小姑娘們就吵不清。", qs: "課文第3段（寶釵）"},
+      {t: "包給園中老媽媽，只問一年孝敬什麼", best: 1, need: "learned", lock: "要先觀摩過別人家怎麼管園子，才想得到這個辦法", e: {inc: 20, exp: -10, h: 8, set: "contract", k: {open: 3}}, r: "老媽媽們得了差事，人人願意。", q: "不如在園子裡所有的老媽媽中，揀出幾個本分老誠能知園圃的事，派准他們收拾料理，也不必要他們交租納稅，只問他們一年可以孝敬些什麼。", qs: "課文第2段", n: "李紈一語道破：「使之以權，動之以利，再無不盡職的了。」"},
+      {t: "維持原樣，別多事", e: {f: 1, k: {face: 1}}, r: "什麼都沒變，工錢照付。", n: "不做決定也是一種決定：每個月的花費一樣不少。"}
+    ]},
+  askFeng: {who: "ping", src: "課文第3～4段", t: "要不要先回奶奶一聲",
+    x: "你要改的，都是王熙鳳當家時定下的規矩。她還在病中，平兒就站在你面前。",
+    ping: "平兒說：奶奶是個明白人。",
+    o: [
+      {t: "直接公告，我現在才是當家的", e: {h: -6, c: 1, rel: {feng: -2}}, r: "王熙鳳那邊的人心裡有氣，有人告到太太那裡。", n: "改革等於挑戰原管理者，最容易引起不滿。"},
+      {t: "請平兒先回王熙鳳一聲", best: 1, e: {h: 5, f: 2, rel: {feng: 1, ping: 1}}, r: "平兒回來笑說：「這樣好事，奶奶豈有不依的。」", q: "探春道：「雖如此說，也須得回你奶奶一聲。我們這裡搜剔小遺，已經不當，皆因你奶奶是個明白人，我才這樣行。」", qs: "課文第4段", n: "尊重原掌事者，改革就少了阻力，也更名正言順。"},
+      {t: "越過王熙鳳，直接去回王夫人", e: {f: 2, h: -5, rel: {feng: -2}}, r: "王夫人點頭了，鳳姐那邊卻覺得被晾在一旁。"},
+      {t: "等王熙鳳病好了再說", e: {s: -30}, r: "白白多付了幾個月的冤枉錢。", n: "拖延也有成本：每個月的浪費都在繼續。"}
+    ]},
+  pick: {who: "wan", src: "課文第5段", need: "contract", t: "挑選承包的人",
+    x: "竹子、稻香村的菜地、蘅蕪苑和怡紅院的香草，各要找一個人負責。婆子們爭著自薦。",
+    ping: "平兒說：鶯兒的娘最會弄香草，上回還編花籃給我頑。",
+    o: [
+      {t: "老祝媽管竹子、老田媽管菜地、老葉媽管香草", best: 1, e: {inc: 10, h: 5, rel: {chai: 1}, k: {open: 2}}, r: "人人都是行家，園子一年好似一年。", q: "這一個老祝媽是個妥當的，況他老頭子和他兒子代代都是管打掃竹子，如今竟把這所有的竹子交與他。", qs: "課文第5段", n: "香草本可給鶯兒的娘，寶釵改薦老葉媽：她和鶯兒娘極好，有不懂的自然會去商量。"},
+      {t: "香草交給鶯兒的娘，她最在行", e: {inc: 10, h: -6, f: -2, rel: {chai: -2}}, r: "寶釵一臉為難。府裡的人說：薛家的人也來分好處了。", n: "寶釵拒絕安插自家的人：府裡閒著的人那麼多，我卻弄自己人進來，會讓大家連我也看不起。", q: "寶釵道：「斷斷使不得！你們這裡多少得用的人，一個一個閒著沒事辦，這會子我又弄個人來，叫那起人連我也看小了。」", qs: "課文第5段"},
+      {t: "誰說得最好聽，就交給誰", e: {inc: 12, later: ["bamboo", 3]}, r: "那婆子拍胸脯保證，說得天花亂墜。", q: "寶釵笑答道：「幸於始者怠於終，繕其辭者嗜其利。」", qs: "課文第5段", n: "一開始很積極的人，往往後來懈怠；話說得漂亮的人，多半是貪圖利益。"},
+      {t: "先給自己院子裡的人", e: {inc: 6, h: -10, c: 1, k: {zong: 1}}, r: "別院的婆子們說你徇私，告了一狀。"}
+    ]},
+  account: {who: "chai", src: "課文第6段", need: "contract", t: "收益要歸到哪裡",
+    x: "承包的婆子們年終有了收益，這筆帳要怎麼算？",
+    ping: "平兒說：歸到帳房的錢，向來是「主子有一全分，他們就得半分」。",
+    o: [
+      {t: "照舊例，年終歸到帳房", e: {inc: -10, h: -5}, r: "帳房又剝了一層皮，婆子們做得沒勁。", n: "收益交到帳房，等於上面又多一層管的人，婆子們又要被剝一層皮。", q: "若年終算帳歸錢時，自然歸到帳房，仍是上頭又添一層管主，還在他們手心裡，又剝一層皮。", qs: "課文第6段"},
+      {t: "另立園子自己的帳", e: {h: 3}, r: "少了帳房剝皮，但每年還是要算一大本帳。"},
+      {t: "不歸帳，改叫承包的人供應園內用品", best: 1, e: {exp: -30, h: 3, rel: {chai: 1}, k: {open: 2}}, r: "頭油、胭粉、香、紙、笤帚、鳥雀糧食，都由承包的人包了。", n: "寶釵說不用交帳，直接讓承包的人負責供應園子裡的日用品；平兒一算，一年能省下四百兩。", q: "寶釵笑道：「依我說，裡頭也不用歸帳。……不如問他們誰領這一分的，他就攬一宗事去。」平兒笑道：「這幾宗雖小，一年通共算了，也省的下四百兩銀子。」", qs: "課文第6段"},
+      {t: "收益全部交公，一文不留", e: {inc: 10, h: -15, k: {tight: 2}}, r: "婆子們嘴上不說，心裡都涼了。", n: "「動之以利」沒了，誰還肯盡力？"}
+    ]},
+  envy: {who: "po", src: "第56回", need: "contract", t: "沒包到的婆子眼紅",
+    x: "承包的婆子們年終要多一筆進帳，園中其他上夜、抬轎、撐船的婆子什麼也沒有，背地裡怨聲不斷。",
+    ping: "平兒說：她們嘴上不敢怨，心裡可不服。",
+    o: [
+      {t: "不理，承包的人辛苦應得", e: {h: -10, later: ["steal", 2]}, r: "怨氣越積越深。"},
+      {t: "請承包的人年終拿出些錢，分給其他媽媽", best: 1, e: {inc: -3, h: 12, rel: {chai: 1}, k: {open: 1}}, r: "沒包到的婆子也歡喜：「我們怎麼好穩坐吃三注的？」", q: "寶釵：「……只叫他拿出若干貫錢來，大家湊齊，單散與園中這些媽媽們。……你們只管了自己寬裕，不分與他們些，他們雖不敢明怨，心裡卻都不服。」", qs: "第56回（課文之後）", n: "這就是回目「識寶釵小惠全大體」的「小惠」。"},
+      {t: "公中另撥錢安撫她們", e: {s: -60, h: 6, k: {face: 1, zong: 1}}, r: "錢花了，承包的人倒覺得事不關己。"},
+      {t: "嚴加看管，誰偷摘就罰", e: {exp: 3, h: -8, c: 1, k: {tight: 2}}, r: "罰了幾個人，被罰的告到太太那裡。"}
+    ]},
+  harvest: {who: "wu2", src: "第53回", t: "年終：田莊交租",
+    x: "莊頭烏進孝來交租，報說今年九月一場碗大的雹子，莊稼打壞了，租子比預期少了三百兩。",
+    pre: {s: -300},
+    o: [
+      {t: "動用存下的庫銀，照常過年", best: 1, e: {k: {open: 1}}, r: "還好平時有存下錢，這一關撐過去了。", q: "九月裡一場碗大的雹子，方近一千三百里地，連人帶房並牲口糧食，打傷了上千上萬的。", qs: "第53回（烏進孝）", n: "收入本來就會有起落，這就是要存預備金的原因。"},
+      {t: "年節照樣辦得熱熱鬧鬧", e: {s: -150, f: 8, k: {face: 3}}, r: "外人只看到賈府風光依舊。", n: "賈珍原本以為莊子至少送來五千兩，看了帳單直皺眉：這點錢哪夠用！", q: "賈珍皺眉道：「我算定了你至少也有五千兩銀子來，這夠作什麼的！」", qs: "第53回"},
+      {t: "偷偷典當老太太的東西過年", e: {s: 200, f: -15, debt: ["贖回老太太的東西", 250, 3], k: {debt: 3}}, r: "這個窟窿遲早要補：贖回來要二百五十兩。", n: "第72回，賈璉就曾託鴛鴦偷運賈母的東西去當。"},
+      {t: "年節從簡，各房的賞減半", e: {s: 60, h: -8, f: -5, k: {tight: 2}}, r: "下人們過了個冷清的年。"}
+    ]},
+
+  // ----- 隨機事件 -----
+  willow: {who: "po", src: "第59回", need: "contract", t: "掐了幾根柳條", n: "鶯兒覺得柳條拿來編花籃最好玩，就摘了一大把；可這片柳堤已經包給婆子管，在她眼裡每一根都是錢。",
+    x: "鶯兒摘了許多嫩柳條編花籃，管這片柳堤的婆子心疼，竟拿自己女兒春燕出氣，在園中又打又罵。",
+    o: [
+      {t: "站在承包婆子那邊，罰鶯兒", e: {h: -6, f: -3, c: 1}, r: "寶釵那邊覺得沒面子，有人告了一狀。"},
+      {t: "站在丫鬟那邊，罰婆子", e: {h: -8}, r: "承包的婆子們寒了心：辛苦種的，誰都能摘。"},
+      {t: "請平兒調停，重講一次取用的規矩", best: 1, block: ["ping", "平兒對你心寒，不肯出面"], e: {h: 4, rel: {ping: 1}}, r: "取用有定例，大家照規矩來。", n: "承包以後一草一木都有主，取用的界線要先說清楚。"},
+      {t: "不管，讓她們自己吵", e: {h: -5, f: -5}, r: "鬧得雞飛狗跳，全府都聽說了。"}
+    ], q: "鶯兒道：「什麼編不得？頑的使的都可。等我摘些下來，帶著這葉子編個花籃兒，採了各色花放在裡頭，才是好頑呢。」", qs: "第59回"},
+  theft: {who: "lin", src: "第60～61回", t: "玫瑰露失竊",
+    x: "王夫人房裡的玫瑰露少了，廚房柳家的女兒五兒手上偏偏有一包茯苓霜，被林之孝家的當成小偷扣下。",
+    o: [
+      {t: "立刻打一頓攆出去，殺雞儆猴", e: {h: -12, c: 1}, r: "後來才知道冤枉了好人，柳家的告到太太那裡。"},
+      {t: "先查清楚茯苓霜是哪來的", best: 1, e: {h: 8, f: 2, rel: {ping: 1}}, r: "原來茯苓霜是五兒的舅舅送的，五兒是被拿來頂缸。", q: "平兒聽了，笑道：「這樣說，你竟是個平白無辜之人，拿你來頂缸。」", qs: "第61回", n: "回目「判冤決獄平兒行權」：查明事實才不會冤枉人。"},
+      {t: "花錢再買一份補上，不追究", e: {s: -30, k: {zong: 1, face: 1}}, r: "事情壓下來了，真正偷東西的人也沒事了。"},
+      {t: "全交給林之孝家的處理", e: {h: -4}, r: "五兒被關了一夜，哭得不成樣子。"}
+    ]},
+  egg: {who: "si", src: "第61回", t: "一碗燉雞蛋",
+    x: "司棋要一碗嫩嫩的燉雞蛋，廚房柳家的說今年雞蛋短，十個錢一個還找不到。司棋帶人把廚房翻得亂七八糟。",
+    o: [
+      {t: "另開小灶，各房想吃什麼就做什麼", e: {exp: 4, k: {face: 1, zong: 1}}, r: "這個點這樣、那個點那樣，廚房的錢撐不住。"},
+      {t: "定規矩：例外點菜要自己出錢", best: 1, e: {exp: -1, h: 4}, r: "柳家的說：這才是明白體下的姑娘。", q: "連前兒三姑娘和寶姑娘偶然商議了要吃個油鹽炒枸杞芽兒來，現打發個姐兒拿著五百錢來給我……", qs: "第61回（柳家的）", n: "探春自己點菜也付錢，以身作則，規矩才立得住。"},
+      {t: "撤換柳家的", e: {s: -10, h: -8}, r: "換了人，廚房照樣缺雞蛋。"},
+      {t: "叫買辦多買雞蛋，貴就貴", e: {exp: 4, k: {dup: 1}}, r: "雞蛋有了，帳也多了。"}
+    ]},
+  bday: {who: "yu", src: "第62～63回", t: "寶玉的生日",
+    x: "寶玉生日到了，姊妹們想熱鬧一番。",
+    o: [
+      {t: "大擺宴席，再請一班戲", e: {s: -120, f: 8, h: 5, k: {face: 3}}, r: "熱鬧極了，帳房的臉色也很精彩。"},
+      {t: "照例，各房自己送禮", e: {f: -1}, r: "規規矩矩，沒什麼話說。"},
+      {t: "大家湊份子，在園中小聚", best: 1, e: {s: -10, h: 6, k: {open: 1}}, r: "花得不多，大家都盡興。", q: "襲人笑道：「你放心，我和晴雯，麝月，秋紋四個人，每人五錢銀子，共是二兩。……」", qs: "第63回", n: "丫頭們自己湊錢替寶玉過生日，就是「怡紅夜宴」。"},
+      {t: "今年不辦了，省錢", e: {h: -8, f: -6, k: {tight: 2}}, r: "寶玉悶悶不樂，老太太也問起來。"}
+    ]},
+  poem: {who: "tan", src: "第45回", t: "詩社的經費",
+    x: "姊妹們起了詩社，每次作東都要花錢，月錢不夠用。",
+    o: [
+      {t: "公中撥五十兩給詩社", e: {s: -50, h: 5, k: {face: 1}}, r: "大家高興，帳上少了五十兩。"},
+      {t: "一文不給，作詩又不用錢", e: {h: -8, k: {tight: 1}}, r: "姊妹們掃興。"},
+      {t: "請王熙鳳當「監社御史」，請她贊助", best: 1, block: ["feng", "你得罪了王熙鳳，她不肯當這個「進錢的銅商」"], e: {h: 6, f: 2}, r: "鳳姐笑說你們是拉她當「進錢的銅商」，還是拿出了五十兩。", q: "鳳姐兒笑道：「你們別哄我，我猜著了，那裡是請我作監社御史！分明是叫我作個進錢的銅商。」", qs: "第45回", n: "找到願意出資的人，又讓她樂在其中，這也是「開源」。"},
+      {t: "叫大家拿自己的月銀輪流作東", e: {h: 1, k: {emerg: 2}}, r: "詩社辦成了，大家的應急錢也見底了。"}
+    ]},
+  crab: {who: "jia", src: "第38～39回", t: "老太太要吃螃蟹",
+    x: "秋天到了，老太太興致一來，要在園中擺螃蟹宴。",
+    o: [
+      {t: "照老太太的意思大辦", e: {s: -25, f: 6, k: {face: 1}}, r: "劉姥姥算了算，嚇了一跳。", n: "劉姥姥一算，一頓螃蟹宴要二十多兩，夠鄉下莊稼人家過一整年。", q: "劉姥姥道：「……再搭上酒菜，一共倒有二十多兩銀子。阿彌陀佛！這一頓的錢夠我們莊家人過一年了。」", qs: "第39回"},
+      {t: "學寶釵的法子：向自家當鋪要幾簍螃蟹來", best: 1, block: ["chai", "寶釵對你有了心結，不好開這個口"], e: {s: -8, f: 6, h: 4, rel: {chai: 1}, k: {open: 1}}, r: "既體面又省錢。", n: "第37回，湘雲要作東卻沒錢，寶釵叫家裡當鋪的夥計送幾簍肥螃蟹來，替她辦成了螃蟹宴。"},
+      {t: "婉拒老太太", e: {f: -10, k: {tight: 1}}, r: "老太太掃了興。"},
+      {t: "辦，但只給主子們吃", e: {s: -15, h: -6}, r: "下人們看著眼饞，心裡不平。"}
+    ]},
+  liu: {who: "liu", src: "第6・39回", t: "劉姥姥來了",
+    x: "鄉下的窮親戚劉姥姥又來了，說是來看看老太太，其實是家裡過不下去。",
+    o: [
+      {t: "給二十兩，讓孩子做件冬衣", best: 1, e: {s: -20, f: 4, h: 2}, r: "劉姥姥千恩萬謝地走了。", n: "鳳姐給劉姥姥二十兩，說是給孩子做冬衣，還客氣地說「不拿就是怪我」。給得體貼，又不傷對方自尊。", q: "鳳姐乃道：「這是二十兩銀子，暫且給這孩子做件冬衣罷。若不拿著，就真是怪我了。」", qs: "第6回"},
+      {t: "給一百兩，顯顯賈府的氣派", e: {s: -100, f: 6, k: {face: 3}}, r: "劉姥姥嚇得說不出話。"},
+      {t: "打發走，不見", e: {f: -8, k: {tight: 1}}, r: "傳出去，說賈府嫌貧愛富。"},
+      {t: "讓她帶園裡的瓜果蔬菜回去", e: {s: -5, f: 4, h: 2, k: {open: 1}}, r: "東西不值多少錢，劉姥姥卻高興得很。"}
+    ]},
+  eunuch: {who: "eun", src: "第72回", t: "宮裡的太監來「借」錢",
+    x: "夏太監打發小太監來說：買房子還短二百兩，先借一借。",
+    o: [
+      {t: "照借二百兩", e: {s: -200, f: 3}, r: "小太監滿意地走了，這錢大概不會回來。", n: "小太監說以前借的一千二百兩，年底會一起還。其實是一借再借，從來沒還過。", q: "小太監道：「夏爺爺還說了，上兩回還有一千二百兩銀子沒送來，等今年年底下，自然一齊都送過來。」", qs: "第72回"},
+      {t: "推說府裡沒錢", e: {f: -6, c: 1}, r: "宮裡的人不高興，有人怕得罪貴妃，告到太太那裡。"},
+      {t: "拿東西去當了借他", e: {f: -5, debt: ["贖回典當的東西", 240, 3], k: {debt: 2}}, r: "為了借別人錢，自己先去當東西，三個月後要花二百四十兩贖回。"},
+      {t: "借一百兩，客氣提一下舊帳", best: 1, e: {s: -100, f: -2}, r: "少借一半，也沒撕破臉。", n: "有些開銷推不掉，這就是要留預備金的原因。原著中王熙鳳也是硬撐著借了。"}
+    ]},
+  opera: {who: "wang", src: "第58回", t: "老太妃薨了",
+    x: "宮裡老太妃薨逝，各官宦人家一律停了戲班。府裡那十二個學戲的女孩子，要怎麼安排？",
+    o: [
+      {t: "給幾兩盤纏，讓願意回家的回家", best: 1, e: {s: -40, exp: -8, h: 4}, r: "願意走的走，願意留的分到各房。", n: "王夫人說：學戲的女孩也是好人家的兒女，趁這機會給些盤纏，讓她們回家。", q: "王夫人因說：「這學戲的倒比不得使喚的，他們也是好人家的兒女……如今有這機會，不如給他們幾兩銀子盤費。」", qs: "第58回"},
+      {t: "全部留下當丫頭使喚", e: {h: -2}, r: "多了十二張嘴，事情卻沒多少。"},
+      {t: "賣出去換錢", e: {s: 60, f: -12, h: -10, k: {tight: 1}}, r: "全府都說賈府刻薄。"},
+      {t: "照舊養著，等國孝過了再唱", e: {s: -30, k: {face: 2}}, r: "一年不能唱戲，錢照花。"}
+    ]},
+  gamble: {who: "po", src: "第73回", t: "夜裡有人聚賭",
+    x: "上夜的婆子們夜裡聚在一起賭錢，越賭越大。",
+    o: [
+      {t: "嚴查，抓出帶頭的", e: {h: -5, f: 3}, r: "抓出三個大頭家，其中一個竟是迎春的奶媽。", n: "一查之下，帶頭開賭的三人、小頭家八人，聚賭的有二十多人，其中一個竟是迎春的奶媽。", q: "查得大頭家三人，小頭家八人，聚賭者通共二十多人……一個就是迎春之乳母。", qs: "第73回"},
+      {t: "睜一隻眼閉一隻眼", e: {later: ["jinfeng", 2], k: {zong: 2}}, r: "賭局越開越大。"},
+      {t: "抽頭，替公中賺一點", e: {s: 30, f: -10, c: 1, k: {debt: 2}}, r: "主子抽賭錢的頭，被人告了。"},
+      {t: "立規矩：上夜不許賭，承包的人負責看管", best: 1, e: {h: 2, f: 2}, r: "大家各管一片，賭局散了。", n: "寶釵早就交代承包的婆子：「別躲懶縱放人吃酒賭錢就是了。」"}
+    ]},
+  pingAsk: {who: "ping", src: "第55回", t: "王熙鳳派平兒來問",
+    x: "王熙鳳在病中，派平兒來問：這陣子家裡怎麼樣？",
+    o: [
+      {t: "報喜不報憂", e: {later: ["exposed", 2]}, r: "平兒點點頭走了，可她什麼都看在眼裡。"},
+      {t: "老實說帳上的問題，請教奶奶", best: 1, block: ["feng", "王熙鳳正在氣頭上，不肯指點你"], e: {h: 4, adv: "ping", rel: {feng: 1}}, r: "平兒多教了你一招（平兒的顧問次數 +1）。", n: "平兒說：旁觀者清。姑娘這幾年冷眼看著，二奶奶有沒做到的地方，姑娘儘管增減，這也是幫二奶奶的忙。", q: "平兒道：「俗語說，『旁觀者清』，這幾年姑娘冷眼看著，或有該添該減的去處二奶奶沒行到，姑娘竟一添減……」", qs: "第55回"},
+      {t: "抱怨王熙鳳留下爛攤子", e: {h: -6, c: 1, rel: {feng: -2, ping: -1}}, r: "話傳到鳳姐耳裡，她的人告了你一狀。"},
+      {t: "請平兒轉告：不用奶奶操心", e: {h: -2}, r: "客客氣氣，什麼也沒交流到。"}
+    ]},
+  doctor: {who: "mai", src: "第51回", t: "請大夫的馬錢",
+    x: "晴雯病了，請來的大夫要付馬錢一兩。麝月拿著一塊銀子和戥子，卻不會看秤。",
+    o: [
+      {t: "揀大塊的給他就是了", e: {s: -5, k: {face: 1, zong: 1}}, r: "多給的錢，也就這麼沒了。", q: "寶玉道：「揀那大的給他一塊就是了。又不作買賣，算這些做什麼！」", qs: "第51回", n: "這正是寶玉的作風：不在乎錢。"},
+      {t: "找人來秤準一兩再給", best: 1, e: {s: -1, k: {open: 1}}, r: "一分不多，一分不少。"},
+      {t: "改請太醫院的王太醫", e: {s: -20, f: 3}, r: "貴，但穩當。"},
+      {t: "請最便宜的大夫", e: {s: -1, later: ["sick", 1]}, r: "便宜大夫開了一劑猛藥。", n: "第51回回目「胡庸醫亂用虎狼藥」。"}
+    ]},
+  cut: {who: "lin", src: "第72回", t: "林之孝家的建議裁人",
+    x: "林之孝說：人口太重了，不如把用不著的老家人放幾家出去，各房的丫頭也減一減。",
+    o: [
+      {t: "照辦，該減的都減", e: {exp: -12, h: -15, f: -5, c: 1, k: {tight: 2}}, r: "一口氣省下不少，被裁的人哭鬧著告到老太太那裡。", n: "林之孝說：府裡人口太多了，不如挑個日子回明老太太、老爺，把用不著的老家人放幾家出去。", q: "林之孝道：「人口太重了。不如揀個空日回明老太太老爺，把這些出過力的老家人用不著的，開恩放幾家出去。」", qs: "第72回"},
+      {t: "只放願意出去的老家人", best: 1, e: {exp: -5, h: 2}, r: "願意走的人帶著恩典回家，留下的人也安心。"},
+      {t: "不裁，反而加月錢穩住人心", e: {exp: 5, h: 8, k: {face: 1, zong: 1}}, r: "人心是穩了，帳更難看了。"},
+      {t: "先擱著再說", e: {}, r: "什麼都沒變。"}
+    ]},
+  fang: {who: "fang", src: "第58回", t: "芳官的月錢", n: "芳官抱怨乾娘偏心：先讓親女兒洗頭，再拿剩水給她洗；她的月錢全在乾娘手上，還被剋扣。",
+    x: "芳官和乾娘吵起來：乾娘先叫親女兒洗頭，再拿剩水給芳官洗。芳官哭說她的月錢都被乾娘拿走了。",
+    o: [
+      {t: "乾娘管乾女兒，天經地義", e: {h: -6, k: {zong: 1}}, r: "女孩子們都不敢再說話。"},
+      {t: "月錢改成直接發到女孩子手上", best: 1, e: {h: 6}, r: "少一層經手，就少一層剋扣。", n: "和探春「別入他們手」的道理一樣：經手的人越多，被剝的皮越多。"},
+      {t: "罰乾娘的月錢", e: {h: 2, c: 1}, r: "乾娘不服，告到太太那裡。"},
+      {t: "把芳官換給別人當乾女兒", e: {h: -2}, r: "換了一個乾娘，問題還在。"}
+    ], q: "芳官……便說他偏心：「把你女兒剩水給我洗。我一個月的月錢都是你拿著，沾我的光不算，反倒給我剩東剩西的。」", qs: "第58回"},
+  late: {who: "ping", src: "第39回", t: "月錢該發了",
+    x: "又到了發月錢的日子。平兒悄悄來傳話：二奶奶照往例，要先把這個月的月錢支出去放利錢，晚幾天再發，利錢公中也分一份。問姑娘要不要照舊？",
+    o: [
+      {t: "照舊，讓二奶奶放出去，公中分利錢", e: {s: 40, set: "usury", k: {debt: 3}}, r: "利錢分進來了！之後每個月都有一筆。只是下人們在問：月錢怎麼還沒發？", q: "平兒悄悄告訴他道：「這個月的月錢，我們奶奶早已支了，放給人使呢。等別處的利錢收了來，湊齊了才放呢。」", qs: "第39回", n: "這是王熙鳳的做法，第105回抄家時成了罪狀之一。"},
+      {t: "請平兒回奶奶：月錢這個月起準時發", best: 1, e: {h: 3}, r: "王熙鳳少了一筆進帳，但下人們安心做事。"},
+      {t: "先發一半，下個月再補", e: {s: 20, h: -8, k: {debt: 1}}, r: "下人們怨聲四起。"},
+      {t: "改成兩個月發一次", e: {h: -6, k: {tight: 1}}, r: "手頭緊的人開始四處借錢。"}
+    ]},
+  xing: {who: "xing", src: "第57回", t: "邢岫煙的棉衣",
+    x: "寄住在府裡的邢岫煙，天冷了還穿著單衣。原來她每月二兩月錢被拿走一兩，只好偷偷把棉衣當了。",
+    o: [
+      {t: "公中替她贖回來", e: {s: -10, h: 3, k: {face: 1}}, r: "棉衣回來了，可下個月還是一樣。"},
+      {t: "查明月錢被誰拿走，改由她本人領", best: 1, e: {h: 5, rel: {chai: 1}}, r: "問題從根本解決了。", n: "邢岫煙說：一個月二兩已經不夠用，現在又被拿走一兩，只好偷偷把棉衣拿去當了換錢。", q: "岫煙道：「因一月二兩銀子還不夠使，如今又去了一兩。前兒我悄悄的把綿衣服叫人當了幾吊錢盤纏。」", qs: "第57回"},
+      {t: "裝作不知道", e: {h: -4}, r: "岫煙在寒風裡發抖。"},
+      {t: "叫她別聲張，免得丟賈府的臉", e: {f: 2, h: -6, k: {face: 2}}, r: "面子保住了，人凍著了。"}
+    ]},
+  fengBday: {who: "jia", src: "第43回", t: "王熙鳳的生日",
+    x: "王熙鳳生日快到了，老太太想熱鬧一番。",
+    o: [
+      {t: "公中全包，大辦一場", e: {s: -80, f: 4, rel: {feng: 1}, k: {face: 2}}, r: "風風光光，花了八十兩。"},
+      {t: "照老太太的新法子：大家湊份子", best: 1, e: {s: -10, h: 4, f: 4, rel: {feng: 1}, k: {open: 1}}, r: "上上下下各出一份，又熱鬧又不傷公中。", n: "賈母提議學小戶人家「湊份子」：每人出一點錢一起辦，又熱鬧又不傷公中。", q: "賈母笑道：「我想著，咱們也學那小家子大家湊分子，多少盡著這錢去辦，你道好頑不好頑？」", qs: "第43回"},
+      {t: "鳳姐病著，今年不辦", e: {f: -6, h: -3, rel: {feng: -1}, k: {tight: 1}}, r: "老太太不太高興。"},
+      {t: "湊份子，沒錢的人也非湊不可", e: {f: 2, h: -8}, r: "窮丫頭們只好去借錢。"}
+    ]},
+  jiao: {who: "eun", src: "第28～29回", t: "貴妃賞銀打醮",
+    x: "貴妃打發夏太監送來一百二十兩銀子，叫府裡到清虛觀打三天平安醮。",
+    o: [
+      {t: "全家去清虛觀看戲三天", e: {s: -60, f: 6, h: 4, k: {face: 2}}, r: "熱熱鬧鬧，花費遠超過賞銀。"},
+      {t: "照宮裡吩咐，用賞銀辦好就好", best: 1, e: {f: 2}, r: "不多不少，辦得妥當。", n: "貴妃賞了一百二十兩，指定在清虛觀打三天平安醮（請道士祈福）、唱戲獻供。照吩咐辦就好。", q: "昨兒貴妃打發夏太監出來，送了一百二十兩銀子，叫在清虛觀初一到初三打三天平安醮，唱戲獻供。", qs: "第28回（襲人）"},
+      {t: "把賞銀留下，挪作家用", e: {s: 120, f: -12, c: 1, k: {emerg: 2}}, r: "有人告到太太那裡：連貴妃的香火錢都敢挪！"},
+      {t: "再加碼，辦得比別家都體面", e: {s: -150, f: 8, k: {face: 3}}, r: "外頭都說賈府闊氣。"}
+    ]},
+
+  // ----- 延後觸發的事件 -----
+  bamboo: {who: "po", src: "延後事件", t: "竹林荒了", n: "寶釵說過：一開始很積極的人，往往後來懈怠；話說得漂亮的人，多半是貪圖利益。",
+    x: "那個說話最好聽的婆子，一開始勤快，後來竹林沒人收拾，新筍還被偷偷拿去外面賣了。",
+    o: [
+      {t: "改交給老祝媽", best: 1, e: {inc: 6, h: 3, s: -10}, r: "老祝媽一接手，竹林慢慢恢復了。"},
+      {t: "罰那婆子的錢", e: {inc: -6, h: -4}, r: "罰了錢，竹林還是荒著。"},
+      {t: "收回來，不包了", e: {inc: -12, h: -5}, r: "又回到一文收入也沒有的時候。"},
+      {t: "再給她一次機會", e: {inc: -8}, r: "她又保證了一次，說得比上次還好聽。"}
+    ], q: "幸於始者怠於終，繕其辭者嗜其利。", qs: "課文第5段（寶釵）"},
+  jinfeng: {who: "ying", src: "第73回", t: "迎春的金鳳不見了",
+    x: "迎春的奶媽賭輸了錢，偷偷把迎春的攢珠累絲金鳳拿去典當。迎春卻說：算了，省些事罷。",
+    o: [
+      {t: "叫奶媽的家人立刻去贖回來", best: 1, e: {h: 2, f: 2, rel: {ping: 1}}, r: "金鳳回來了。", n: "平兒說：早晚都得贖回來，既然知道會有今天，當初又何必拿去當。", q: "平兒笑道：「你遲也贖，早也贖，既有今日，何必當初。」", qs: "第73回"},
+      {t: "公中出錢贖回", e: {s: -30, k: {zong: 1}}, r: "偷東西的人什麼代價也沒付。"},
+      {t: "稟告老太太重罰", e: {h: -5, f: 2}, r: "老太太大怒，牽連了一大串人。"},
+      {t: "照迎春的意思，算了", e: {f: -6, k: {zong: 2}}, r: "下人們知道了：二姑娘的東西拿了也沒事。"}
+    ]},
+  leak: {who: "wang", src: "改編自第39・105回", t: "放利錢東窗事發",
+    x: "王熙鳳拿月錢放利錢、公中還分了利錢的事，被人捅到王夫人跟前。王夫人沉著臉問你：「你當著家，這些錢是怎麼回事？」",
+    pre: {c: 1},
+    o: [
+      {t: "立刻叫停，分到的利錢全數吐回，月錢連利息補發", best: 1, e: {confiscate: 1, s: -60, h: 6, unset: "usury", set: "raid"}, r: "分到的利錢全數吐回，還倒貼了利息。可是風聲已經傳開，王夫人決定徹查整個園子……",
+        n: "原著中王熙鳳放利錢的借券，直到第105回賈府被抄家時才被查出，成了罪狀之一。"},
+      {t: "說這是二奶奶的舊例，與我無關", e: {h: -8, set: "raid", rel: {feng: -3}}, r: "可公中明明分了利錢。王夫人決定親自查個明白……王熙鳳的人也記恨你。"},
+      {t: "拿錢給知情的人封口，讓二奶奶照樣放", e: {s: -40, f: -5, set: "hush"}, r: "暫時壓下來了，可紙包不住火……"},
+      {t: "一口咬定沒這回事", e: {f: -10, set: "raid"}, r: "越描越黑。王夫人決定親自查個明白……"}
+    ]},
+  raid: {who: "wang", src: "第74回（改編）", t: "抄檢大觀園",
+    x: "王夫人一聲令下，王熙鳳帶著王善保家的等人，連夜抄檢大觀園，連姑娘們的箱籠都要翻。公中分到的利錢，一筆一筆都被查了出來。",
+    pre: {c: 1, f: -10, unset: "usury", confiscate: 1},
+    o: [
+      {t: "命丫鬟秉燭開門以待：只准搜我的，不准碰我的丫頭", best: 1, e: {h: 14, f: 6}, r: "眾人被你的氣勢鎮住，連王熙鳳都陪著笑臉。",
+        q: "探春道：「我的東西倒許你們搜閱，要想搜我的丫頭，這卻不能。……你們今日早起不曾議論甄家，自己家裡好好的抄家，果然今日真抄了。咱們也漸漸的來了。」", qs: "第74回",
+        n: "原著中抄檢大觀園的起因，是園中撿到一個不該出現的香囊，不是放利錢；遊戲把兩件事串在一起。探春這段話，預言了賈府日後真的被抄家。"},
+      {t: "全力配合，任她們翻", e: {h: -16}, r: "丫頭們的箱子被翻得亂七八糟，她們看你的眼神全變了。"},
+      {t: "擋在門口，不讓任何人進來", e: {f: -8, c: 1}, r: "王善保家的回去告了一狀：三姑娘抗命！"},
+      {t: "當眾說出放利錢全是王熙鳳的主意", e: {h: -10, f: -4, rel: {feng: -3}}, r: "這是實話，可你明明分了利錢，出了事卻撇得一乾二淨。王熙鳳的人從此恨上你。"}
+    ]},
+  exposed: {who: "feng", src: "延後事件", t: "王熙鳳全都知道了",
+    x: "你報喜不報憂，王熙鳳卻從別處聽說了帳上的窟窿。",
+    pre: {c: 1},
+    o: [
+      {t: "親自去向王熙鳳說明", best: 1, e: {h: 4, rel: {feng: 1}}, r: "鳳姐冷笑一聲，倒也沒再為難你。"},
+      {t: "推說平兒沒傳清楚", e: {h: -8, rel: {feng: -1, ping: -2}}, r: "平兒委屈極了。"},
+      {t: "裝作沒事", e: {f: -4, rel: {feng: -1}}, r: "府裡都在看你們的笑話。"},
+      {t: "送禮給鳳姐賠罪", e: {s: -30, rel: {feng: 1}, k: {face: 1}}, r: "禮收了，話也傳出去了。"}
+    ]},
+  sick: {who: "mai", src: "第51回", t: "晴雯病重",
+    x: "便宜大夫開的猛藥，晴雯吃了反而更重了。",
+    o: [
+      {t: "改請王太醫", best: 1, e: {s: -20, h: 4}, r: "換了藥，晴雯慢慢好起來。", n: "這是第51回的回目，意思是：不高明的醫生亂開猛藥。換個好大夫才是正辦。", q: "胡庸醫亂用虎狼藥", qs: "第51回回目"},
+      {t: "繼續吃原來的藥", e: {h: -8}, r: "怡紅院上下都很不滿。"},
+      {t: "送她回家養病", e: {h: -10}, r: "寶玉傷心了好幾天。"},
+      {t: "讓寶玉自己去張羅", e: {s: -15, k: {zong: 1}}, r: "寶玉什麼都挑最貴的。"}
+    ]},
+  guard: {who: "chai", src: "延後事件", t: "姑娘們和監管的人吵起來了",
+    x: "監管的人連姑娘們摘朵花都要攔，天天吵個不停。",
+    o: [
+      {t: "撤掉監管，改包給老媽媽", need: "learned", lock: "要先觀摩過別人家怎麼管園子", best: 1, e: {exp: -5, inc: 15, h: 8, set: "contract", k: {open: 2}}, r: "改成承包，大家都有好處。"},
+      {t: "再加派人手看得更緊", e: {exp: 5, h: -6, k: {tight: 1}}, r: "吵得更兇了。"},
+      {t: "罰監管的人", e: {h: -3}, r: "監管的人兩頭受氣。"},
+      {t: "不理", e: {h: -5, f: -5}, r: "全府都聽說了。"}
+    ]},
+  steal: {who: "po", src: "第56回", t: "果子少了",
+    x: "沒分到好處的婆子們假公濟私，多摘果子、多掐花，承包的人有冤沒處訴。",
+    o: [
+      {t: "補一個分紅辦法，大家都沾一點", best: 1, e: {inc: -3, h: 8}, r: "怨氣散了，果子也不少了。", n: "寶釵說：沒分到好處的人嘴上不敢抱怨，心裡卻不服，就藉著公事多摘幾個果子、多掐幾枝花，承包的人有冤也說不出口。", q: "他們雖不敢明怨，心裡卻都不服，只用假公濟私的多摘你們幾個果子，多掐幾枝花兒，你們有冤還沒處訴。", qs: "第56回（寶釵）"},
+      {t: "抓賊，抓到就罰", e: {h: -6}, r: "抓到幾個，抓不完。"},
+      {t: "加派人巡夜", e: {exp: 3}, r: "多了一筆巡夜的工錢。"},
+      {t: "不理", e: {inc: -5}, r: "收益一點一點流失。"}
+    ]}
+};
+const FIXED_TAN = {1: ["funeral"], 2: ["school"], 3: ["rouge"], 4: ["lai"], 5: ["garden", "askFeng"], 6: ["pick", "account"], 8: ["envy"], 12: ["harvest"]};
+const RANDOM_TAN = ["willow", "theft", "egg", "bday", "poem", "crab", "liu", "eunuch", "opera", "gamble", "pingAsk", "doctor", "cut", "fang", "late", "xing", "fengBday", "jiao"];
+let FIXED = FIXED_TAN, RANDOM = RANDOM_TAN;
+const CLUE = {rouge: "課文第1段", lai: "課文第1～2段", garden: "課文第2段", askFeng: "課文第3～4段", pick: "課文第5段", account: "課文第6段"};
+const ZHAO_LINES = [
+  {t: "「這屋裡的人都踩下我的頭去還罷了。姑娘你也想一想，該替我出氣才是。」", s: "第55回"},
+  {t: "「如今你舅舅死了，你多給了二三十兩銀子，難道太太就不依你？」", s: "第55回"},
+  {t: "趙姨娘聽說芳官拿茉莉粉充薔薇硝哄了賈環，氣沖沖要去怡紅院打人，先衝到你這裡來。", s: "第60回"},
+  {t: "趙姨娘又來了：環哥兒的月錢不夠使，你這當姊姊的，就不能多撥一點？", s: "依第55回情境"}
+];
+const BAOYU = ["何必算得這麼清楚？又不作買賣，大家高興就好。", "姊妹們、丫頭們受委屈，我心裡過不去。", "憑他怎麼後手不接，也短不了咱們兩個人的。"];
+const FENG_ANGRY = ["三姑娘如今是能人了，還用得著問我？不過照我說，該狠的時候就得狠。", "我病著，管不著。你愛怎麼辦就怎麼辦，出了事別找我。"];
+const FENGS = ["這有什麼難的？該罰就罰、該省就省，誰敢不服？", "錢放著也是放著，不如叫它生些利息。", "別心軟，心一軟，帳就難看了。"];
+const CHATTER = {
+  chai: ["凡事不可太過，也不可不及。", "這件事，怕不只眼前這一層。", "妹妹別急，先看看底下人怎麼說。"],
+  wan: ["三妹妹別急，慢慢想，總有個兩全的法子。", "我是不大管事的，只是……那些嘴甜的，妹妹可要留心。"],
+  ping: ["姑娘，外頭的人都在看您怎麼辦這件事呢。", "我們奶奶說了，這些事姑娘做主就是。", "底下的人嘴上不說，心裡可都有一本帳。"],
+  po: ["聽說三姑娘要改規矩了？這下可有好戲看。", "咱們做下人的，只求月錢按時發。", "這位姑娘年紀輕輕，倒是不好糊弄。"],
+  dai: ["我雖不管事，心裡每常閒了，替你們一算計，出的多進的少。"]
+};
+// 不請自來的人：寶玉（最大方）、王熙鳳（最狠最精）、黛玉（最省）會指著某個選項，其他人只是插句話
+function interject(ev) {
+  if (MODE === "feng") return interjectF(ev);
+  const ok = ev.o.map((o, i) => i).filter(i => !ev.o[i].best && !lockOf(ev.o[i]));
+  const val = o => (o.e.s || 0) + ((o.e.inc || 0) - (o.e.exp || 0)) * 6 - (o.e.owe || 0) - (o.e.debt ? o.e.debt[1] : 0);
+  const pickBy = f => { const c = ok.filter(i => f(ev.o[i]) > 0); return c.length ? c.reduce((b, i) => f(ev.o[i]) > f(ev.o[b]) ? i : b) : -1; };
+  const rules = {
+    yu: () => pickBy(o => -(o.e.s || 0) + (o.e.exp || 0) * 6 + ((o.e.k || {}).zong || 0) * 30 + (o.e.h || 0)),
+    feng: () => pickBy(o => val(o) > 0 && ((o.e.h || 0) < 0 || o.e.c || (o.e.k || {}).debt || (o.e.k || {}).tight) ? val(o) + 1 : 0),
+    dai: () => pickBy(o => ((o.e.k || {}).tight || 0) * 50 + Math.max(0, val(o) + 1))
+  };
+  const pool = ["yu", "yu", "yu", "feng", "feng", "dai", "dai", "chai", "wan", "ping", "po"].filter(k => k !== ev.who);
+  const k = rnd(pool);
+  if (rules[k]) {
+    const i = rules[k]();
+    if (i < 0) return;
+    marks[k] = i;
+    const line = k === "yu" ? rnd(BAOYU) : k === "feng" ? rnd(angry("feng") ? FENG_ANGRY : FENGS) : rnd(DAIYU);
+    const say = k === "yu" ? "寶玉湊過來" : k === "feng" ? "王熙鳳在病中派小丫頭來傳話" : "黛玉幽幽地嘆了口氣";
+    notes.push({k, pop: 1, say, t: `「${line}」他指著 ${"ABCDE"[i]}。`.replace("他指著", k === "yu" ? "他指著" : "她指著")});
+  } else {
+    notes.push({k, pop: 1, say: P[k].n + "插了一句", t: `「${rnd(CHATTER[k])}」`});
+  }
+}
+// 王熙鳳模式：秦可卿前兩個月主動出主意、第 3 個月托夢（只說話，不影響劇情）；之後是賈璉、旺兒媳婦等人湊過來
+function interjectF(ev) {
+  const ok = ev.o.map((o, i) => i).filter(i => !ev.o[i].best && !lockOf(ev.o[i]));
+  if (G.m <= 2 && Math.random() < 0.6) {
+    const bi = ev.o.findIndex(o => o.best), use = bi >= 0 && !lockOf(ev.o[bi]);
+    if (use) marks.qin = bi;
+    notes.push({k: "qin", pop: 1, say: "秦可卿病中派人來說", t: `「${rnd(QIN_LINES)}」${use ? `她指著 ${"ABCDE"[bi]}。` : ""}`});
+    return;
+  }
+  if (G.m === 3) { if (!G.qinDream) { G.qinDream = 1; notes.push({k: "qin", pop: 1, say: "托夢", t: QIN_DREAM}); return; } if (Math.random() < 0.3) return; }
+  const val = o => (o.e.s || 0) + ((o.e.inc || 0) - (o.e.exp || 0)) * 6 - (o.e.debt ? o.e.debt[1] : 0);
+  const pickBy = f => { const c = ok.filter(i => f(ev.o[i]) > 0); return c.length ? c.reduce((b, i) => f(ev.o[i]) > f(ev.o[b]) ? i : b) : -1; };
+  const k = rnd(["lian", "lian", "wanger", "wanger", "ping", "po", "you"].filter(x => x !== ev.who));
+  if (k === "lian" || k === "wanger") {
+    const i = k === "lian" ? pickBy(o => 30 + (o.e.en || 0) + (o.e.h || 0) - (o.e.c || 0) * 10 - (o.e.f || 0 ? 0 : 0)) : pickBy(val);
+    if (i < 0) return;
+    marks[k] = i;
+    notes.push({k, pop: 1, say: k === "lian" ? "賈璉湊過來" : "旺兒媳婦悄悄進來", t: `「${rnd(k === "lian" ? LIAN_LINES : WANGER_LINES)}」${k === "lian" ? "他" : "她"}指著 ${"ABCDE"[i]}。`});
+  } else notes.push({k, pop: 1, say: P[k].n + "插了一句", t: `「${rnd(CHATTER_F[k])}」`});
+}
+const DAIYU = ["依我說，各人少吃少用些罷了。", "花謝花飛，錢來錢去，又能留得幾時？", "我不管事的，你們看著辦罷。"];
+
+
+// ===== 王熙鳳模式 =====
+// 和探春模式共用引擎；差別：賺錢容易、人心掉得快（扣人心 ×3、月底再流失），要靠「公關」回穩；
+// 多了「心力」（歸零病倒）和「把柄」（髒錢、人命，年終一件件被翻出來）；找碴的是婆婆邢夫人；
+// 能商量的只有平兒，而她怕鳳姐，不一定肯開口；秦可卿前三個月會主動跳出來說話（不影響劇情），第 3 個月過世。
+// 選項標記：orig＝原著鳳姐的做法，best＝較好的做法（兩者常常不同）；chain＝連續事件（不出「威重令行」）
+Object.assign(P, {
+  xingf: {n: "邢夫人", c: "#6a4a5a"}, lian: {n: "賈璉", c: "#5a6e8a"}, wanger: {n: "旺兒媳婦", c: "#8a6a3a"}, you: {n: "尤氏", c: "#7a6a8a"},
+  qin: {n: "秦可卿", c: "#8a5a7a"}, rui: {n: "賈瑞", c: "#5a5a4a"}, jing: {n: "淨虛", c: "#6e6e5a"}, er: {n: "尤二姐", c: "#a05a6a"},
+  zhang: {n: "張華", c: "#5a4a3a"}, shou: {n: "守備家", c: "#4a4a5a"}, yuan: {n: "鴛鴦", c: "#8a3a4a"}, lai2: {n: "來升", c: "#6a5a4a"},
+  yun: {n: "賈芸", c: "#4a6a5a"}, hong: {n: "小紅", c: "#b0504a"}, huan: {n: "賈環", c: "#5a5a6a"}, xiren: {n: "襲人", c: "#8a6a5a"},
+  xinger: {n: "興兒", c: "#6a6a4a"}
+});
+Object.assign(ROLE, {
+  xingf: "你的婆婆・賈赦的正室", lian: "你的丈夫・賈赦之子", wanger: "心腹・替你在外頭放帳", you: "寧國府的大奶奶・賈珍之妻",
+  qin: "寧國府的小媳婦・和你最知心", rui: "賈家遠房子弟・塾師代儒的孫子", jing: "饅頭庵（水月庵）的老尼", er: "尤氏的妹妹・賈璉偷娶的二房",
+  zhang: "尤二姐原先的未婚夫", shou: "張金哥未婚夫的家人", yuan: "賈母的大丫鬟・管老太太的東西", lai2: "寧國府的大總管",
+  yun: "賈家遠房的子侄", hong: "寶玉房裡的小丫頭紅玉", huan: "趙姨娘生的庶子", xiren: "寶玉的大丫鬟", xinger: "賈璉的小廝"
+});
+Object.assign(EV, {
+  f_usury: {who: "wanger", src: "第16・39回", t: "旺兒媳婦送利錢來了",
+    x: "公中每個月要發幾百兩月錢，總要過幾天才發到下人手上。心腹旺兒媳婦悄悄來說：奶奶只要把月錢早幾天支出去放給人使，利錢就是奶奶的。",
+    o: [
+      {t: "照放，交給旺兒媳婦經手", orig: 1, e: {set: "usury", dirt: ["usury", "放利錢的借券"], k: {debt: 3}}, r: "利錢一個月一個月滾進來（每月 +40 兩）。只是月錢總晚幾天發，下人們開始嘀咕。",
+        q: "平兒悄悄的說道：「奶奶的那利錢銀子，遲不送來，早不送來，這會子二爺在家，他且送這個來了。」", qs: "第16回", n: "拿去冒險的，是下人們的月錢。第105回抄家時，「重利盤剝」成了罪狀。"},
+      {t: "月錢準時發，一文不挪", e: {h: 4}, r: "下人們按時拿到月錢，對你多了幾分服氣。", n: "不挪用別人的錢，是理財最基本的界線。"},
+      {t: "月錢準時發；只拿自己嫁妝裡的梯己銀子去生利", best: 1, e: {inc: 12, h: 2, k: {open: 1}}, r: "用自己的錢生利，不碰公中，每月多十二兩。", n: "拿自己的錢投資，風險自己扛，和挪用公款是兩回事。"},
+      {t: "不放利錢，叫旺兒去田莊催舊租", e: {s: 30, h: -3}, r: "催回三十兩舊租，莊戶們有些怨言。"}
+    ]},
+  f_rui: {who: "rui", src: "第11～12回", t: "賈瑞的糾纏",
+    x: "你去寧府探望病中的秦可卿，回程經過園子，族中子弟賈瑞突然閃出來攔路，言語輕薄。之後他天天找藉口上門，糾纏不休。",
+    o: [
+      {t: "假意約他，設局狠狠整他一頓", orig: 1, e: {en: -5, f: 2, dirt: ["rui", "賈瑞之死"], later: ["f_rui2", 2]}, r: "他在穿堂凍了一夜，又被賈蓉、賈薔堵住逼寫欠契。從此一病不起。",
+        q: "鳳姐兒……心裡暗忖道：「這才是知人知面不知心呢，那裡有這樣禽獸的人呢。他如果如此，幾時叫他死在我的手裡，他才知道我的手段！」", qs: "第11回", n: "回目「王熙鳳毒設相思局」。以暴制暴雖然出了氣，卻賠上一條人命。"},
+      {t: "稟告老太太，請長輩出面管教", best: 1, e: {en: -10, f: -3, rel: {jia: 1}}, r: "長輩出面，賈瑞被祖父代儒狠狠管教，再也不敢來。只是這件事難以啟齒，府裡也有些閒話。",
+        n: "遇到騷擾，最好的做法是告訴可信任的長輩或師長，尋求正式協助。說出來需要勇氣，但錯的是騷擾的人，不是你。"},
+      {t: "忍著不說，以後避開他", e: {en: -18, later: ["f_rui3", 1]}, r: "你處處躲著他，他卻以為你不敢聲張，越發糾纏。", n: "忍耐不會讓騷擾停止，反而讓對方以為你默許。"},
+      {t: "當著眾人厲聲斥責他", e: {en: -6, f: -5, h: 3}, r: "他灰溜溜地走了。下人們佩服你潑辣，可也有人在背地裡亂傳閒話。", n: "當場拒絕是對的；但那個時代，被議論的往往反而是女方。"}
+    ]},
+  f_rui3: {who: "rui", src: "第12回", chain: 1, t: "賈瑞又來了",
+    x: "你越躲，賈瑞越大膽，竟趁你一個人在屋裡時找上門來。",
+    o: [
+      {t: "這回一定要稟告長輩", best: 1, e: {en: -8, f: -3, rel: {jia: 1}}, r: "長輩出面，他再也不敢來了。你後悔沒有早點說。"},
+      {t: "設局整他", orig: 1, e: {en: -5, dirt: ["rui", "賈瑞之死"], later: ["f_rui2", 2]}, r: "你冷笑一聲，派人布下圈套。", n: "鳳姐見賈瑞自己送上門來，就再想別的計策，說是要讓他「知錯改正」，其實是更狠的圈套。", q: "鳳姐因見他自投羅網，少不得再尋別計令他知改。", qs: "第12回"},
+      {t: "叫平兒天天擋在院門口", e: {en: -6, rel: {ping: -1}}, r: "暫時擋住了，平兒卻天天替你守門，很是辛苦。"},
+      {t: "繼續忍著", e: {en: -20}, r: "你夜裡睡不著覺，白天也提心吊膽。"}
+    ]},
+  f_rui2: {who: "po", src: "第12回", chain: 1, t: "賈瑞病死了",
+    x: "賈瑞那夜之後一病不起，終於嚥了氣。祖父代儒夫婦哭得死去活來，各房都在議論該送多少奠儀。",
+    o: [
+      {t: "照族中的例，送二十兩", e: {s: -20, en: -4}, r: "和大家送的一樣。只有你知道，這件事和自己脫不了關係。",
+        q: "榮國府賈赦贈銀二十兩，賈政亦是二十兩，寧國府賈珍亦有二十兩。", qs: "第12回"},
+      {t: "暗中多送一百兩，給代儒老夫婦養老", best: 1, e: {s: -100, en: 4, h: 2}, r: "錢換不回人命，但你心上的石頭稍微放下了些。"},
+      {t: "心虛，推說病了不去", e: {en: -12, f: -4}, r: "有人注意到：二奶奶怎麼偏偏這時候病了？"},
+      {t: "叫人封口，不許再提這件事", e: {s: -30, h: -4, en: -5}, r: "沒人敢提了，可下人們心裡都有數。"}
+    ], n: "賈瑞固然可惡，但罪不至死。「以暴制暴」的代價，往往比想像中大。"},
+  f_roll: {who: "lai2", src: "第14回", t: "協理寧國府：點卯",
+    x: "賈珍請你過府協理秦可卿的喪事。頭一天點卯，偏有一個迎送親客的管事遲到了，寧府上下都在看你怎麼發落。",
+    o: [
+      {t: "打二十板子，再革他一個月銀米", orig: 1, e: {h: -4, f: 6, exp: -10, en: -4}, r: "眾人見你眉立，再不敢怠慢，寧府上下井井有條。",
+        q: "鳳姐便說道：「明兒他也睡迷了，後兒我也睡迷了，將來都沒了人了。本來要饒你，只是我頭一次寬了，下次人就難管，不如現開發的好。」登時放下臉來，喝命：「帶出去，打二十板子！」", qs: "第14回",
+        n: "立威要在第一次。只是人心也在這一刻，記下了你的狠。"},
+      {t: "念他初犯，饒過這一次", e: {h: 4, exp: 6}, r: "那人千恩萬謝。第二天，遲到的又多了兩個。"},
+      {t: "罰一個月銀米，不打", best: 1, e: {h: -1, f: 3, exp: -6}, r: "規矩立起來了，也沒有鬧得太難看。", n: "賞罰分明，但罰的分寸要拿捏好：讓人怕規矩，而不是怕你。"},
+      {t: "叫大總管來升自己處置", e: {f: -4, exp: 3}, r: "來升護著自己人，輕輕放過。眾人說：這位奶奶不過如此。"}
+    ]},
+  f_five: {who: "you", src: "第13～14回", t: "寧府的五件弊病", n: "鳳姐一到寧府就看出五個毛病：人多手雜常丟東西、沒人負責互相推託、花錢浪費亂報帳、工作分配不均、有臉面的不服管而沒臉面的沒機會出頭。",
+    x: "寧府人多事雜：人口混雜、東西遺失；事無專責、臨期推諉；花費過度、濫支冒領；苦樂不均；有臉面的不服管、沒臉面的不能上進。",
+    q: "鳳姐兒……因想：頭一件是人口混雜，遺失東西，第二件，事無專執，臨期推委，第三件，需用過費，濫支冒領，第四件，任無大小，苦樂不均，第五件，家人豪縱，有臉者不服鈐束，無臉者不能上進。", qs: "第13回",
+    o: [
+      {t: "分班派職：誰管茶、誰管燈、誰管器皿，丟了照數賠", orig: 1, best: 1, e: {exp: -15, h: 2, f: 4, k: {open: 2}}, r: "人人各司其職，東西不丟、差事不推。", n: "這就是「責任到人」：每件事都有人負責，就沒人能推託。"},
+      {t: "多撥銀子，人手不夠就再添人", e: {exp: 10, h: 4, k: {face: 1}}, r: "人是多了，事反而更亂。"},
+      {t: "照舊，喪事辦完就好", e: {exp: 5, f: -4}, r: "寧府的人說：西府的奶奶也不過如此。"},
+      {t: "抓幾個偷懶的重重地罰", e: {h: -6, f: 2, exp: -5}, r: "眾人怕了，怨氣也起來了。"}
+    ]},
+  f_temple: {who: "jing", src: "第15回", t: "饅頭庵弄權",
+    x: "送殯途中住在饅頭庵，老尼淨虛求你：張財主的女兒金哥已許給守備的公子，可李衙內也看上了，張家想退親。只要你託長安節度使雲老爺寫封信壓一壓守備，張家願出三百兩。",
+    o: [
+      {t: "收下，叫人寫信給雲老爺", orig: 1, e: {s: 300, dirt: ["temple", "饅頭庵的三百兩"], later: ["f_temple2", 2], k: {debt: 1}}, r: "一封信，三百兩到手。王夫人連一點消息也不知道。",
+        q: "鳳姐聽了這話，便發了興頭，說道：「你是素日知道我的，從來不信什麼是陰司地獄報應的，憑是什麼事，我說要行就行。你叫他拿三千銀子來，我就替他出這口氣。」", qs: "第15回", n: "這是收賄、包攬官司。錢來得快，代價還沒到。（原文是三千兩，遊戲中統一折算為三百兩）"},
+      {t: "婉拒：這是官司，不是內宅該管的", best: 1, e: {f: -2, h: 2}, r: "老尼碰了個軟釘子。你少了一筆錢，也少了一樁禍。", n: "原著中鳳姐起初也說「太太再不管這樣的事」，是被老尼一激才接下。"},
+      {t: "錢先收下，信卻不真的寫", e: {s: 300, f: -4, later: ["f_temple4", 2]}, r: "錢收了，信沒寫。張家遲早會發現。"},
+      {t: "回王夫人，請長輩定奪", e: {en: -4, f: 2}, r: "王夫人說咱們家不管這樣的事，這件事就此作罷。"}
+    ]},
+  f_temple2: {who: "jing", src: "第15～16回", chain: 1, t: "金哥自縊", n: "張家父母貪圖權勢退了親，女兒金哥卻有情有義，聽說後上吊自盡；守備的兒子知道了，也投河殉情。",
+    x: "雲老爺一封信，守備只得退親。誰知張金哥聽說父母退了前夫，一條麻繩上了吊；守備的公子聽說了，也投河死了。兩條人命，換來你的三百兩。",
+    q: "誰知那張家父母如此愛勢貪財，卻養了一個知義多情的女兒，聞得父母退了前夫，他便一條麻繩悄悄的自縊了。那守備之子聞得金哥自縊，他也是個極多情的，遂也投河而死。", qs: "第16回",
+    o: [
+      {t: "再給老尼一筆錢，叫她閉嘴", e: {s: -80, en: -6, later: ["f_temple3", 3]}, r: "暫時壓住了。可兩家的仇，不會因此消失。"},
+      {t: "拿出一半銀子，暗中送兩家辦後事", e: {s: -150, en: -4, h: 2}, r: "錢補不回人命，但兩家的恨意稍減，沒有再追究。"},
+      {t: "把三百兩全數退回，向王夫人坦白", best: 1, e: {s: -300, c: 1, f: -8, clean: "temple"}, r: "王夫人又驚又怒，這一狀記在你頭上。但這件事總算了結了。", n: "承認錯誤要付代價，但能把把柄收回來。"},
+      {t: "裝作不知道，什麼都不做", orig: 1, e: {en: -8, later: ["f_temple3", 2]}, r: "你照常過日子，膽子卻越來越大。", n: "鳳姐白得這筆錢（原文三千兩，遊戲中折算三百兩），王夫人一點也不知道。從此她膽子越來越大，類似的事就肆無忌憚地做下去。",
+        q: "這裡鳳姐卻坐享了三千兩，王夫人等連一點消息也不知道。自此鳳姐膽識愈壯，以後有了這樣的事，便恣意的作為起來。", qs: "第16回"}
+    ]},
+  f_temple3: {who: "shou", src: "改編自第15・105回", chain: 1, t: "守備家告上衙門",
+    x: "守備家死了兒子，越想越不甘心，打聽出是賈府的璉二奶奶託人寫的信，一紙狀子告上衙門。",
+    o: [
+      {t: "再花錢打點衙門，把案子壓下來", e: {debt: ["打點衙門的借款", 360, 3], en: -6}, r: "官司壓下來了，你卻欠了一屁股債，把柄也還在。"},
+      {t: "推給旺兒，叫他頂罪", e: {h: -10, en: -6, clean: "temple"}, r: "旺兒替你頂了罪。下人們看在眼裡：跟著二奶奶，出了事就被丟出去。"},
+      {t: "請娘家叔叔王子騰出面", e: {f: -8, en: -8, clean: "temple"}, r: "叔叔一句話，衙門撤了案。只是這份人情，日後要還。"},
+      {t: "向王夫人坦白，退回贓銀", best: 1, e: {s: -300, c: 1, f: -6, clean: "temple"}, r: "王夫人嘆了口氣，替你收拾殘局。這一狀記在你頭上。"}
+    ], n: "原著中，賈府這些仗勢弄權的事，直到第105回抄家時才一併爆發。"},
+  f_temple4: {who: "jing", src: "改編自第15回", chain: 1, t: "張家來討說法",
+    x: "張家等了兩個月，雲老爺那邊毫無動靜。老尼淨虛帶著張家的人找上門來討銀子。",
+    o: [
+      {t: "如數退回三百兩", best: 1, e: {s: -300, f: -4}, r: "錢退了，面子也丟了些，但事情了結了。"},
+      {t: "這才寫信給雲老爺", orig: 1, e: {dirt: ["temple", "饅頭庵的三百兩"], later: ["f_temple2", 2]}, r: "信送出去了，守備只得退親……"},
+      {t: "叫人把她們轟出去", e: {f: -10, c: 1}, r: "張家四處嚷嚷：賈府的奶奶收錢不辦事！"},
+      {t: "推說信寫了，是雲老爺不肯", e: {en: -6, f: -4}, r: "張家半信半疑地走了，老尼卻不再信你。"}
+    ]},
+  f_bday: {who: "lian", src: "第44回", t: "生日宴上的醜事",
+    x: "你的生日宴上多喝了幾杯，回房歇息，竟撞見賈璉趁你不在，把僕人鮑二的媳婦叫進房裡，兩人還在咒你早死。",
+    o: [
+      {t: "衝進去大鬧，連平兒一起打", orig: 1, e: {en: -10, h: -6, f: -8, rel: {ping: -3, lian: -2}, later: ["f_bao", 1]}, r: "你踢門撕打，又遷怒平兒，一路鬧到老太太跟前。",
+        n: "原著中平兒無辜挨打，委屈得要尋死。把怒氣發在無辜的人身上，只會失去最忠心的幫手。"},
+      {t: "不吵不鬧，去回老太太評理", e: {en: -10, f: -3, rel: {jia: 1, lian: -1}, later: ["f_bao", 1]}, r: "老太太笑著打圓場，反倒勸你別再生氣。",
+        q: "賈母笑道：「什麼要緊的事！小孩子們年輕，饞嘴貓兒似的，那裡保得住不這麼著。從小兒世人都打這麼過的。」", qs: "第44回",
+        n: "那個時代把丈夫偷腥當小事，連老太太都這麼說。王熙鳳連生氣，都找不到地方說理。"},
+      {t: "隱忍不發，裝作沒看見", e: {en: -22, rel: {lian: 1}}, r: "你笑著回到席上。那天夜裡，你一個人坐到天亮。", n: "忍下來不代表沒事，傷害都記在心力裡。"},
+      {t: "隔天冷靜地和賈璉把話說清楚", best: 1, e: {en: -12, f: 2, rel: {lian: -1}, later: ["f_bao", 1]}, r: "賈璉理虧，賠了不是。事情沒有鬧大，可你知道，這不會是最後一次。"}
+    ]},
+  f_bao: {who: "lin", src: "第44回", chain: 1, t: "鮑二家的上吊了",
+    x: "鮑二家的羞愧難當，上吊死了。她娘家的親戚吵著要告官。",
+    o: [
+      {t: "「我沒一個錢！只管叫他告去」", orig: 1, e: {f: -10, c: 1, h: -6}, r: "娘家真的告了，鬧得滿城風雨。", n: "鳳姐說：我一個錢也沒有，有也不給！讓他去告，告不成反倒告他「拿死人訛詐」。強硬到底，不留餘地。",
+        q: "鳳姐兒道：「我沒一個錢！有錢也不給，只管叫他告去。也不許勸他，也不用震嚇他，只管讓他告去。告不成倒問他個『以屍訛詐』！」", qs: "第44回"},
+      {t: "給娘家二百兩，好好安葬", e: {s: -200, h: 4}, r: "事情平息了。原著中，是賈璉偷偷拿了二百兩去發送。"},
+      {t: "請林之孝家的去勸，許他們幾個錢", best: 1, e: {s: -50, h: 2, f: -2}, r: "林之孝家的軟硬兼施，娘家答應不告了。", n: "林之孝家的說：我已經和大家一起勸過，又嚇唬了一頓、答應給些錢，他們就同意不告了。軟硬兼施，花小錢了結大事。",
+        q: "林之孝家的道：「我才和眾人勸了他們，又威嚇了一陣，又許了他幾個錢，也就依了。」", qs: "第44回"},
+      {t: "反告他們「以屍訛詐」", e: {f: -6, h: -10, en: -6, dirt: ["bao", "鮑二家的人命"]}, r: "官府看在賈府的面子上不收狀子，鮑家敢怒不敢言。"}
+    ]},
+  f_xiaoyue: {who: "ping", src: "第55回", t: "小產", n: "鳳姐小產，本該休養一個月，卻仗著身體好，躺在床上照樣盤算家事，誰勸都不聽。",
+    x: "剛忙完年事，你便小產了。太醫說要靜養一個月，可府裡大小事，人人還等著你一句話。王夫人問：家務先交給誰？",
+    q: "剛將年事忙過，鳳姐兒便小月了，在家一月，不能理事，天天兩三個太醫用藥。鳳姐兒自恃強壯，雖不出門，然籌畫計算，想起什麼事來，便命平兒去回王夫人，任人諫勸，他只不聽。", qs: "第55回",
+    o: [
+      {t: "硬撐著，躺在床上照樣籌畫", orig: 1, e: {en: -30, later: ["f_sick", 2]}, r: "你任人勸也不聽，身子一天天虧虛下去。"},
+      {t: "讓探春代管，由她出頭整頓、得罪人", best: 1, e: {en: 30, h: 12, f: -3, exp: -12, set: "tanRule", later: ["f_tanBack", 2]}, r: "探春一上任就駁了你的舊例。你叫平兒「越恭敬越說駁的是」，眾人對你的怨氣，竟慢慢散了。",
+        q: "鳳姐：「若按私心藏奸上論，我也太行毒了，也該抽回退步，回頭看看。再要窮追苦克，人恨極了，他們笑裡藏刀，偺們兩個，才四個眼睛兩個心，一時不防，倒弄壞了。趁著緊溜之中，他出頭一料理，眾人就把往日偺們的恨暫可解了。」", qs: "第55回",
+        n: "這段正是課文〈賈探春敏慧興利〉的開端：鳳姐病了，探春才有機會改革。讓人分擔，不只是休息，也是化解積怨。探春代管期間，邢夫人不會來找碴，心力每月回復。"},
+      {t: "交給大嫂李紈", e: {en: 25, h: 4, exp: 10}, r: "李紈心腸好，下人們卻趁機鬆懈，開銷又多了。", n: "原文說李紈重品德、不重才幹，難免放縱下人。好人不一定是好管理者。", q: "李紈是個尚德不尚才的，未免逞縱了下人。", qs: "第55回"},
+      {t: "交給旺兒媳婦等心腹代辦", e: {en: 20, s: 80, h: -10, k: {debt: 1}}, r: "心腹們趁你不在撈了一筆，分你八十兩。下人們恨得牙癢。"}
+    ]},
+  f_sick: {who: "ping", src: "第55・72回", chain: 1, t: "下紅之症", n: "鳳姐本來氣血就不足，又不懂保養、凡事爭強，小產後身子虧虛，一個月後又添了婦科的病，卻不肯說出來。",
+    x: "一個月後，你又添了下紅的病，面目黃瘦，卻不肯說出來。",
+    q: "誰知鳳姐稟賦氣血不足，兼年幼不知保養，平生爭強鬪智，心力更虧，故雖系小月，竟著實虧虛下來，一月之後，復添了下紅之症。他雖不肯說出來，眾人看他面目黃瘦，便知失於調養。", qs: "第55回",
+    o: [
+      {t: "請太醫好好調養，事情暫交別人", best: 1, e: {en: 25, s: -40, h: 3}, r: "你總算肯歇下來了，氣色一天天好轉。"},
+      {t: "瞞著不說，照常理事", orig: 1, e: {en: -20, f: 2}, r: "你在人前照樣說說笑笑，回房卻連坐都坐不住。", n: "第72回回目：「王熙鳳恃強羞說病」。"},
+      {t: "這才讓探春代管", e: {en: 20, h: 8, set: "tanRule", later: ["f_tanBack", 2]}, r: "探春接手，府裡上下對你的怨氣，也跟著散了些。"},
+      {t: "吃偏方，省得花錢請太醫", e: {en: -8, s: -5}, r: "偏方沒有用，病拖得更久。"}
+    ]},
+  f_tanBack: {who: "tan", src: "第55～56回", chain: 1, t: "探春交還家務",
+    x: "你身子好些了。探春這幾個月蠲了重複的開銷、把大觀園包給老媽媽們管，帳目好看了不少。現在要把家務交還給你。",
+    o: [
+      {t: "收回大權，探春立下的新章程照樣施行", best: 1, e: {inc: 10, h: 4, unset: "tanRule"}, r: "好的制度留了下來。探春笑說：「還是二嫂子明白。」", n: "好的制度不因換人而廢，這才是真正的管理者。"},
+      {t: "一切恢復我當家時的舊例", e: {exp: 12, h: -8, unset: "tanRule"}, r: "探春默默把帳交回。下人們說：又回到從前了。"},
+      {t: "園子的事放手給探春，我只管大事", e: {en: 10, inc: 8, f: -4, unset: "tanRule"}, r: "你輕鬆不少，只是有人說你「權柄旁落」。"},
+      {t: "挑幾件探春的錯處，重新立威", e: {h: -10, f: 3, en: -6, unset: "tanRule"}, r: "下人們又怕你了，也又恨你了。"}
+    ]},
+  f_er1: {who: "xinger", src: "第65～68回", t: "賈璉偷娶尤二姐",
+    x: "你審問賈璉的小廝興兒，才知道：國孝家孝期間，賈璉在外頭偷偷娶了尤氏的妹妹尤二姐，在小花枝巷買了房子、置了丫頭，瞞了你半年。",
+    o: [
+      {t: "假意賢良把她接進府，暗中唆使她前夫張華告狀", orig: 1, e: {s: -20, en: -8, f: 4, dirt: ["er", "張華的狀子"], later: ["f_er2", 1]}, r: "你親自去接尤二姐，口口聲聲「妹妹」；另一頭，封了銀子給張華，叫他去告賈璉。", n: "鳳姐打聽清楚後，封了二十兩給旺兒，叫他把張華找來養著，再讓張華寫狀子去衙門告賈璉。表面上把人接進府，暗地裡借刀生事。",
+        q: "鳳姐都一一盡知原委，便封了二十兩銀子與旺兒，悄悄命他將張華勾來養活，著他寫一張狀子，只管往有司衙門中告去。", qs: "第68回"},
+      {t: "回老太太、太太，請長輩按禮處置", best: 1, e: {en: -12, f: -4, rel: {jia: 1, lian: -2}, later: ["f_er4", 2]}, r: "賈璉挨了一頓罵，尤二姐依禮接進府來安置。你吞下這口氣，至少沒有人因此送命。"},
+      {t: "裝作不知道", e: {en: -25, later: ["f_er4", 2]}, r: "你每天看著賈璉找藉口出門……"},
+      {t: "大鬧寧國府，逼賈珍、尤氏賠錢", e: {s: 200, f: -10, h: -4, en: -8, rel: {lian: -1}, later: ["f_er4", 2]}, r: "你衝到寧府，又哭又鬧，逼得賈珍、賈蓉賠了不是、拿出銀子。", n: "鳳姐衝進寧府，劈頭就說：「好大哥哥，帶著兄弟們幹的好事！」當面發難，逼對方理虧賠罪。",
+        q: "鳳姐進來了，說：「好大哥哥，帶著兄弟們幹的好事！」", qs: "第68回"}
+    ]},
+  f_er2: {who: "zhang", src: "第68回", chain: 1, t: "張華的狀子",
+    x: "張華真的告到都察院，說賈璉「國孝家孝之中，背旨瞞親，仗財依勢，強逼退親，停妻再娶」。衙門傳人去對詞，事情鬧大了。",
+    o: [
+      {t: "拿三百兩叫王信去打點察院", orig: 1, e: {s: -300, later: ["f_er3", 2]}, r: "察院收了銀子，只說張華無賴、以窮訛詐。尤二姐卻被嚇得不輕。", n: "鳳姐叫王信託察院只要虛張聲勢嚇唬一下，又拿三百兩去打點。告狀是她安排的，壓下案子的也是她。",
+        q: "鳳姐……將王信喚來，告訴他此事，命他託察院只虛張聲勢警唬而已，又拿了三百銀子與他去打點。", qs: "第68回"},
+      {t: "收手：給張華一筆錢，叫他撤狀回鄉", best: 1, e: {s: -100, clean: "er", later: ["f_er4", 1]}, r: "張華拿了錢走了，狀子總算收回。可尤二姐還住在府裡……"},
+      {t: "順勢讓官府把尤二姐判還給張華", e: {f: -10, h: -6, en: -6, later: ["f_er3", 1]}, r: "賈璉氣得跳腳，尤二姐整天以淚洗面。"},
+      {t: "把事情鬧到老太太跟前", e: {en: -10, f: -6, rel: {jia: -1}, later: ["f_er3", 2]}, r: "老太太嫌你把家醜鬧到外頭去。"}
+    ]},
+  f_er3: {who: "er", src: "第69回", chain: 1, t: "尤二姐病了",
+    x: "尤二姐懷了身孕，卻病倒了。賈赦賞給賈璉的丫鬟秋桐仗著得寵，天天指桑罵槐。你若有心，正好「借劍殺人」。",
+    o: [
+      {t: "借秋桐的嘴，冷眼旁觀", orig: 1, e: {en: -6, h: -12, dirt: ["er2", "尤二姐之死"], rel: {lian: -2, ping: -1}}, r: "尤二姐受不住羞辱，吞金自盡。府裡的人表面不說，心裡都明白。",
+        q: "弄小巧用借劍殺人　覺大限吞生金自逝", qs: "第69回回目", n: "原著中平兒偷偷拿錢給尤二姐弄飯吃，被秋桐告了一狀；尤二姐死後，平兒又偷出二百兩替她辦後事。"},
+      {t: "請好大夫，叫平兒照看", best: 1, e: {s: -60, en: -10, h: 6, rel: {ping: 1, lian: 1}}, r: "尤二姐慢慢好起來。你很不甘心，但你守住了一條人命。"},
+      {t: "約束秋桐，不許她再鬧", e: {en: -8, f: -2}, r: "秋桐收斂了些，背地裡卻罵你偏心。"},
+      {t: "把尤二姐送出府另外安置", e: {s: -100, en: -6, f: -3, rel: {lian: -1}}, r: "眼不見為淨，只是又多了一份開銷。"}
+    ]},
+  f_er4: {who: "er", src: "第68～69回", chain: 1, t: "府裡多了兩個「二房」",
+    x: "尤二姐住進了府裡，賈璉天天往她那裡去；賈赦又賞了丫鬟秋桐給賈璉。府裡一下多了兩個人，和你分丈夫、分體面。",
+    o: [
+      {t: "冷落她，叫下人剋扣她的飯菜", orig: 1, e: {h: -8, en: -4, later: ["f_er3", 1]}, r: "下人們看你的臉色行事，尤二姐的飯菜一天不如一天。", n: "鳳姐裝病不和尤二姐一起吃飯，叫人送去的飯菜都是難以下嚥的東西。表面客氣，暗中折磨。",
+        q: "鳳姐既裝病，便不和尤二姐吃飯了。每日只命人端了菜飯到他房中去吃，那茶飯都系不堪之物。", qs: "第69回"},
+      {t: "以禮相待，該給的分例一樣不少", best: 1, e: {en: -10, s: -20, h: 4}, r: "你心裡苦，面子上卻做得無可挑剔。"},
+      {t: "叫賈璉自己去擺平", e: {en: -6, f: -2, rel: {lian: -1}}, r: "賈璉兩頭討好，兩頭不是人。"},
+      {t: "請老太太作主", e: {en: -6, rel: {jia: 1}}, r: "老太太把規矩講清楚，大家暫時相安無事。"}
+    ]},
+  f_xia: {who: "eun", src: "第72回", t: "夏太監又來借錢", n: "小太監嘴上說以前借的一千二百兩年底會還，其實是一借再借，從來沒還過。",
+    x: "夏太監打發小太監來說：買房子還短二百兩，先借一借。小太監還說：上兩回的一千二百兩，年底一齊送來。",
+    q: "小太監道：「夏爺爺還說了，上兩回還有一千二百兩銀子沒送來，等今年年底下，自然一齊都送過來。」", qs: "第72回",
+    o: [
+      {t: "把自己的兩個金項圈押四百兩，一半給太監", orig: 1, e: {s: 200, f: 2, debt: ["贖回金項圈", 440, 3], k: {debt: 2}}, r: "太監拿了二百兩走了，另外二百兩挪去過中秋。三個月後，要四百四十兩才贖得回來。", n: "鳳姐叫平兒把自己兩個金項圈拿去押了四百兩，一半給太監，一半拿去過中秋。拿自己的首飾撐場面，撐得很辛苦。",
+        q: "說著叫平兒，「把我那兩個金項圈拿出去，暫且押四百兩銀子。」……鳳姐命與小太監打疊起一半，那一半命人與了旺兒媳婦，命他拿去辦八月中秋的節。", qs: "第72回"},
+      {t: "照借二百兩", e: {s: -200, f: 3}, r: "小太監滿意地走了，這錢大概不會回來。"},
+      {t: "推說府裡沒錢", e: {f: -8, c: 1}, r: "宮裡的人不高興，有人怕得罪貴妃，告到太太那裡。"},
+      {t: "借一百兩，客氣提一下舊帳", best: 1, e: {s: -100, f: -2}, r: "少借一半，也沒撕破臉。"}
+    ]},
+  f_xingShame: {who: "xingf", src: "第71回", t: "壽宴上，婆婆當眾給你沒臉", n: "邢夫人當著眾人「陪笑」替婆子求情：我本不該求情，但老太太大壽，連窮人都要接濟，咱們家倒先折磨起人來；不看我的面子，也看老太太的面子放了吧。表面客氣，其實是當眾說媳婦刻薄。",
+    x: "老太太八十大壽，前一晚你捆了兩個對尤氏無禮的婆子。散席時，婆婆邢夫人當著眾人的面，陪笑替那兩個婆子求情。",
+    q: "邢夫人直至晚間散時，當著許多人陪笑和鳳姐求情說：「……論理我不該討情，我想老太太好日子，發狠的還舍錢舍米，周貧濟老，咱們家先倒折磨起人家來了。不看我的臉，權且看老太太，竟放了他們罷。」", qs: "第71回",
+    o: [
+      {t: "當場笑著圓過去，回房再偷偷地哭", orig: 1, e: {en: -15, h: 2}, r: "你憋得臉紫漲，還是笑著打了圓場。回到房裡，眼淚止不住地掉。",
+        n: "原文：「鳳姐聽了這話，又當著許多人，又羞又氣，一時抓尋不著頭腦，憋得臉紫漲。」"},
+      {t: "當眾頂回去：這是寧府的事，與太太無關", e: {f: -12, c: 1, xg: 2}, r: "滿屋子的人都愣住了。媳婦頂撞婆婆，有人立刻告到王夫人那裡。"},
+      {t: "順勢放了兩個婆子，人情做給婆婆", best: 1, e: {en: -6, h: 4, xg: -1}, r: "邢夫人找不到話說，下人們都說二奶奶有肚量。", n: "把對方的「刁難」變成自己的「人情」，是化解衝突的一招。"},
+      {t: "事後去老太太跟前訴委屈", e: {en: -8, rel: {jia: 1}, xg: 1}, r: "老太太心疼你，可邢夫人更恨你了：仗著老太太撐腰！"}
+    ]},
+  f_yuanyang: {who: "yuan", src: "第72回", t: "銀子不湊手",
+    x: "年下要用錢的地方一大堆，帳上卻挪不出來。賈璉想託老太太的大丫鬟鴛鴦，把老太太用不著的金銀器皿偷運出來，先當幾百兩銀子使。",
+    o: [
+      {t: "照辦，託鴛鴦偷運出來當", orig: 1, e: {s: 300, f: -4, debt: ["贖回老太太的東西", 380, 2], dirt: ["yuan", "偷當老太太的東西"], k: {debt: 3}}, r: "三百兩到手。可萬一老太太問起那箱東西……",
+        n: "第72回，賈璉託鴛鴦偷運賈母的東西去當，鳳姐還趁機向賈璉討好處。拆東牆補西牆，牆總有拆完的一天。"},
+      {t: "當掉自己的嫁妝首飾", e: {s: 150, en: -6, debt: ["贖回嫁妝首飾", 180, 3], k: {debt: 1}}, r: "自己的東西自己當，至少不連累別人。"},
+      {t: "各房用度一律裁減兩成", e: {exp: -15, h: -12, k: {tight: 2}}, r: "帳是省下來了，各房的怨氣全衝著你來。"},
+      {t: "向王夫人據實稟明虧空", best: 1, e: {f: -6, h: 2, s: 100}, r: "王夫人沉默半晌，拿出自己的體己一百兩，叫你往後再想法子。", n: "把真實的帳攤開，雖然丟臉，卻能換來幫助，也不會越陷越深。"}
+    ]},
+  f_leak: {who: "lian", src: "第16回（改編）", chain: 1, t: "利錢露了餡",
+    x: "旺兒媳婦偏偏挑賈璉在家的時候送利錢來，被賈璉撞個正著：「什麼利錢？」",
+    o: [
+      {t: "叫平兒撒個謊遮過去", orig: 1, e: {en: -5, rel: {ping: -1}, relaunch: 2}, r: "平兒急中生智，說是薛姨媽打發香菱來了。混過去了，可下次呢？", n: "平兒說：還好是我在堂屋撞見；要是二爺問起利錢，奶奶又不肯瞞他，就得照實說了。我們二爺連油鍋裡的錢都要撈出來花。",
+        q: "平兒悄悄的說道：「……幸虧我在堂屋裡撞見，不然時走了來回奶奶，二爺倘或問奶奶是什麼利錢，奶奶自然不肯瞞二爺的，少不得照實告訴二爺。我們二爺那脾氣，油鍋裡的錢還要找出來花呢。」", qs: "第16回"},
+      {t: "就此收手，把借券燒了", best: 1, e: {unset: "usury", clean: "usury", h: 4}, r: "少了一筆進帳，卻也少了一個把柄。"},
+      {t: "分賈璉一份，堵他的嘴", e: {s: -60, rel: {lian: 1}, relaunch: 3}, r: "賈璉拿了錢，什麼也不問了。知道的人，又多了一個。"},
+      {t: "不但不收，還要加碼多放", e: {s: 80, en: -4, relaunch: 1}, r: "利錢更多了，風聲也更緊了。"}
+    ]},
+  f_harvest: {who: "wu2", src: "第53回", t: "年終：田莊交租", n: "莊頭說：九月一場像碗那麼大的冰雹，方圓一千多里，人、房子、牲口、糧食都被打壞了。",
+    x: "莊頭烏進孝來交租，報說今年九月一場碗大的雹子，莊稼打壞了，租子比預期少了一百五十兩。",
+    pre: {s: -150},
+    q: "九月裡一場碗大的雹子，方近一千三百里地，連人帶房並牲口糧食，打傷了上千上萬的。", qs: "第53回（烏進孝）",
+    o: [
+      {t: "動用存下的庫銀，照常過年", best: 1, e: {k: {open: 1}}, r: "還好平時有存下錢，這一關撐過去了。", n: "收入本來就會有起落，這就是要存預備金的原因。"},
+      {t: "年節照樣辦得熱熱鬧鬧", orig: 1, e: {s: -100, f: 8, k: {face: 3}}, r: "外人只看到賈府風光依舊。", n: "鳳姐自己說過：「多儉省了，外人又笑話，老太太、太太也受委屈。」面子，是最難省的一筆錢。"},
+      {t: "叫旺兒媳婦去外頭放一筆急帳，年後收回", e: {s: 120, dirt: ["usury", "放利錢的借券"], k: {debt: 3}}, r: "年前就收回一筆利錢。只是借券上，又多了你的名字。"},
+      {t: "年節從簡，各房的賞減半", e: {s: 60, h: -8, f: -5, k: {tight: 2}}, r: "下人們過了個冷清的年。"}
+    ]},
+  // ----- 王熙鳳模式的隨機事件 -----
+  f_yun: {who: "yun", src: "第24回", t: "賈芸求差事",
+    x: "族中子侄賈芸提了冰片、麝香來孝敬，想求一份園中種樹的差事。",
+    o: [
+      {t: "收下禮，差事派給他", orig: 1, e: {s: 30, h: -2}, r: "禮折了三十兩。旁人說：想在二奶奶這裡辦事，先得送禮。", n: "原著中賈芸向舅舅賒香料不成，借了錢買冰片麝香送鳳姐，才換到種樹的差事。"},
+      {t: "退回禮物，先看他能不能辦事", best: 1, e: {h: 3, f: 2}, r: "賈芸把樹種得極好。下人們說：二奶奶看的是本事。"},
+      {t: "差事派給出價更高的人", e: {s: 60, h: -6, k: {debt: 1}}, r: "錢更多了，樹卻種得七零八落。"},
+      {t: "立規矩：一律不准送禮，差事公開挑人", e: {h: 5, en: -3}, r: "求差事的人少了送禮的門路，多了公平的機會。"}
+    ]},
+  f_hong: {who: "hong", src: "第27回", t: "伶俐的小丫頭",
+    x: "你在園中差遣寶玉房裡的小丫頭紅玉傳話，她口齒伶俐，一大串話傳得一字不差。",
+    o: [
+      {t: "要來自己身邊栽培", orig: 1, best: 1, e: {en: 6, h: 2}, r: "多了一個得力的幫手，你也輕鬆了些。",
+        q: "紅玉笑道：「願意不願意，我們也不敢說。只是跟著奶奶，我們也學些眉眼高低，出入上下，大小的事也得見識見識。」", qs: "第27回", n: "會用人、肯培養人，管理者才不會什麼都自己扛。"},
+      {t: "賞她幾錢銀子就好", e: {s: -2, h: 1}, r: "小紅謝了賞，回去了。"},
+      {t: "外人信不過，只用自己的陪房", e: {en: -3}, r: "事情還是全壓在你身上。"},
+      {t: "叫她去管帳房", e: {exp: 3, h: -2}, r: "小丫頭管不動老帳房，反而亂了套。"}
+    ]},
+  f_huan: {who: "huan", src: "第20回", t: "賈環賭錢耍賴",
+    x: "賈環和丫頭們擲骰子，輸了耍賴，被說了兩句，哭著跑回去；趙姨娘又在屋裡罵個不停。",
+    o: [
+      {t: "隔窗喝住趙姨娘，再給賈環一吊錢叫他去玩", orig: 1, best: 1, e: {s: -1, f: 3, h: -2}, r: "趙姨娘不敢再吭聲，賈環拿了錢走了。", n: "原著中鳳姐隔窗教訓趙姨娘，又叫人給了賈環一吊錢。她管得住，也不讓小孩子太難堪。"},
+      {t: "不管：那是趙姨娘屋裡的事", e: {f: -4}, r: "罵聲傳遍半個府，老太太都聽見了。"},
+      {t: "罰賈環", e: {h: -3}, r: "賈環更恨你了，趙姨娘也是。"},
+      {t: "叫趙姨娘自己管好兒子", e: {f: -2, h: -2}, r: "趙姨娘管不住，反而鬧得更大。"}
+    ]},
+  f_xiren: {who: "xiren", src: "第51回", t: "襲人回家探母",
+    x: "襲人的母親病重，她要回家探望。她是寶玉房裡的大丫頭，出門的體面代表賈府。",
+    o: [
+      {t: "拿自己的皮褂子給她穿，車馬人手備齊", orig: 1, best: 1, e: {s: -10, f: 6, h: 4}, r: "襲人體體面面地回家，人人都說二奶奶會辦事。", n: "原著中鳳姐把自己的皮褂子給了襲人。小錢花在刀口上，換來的是體面和人心。"},
+      {t: "照例派一輛車", e: {f: -1}, r: "規規矩矩，沒什麼話說。"},
+      {t: "叫她自己雇車回去", e: {s: 2, f: -6}, r: "外人說：賈府的大丫頭怎麼這樣寒酸？"},
+      {t: "大張旗鼓，多派十幾個人", e: {s: -30, f: 4, k: {face: 2}}, r: "陣仗是大了，錢也花多了。"}
+    ]},
+  f_jiaFun: {who: "jia", src: "第40回", t: "老太太要熱鬧",
+    x: "老太太興致好，要在園中擺宴，叫你想個熱鬧的法子。",
+    o: [
+      {t: "你親自說笑話、湊趣，小錢辦得熱鬧", orig: 1, best: 1, e: {s: -20, f: 6, en: -4, rel: {jia: 1}}, r: "老太太笑得前仰後合。", n: "原著中鳳姐最會逗老太太開心。賈母是她最大的靠山。"},
+      {t: "大擺宴席，再請一班戲", e: {s: -80, f: 8, k: {face: 2}}, r: "熱鬧極了，帳也難看極了。"},
+      {t: "推說太忙", e: {f: -6, rel: {jia: -1}}, r: "老太太有些不高興。"},
+      {t: "交給下人去辦", e: {s: -30, f: 2}, r: "辦得中規中矩，老太太說：「鳳丫頭怎麼沒來？」"}
+    ]}
+});
+// 秦可卿第 13 回過世：前兩個月會主動跳出來，第 3 個月托夢後就不再出現
+const QIN_DREAM = "「嬸嬸，你是個脂粉隊裡的英雄，連那些束帶頂冠的男子也不能過你……常言『月滿則虧，水滿則溢』，又道是『登高必跌重』。」（第13回）醒來時，傳來雲板四聲──秦可卿過世了。";
+const QIN_LINES = ["嬸嬸，「月滿則虧，水滿則溢」，凡事留個退步。", "嬸嬸是脂粉隊裡的英雄，可也別把人逼得太緊。", "依我看，這個辦法長遠些。"];
+const LIAN_LINES = ["何苦來，不犯著這樣肝火盛。", "說句頑話就急了。這有什麼這樣的？", "依我說，多一事不如少一事。"];
+const WANGER_LINES = ["奶奶，現成的銀子，不拿白不拿。", "外頭的事，只要奶奶一句話，我們自有道理。", "奶奶放心，這種事神不知鬼不覺。"];
+const CHATTER_F = {
+  ping: ["奶奶，您這兩天臉色不好，別太操勞了。", "底下的人嘴上不說，心裡可都記著帳呢。"],
+  po: ["二奶奶來了，大家仔細些！", "聽說二奶奶又要立新規矩了……"],
+  you: ["你這鳳丫頭，什麼事都要爭個強。", "你也歇歇罷，別累壞了身子。"]
+};
+const XING_LINES = [
+  {t: "「論理我不該討情，我想老太太好日子，發狠的還舍錢舍米，周貧濟老，咱們家先倒折磨起人家來了。不看我的臉，權且看老太太，竟放了他們罷。」", s: "第71回"},
+  {t: "邢夫人要你幫大老爺去討老太太的丫頭鴛鴦作妾，你才勸了一句，她就冷笑：「大家子三房四妾的也多，偏咱們就使不得？……我叫了你來，不過商議商議，你先派上了一篇不是。」", s: "第46回"},
+  {t: "邢夫人「凡出入銀錢事務，一經他手，便克嗇異常」，這回又打發人來說：大老爺那邊短了用度，叫你從公中挪些過去。", s: "依第46回情境"},
+  {t: "邢夫人得了園中撿到的一件不該有的東西，不聲張，封好了直接送到王夫人那裡，矛頭指向你管家不嚴。", s: "依第73～74回情境"}
+];
+// 公關：每月一次，用各種花費把人心拉回來（不受人心 ×3 影響）
+const PRS = [
+  {k: "shang", t: "散賞錢：各房下人多賞一個月月錢", e: n => ({s: -(40 + 15 * n), h: 12}), r: "賞錢一發，各房都喜孜孜的。只是下回要賞得更多，大家才覺得稀罕。", n: "賞罰分明是鳳姐的本事；但只靠撒錢收買人心，一次比一次貴。"},
+  {k: "jiu", t: "擺酒唱戲，請老太太熱鬧一天", e: () => ({s: -60, f: 8, h: 4, rel: {jia: 1}}), r: "老太太高興，連帶著上上下下都沾了光。", n: "討好最上面的人，是鳳姐穩住地位的老辦法。"},
+  {k: "zhai", t: "捨米施藥、齋僧佈施", e: () => ({s: -50, h: 6, f: 4, en: 3}), r: "府外的人都說賈府積德，你心裡也安穩些。", n: "第71回邢夫人那句「發狠的還舍錢舍米，周貧濟老」，說的就是這種事。"},
+  {k: "kuan", t: "寬放一條舊規矩（上夜的婆子可以輪班歇息）", e: () => ({exp: 6, h: 10}), r: "婆子們鬆了一口氣：二奶奶也有寬厚的時候。", n: "鳳姐自己說「雖然看破些，無奈一時也難寬放」。寬放要花錢，不寬放要失人心。"},
+  {k: "ping", t: "讓平兒私下施恩、替人說情", e: () => ({h: 10, en: -2}), max: 3, need: "ping", r: "平兒悄悄替幾個犯錯的人求了情，大家都念平兒的好，也就不那麼恨你了。", n: "第61回「判冤決獄平兒行權」：平兒常替鳳姐做好人。只是這種人情，用多了就不靈了（最多 3 次）。"},
+  {k: "yuan", t: "送鴛鴦等老太太跟前的人一份體己", e: () => ({s: -30, c: -1}), need: "comp", r: "鴛鴦在老太太面前替你說了幾句好話，一狀就這麼揭過去了。", n: "結交關鍵人物，是鳳姐在賈母面前吃得開的原因。"},
+  {k: "rest", t: "閉門靜養幾天，什麼都不管", e: () => ({en: 20, h: -3, f: -2}), r: "你總算睡了幾個好覺。只是你不在，底下人又鬆懈了。", n: "心力也是本錢：一直硬撐，總有撐不住的一天。"}
+];
+const DIRT_NOTE = {
+  usury: "拿下人的月錢放高利貸。第106回賈政問：「那重利盤剝究竟是誰幹的？況且非咱們這樣人家所為。」",
+  temple: "一封信、三百兩，張金哥上吊，守備之子投河，兩條人命。",
+  rui: "賈瑞固然輕薄，但你設下的圈套，讓他一病不起。",
+  bao: "鮑二家的上吊，你反告她娘家「以屍訛詐」。",
+  er: "唆使張華告自己的丈夫，又拿錢打點衙門。",
+  er2: "借秋桐的嘴羞辱尤二姐，逼得她吞金自盡。",
+  yuan: "偷當老太太的東西，拆東牆補西牆。"
+};
+const FIXED_F = {1: ["f_usury"], 2: ["f_rui"], 3: ["f_roll"], 4: ["f_five"], 5: ["f_temple"], 6: ["f_bday"], 7: ["f_xiaoyue"], 8: ["f_er1"], 9: ["f_xia"], 10: ["f_xingShame"], 11: ["f_yuanyang"], 12: ["f_harvest"]};
+const RANDOM_F = ["theft", "egg", "liu", "opera", "gamble", "jiao", "doctor", "cut", "fang", "bday", "f_yun", "f_hong", "f_huan", "f_xiren", "f_jiaFun"];
+
+// ===== 遊戲狀態 =====
+const START_TAN = {s: 150, f: 60, h: 40, c: 0}, START_FENG = {s: 200, f: 60, h: 35, c: 0};
+let START = START_TAN, BASE_INC = 100, BASE_EXP = 105;
+let MODE = "tan";
+// 切換模式：數值、事件表、人際關係、說明、前情提要都跟著換
+function setMode(m) {
+  MODE = m;
+  const f = m === "feng";
+  START = f ? START_FENG : START_TAN;
+  BASE_INC = f ? 135 : 100; BASE_EXP = f ? 140 : 105;
+  FIXED = f ? FIXED_F : FIXED_TAN; RANDOM = f ? RANDOM_F : RANDOM_TAN;
+  FIXED_IDS = new Set(Object.values(FIXED).flat());
+  REL_NAME = f ? {jia: "賈母", ping: "平兒", lian: "賈璉"} : {feng: "王熙鳳", chai: "寶釵", ping: "平兒"};
+  TOUR = f ? TOUR_FENG : TOUR_TAN; STORY = f ? STORY_FENG : STORY_TAN;
+}
+let G;
+function newGame() {
+  G = {m: 1, s: START.s, f: START.f, h: START.h, c: 0, inc: BASE_INC, exp: BASE_EXP, owe: 0, debts: [], did: 0,
+    k: {face: 0, dup: 0, emerg: 0, debt: 0, tight: 0, open: 0, zong: 0},
+    flag: {}, rel: Object.fromEntries(Object.keys(REL_NAME).map(k => [k, 0])), used: new Set(), queue: [], hist: [], trace: [{s: START.s, f: START.f, h: START.h, en: 100}],
+    adv: MODE === "feng" ? {ping: 3} : {wan: 2, chai: 2, ping: 2}, help: [["wan", "李紈"], ["wan", "李紈"], ["ping", "平兒"], ["you", "尤氏"]],
+    zhao: 0, zhaoPay: 0, hide: 0, cards: [], ci: 0, over: false,
+    en: 100, dirt: [], dirtLog: [], pr: {}, prM: 0, xa: 0, xg: 0, xPay: 0, jiaHelp: 2, pingHelp: 2};
+}
+const clamp = v => Math.max(0, Math.min(100, v));
+
+function planMonth() {
+  const fixed = (FIXED[G.m] || []).filter(id => !EV[id].need || G.flag[EV[id].need]);
+  const due = G.queue.filter(q => q.at <= G.m).map(q => q.id);
+  G.queue = G.queue.filter(q => q.at > G.m);
+  const cards = [...fixed];
+  // 放利錢：放得越久越容易出事；推託或否認之後，下個月就抄檢大觀園
+  if (G.flag.raid || G.flag.hush) { delete G.flag.raid; delete G.flag.hush; cards.push("raid"); }
+  else if (G.flag.usury && G.m >= G.leakAt) { if (MODE === "feng") { cards.push("f_leak"); G.leakAt = 99; } else cards.push("leak"); }
+  // 本月到期的債一定要處理（可能讓這個月多一件事）
+  G.debts.filter(x => x.due === G.m && G.m <= 12).forEach(x => cards.push(dunCard(x)));
+  while (cards.length < 2 && due.length) cards.push(due.shift());
+  due.forEach(id => G.queue.push({id, at: G.m + 1}));
+  while (cards.length < 2) cards.push(drawRandom());
+  G.cards = cards.filter(Boolean);
+  G.ci = 0;
+}
+function drawRandom() {
+  const pool = RANDOM.filter(id => !G.used.has(id) && (!EV[id].need || G.flag[EV[id].need]));
+  if (!pool.length) return null;
+  const id = rnd(pool);
+  G.used.add(id);
+  return id;
+}
+
+// ===== 畫面 =====
+function show(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.toggle("on", s.id === id));
+  window.scrollTo(0, 0);
+}
+// 庫銀、利錢、欠帳簿：兩個模式共用
+const moneyHtml = () => `
+    <div class="stat money ${G.s < 80 ? "danger" : ""}" id="money"><div class="lab"><span>庫銀${G.s < 80 ? "・告急！" : ""}</span><span class="val">${G.s} 兩</span></div><div class="bar s"><i class="${G.s < 80 ? "low" : ""}" style="width:${Math.max(0, Math.min(100, G.s / 6))}%"></i><b class="mark" style="left:${START.s / 6}%"></b></div>
+      <div class="gap">比原始帳目（${START.s} 兩）<b class="${G.s >= START.s ? "pos" : "neg"}">${G.s >= START.s ? "+" : "−"}${Math.abs(G.s - START.s)} 兩</b></div>
+      ${G.debts.length ? `<div class="gap">扣掉欠帳後 <b class="${G.s - debtSum() >= START.s ? "pos" : "neg"}">${G.s - debtSum() >= START.s ? "+" : "−"}${Math.abs(G.s - debtSum() - START.s)} 兩</b></div>` : ""}</div>
+    ${G.flag.usury ? `<div class="debts usury"><div class="sidehead">王熙鳳放利錢中</div><div class="drow"><span>公中每月分到</span><b class="pos">+${usuryAmt()} 兩</b><em>已分到 ${G.usuryGain || 0} 兩・紙包不住火，遲早會被查出</em></div></div>` : ""}
+    ${G.debts.length ? `<div class="debts"><div class="sidehead">欠帳簿・共 ${debtSum()} 兩</div>${G.debts.map(x => `<div class="drow"><span>${x.n}</span><b>${x.amt} 兩</b><em>${x.due > 12 ? "年終清償" : x.due === G.m ? "本月到期！" : `第 ${x.due} 月到期`}</em></div>`).join("")}</div>` : ""}
+`;
+function renderSideF() {
+  const net = G.inc - G.exp, prUsed = G.prM === G.m;
+  const pingNote = angry("ping") ? "心寒，不肯說" : marks.pingAsked ? "這件事問過了" : G.adv.ping ? `剩 ${G.adv.ping} 次・未必敢開口` : "問不出話了";
+  $("side").innerHTML = `
+    <div class="month">第 ${G.m} 月<small>／ 12 個月</small></div>
+    ${moneyHtml()}
+    ${G.dirt.length ? `<div class="debts dirt" data-tour="dirt"><div class="sidehead">把柄・${G.dirt.length} 件</div>${G.dirt.map(x => `<div class="drow"><span>${x.n}</span><em>年終查帳會被翻出來</em></div>`).join("")}</div>` : ""}
+    <div class="stat ${G.f >= 100 ? "max" : ""}" data-tour="face"><div class="lab"><span>體面</span><span class="val">${G.f}</span></div><div class="bar f"><i class="${G.f < 25 ? "low" : ""}" style="width:${G.f}%"></i></div></div>
+    <div class="stat ${G.h >= 100 ? "max" : ""}" data-tour="heart"><div class="lab"><span>人心・掉得快</span><span class="val">${G.h}</span></div><div class="bar h"><i class="${G.h < 25 ? "low" : ""}" style="width:${G.h}%"></i></div></div>
+    <div class="stat" data-tour="en"><div class="lab"><span>心力${G.en < 25 ? "・快撐不住了" : ""}</span><span class="val">${G.en}</span></div><div class="bar e"><i class="${G.en < 25 ? "low" : ""}" style="width:${G.en}%"></i></div></div>
+    <div class="rels" data-tour="rels">${Object.keys(REL_NAME).map(k => `<span class="relx ${relWord(k) === "得罪" ? "bad" : relWord(k) === "交好" ? "good" : ""}">${REL_NAME[k]}・${relWord(k)}</span>`).join("")}</div>
+    <div class="comp" data-tour="comp">告狀 ${[0, 1, 2].map(i => `<i class="${i < G.c ? "on" : ""}"></i>`).join("")}<span>滿 3 次出局</span></div>
+    <div class="flow" data-tour="flow">每月收入 <b class="pos">${G.inc}</b> 兩・支出 <b class="neg">${G.exp}</b> 兩<br>每月結餘 <b class="${net < 0 ? "neg" : "pos"}">${net > 0 ? "+" : ""}${net}</b> 兩
+      <span class="gap">（原本 ${BASE_INC - BASE_EXP} 兩，${net === BASE_INC - BASE_EXP ? "沒有變化" : net > BASE_INC - BASE_EXP ? `改善 <b class="pos">+${net - (BASE_INC - BASE_EXP)}</b>` : `惡化 <b class="neg">${net - (BASE_INC - BASE_EXP)}</b>`}）</span>${G.owe ? `<br>年終要還債 <b class="neg">${G.owe}</b> 兩` : ""}</div>
+    <div class="sidebtns"><button class="relbtn" id="relBtn" type="button">人物關係圖</button><button class="relbtn" id="tourBtn" type="button">操作說明</button></div>
+    <div class="advwrap" data-tour="pr"><div class="sidehead">公關・收買人心</div><button class="prbtn" id="prBtn" type="button" ${prUsed ? "disabled" : ""}>${prUsed ? "本月已經打點過了" : "打點人心（每月一次）"}</button></div>
+    <div class="advwrap" data-tour="adv"><div class="sidehead">請教</div><div class="advs"><button class="adv" data-adv="ping" ${angry("ping") || !G.adv.ping || marks.pingAsked ? "disabled" : ""}>${av("ping")}<span>平兒<em>${pingNote}</em></span></button></div>
+      <p class="sidenote">${G.m <= 2 ? "秦可卿病中，偶爾會派人來說幾句話。" : "秦可卿已經過世，能說真心話的人更少了。"}</p></div>`;
+  $("side").querySelectorAll("[data-adv]").forEach(b => b.onclick = () => consult(b.dataset.adv));
+  $("prBtn").onclick = openPR;
+  AU.mood(G.f < 30 || G.h < 30 || G.en < 30 ? "tense" : G.f >= 85 ? "grand" : "light");
+  $("relBtn").onclick = showRel;
+  $("tourBtn").onclick = startTour;
+}
+function renderSide() {
+  if (MODE === "feng") return renderSideF();
+  const net = G.inc - G.exp;
+  const pingOff = k => k === "ping" && (angry("feng") || angry("ping"));
+  const advNote = k => k === "dai" ? "不限次數" : k === "feng" ? (G.fengM === G.m ? "本月已指點" : "交好・每月一次") : pingOff(k) ? "不便多說" : friend(k) ? "交好・免費" : "剩 " + G.adv[k] + " 次";
+  const advOff = k => k === "dai" ? false : k === "feng" ? G.fengM === G.m : pingOff(k) || (!G.adv[k] && !friend(k));
+  const advBtn = (k) => `<button class="adv ${friend(k) && k !== "dai" ? "free" : ""}" data-adv="${k}" ${advOff(k) ? "disabled" : ""}>${av(k)}<span>${P[k].n}<em>${advNote(k)}</em></span></button>`;
+  $("side").innerHTML = `
+    <div class="month">第 ${G.m} 月<small>／ 12 個月</small></div>
+    ${moneyHtml()}
+    <div class="stat ${G.f >= 100 ? "max" : ""}" data-tour="face"><div class="lab"><span>體面${G.f >= 100 ? "・破表" : ""}</span><span class="val">${G.f}</span></div><div class="bar f"><i class="${G.f < 25 ? "low" : ""}" style="width:${G.f}%"></i></div></div>
+    <div class="stat ${G.h >= 100 ? "max" : ""}" data-tour="heart"><div class="lab"><span>人心${G.h >= 100 ? "・破表" : ""}</span><span class="val">${G.h}</span></div><div class="bar h"><i class="${G.h < 25 ? "low" : ""}" style="width:${G.h}%"></i></div></div>
+    <div class="rels" data-tour="rels">${Object.keys(REL_NAME).map(k => `<span class="relx ${relWord(k) === "得罪" ? "bad" : relWord(k) === "交好" ? "good" : ""}">${REL_NAME[k]}・${relWord(k)}</span>`).join("")}</div>
+    <div class="comp" data-tour="comp">告狀 ${[0, 1, 2].map(i => `<i class="${i < G.c ? "on" : ""}"></i>`).join("")}<span>滿 3 次出局</span></div>
+    <div class="flow" data-tour="flow">每月收入 <b class="pos">${G.inc}</b> 兩・支出 <b class="neg">${G.exp}</b> 兩<br>每月結餘 <b class="${net < 0 ? "neg" : "pos"}">${net > 0 ? "+" : ""}${net}</b> 兩
+      <span class="gap">（原本 ${BASE_INC - BASE_EXP} 兩，${net === BASE_INC - BASE_EXP ? "沒有變化" : net > BASE_INC - BASE_EXP ? `改善 <b class="pos">+${net - (BASE_INC - BASE_EXP)}</b>` : `惡化 <b class="neg">${net - (BASE_INC - BASE_EXP)}</b>`}）</span>${G.owe ? `<br>年終要還債 <b class="neg">${G.owe}</b> 兩` : ""}</div>
+    <div class="sidebtns"><button class="relbtn" id="relBtn" type="button">人物關係圖</button><button class="relbtn" id="tourBtn" type="button">操作說明</button></div>
+    <div class="advwrap" data-tour="adv"><div class="sidehead">請教顧問</div><div class="advs">${["wan", "chai", "ping", "dai"].concat(friend("feng") ? ["feng"] : []).map(advBtn).join("")}</div></div>`;
+  $("side").querySelectorAll("[data-adv]").forEach(b => b.onclick = () => consult(b.dataset.adv));
+  AU.mood(G.f < 30 || G.h < 30 ? "tense" : G.f >= 85 ? "grand" : "light");
+  $("relBtn").onclick = showRel;
+  $("tourBtn").onclick = startTour;
+}
+let notes = [], marks = {};
+function renderCard() {
+  const id = G.cards[G.ci], ev = EV[id];
+  // 七成機率有人物跳出來插話
+  if (!marks.rolled) { marks.rolled = true; if (Math.random() < (MODE === "feng" && G.m <= 3 ? 1 : 0.7)) interject(ev); }
+  const TAGS = {wan: ["wan", "李紈：最划算"], chai: ["chai", MODE === "feng" ? "平兒：怕有後患" : "寶釵：怕有後患"], ping: ["ping", "平兒：下人會服氣"], yu: ["yu", "寶玉推薦"],
+    feng: ["yu", "鳳姐傳話"], dai: ["chai", "黛玉嘆氣"], fengTip: ["ping", "鳳姐指點：照這個辦"], qin: ["ping", "秦可卿：長遠之計"], lian: ["yu", "賈璉：何必得罪人"], wanger: ["wan", "旺兒媳婦：最來錢"]};
+  const tags = i => Object.keys(TAGS).filter(k => marks[k] === i || (Array.isArray(marks[k]) && marks[k].includes(i)))
+    .map(k => `<span class="tag ${TAGS[k][0]}">${TAGS[k][1]}</span>`).join("");
+  $("main").innerHTML = `
+    <article class="ev frame">
+      <div class="body">
+        <div class="top">${whoTag(ev.who)}<span class="chip">${ev.src}</span><span class="chip">本月第 ${G.ci + 1}／${G.cards.length} 件</span></div>
+        <h2 class="gild">${ev.t}</h2>
+        <p class="txt">${gloss(ev.x, ev.who)}</p>
+      </div>
+      <div class="pic" style="--glow:${GLOW[ev.who] || "rgba(235,189,96,.35)"}">${ART.has(ev.who) ? `<img src="art/${ev.who}.webp" alt="${P[ev.who].n}">` : `<span class="glyph">${P[ev.who].n.slice(0, 1)}</span>`}</div>
+    </article>
+
+    <div class="opts">${ev.o.map((o, i) => {
+      const lock = lockOf(o);
+      return `<button class="opt" data-i="${i}" ${lock ? "disabled" : ""}><span class="k"><b>${"ABCDE"[i]}</b></span><span>${o.t}${lock ? `<span class="lock">🔒 ${lock}</span>` : ""}<br>${tags(i)}</span></button>`;
+    }).join("")}${specialKey(id) ? `<button class="opt special" data-i="sp"><span class="k"><b>E</b></span><span>${SPECIAL[specialKey(id)].t}</span></button>` : ""}</div>`;
+  $("main").querySelectorAll(".opt").forEach(b => b.onclick = () => b.dataset.i === "sp" ? chooseSpecial() : choose(+b.dataset.i));
+  // 新插話：卡片出現後角色跳出來說
+  const fresh = notes.find(n => !n.shown);
+  if (fresh) { fresh.shown = true; const at = G.m * 10 + G.ci; setTimeout(() => { if (G.m * 10 + G.ci === at) sayNote(fresh); }, 450); }
+}
+// 破表特殊選項：人心或體面滿 100 時，隨機事件多一個選項（課文主線不出現，免得跳過關鍵劇情）
+const SPECIAL = {
+  h: {t: "【人心破表】請上上下下一起分擔這件事", e: {h: -30, f: 6, k: {open: 1}}, r: "眾人爭著幫忙，這件事沒花公中一文錢就辦妥了。",
+    n: "人心是理家最大的本錢。探春的改革能推動，靠的是「使之以權，動之以利」，讓眾人「無不願意」。（人心 −30）"},
+  f: {t: "【體面破表】憑府上的名聲，請親友商家幫忙周轉", e: {s: 100, f: -30, debt: ["親友商家周轉", 120, 3]}, r: "憑著賈府的名聲，相熟的鋪子都願意先墊上一百兩，三個月後要還一百二十兩。",
+    n: "體面也是一種信用：別人願意借你，是因為信得過你。但信用用一次就少一次。（體面 −30）"}
+};
+// 王熙鳳模式：突發事件都能「威重令行」硬壓下來
+SPECIAL.w = {t: "【威重令行】拿出璉二奶奶的威勢，一句話壓下來", e: {en: -10, h: -10, f: 2}, r: "眾人不敢不從，事情就這麼辦了。只是背地裡，又多了幾個恨你的人。",
+  n: "「明日再有誤的，打四十，後日的六十」──鳳姐的威勢讓人不敢違抗。但她自己也說：「一家子大約也沒個背地裡不恨我的。」（心力 −10、人心 −10）"};
+const specialKey = id => FIXED_IDS.has(id) || id.startsWith("dun") || id === "leak" || id === "raid" || EV[id].chain ? null : G.h >= 100 ? "h" : G.f >= 100 ? "f" : MODE === "feng" ? "w" : null;
+function sayNote(n) {
+  if (G.over || ["fb", "zhao", "settle", "tour"].some(id => $(id).classList.contains("on"))) return;
+  $("sayPic").innerHTML = ART.has(n.k) ? `<img src="art/${n.k}.webp" alt="${P[n.k].n}">` : `<span class="glyph">${P[n.k].n.slice(0, 1)}</span>`;
+  $("sayWho").innerHTML = `<span class="who">${P[n.k].n}</span><span class="role">${ROLE[n.k]}</span>${n.say ? `<span class="how">${n.say}</span>` : ""}`;
+  $("sayTxt").innerHTML = gloss(n.t.replace(/<b>[^<]*<\/b>[：:]?/, ""), n.k);
+  $("say").classList.add("on");
+  AU.tick();
+}
+const closeSay = () => $("say").classList.remove("on");
+function monthsLeft() { return 13 - G.m; }
+// 平兒畏懼鳳姐的威勢：交情越好越敢說真話；不敢開口時不扣次數
+function consultPingF() {
+  if (angry("ping") || !G.adv.ping || marks.pingAsked) return;
+  marks.pingAsked = true;
+  const ev = EV[G.cards[G.ci]];
+  let n;
+  if (Math.random() < 0.45 + 0.15 * G.rel.ping) {
+    G.adv.ping--;
+    const ok = ev.o.map((o, i) => i).filter(i => !lockOf(ev.o[i]));
+    marks.ping = ok.filter(i => (ev.o[i].e.h || 0) >= 3);
+    marks.chai = ok.filter(i => { const e = ev.o[i].e; return e.c || e.dirt || e.debt || e.later || (e.h || 0) <= -8 || (e.en || 0) <= -15; });
+    n = {k: "ping", say: "壯著膽子開口", t: "平兒看了看你的臉色，小聲說：「奶奶要聽真話，我就說了……」她把下人會服氣的、怕有後患的，都悄悄指了出來。"};
+  } else {
+    n = {k: "ping", say: "低著頭不敢多說", t: rnd(["「奶奶拿主意就是了，我們哪敢多嘴。」", "「這……奶奶心裡早有主意了，何必問我。」", "平兒抿著嘴，只說：「奶奶怎麼說，我就怎麼辦。」"]) + "（她不敢說，沒有用掉次數）"};
+  }
+  notes.push(n); n.shown = true;
+  renderSide(); renderCard(); sayNote(n);
+}
+function consult(k) {
+  if (MODE === "feng") return consultPingF();
+  const ev = EV[G.cards[G.ci]];
+  if (k === "dai") {
+    const fc = G.s + (G.inc - G.exp) * 3;
+    notes.push({k: "dai", t: `<b>黛玉：</b>「我雖不管事，心裡每常閒了，替你們一算計……」照現在這樣，三個月後庫銀約剩 <b>${fc}</b> 兩${fc < 80 ? "，必致後手不接" : ""}。至於怎麼辦？她說：「${rnd(DAIYU)}」`});
+  } else if (k === "feng") {
+    if (!friend("feng") || G.fengM === G.m) return;
+    G.fengM = G.m;
+    const ok = ev.o.map((o, i) => i).filter(i => !lockOf(ev.o[i]));
+    const bi = ev.o.findIndex(o => o.best);
+    if (bi >= 0 && ok.includes(bi)) {
+      marks.fengTip = bi;
+      notes.push({k: "feng", say: "交好之後，王熙鳳派小丫頭來指點", t: `「這種事我當家時也遇過。聽我的，照 ${"ABCDE"[bi]} 辦，錯不了。」`});
+    } else {
+      notes.push({k: "feng", say: "交好之後，王熙鳳派小丫頭來指點", t: "「這件事啊……哪個都不好辦。你自己拿主意罷，我信得過你。」"});
+    }
+  } else {
+    if (!G.adv[k] && !friend(k)) return;
+    if (!friend(k)) G.adv[k]--;
+    const ok = ev.o.map((o, i) => i).filter(i => !lockOf(ev.o[i]));
+    if (k === "wan") {
+      const val = i => { const e = ev.o[i].e; return (e.s || 0) + ((e.inc || 0) - (e.exp || 0)) * monthsLeft() - (e.owe || 0) - (e.debt ? e.debt[1] : 0); };
+      marks.wan = ok.reduce((b, i) => val(i) > val(b) ? i : b, ok[0]);
+      notes.push({k: "wan", t: "<b>李紈</b>替你把每個辦法算了一遍：哪個最省錢、最能生錢，已經標出來了。"});
+    } else if (k === "chai") {
+      marks.chai = ok.filter(i => { const e = ev.o[i].e; return e.c || e.later || e.owe || e.debt || (e.h || 0) <= -8 || (e.f || 0) <= -10; });
+      notes.push({k: "chai", t: `<b>寶釵</b>淡淡地說：「${marks.chai.length ? "有幾樣辦法，眼前看著好，日後怕有後患。" : "這幾個辦法，我看都還使得。"}」`});
+    } else {
+      marks.ping = ok.filter(i => (ev.o[i].e.h || 0) >= 3);
+      notes.push({k: "ping", t: `<b>平兒</b>：${(ev.ping || "下人們的心思，我大概知道一些。").replace(/^平兒(悄悄)?說：/, "")}`});
+    }
+  }
+  const n = notes[notes.length - 1];
+  n.shown = true;
+  n.say = n.say || "應你的請教";
+  renderSide(); renderCard();
+  sayNote(n);
+}
+
+// ===== 選擇與結果 =====
+// 人際關係：好感 ≤ −2 就是「得罪」，有些辦法會用不了；≥ 2 是「交好」
+let REL_NAME = {feng: "王熙鳳", chai: "寶釵", ping: "平兒"};
+const angry = k => G.rel[k] <= -2;
+const friend = k => G.rel[k] >= 2;
+const relWord = k => angry(k) ? "得罪" : friend(k) ? "交好" : "普通";
+// 一個選項現在能不能選：要先完成某件事（need），或因為得罪了人而鎖住（block）
+const lockOf = o => o.need && !G.flag[o.need] ? o.lock : o.block && angry(o.block[0]) ? o.block[1] : "";
+const LABEL = {en: "心力", s: "庫銀", f: "體面", h: "人心", c: "告狀", inc: "每月收入", exp: "每月支出", owe: "年終要還", debt: "新增欠帳"};
+const debtSum = () => G.debts.reduce((a, x) => a + x.amt, 0);
+// 到期的債：債主上門，臨時生成一張事件卡
+function dunCard(x) {
+  const id = "dun" + x.id, later = Math.min(3, Math.max(1, 12 - G.m));
+  EV[id] = {who: "dun", src: "欠帳到期", t: `${x.n}到期了`,
+    x: `${x.n}一共 ${x.amt} 兩，這個月到期，債主已經上門了。`,
+    o: [
+      {t: `照數還清 ${x.amt} 兩`, e: {s: -x.amt, clear: x.id}, r: "債清了，心也定了。", n: "借來的錢遲早要還：越早還，利息越少。"},
+      {t: "再借一筆新的來還舊的（多兩成利息）", e: {clear: x.id, debt: [x.n + "（借新還舊）", Math.round(x.amt * 1.2), later], f: -6, k: {debt: 3}}, r: `債沒少，只是換了債主，變成 ${Math.round(x.amt * 1.2)} 兩。`, n: "以債養債：每拖一次，要還的就更多。"},
+      {t: "求債主寬限（多一成利息）", e: {clear: x.id, debt: [x.n + "（寬限）", Math.round(x.amt * 1.1), Math.min(2, later)], f: -10, k: {debt: 1}}, r: `債主勉強答應，變成 ${Math.round(x.amt * 1.1)} 兩，府裡上下都知道你在拖債。`},
+      {t: "偷偷典當老太太的東西來還", e: {clear: x.id, debt: ["贖回老太太的東西", Math.round(x.amt * 1.3), later], f: -8, k: {debt: 2}}, r: `這筆是還了，可當鋪那邊要 ${Math.round(x.amt * 1.3)} 兩才能贖回。`, n: "第72回，賈璉就託鴛鴦偷運賈母的東西去當，拆東牆補西牆。"}
+    ]};
+  return id;
+}
+// 人心、體面的增減一律放大 FH 倍：漲得快，也掉得快
+const FH = 2;
+function apply(e, d, raw) {
+  if (e.s) { G.s += e.s; d.s = (d.s || 0) + e.s; }
+  if (e.f) { const v = raw ? e.f : Math.round(e.f * FH); G.f = clamp(G.f + v); d.f = (d.f || 0) + v; }
+  // 王熙鳳模式：扣人心時放大 3 倍（探春是 2 倍）
+  if (e.h) { const v = raw ? e.h : Math.round(e.h * (MODE === "feng" && e.h < 0 ? 3 : FH)); G.h = clamp(G.h + v); d.h = (d.h || 0) + v; }
+  if (e.c) { const was = G.c; G.c = Math.max(0, G.c + e.c); if (G.c !== was) d.c = (d.c || 0) + G.c - was; }
+  // 心力：事件裡的消耗放大 1.5 倍（王熙鳳心力交瘁，挖東牆補西牆很難撐到年底）
+  if (e.en) { const v = !raw && e.en < 0 ? Math.round(e.en * 1.5) : e.en; G.en = clamp(G.en + v); d.en = (d.en || 0) + v; }
+  if (e.dirt && !G.dirt.some(x => x.k === e.dirt[0])) {
+    G.dirt.push({k: e.dirt[0], n: e.dirt[1]}); G.taint = 1; d.dirt = e.dirt[1];
+    if (!G.dirtLog.some(x => x.k === e.dirt[0])) G.dirtLog.push({k: e.dirt[0], n: e.dirt[1]});
+  }
+  if (e.clean) { const x = G.dirt.find(y => y.k === e.clean); if (x) { G.dirt = G.dirt.filter(y => y !== x); d.clean = x.n; } }
+  if (e.xg) G.xg = Math.max(0, G.xg + e.xg);
+  if (e.relaunch) G.leakAt = G.m + e.relaunch;
+  if (e.inc) { G.inc += e.inc; d.inc = e.inc; }
+  if (e.exp) { G.exp += e.exp; d.exp = e.exp; }
+  if (e.owe) { G.owe += e.owe; d.owe = e.owe; }
+  if (e.debt) { const [n, amt, after] = e.debt; G.debts.push({id: ++G.did, n, amt, due: G.m + after}); d.debt = (d.debt || 0) + amt; }
+  if (e.clear) G.debts = G.debts.filter(x => x.id !== e.clear);
+  if (e.unset) { delete G.flag[e.unset]; delete G.flag.hush; }
+  for (const k in e.rel || {}) {
+    if (!(k in G.rel)) continue;
+    const was = angry(k);
+    G.rel[k] += e.rel[k]; d["rel_" + k] = (d["rel_" + k] || 0) + e.rel[k];
+    const wasF = G.rel[k] - e.rel[k] >= 2;
+    if (!was && angry(k)) d.angry = (d.angry || []).concat(k);
+    if (!wasF && friend(k)) d.friend = (d.friend || []).concat(k);
+  }
+  if (e.set) { G.flag[e.set] = 1; if (e.set === "usury") { G.taint = 1; G.usuryGain = G.usuryGain || 0; G.usuryAt = G.m; G.leakAt = G.m + 1 + Math.floor(Math.random() * 3); } }
+  // 沒收這段期間分到的利錢
+  if (e.confiscate && G.usuryGain) { G.s -= G.usuryGain; d.s = (d.s || 0) - G.usuryGain; G.usuryGain = 0; }
+  if (e.later) G.queue.push({id: e.later[0], at: G.m + e.later[1]});
+  if (e.adv) G.adv[e.adv]++;
+  for (const t in e.k || {}) G.k[t] += e.k[t];
+}
+function deltaHtml(d) {
+  return (d.dirt ? `<span class="neg">新增把柄：${d.dirt}</span>` : "") + (d.clean ? `<span class="pos">把柄收回：${d.clean}</span>` : "") +
+    Object.keys(d).filter(k => !["angry", "friend", "dirt", "clean"].includes(k)).map(k => {
+    if (k.startsWith("rel_")) { const v = d[k]; return `<span class="${v > 0 ? "pos" : "neg"}">${REL_NAME[k.slice(4)]}的好感 ${v > 0 ? "+" : ""}${v}</span>`; }
+    const v = d[k], good = k === "c" || k === "exp" || k === "owe" || k === "debt" ? v < 0 : v > 0;
+    return `<span class="${good ? "pos" : "neg"}">${LABEL[k]} ${v > 0 ? "+" : ""}${v}${k === "s" || k === "inc" || k === "exp" || k === "owe" || k === "debt" ? " 兩" : ""}</span>`;
+  }).join("");
+}
+const MOOD = {good: ["點了點頭，露出佩服的神色。", "鬆了一口氣。", "笑著說：「這才像個當家的。」"],
+  bad: ["皺起了眉頭。", "搖了搖頭，什麼也沒說。", "嘆了一口氣。"], mid: ["若有所思。", "看了你一眼。"]};
+function mood(o, d) {
+  if (o.best) return "good";
+  const sc = (d.s || 0) / 20 + (d.f || 0) / 2 + (d.h || 0) / 2 - (d.c || 0) * 6 + ((d.inc || 0) - (d.exp || 0)) * 0.6 - (o.e.later ? 3 : 0);
+  return sc >= 1 ? "good" : sc > -4 ? "mid" : "bad";
+}
+function reactHtml(who, m) {
+  const k = ART.has(who) && who !== "zhao" ? who : rnd(MODE === "feng" ? ["ping", "po"] : ["ping", "wan", "chai"]);
+  return `<div class="react">${av(k)}<span><b>${P[k].n}</b>${rnd(MOOD[m])}</span></div>`;
+}
+function floatMoney(v) {
+  if (!v) return;
+  const m = $("money");
+  if (!m) return;
+  const f = document.createElement("span");
+  f.className = "float" + (v > 0 ? " up" : "");
+  f.textContent = (v > 0 ? "+" : "") + v + " 兩";
+  m.appendChild(f);
+  setTimeout(() => f.remove(), 1500);
+}
+function choose(i) {
+  closeSay();
+  const id = G.cards[G.ci], ev = EV[id], o = ev.o[i], d = {};
+  if (ev.pre) apply(ev.pre, d);
+  apply(o.e, d);
+  G.hist.push({id, i});
+  const q = o.q || ev.q, qs = o.qs || ev.qs, m = mood(o, d);
+  AU[m === "good" ? "good" : m === "bad" ? "bad" : "tick"]();
+  $("fbBox").innerHTML = `
+    <h3>${o.r}</h3>
+    ${reactHtml(ev.who, m)}
+    ${gloss(o.r, ev.who) !== o.r ? `<p class="glline">${glossList(o.r, ev.who)}</p>` : ""}
+    <div class="deltas">${deltaHtml(d) || "<span>沒有變化</span>"}</div>
+    ${(d.angry || []).map(k => `<p class="angry">你得罪了${REL_NAME[k]}！之後有些要靠${k === "lian" ? "他" : "她"}的辦法會用不了。</p>`).join("")}
+    ${(d.friend || []).map(k => `<p class="maxed">你和${REL_NAME[k]}交好了！${MODE === "feng" ? ({ping: "平兒更敢對你說真話了。", jia: "老太太更疼你了。", lian: "夫妻倆總算和好了。"})[k] : k === "feng" ? "顧問區多了王熙鳳，每月可以免費指點你一次。" : "之後請教她不用花次數。"}</p>`).join("")}
+    ${d.h > 0 && G.h >= 100 ? `<p class="maxed">人心破表！之後的突發事件可以動用特殊選項。</p>` : ""}${d.f > 0 && G.f >= 100 ? `<p class="maxed">體面破表！之後的突發事件可以動用特殊選項。</p>` : ""}
+    ${q ? `<div class="quote"><cite>原文・${qs}</cite>${q}</div>` : ""}
+    ${o.n || ev.n ? `<p class="explain">${gloss(o.n || ev.n, ev.who)}</p>` : ""}
+    <button class="btn" id="fbOk">繼續</button>`;
+  $("fb").classList.add("on");
+  renderSide();
+  floatMoney(d.s);
+  $("fbOk").onclick = () => { $("fb").classList.remove("on"); afterChoice(); };
+}
+function chooseSpecial() {
+  const sk = specialKey(G.cards[G.ci]), sp = SPECIAL[sk], d = {};
+  apply(sp.e, d, true);
+  AU[sk === "w" ? "tick" : "good"]();
+  $("fbBox").innerHTML = `<h3>${sp.r}</h3>${reactHtml("ping", sk === "w" ? "mid" : "good")}<div class="deltas">${deltaHtml(d)}</div><p class="explain">${sp.n}</p><button class="btn" id="fbOk">繼續</button>`;
+  $("fb").classList.add("on");
+  renderSide();
+  floatMoney(d.s);
+  $("fbOk").onclick = () => { $("fb").classList.remove("on"); afterChoice(); };
+}
+function failReason() {
+  if (G.s <= 0) return "broke";
+  if (G.c >= 3) return "comp";
+  if (G.h <= 0) return "heart";
+  if (G.f <= 0) return "face";
+  if (MODE === "feng" && G.en <= 0) return "sick";
+  return null;
+}
+function afterChoice() {
+  const r = failReason();
+  if (r) return finish(r);
+  notes = []; marks = {};
+  if (MODE === "feng") {
+    // 邢夫人：第 1 月第一件事之後一定來（教學關）；探春代管期間你在養病，她不會來
+    if (G.m === 1 && G.ci === 0) return xingAttack(true);
+    if (G.ci === 0 && G.m > 1 && !G.flag.tanRule && G.xa < 5 && Math.random() < 0.2 + 0.1 * G.xg + 0.1 * G.xPay) return xingAttack(false);
+    return nextCard();
+  }
+  // 趙姨娘：第 1 月第一件事之後一定來（教學關），之後每月有機率突襲
+  if (G.m === 1 && G.ci === 0) return zhaoAttack(true);
+  if (G.ci === 0 && G.m > 1 && G.zhao < 4) {
+    const p = 0.2 + 0.12 * G.zhaoPay + (G.zhao < 2 && G.m >= 7 ? 0.5 : 0);
+    if (Math.random() < p) return zhaoAttack(false);
+  }
+  nextCard();
+}
+function nextCard() {
+  G.ci++;
+  if (G.ci < G.cards.length) { renderSide(); renderCard(); return; }
+  monthEnd();
+}
+const usuryAmt = () => MODE === "feng" ? 40 : 25;
+function monthEnd() {
+  const usury = G.flag.usury && G.m > G.usuryAt ? usuryAmt() : 0;
+  // 王熙鳳：背地裡的怨氣每月流失人心、操勞消耗心力；探春代管時安心靜養
+  const fd = MODE === "feng" ? (G.flag.tanRule ? {h: 0, en: 8} : {h: -4, en: -12}) : null;
+  if (fd) { G.h = clamp(G.h + fd.h); G.en = clamp(G.en + fd.en); }
+  const dirtN = MODE === "feng" ? G.dirt.filter(x => x.k !== "usury").length : 0;
+  if (usury) { G.s += usury; G.usuryGain = (G.usuryGain || 0) + usury; }
+  const net = G.inc - G.exp;
+  G.s += net;
+  if (G.s < 80) G.k.emerg++;
+  G.trace.push({s: G.s, f: G.f, h: G.h, en: G.en});
+  const fin = G.m === 12;
+  $("settleBox").innerHTML = `
+    <h3>第 ${G.m} 月月底結算</h3>
+    ${usury ? `<div class="react">${av("feng")}<span><b>王熙鳳放利錢</b>，公中分到 <b class="pos">+${usury} 兩</b>（已經放了 ${G.m - G.usuryAt} 個月）</span></div>` : ""}
+    <div class="react">${av("ping")}<span><b>平兒</b>來報帳：${G.s < 80 ? `「${MODE === "feng" ? "奶奶" : "姑娘"}，帳上快見底了！」` : net < 0 ? "「這個月又是出的多、進的少。」" : "「這個月總算有些盈餘。」"}</span></div>
+    ${fd ? `<div class="react">${av("ping")}<span>${G.flag.tanRule ? `探春代管，你安心靜養：<b class="pos">心力 +8</b>` : `背地裡的怨氣 <b class="neg">人心 −4</b>・一個月的操勞 <b class="neg">心力 −12</b>`}</span></div>` : ""}
+    ${settleCharts(net)}
+    <table><tr><td>本月結餘</td><td class="${net < 0 ? "neg" : "pos"}">${net > 0 ? "+" : ""}${net} 兩</td></tr><tr><td>庫銀剩下</td><td>${G.s} 兩</td></tr>
+    <tr><td>比原始帳目（${START.s} 兩）</td><td class="${G.s >= START.s ? "pos" : "neg"}">${G.s >= START.s ? "+" : "−"}${Math.abs(G.s - START.s)} 兩</td></tr>
+    ${fin && (G.flag.usury || G.flag.raid || G.flag.hush) ? `<tr><td>年終查帳：放利錢的借券被查出</td><td class="neg">沒收 ${G.usuryGain || 0} 兩・告狀 +1・體面 −20</td></tr>` : ""}
+    ${fin && dirtN ? `<tr><td>年終查帳：把柄被翻出 ${dirtN} 件</td><td class="neg">體面 −${12 * dirtN}</td></tr>` : ""}
+    ${fin && (G.owe + debtSum()) ? `<tr><td>年終清償欠帳</td><td class="neg">−${G.owe + debtSum()} 兩</td></tr><tr><td>還完後庫銀</td><td>${G.s - G.owe - debtSum()} 兩</td></tr>` : ""}</table>
+    <button class="btn" id="setOk">${fin ? "年終算帳" : "進入下個月"}</button>`;
+  $("settle").classList.add("on");
+  renderSide();
+  floatMoney(net);
+  AU.coin();
+  $("setOk").onclick = () => {
+    $("settle").classList.remove("on");
+    const r = failReason();
+    if (r) return finish(r);
+    if (fin) {
+      G.s -= G.owe + debtSum(); G.debts = [];
+      if (G.flag.usury || G.flag.raid || G.flag.hush) { G.s -= G.usuryGain || 0; G.usuryGain = 0; G.c += 1; G.f = clamp(G.f - 20); ["usury", "raid", "hush"].forEach(k => delete G.flag[k]); }
+      G.f = clamp(G.f - 12 * dirtN);
+      const r2 = failReason(); if (r2) return finish(r2);
+      const ok = G.s >= START.s && G.f >= 50 && G.h >= 50;
+      return finish(MODE === "feng" ? (ok ? (G.taint ? "f_taint" : "f_win") : "f_meh") : ok ? (G.taint ? "taint" : "win") : "meh"); }
+    G.m++; planMonth(); renderSide(); renderCard();
+  };
+}
+
+// 月結：本月收支橫條（虛線是原本的帳）＋庫銀逐月長條（虛線是原始帳目）
+function settleCharts(net) {
+  const max = Math.max(G.inc, G.exp, BASE_INC, BASE_EXP) * 1.1, w = v => (v / max * 100).toFixed(1);
+  const row = (label, v, base, cls) => `<div class="hrow"><span>${label}</span><div class="htrack"><i class="${cls}" style="width:${w(v)}%"></i><b class="mark" style="left:${w(base)}%" title="原本 ${base} 兩"></b></div><em>${v} 兩<small>原本 ${base}</small></em></div>`;
+  const hi = Math.max(START.s * 1.6, ...G.trace.map(t => t.s)), H = 120;
+  const bars = G.trace.map((t, i) => {
+    const h = Math.max(2, Math.max(0, t.s) / hi * H), up = t.s >= START.s;
+    return `<div class="vcol"><em>${t.s}</em><i class="${up ? "up" : "down"}" style="height:${h}px;animation-delay:${i * 0.05}s"></i><span>${i === 0 ? "開始" : i + "月"}</span></div>`;
+  }).join("");
+  return `<div class="schart"><div class="stitle">本月收支</div>${row("收入", G.inc, BASE_INC, "inc")}${row("支出", G.exp, BASE_EXP, "exp")}</div>
+    <div class="schart"><div class="stitle">庫銀逐月變化<small>虛線＝原始帳目 ${START.s} 兩</small></div>
+      <div class="vbars" style="height:${H + 44}px"><b class="base" style="bottom:${START.s / hi * H + 18}px"></b>${bars}</div></div>`;
+}
+
+// ===== 趙姨娘突襲 =====
+let zTimer = null;
+function zhaoAttack(tutorial) {
+  G.zhao++;
+  const line = tutorial ? ZHAO_LINES[0] : rnd(ZHAO_LINES);
+  // 得罪了王熙鳳或平兒，平兒就不會來幫你勸
+  if (angry("feng") || angry("ping")) G.help = G.help.filter(h => h[0] !== "ping");
+  const helper = G.help[0];
+  const hideOk = G.hide < 2;
+  const pay = 20 + 20 * G.zhaoPay;
+  const secs = tutorial ? 12 : 8;
+  $("zhaoBox").innerHTML = `<div class="zpic"><img src="art/zhao.webp" alt="趙姨娘"></div><div>
+    <div class="top" style="display:flex;gap:10px;align-items:center"><b class="gild" style="font:900 26px var(--serif)">趙姨娘殺到了！</b><span class="chip">${line.s}</span></div>
+    <p style="font-size:20px;margin:10px 0 0;font-family:var(--serif)">${gloss(line.t, "zhao")}</p>
+    <div class="timer"><i id="zBar"></i></div>
+    ${tutorial ? `<p class="note" style="margin:0 0 12px">第一次遇到她：倒數結束前一定要處理。正面吵回去或不理她，會鬧得全府大亂。提示：找人來幫忙最穩當。</p>` : ""}
+    <div class="opts">
+      <button class="opt ${tutorial ? "hint" : ""}" data-z="help" ${helper ? "" : "disabled"}><span class="k"><b>A</b></span><span>${helper ? `派人去請${helper[1]}來勸（還能請 ${G.help.length} 次）` : "已經沒有人可以請了"}</span></button>
+      <button class="opt" data-z="hide" ${hideOk ? "" : "disabled"}><span class="k"><b>B</b></span><span>${hideOk ? "藉口去寶釵那裡議事，先躲開" : "連躲兩次，這回躲不掉了"}</span></button>
+      <button class="opt" data-z="pay"><span class="k"><b>C</b></span><span>給她 ${pay} 兩打發走</span></button>
+      <button class="opt" data-z="fight"><span class="k"><b>D</b></span><span>正面跟她吵，把話說清楚</span></button>
+    </div></div>`;
+  $("zhao").classList.add("on");
+  AU.tenseStart();
+  const t0 = performance.now();
+  clearInterval(zTimer);
+  zTimer = setInterval(() => {
+    const left = 1 - (performance.now() - t0) / (secs * 1000);
+    $("zBar").style.width = Math.max(0, left * 100) + "%";
+    $("zhaoBox").style.setProperty("--amp", (0.6 + 7 * Math.min(1, 1 - left)).toFixed(2));
+    if (left <= 0) zhaoDone("timeout");
+  }, 100);
+  $("zhaoBox").querySelectorAll("[data-z]").forEach(b => b.onclick = () => zhaoDone(b.dataset.z));
+}
+function zhaoDone(how) {
+  clearInterval(zTimer);
+  AU.tenseStop();
+  $("zhao").classList.remove("on");
+  if (how === "fight" || how === "timeout") return finish("zhao", how);
+  const d = {};
+  let r, q, qs, n;
+  if (how === "help") {
+    const [k, name] = G.help.shift();
+    G.lastHelp = k === "you" ? "wan" : k;
+    apply({h: 3, f: k === "ping" ? 2 : 0}, d);
+    G.hide = 0;
+    r = `${name}趕來，好說歹說把趙姨娘勸走了。`;
+    q = "探春便歎氣說：「這是什麼大事，姨娘也太肯動氣了！我正有一句話要請姨娘商議……快同我來。」尤氏李氏都笑說：「姨娘請到廳上來，咱們商量。」"; qs = "第60回";
+    n = "原著中，是晴雯派人去回探春，探春和尤氏、李紈帶著平兒趕來，才把趙姨娘勸走。借助他人力量，比一個人硬碰硬有效。";
+  } else if (how === "hide") {
+    G.hide++;
+    apply({f: -10}, d);
+    r = "你躲過一劫，可趙姨娘在議事廳鬧了半天，人人都看見了。";
+    n = "躲得了一時，躲不了一世：連躲兩次，下次就躲不掉了。";
+  } else {
+    apply({s: -(20 + 20 * G.zhaoPay), k: {zong: 2}}, d);
+    G.zhaoPay++; G.hide = 0;
+    r = "趙姨娘拿了錢走了。只是她嚐到甜頭，下次會更快回來、要得更多。";
+    n = "探春在第55回寧可被生母哭罵，也不肯拿公中的錢多給。";
+  }
+  $("fbBox").innerHTML = `<h3>${r}</h3>${how === "help" ? reactHtml(G.lastHelp, "good") : how === "pay" ? `<div class="react">${av("zhao")}<span><b>趙姨娘</b>拿了錢，嘴裡還在嘟囔。</span></div>` : ""}<div class="deltas">${deltaHtml(d)}</div>
+    ${q ? `<div class="quote"><cite>原文・${qs}</cite>${q}</div>` : ""}<p class="explain">${n}</p><button class="btn" id="fbOk">繼續</button>`;
+  $("fb").classList.add("on");
+  renderSide();
+  floatMoney(d.s);
+  $("fbOk").onclick = () => { $("fb").classList.remove("on"); const f = failReason(); if (f) return finish(f); nextCard(); };
+}
+
+// ===== 邢夫人找碴（王熙鳳模式）=====
+function xingAttack(tutorial) {
+  G.xa++;
+  const line = tutorial ? XING_LINES[0] : rnd(XING_LINES);
+  const jiaOk = G.jiaHelp > 0 && !angry("jia"), pingOk = G.pingHelp > 0 && !angry("ping");
+  const pay = 30 + 20 * G.xPay, secs = tutorial ? 12 : 8;
+  $("zhaoBox").innerHTML = `<div class="zpic xing"><img src="art/xingf.webp" alt="邢夫人"></div><div>
+    <div class="top" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><b class="gild" style="font:900 26px var(--serif)">婆婆邢夫人來了！</b><span class="chip">${line.s}</span></div>
+    <p style="font-size:20px;margin:10px 0 0;font-family:var(--serif)">${gloss(line.t, "xingf")}</p>
+    <div class="timer"><i id="zBar"></i></div>
+    ${tutorial ? `<p class="note" style="margin:0 0 12px">第一次遇到婆婆找碴：倒數結束前一定要處理。媳婦當面頂撞婆婆、或是不理不睬，就是「不孝」，直接出局。</p>` : ""}
+    <div class="opts">
+      <button class="opt ${tutorial ? "hint" : ""}" data-z="jia" ${jiaOk ? "" : "disabled"}><span class="k"><b>A</b></span><span>${jiaOk ? `到老太太跟前，請老太太撐腰（還能請 ${G.jiaHelp} 次）` : angry("jia") ? "老太太對你不滿，不肯出面" : "不好再麻煩老太太了"}</span></button>
+      <button class="opt" data-z="ping" ${pingOk ? "" : "disabled"}><span class="k"><b>B</b></span><span>${pingOk ? `叫平兒去陪笑周旋（還能請 ${G.pingHelp} 次）` : angry("ping") ? "平兒對你心寒，不肯去" : "平兒已經去過太多次了"}</span></button>
+      <button class="opt" data-z="pay"><span class="k"><b>C</b></span><span>備一份銀子孝敬婆婆</span></button>
+      <button class="opt" data-z="eat"><span class="k"><b>D</b></span><span>賠笑認錯，把委屈吞下去</span></button>
+      <button class="opt" data-z="fight"><span class="k"><b>E</b></span><span>當面頂回去，把道理說清楚</span></button>
+    </div></div>`;
+  $("zhao").classList.add("on");
+  AU.tenseStart();
+  const t0 = performance.now();
+  clearInterval(zTimer);
+  zTimer = setInterval(() => {
+    const left = 1 - (performance.now() - t0) / (secs * 1000);
+    $("zBar").style.width = Math.max(0, left * 100) + "%";
+    $("zhaoBox").style.setProperty("--amp", (0.6 + 7 * Math.min(1, 1 - left)).toFixed(2));
+    if (left <= 0) xingDone("timeout");
+  }, 100);
+  $("zhaoBox").querySelectorAll("[data-z]").forEach(b => b.onclick = () => xingDone(b.dataset.z));
+}
+function xingDone(how) {
+  clearInterval(zTimer);
+  AU.tenseStop();
+  $("zhao").classList.remove("on");
+  if (how === "fight" || how === "timeout") return finish("xing", how);
+  const d = {};
+  let r, q, qs, n;
+  if (how === "jia") {
+    G.jiaHelp--; G.xg++;
+    apply({f: 2}, d);
+    r = "老太太把你叫到身邊說話，邢夫人只得悻悻地走了。可她心裡更恨你了。";
+    n = "賈母是鳳姐最大的靠山。但每搬一次靠山，婆媳的心結就更深一層：之後邢夫人會更常來找碴。";
+  } else if (how === "ping") {
+    G.pingHelp--;
+    apply({h: 2}, d);
+    r = "平兒陪著笑臉，左一個「太太」右一個「太太」，總算把邢夫人勸回去了。";
+    n = "平兒是鳳姐最得力的幫手，原著中常替鳳姐收拾殘局、做好人。";
+  } else if (how === "pay") {
+    apply({s: -(30 + 20 * G.xPay), k: {zong: 1}}, d);
+    G.xPay++;
+    r = "邢夫人收了銀子，臉色好看多了。只是她知道了：從你這裡要得到錢。";
+    n = "原著說邢夫人「婪取財貨為自得」。給錢能買一時清靜，卻養大了胃口，下次會更快再來、要得更多。";
+  } else {
+    apply({en: -12, h: 1}, d);
+    r = "你連忙陪笑認錯，把委屈全吞進肚裡。";
+    q = "鳳姐兒知道邢夫人稟性愚強……勸了不中用，連忙陪笑說道：「太太這話說的極是。我能活了多大，知道什麼輕重？」"; qs = "第46回";
+    n = "忍一時風平浪靜，但每忍一次，心力就少一分。";
+  }
+  $("fbBox").innerHTML = `<h3>${r}</h3>${how === "pay" ? `<div class="react">${av("xingf")}<span><b>邢夫人</b>收下銀子，嘴角總算有了笑意。</span></div>` : reactHtml("ping", how === "eat" ? "mid" : "good")}<div class="deltas">${deltaHtml(d)}</div>
+    ${q ? `<div class="quote"><cite>原文・${qs}</cite>${q}</div>` : ""}<p class="explain">${n}</p><button class="btn" id="fbOk">繼續</button>`;
+  $("fb").classList.add("on");
+  renderSide();
+  floatMoney(d.s);
+  $("fbOk").onclick = () => { $("fb").classList.remove("on"); const f = failReason(); if (f) return finish(f); nextCard(); };
+}
+
+// ===== 公關：每月打點一次人心（王熙鳳模式）=====
+function openPR() {
+  if (G.prM === G.m) return;
+  closeSay();
+  const fmt = e => Object.keys(e).filter(k => LABEL[k]).map(k => `${LABEL[k]} ${e[k] > 0 ? "+" : ""}${e[k]}${k === "s" || k === "exp" ? " 兩" : ""}`)
+    .concat(Object.keys(e.rel || {}).map(k => `${REL_NAME[k]}的好感 +${e.rel[k]}`)).join("・");
+  const why = p => p.need === "ping" && angry("ping") ? "平兒對你心寒，不肯再替你做人情" : p.max && (G.pr[p.k] || 0) >= p.max ? "人情已經用盡了" : p.need === "comp" && !G.c ? "目前沒有人告你的狀" : "";
+  $("fbBox").innerHTML = `<h3>公關：收買人心</h3><p class="explain">每個月只能打點一次。人心掉得快，就靠這些手段拉回來；每一種的代價都不一樣。</p>
+    <div class="opts">${PRS.map((p, i) => `<button class="opt" data-p="${i}" ${why(p) ? "disabled" : ""}><span class="k"><b>${i + 1}</b></span><span>${p.t}<br><small class="prfx">${fmt(p.e(G.pr[p.k] || 0))}</small>${why(p) ? `<span class="lock">🔒 ${why(p)}</span>` : ""}</span></button>`).join("")}</div>
+    <p style="text-align:center;margin:14px 0 0"><button class="btn ghost" id="fbOk" type="button">先不用</button></p>`;
+  $("fb").classList.add("on");
+  $("fbOk").onclick = () => $("fb").classList.remove("on");
+  $("fbBox").querySelectorAll("[data-p]").forEach(b => b.onclick = () => doPR(PRS[+b.dataset.p]));
+}
+function doPR(p) {
+  const d = {}, n = G.pr[p.k] || 0;
+  apply(p.e(n), d, true);
+  G.pr[p.k] = n + 1; G.prM = G.m;
+  AU.coin();
+  $("fbBox").innerHTML = `<h3>${p.r}</h3>${reactHtml("ping", "good")}<div class="deltas">${deltaHtml(d) || "<span>沒有變化</span>"}</div><p class="explain">${p.n}</p><button class="btn" id="fbOk">繼續</button>`;
+  renderSide(); renderCard();
+  floatMoney(d.s);
+  $("fbOk").onclick = () => { $("fb").classList.remove("on"); const f = failReason(); if (f) finish(f); };
+}
+
+// ===== 結局 =====
+const ENDS = {
+  taint: {kind: "通關・有污點", t: "帳面雖平，心卻不定", p: "一年撐過來了，數字也好看。可你曾默許王熙鳳拿月錢放利錢、從中分利；抄檢大觀園時，借券一張張被翻出來。帳可以補，名聲和人心補不回來──這不算真正的通關。"},
+  win: {kind: "通關", t: "敏探春興利除宿弊", p: "一年下來，庫銀沒有虧，人心和體面都穩住了。你做到了探春做到的事。"},
+  meh: {kind: "勉強撐過", t: "撐過一年，卻沒有起色", p: "賈府沒有倒，但帳上、人心或體面總有一樣沒顧好。通關條件：庫銀至少 150 兩，體面、人心都至少 50。"},
+  broke: {kind: "出局", t: "寅吃卯糧", p: "庫銀見底，或年終還不起欠帳。事情傳開，理家的權柄被收了回去。"},
+  comp: {kind: "出局", t: "被告到太太跟前", p: "告狀滿三次。王夫人嘆口氣：「你還小，這些事先交給別人罷。」"},
+  heart: {kind: "出局", t: "眾叛親離", p: "下人們集體怠工，園子沒人打掃，事情沒人辦。"},
+  face: {kind: "出局", t: "失了體統", p: "賈府成了別家的笑柄，老太太面上無光，把家務交還給別人。"},
+  zhao: {kind: "出局", t: "辱親女愚妾爭閒氣", p: "趙姨娘鬧得全府大亂，王夫人收回了管家權。"},
+  f_win: {kind: "通關", t: "脂粉隊裡的英雄", p: "一年下來，帳沒有虧，人心和體面都穩住了，手上也乾乾淨淨。秦可卿說你「連那些束帶頂冠的男子也不能過你」，你做到了。"},
+  f_taint: {kind: "通關・有污點", t: "機關算盡太聰明", p: "帳面好看，一年也撐過來了。可是那些見不得光的錢、那些因你而死的人，都記在帳上。原著中，這些事在賈府被抄家時一併爆發──這不算真正的通關。"},
+  f_meh: {kind: "勉強撐過", t: "騎上老虎", p: "「我如今也是騎上老虎了」──一年撐過來，帳上、人心或體面卻總有一樣沒顧好。通關條件：庫銀至少 200 兩，體面、人心都至少 50。"},
+  f_broke: {kind: "出局", t: "雞兒吃了過年糧", p: "庫銀見底，或年終還不起欠帳。鳳姐自己說過：「咱們的月例，一月趕不上一月，雞兒吃了過年糧。」管家權被收了回去。"},
+  f_face: {kind: "出局", t: "失了體統", p: "賈府成了別家的笑柄，老太太面上無光，把家務交給了別人。"},
+  f_comp: {kind: "出局", t: "被告到太太跟前", p: "告狀滿三次。王夫人沉著臉說：你先歇著罷，家務交給別人。"},
+  f_heart: {kind: "出局", t: "力詘失人心", p: "下人們陽奉陰違，事情一件也辦不動。原著第110回，鳳姐正是這樣「力詘失人心」。"},
+  f_sick: {kind: "出局", t: "恃強羞說病", p: "你硬撐到最後一刻，終於病倒在床上，家務只得交給別人。"},
+  f_xing: {kind: "出局", t: "頂撞婆婆", p: "邢夫人哭到老太太跟前：媳婦當眾給我沒臉！「不孝」的罪名壓下來，你只得交出管家權。"}
+};
+function finish(reason, how) {
+  G.over = true;
+  const feng = MODE === "feng", key = feng && ENDS["f_" + reason] ? "f_" + reason : reason;
+  const won = key === "win" || key === "f_win";
+  AU.tenseStop();
+  AU[won ? "win" : "lose"]();
+  if (G.taint) G.k.debt += 5;
+  if (!["win", "meh", "taint", "f_win", "f_meh", "f_taint"].includes(key)) G.trace.push({s: G.s, f: G.f, h: G.h, en: G.en});
+  const E = ENDS[key];
+  const SC = calcScore(key);
+  let p = E.p;
+  if (reason === "zhao") p = (how === "timeout" ? "你遲遲沒有回應，" : "你和生母當眾吵了起來，") + p;
+  if (key === "f_xing") p = (how === "timeout" ? "你遲遲沒有回應，" : "你當面頂撞了婆婆，") + p;
+  const ks = Object.keys(G.k);
+  let type = ks.reduce((b, k) => G.k[k] > G.k[b] ? k : b, "open");
+  if (G.k[type] === 0) type = "open";
+  const T = TYPES[type];
+  if (key === "win") { try { localStorage.setItem("rb-pass", "1"); } catch (e) {} }
+  if (key === "f_win") { try { localStorage.setItem("rb-fpass", "1"); } catch (e) {} }
+  send(type, key);
+  const rows = G.hist.filter(h => FIXED_IDS.has(h.id) || EV[h.id].o.some(o => o.best || o.orig)).map(h => {
+    const ev = EV[h.id], mine = ev.o[h.i], bi = ev.o.findIndex(o => o.best), best = ev.o[bi];
+    if (feng) {
+      const orig = ev.o.find(o => o.orig), oq = orig && (orig.q || ev.q);
+      if (!best && !orig) return "";
+      return `<tr><td><b>${ev.t}</b><br><span class="chip">${ev.src}</span></td><td>${mine.t}${h.i === bi ? ` <span class="ok">✓</span>` : ""}</td>
+        <td>${orig ? orig.t : "—"}${oq ? `<div class="q">${oq}</div>` : ""}</td><td><span class="ok">${best ? best.t : "—"}</span></td></tr>`;
+    }
+    if (!best) return "";
+    const same = h.i === bi, q = best.q || ev.q;
+    return `<tr><td><b>${ev.t}</b><br><span class="chip">${CLUE[h.id] || ev.src}</span></td>
+      <td>${mine.t}${same ? ` <span class="ok">✓</span>` : ""}</td>
+      <td><span class="ok">${best.t}</span>${q ? `<div class="q">${q}</div>` : ""}</td></tr>`;
+  }).join("");
+  $("endWrap").innerHTML = `
+    <div class="endhead ${won ? "win" : ["meh", "zhao", "taint", "f_meh", "f_taint", "f_xing"].includes(key) ? "" : "lose"}"><div><div class="kind">${E.kind}・第 ${G.m} 月</div><h1 class="gild">${E.t}</h1><p>${p}</p></div><img src="art/${feng ? "feng" : reason === "zhao" ? "zhao" : reason === "win" ? "tan_win" : reason === "meh" || reason === "taint" ? "tan" : "tan_lose"}.webp" alt=""></div>
+    ${feng && G.dirtLog.length ? `<div class="sec frame taint"><h2>你的把柄</h2><p>帳可以補，這些事卻抹不掉：</p>
+      <ul class="dirtlist">${G.dirtLog.map(x => `<li><b>${x.n}</b>${DIRT_NOTE[x.k] || ""}${G.dirt.some(y => y.k === x.k) ? "" : "（後來收手了）"}</li>`).join("")}</ul>
+      <div class="quote"><cite>原文・第5回〈聰明累〉</cite>機關算盡太聰明，反算了卿卿性命。</div>
+      <p class="explain">王熙鳳賺錢的本事無人能及，但她的錢，很多是拿別人的錢冒險、拿別人的命換來的。原著中，這些事在賈府被抄家時一一爆發。</p></div>` : ""}
+    ${G.taint && !feng ? `<div class="sec frame taint"><h2>污點：貪念一動</h2><p>你曾默許王熙鳳拿月錢放利錢，公中也分了利錢。不管後來怎麼補救，這一筆都記在你的帳上。</p>
+      <div class="quote"><cite>原文・第39回（平兒）</cite>「這幾年拿著這一項銀子，翻出有幾百來了。……只他這梯己利錢，一年不到，上千的銀子呢。」</div>
+      <p class="explain">放利錢看似「開源」，其實是拿別人的錢冒險。原著中，這些借券在第105回賈府被抄家時成了罪狀之一。真正的開源，是探春那樣讓資源動起來，而不是挪用別人應得的錢。</p></div>` : ""}
+    <div class="sec frame"><h2>本輪分數：<span class="gild" style="font-size:1.4em">${SC.total}</span> 分</h2>
+      <p class="explain">撐了 ${SC.months} 個月 ${SC.surv}／40・結局 ${SC.end}／30・庫銀 ${SC.money}／10・體面人心 ${SC.fh}／20${SC.dirt ? `・把柄 ${SC.dirt}` : ""}</p></div>
+    <div class="sec frame"><h2>登記成績</h2><p class="explain">輸入班級、座號、姓名後送出，老師就看得到你這一輪的結果。每一輪結束都可以登記一次。</p>
+      <form class="scoreform" id="scoreForm" autocomplete="off"><input id="sCls" maxlength="10" placeholder="班級（例：資二乙）" required><input id="sNo" type="number" inputmode="numeric" min="1" max="99" placeholder="座號" required><input id="sName" maxlength="12" placeholder="姓名" required><button class="btn">送出成績</button></form><p id="sMsg"></p></div>
+    <div class="sec frame"><h2>這一年的帳</h2>${chart()}</div>
+    <div class="sec frame"><div class="type"><div class="big"><span>${T.ch}</span></div><div><div class="chip">你的理財類型</div><h3>${T.n}</h3></div></div>
+      <dl class="kv"><dt>紅樓夢對照</dt><dd>${T.hong}</dd><dt>現實生活</dt><dd>${T.life}</dd><dt>給你的建議</dt><dd><b>${T.tip}</b></dd></dl></div>
+    ${feng ? `<div class="sec frame"><h2>原著鳳姐 vs 較好的做法</h2><p class="explain">原著中王熙鳳的做法，往往最狠、最來錢，也最有後患。比一比你的選擇。</p>
+      <div style="overflow-x:auto"><table class="cmp"><thead><tr><th>事件</th><th>你的選擇</th><th>原著鳳姐的做法</th><th>較好的做法</th></tr></thead><tbody>${rows || `<tr><td colspan="4">這一輪很快就出局了，再挑戰一次吧！</td></tr>`}</tbody></table></div></div>`
+    : `<div class="sec frame"><h2>探春解對照</h2><p class="explain">你的選擇和原著做法比一比。讀課文時，留意標示的段落。</p>
+      <div style="overflow-x:auto"><table class="cmp"><thead><tr><th>事件</th><th>你的選擇</th><th>原著（探春解）</th></tr></thead><tbody>${rows || `<tr><td colspan="3">這一輪還沒遇到課文裡的事件就出局了，再挑戰一次吧！</td></tr>`}</tbody></table></div></div>`}
+    <div class="endbtns"><button class="btn" id="again">再玩一次</button><button class="btn ghost" id="home2">回首頁</button></div>`;
+  setupScore(key, E, T, SC.total);
+  $("again").onclick = startGame;
+  $("home2").onclick = () => { renderHome(); show("home"); };
+  show("end");
+}
+let FIXED_IDS = new Set(Object.values(FIXED).flat());
+function chart() {
+  const W = 760, H = 220, L = 48, R = 16, T = 16, B = 30, n = 12;
+  const x = i => L + (W - L - R) * i / n;
+  const ys = v => T + (H - T - B) * (1 - Math.max(0, Math.min(600, v)) / 600);
+  const yp = v => T + (H - T - B) * (1 - v / 100);
+  const line = (f, key, col) => `<polyline fill="none" stroke="${col}" stroke-width="3" stroke-linejoin="round" points="${G.trace.map((p, i) => x(i) + "," + f(p[key])).join(" ")}"/>` +
+    G.trace.map((p, i) => `<circle cx="${x(i)}" cy="${f(p[key])}" r="4" fill="${col}"/>`).join("");
+  const months = Array.from({length: 13}, (_, i) => i % 3 === 0 ? `<text x="${x(i)}" y="${H - 8}" text-anchor="middle">${i === 0 ? "開始" : i + " 月"}</text>` : "").join("");
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="庫銀、體面、人心${MODE === "feng" ? "、心力" : ""}的逐月變化">
+    <line x1="${L}" x2="${W - R}" y1="${ys(START.s)}" y2="${ys(START.s)}" stroke="#5a4433" stroke-dasharray="4 4"/><text x="${L - 6}" y="${ys(START.s) + 4}" text-anchor="end">${START.s}</text>
+    ${months}${line(ys, "s", "#ebbd60")}${line(yp, "f", "#4cc3a6")}${line(yp, "h", "#ec4b3e")}${MODE === "feng" ? line(yp, "en", "#9a8cff") : ""}</svg>
+    <p class="explain"><b style="color:#ebbd60">━ 庫銀</b>（虛線為起始的 ${START.s} 兩）　<b style="color:#4cc3a6">━ 體面</b>　<b style="color:#ec4b3e">━ 人心</b>${MODE === "feng" ? `　<b style="color:#9a8cff">━ 心力</b>` : ""}</p>`;
+}
+
+// ===== 換算分數（滿分 100）=====
+// 撐了幾個月 40＋結局 30＋庫銀 10＋體面人心 20，王熙鳳模式每個把柄扣 5
+const END_PTS = {win: 30, f_win: 30, taint: 15, f_taint: 15, meh: 10, f_meh: 10};
+function calcScore(key) {
+  const done = key in END_PTS, months = done ? 12 : Math.max(0, G.m - 1);
+  const p = {
+    surv: Math.round(months / 12 * 40),
+    end: END_PTS[key] || 0,
+    money: done ? Math.round(10 * Math.max(0, Math.min(1, G.s / START.s))) : 0,
+    fh: Math.round(20 * (G.f + G.h) / 200),
+    dirt: MODE === "feng" ? -5 * G.dirtLog.length : 0
+  };
+  p.total = Math.max(0, Math.min(100, p.surv + p.end + p.money + p.fh + p.dirt));
+  p.months = months;
+  return p;
+}
+// ===== 學生登記成績：只有兩位管理者（學校 Google 帳號）能讀取、刪除 =====
+const ADMINS = ["wetwaves302@mst.hlis.hlc.edu.tw", "walala@hlbh.hlc.edu.tw"];
+let lastStu = null;   // 同一次開啟網頁內記住上一筆，方便同一位學生連續玩
+function setupScore(key, E, T, score) {
+  const f = $("scoreForm"), msg = $("sMsg");
+  if (lastStu) { $("sCls").value = lastStu.cls; $("sNo").value = lastStu.no; $("sName").value = lastStu.name; }
+  const rec = {mode: MODE, end: key, endT: E.t, type: T.n, m: G.m, score, s: G.s, f: G.f, h: G.h, dirt: MODE === "feng" ? G.dirtLog.length : G.taint ? 1 : 0};
+  if (MODE === "feng") rec.en = G.en;
+  f.onsubmit = async ev => {
+    ev.preventDefault();
+    const cls = $("sCls").value.trim(), no = parseInt($("sNo").value, 10), name = $("sName").value.trim();
+    if (!cls || !name || !(no >= 1 && no <= 99)) { msg.className = "bad"; msg.textContent = "請把班級、座號（1～99）、姓名都填好。"; return; }
+    const btn = f.querySelector("button");
+    btn.disabled = true; msg.className = ""; msg.textContent = "送出中…";
+    const str = v => ({stringValue: String(v)}), int = v => ({integerValue: String(Math.round(v))});
+    const fields = {cls: str(cls), no: int(no), name: str(name), mode: str(rec.mode), end: str(rec.end), endT: str(rec.endT), type: str(rec.type),
+      m: int(rec.m), score: int(rec.score), s: int(rec.s), f: int(rec.f), h: int(rec.h), dirt: int(rec.dirt), d: str(twDate())};
+    if ("en" in rec) fields.en = int(rec.en);
+    const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    try {
+      const r = await fetch(`${FS}${FB_DOCS}:commit?key=${FB_KEY}`, {method: "POST", headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({writes: [{update: {name: `${FB_DOCS}/rbScore/${id}`, fields}, currentDocument: {exists: false},
+          updateTransforms: [{fieldPath: "t", setToServerValue: "REQUEST_TIME"}]}]})});
+      if (!r.ok) throw new Error(r.status);
+      lastStu = {cls, no, name};
+      f.querySelectorAll("input").forEach(i => i.disabled = true);
+      msg.className = "ok"; msg.textContent = `已送出！${cls} ${no} 號 ${name}，這一輪的成績老師看得到了。`;
+    } catch (e) {
+      btn.disabled = false; msg.className = "bad"; msg.textContent = "送出失敗，請確認網路後再按一次。";
+    }
+  };
+}
+
+// ----- 管理者：Google 登入、成績列表、刪除、下載 -----
+let aToken = "", aRows = [], aSel = new Set(), aArm = false;
+async function adminLogin() {
+  const msg = $("aMsg");
+  msg.textContent = "登入中…";
+  try {
+    const V = "10.12.2";
+    const [{initializeApp, getApps}, A] = await Promise.all([import(`https://www.gstatic.com/firebasejs/${V}/firebase-app.js`), import(`https://www.gstatic.com/firebasejs/${V}/firebase-auth.js`)]);
+    const app = getApps()[0] || initializeApp({apiKey: FB_KEY, authDomain: "hlbh-admin-duty.firebaseapp.com", projectId: "hlbh-admin-duty"});
+    const auth = A.getAuth(app), prov = new A.GoogleAuthProvider();
+    prov.setCustomParameters({prompt: "select_account"});
+    const cred = await A.signInWithPopup(auth, prov);
+    const email = (cred.user.email || "").toLowerCase();
+    if (!ADMINS.includes(email)) { await A.signOut(auth); msg.textContent = `${email} 沒有管理權限。`; return; }
+    aToken = await cred.user.getIdToken();
+    // 管理者登入的裝置，王熙鳳模式直接解鎖（方便老師示範）
+    try { localStorage.setItem("rb-pass", "1"); } catch (e) {}
+    $("fengBox").innerHTML = `<button class="btn" id="startFeng" type="button">挑戰王熙鳳模式</button>`;
+    $("fengBox").classList.remove("lockbox");
+    $("startFeng").onclick = () => startGame(true, "feng");
+    msg.textContent = `已登入：${email}`;
+    $("aLogin").hidden = true;
+    await loadScores();
+  } catch (e) {
+    msg.textContent = "登入失敗：" + (e.code === "auth/popup-closed-by-user" ? "登入視窗被關掉了。" : e.code === "auth/unauthorized-domain" ? "這個網址還沒加入 Firebase 的授權網域。" : e.code === "auth/operation-not-allowed" ? "Firebase 還沒開啟 Google 登入。" : (e.code || e.message));
+  }
+}
+const fsVal = v => v.stringValue ?? (v.integerValue != null ? +v.integerValue : v.timestampValue ?? "");
+async function loadScores() {
+  const box = $("aBox");
+  box.hidden = false; box.innerHTML = "讀取成績中…";
+  const rows = []; let page = "";
+  do {
+    const r = await fetch(`${FS}${FB_DOCS}/rbScore?pageSize=300${page ? "&pageToken=" + page : ""}`, {headers: {Authorization: "Bearer " + aToken}});
+    if (!r.ok) { box.innerHTML = `讀取失敗（${r.status}）。`; return; }
+    const j = await r.json();
+    (j.documents || []).forEach(d => { const o = {id: d.name.split("/").pop()}; for (const k in d.fields) o[k] = fsVal(d.fields[k]); rows.push(o); });
+    page = j.nextPageToken || "";
+  } while (page);
+  aRows = rows.sort((a, b) => String(b.t).localeCompare(String(a.t)));
+  aSel = new Set(); aArm = false;
+  renderScores();
+}
+const twTime = t => t ? new Date(new Date(t).getTime() + 8 * 3600e3).toISOString().slice(0, 16).replace("T", " ") : "";
+const modeName = m => m === "feng" ? "王熙鳳" : "探春";
+function renderScores() {
+  const box = $("aBox");
+  let day = "", body = "";
+  for (const r of aRows) {
+    const d = twTime(r.t).slice(0, 10) || r.d;
+    if (d !== day) { day = d; const ids = aRows.filter(x => (twTime(x.t).slice(0, 10) || x.d) === d).map(x => x.id);
+      body += `<tr class="day"><td><input type="checkbox" data-day="${d}" ${ids.every(i => aSel.has(i)) ? "checked" : ""}></td><td colspan="14">${d}・${ids.length} 筆</td></tr>`; }
+    body += `<tr><td><input type="checkbox" data-id="${r.id}" ${aSel.has(r.id) ? "checked" : ""}></td><td>${twTime(r.t).slice(11)}</td><td>${esc(r.cls)}</td><td>${r.no}</td><td>${esc(r.name)}</td><td>${modeName(r.mode)}</td>
+      <td><b>${r.score ?? ""}</b></td><td>${esc(r.endT || r.end)}</td><td>${esc(r.type || "")}</td><td>${r.m}</td><td>${r.s}</td><td>${r.f}</td><td>${r.h}</td><td>${r.en ?? ""}</td><td>${r.dirt ?? ""}</td></tr>`;
+  }
+  box.innerHTML = `<div class="abtns"><button type="button" id="aCsv" ${aRows.length ? "" : "disabled"}>下載成績（CSV，Excel 可開）</button><button type="button" id="aReload">重新整理</button>
+      <button type="button" class="warn" id="aDel" ${aSel.size ? "" : "disabled"}>${aArm ? `再按一次，確定刪除 ${aSel.size} 筆` : `刪除勾選的 ${aSel.size} 筆`}</button><button type="button" id="aStats">查看全班統計</button></div>
+    <p style="color:var(--muted);font-size:14px;margin:0 0 8px">共 ${aRows.length} 筆，依時間新到舊排列；勾日期那一列可整天勾選。</p>
+    <div class="scorewrap"><table class="scoretbl"><thead><tr><th></th><th>時間</th><th>班級</th><th>座號</th><th>姓名</th><th>模式</th><th>分數</th><th>結局</th><th>理財類型</th><th>月</th><th>庫銀</th><th>體面</th><th>人心</th><th>心力</th><th>把柄</th></tr></thead><tbody>${body || `<tr><td colspan="15">目前沒有成績。</td></tr>`}</tbody></table></div><div id="aStatBox"></div>`;
+  box.querySelectorAll("[data-id]").forEach(c => c.onchange = () => { c.checked ? aSel.add(c.dataset.id) : aSel.delete(c.dataset.id); aArm = false; renderScores(); });
+  box.querySelectorAll("[data-day]").forEach(c => c.onchange = () => {
+    aRows.filter(x => (twTime(x.t).slice(0, 10) || x.d) === c.dataset.day).forEach(x => c.checked ? aSel.add(x.id) : aSel.delete(x.id)); aArm = false; renderScores(); });
+  $("aCsv").onclick = downloadCsv;
+  $("aReload").onclick = loadScores;
+  $("aDel").onclick = deleteSel;
+  $("aStats").onclick = async () => { const rows = await fetchStats(aToken).catch(() => null); if (rows) { renderStats(rows); $("aStatBox").appendChild($("stats")); } };
+}
+async function deleteSel() {
+  if (!aArm) { aArm = true; return renderScores(); }
+  const ids = [...aSel];
+  $("aDel").disabled = true; $("aDel").textContent = "刪除中…";
+  for (let i = 0; i < ids.length; i += 20)
+    await Promise.all(ids.slice(i, i + 20).map(id => fetch(`${FS}${FB_DOCS}/rbScore/${id}`, {method: "DELETE", headers: {Authorization: "Bearer " + aToken}})));
+  await loadScores();
+}
+function downloadCsv() {
+  const q = v => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const rows = [...aRows].sort((a, b) => String(a.t).localeCompare(String(b.t)) || String(a.cls).localeCompare(String(b.cls)) || a.no - b.no);
+  const head = ["日期", "時間", "班級", "座號", "姓名", "模式", "分數", "結局", "理財類型", "到第幾月", "庫銀", "體面", "人心", "心力", "把柄數"];
+  const lines = rows.map(r => [twTime(r.t).slice(0, 10) || r.d, twTime(r.t).slice(11), r.cls, r.no, r.name, modeName(r.mode), r.score ?? "", r.endT || r.end, r.type, r.m, r.s, r.f, r.h, r.en ?? "", r.dirt ?? ""].map(q).join(","));
+  const blob = new Blob(["\ufeff" + [head.map(q).join(","), ...lines].join("\r\n")], {type: "text/csv;charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = `大觀園理家記成績_${twDate()}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+$("aLogin").onclick = adminLogin;
+
+// ===== 全班統計：匿名，只記「哪天、哪種結局、哪種類型」 =====
+// 資料庫規則只允許 +1，讀取需教師登入；這裡的 key 是公開識別碼，不是密碼。
+const FB_KEY = "AIzaSyBS3Y8Vj4-Ty-jmM2oGEWzZ3kXCgpbGOfE";
+const FB_DOCS = "projects/hlbh-admin-duty/databases/(default)/documents";
+const FS = "https://firestore.googleapis.com/v1/";
+const twDate = (back = 0) => new Date(Date.now() + 8 * 3600e3 - back * 864e5).toISOString().slice(0, 10);
+function send(type, end) {
+  const d = twDate();
+  const w = c => ({update: {name: `${FB_DOCS}/rb/${d}_${c}`, fields: {c: {stringValue: c}, d: {stringValue: d}}},
+    updateMask: {fieldPaths: ["c", "d"]}, updateTransforms: [{fieldPath: "n", increment: {integerValue: "1"}}]});
+  fetch(`${FS}${FB_DOCS}:commit?key=${FB_KEY}`, {method: "POST", keepalive: true, headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({writes: [w("type-" + type), w("end-" + end)]})}).catch(() => {});
+}
+const LOCK_KEY = "rb-tlock";
+$("tForm").onsubmit = async ev => {
+  ev.preventDefault();
+  const msg = $("tMsg");
+  let lock = {n: 0, until: 0};
+  try { lock = JSON.parse(localStorage.getItem(LOCK_KEY)) || lock; } catch (e) {}
+  if (Date.now() < lock.until) { msg.textContent = `嘗試次數過多，請 ${Math.ceil((lock.until - Date.now()) / 6e4)} 分鐘後再試。`; return; }
+  const saveLock = () => { try { localStorage.setItem(LOCK_KEY, JSON.stringify(lock)); } catch (e) {} };
+  msg.textContent = "讀取中…";
+  try {
+    const login = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FB_KEY}`, {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({email: "teacher@review.hlbh", password: $("tPw").value, returnSecureToken: true})});
+    if (!login.ok) {
+      const err = ((await login.json()).error || {}).message || "";
+      lock.n++;
+      if (lock.n >= 5 || err.startsWith("TOO_MANY_ATTEMPTS")) { lock = {n: 0, until: Date.now() + 15 * 6e4}; msg.textContent = "嘗試次數過多，已暫時鎖定，請 15 分鐘後再試。"; }
+      else msg.textContent = `密碼不正確（還可再試 ${5 - lock.n} 次）。`;
+      saveLock(); return;
+    }
+    lock = {n: 0, until: 0}; saveLock();
+    const {idToken} = await login.json();
+    const rows = await fetchStats(idToken);
+    $("tPw").value = ""; msg.textContent = "";
+    renderStats(rows);
+  } catch (e) { msg.textContent = "讀取失敗，請稍後再試。"; }
+};
+async function fetchStats(token) {
+  const rows = [];
+  let page = "";
+  do {
+    const r = await fetch(`${FS}${FB_DOCS}/rb?pageSize=300${page ? "&pageToken=" + page : ""}`, {headers: {Authorization: "Bearer " + token}});
+    if (!r.ok) throw new Error(r.status);
+    const j = await r.json();
+    (j.documents || []).forEach(d => rows.push({c: d.fields.c.stringValue, d: d.fields.d.stringValue, n: +d.fields.n.integerValue}));
+    page = j.nextPageToken || "";
+  } while (page);
+  return rows;
+}
+function renderStats(rows) {
+  const t0 = twDate(), t7 = twDate(6);
+  const sum = (c, f) => rows.filter(r => r.c === c && f(r.d)).reduce((a, r) => a + r.n, 0);
+  const tr = (c, name) => `<tr><td>${name}</td><td>${sum(c, d => d === t0)}</td><td>${sum(c, d => d >= t7)}</td><td>${sum(c, () => true)}</td></tr>`;
+  $("stats").innerHTML = `<table><thead><tr><th>結局</th><th>今天</th><th>近 7 天</th><th>累計</th></tr></thead><tbody>
+    ${Object.keys(ENDS).map(k => tr("end-" + k, ENDS[k].t)).join("")}</tbody></table><br>
+    <table><thead><tr><th>理財類型</th><th>今天</th><th>近 7 天</th><th>累計</th></tr></thead><tbody>
+    ${Object.keys(TYPES).map(k => tr("type-" + k, TYPES[k].n)).join("")}</tbody></table>`;
+  $("stats").hidden = false;
+}
+
+// ===== 操作說明導覽：依序框出各區塊並說明 =====
+const TOUR_TAN = [
+  {sel: ".ev", t: "事件卡", x: "這是這個月要處理的事。上面寫著是誰來找你、對方的身分，以及出自原著第幾回。每個月有 2 件事。"},
+  {sel: ".opts", t: "選擇辦法", x: "從 A～D 選一個辦法。選完會看到結果、數值怎麼變，還有對應的原著原文。人心或體面破表時，會多一個特殊選項 E。有 🔒 的選項代表現在還不能用，後面會寫原因。"},
+  {sel: "#money", t: "庫銀", x: "公中的現銀，一開始只有 150 兩。條上的白色刻度是一開始的位置，下面會寫比原始帳目多或少多少。<b>歸零就破產出局！</b>"},
+  {sel: "[data-tour=face]", t: "體面", x: "賈府在老太太和外人眼中的面子。<b>歸零出局</b>；滿 100 會「破表」，可以用特殊選項。"},
+  {sel: "[data-tour=heart]", t: "人心", x: "下人和姊妹們服不服你。<b>歸零出局</b>；滿 100 也會破表。人心和體面漲得快、掉得也快，要小心。"},
+  {sel: "[data-tour=rels]", t: "人際關係", x: "王熙鳳、寶釵、平兒對你的態度。<b>得罪</b>了，靠她們的辦法會鎖住；<b>交好</b>了，她們會免費幫你出主意。"},
+  {sel: "[data-tour=comp]", t: "告狀", x: "有人告到王夫人跟前就亮一格，<b>滿三格出局</b>。"},
+  {sel: "[data-tour=flow]", t: "每月收支", x: "每個月底自動結算一次，會跳出長條圖。改革成功，收入會增加、支出會減少。借了錢，下面會多出一本紅色的欠帳簿，到期要還。"},
+  {sel: "[data-tour=adv]", t: "找誰支援：請教顧問", x: "<b>李紈</b>幫你算哪個最划算，<b>寶釵</b>提醒哪個有後患，<b>平兒</b>告訴你下人服不服氣，各能問 2 次；<b>黛玉</b>隨時能問，她會預測三個月後的庫銀。寶玉、王熙鳳也常不請自來出主意──可別全信。"},
+  {sel: ".sidebtns", t: "人物關係圖與說明", x: "忘了誰是誰，按「人物關係圖」；想再看一次這份說明，按「操作說明」。"},
+  {sel: "#snd", t: "聲音", x: "背景音樂和音效的開關在這裡。"},
+  {sel: "", t: "最後提醒", x: "生母<b>趙姨娘</b>隨時會殺到！倒數結束前一定要處理，<b>派人去請李紈、平兒來勸</b>最穩當，跟她吵就直接出局。<br><br><b>通關條件</b>：撐過 12 個月，年終庫銀不少於 150 兩，體面和人心都在 50 以上。"}
+];
+const TOUR_FENG = [
+  {sel: ".ev", t: "事件卡", x: "這個月要處理的事，寫著是誰來找你、出自原著第幾回。每個月有 2 件事。有些事一旦做了，後面會接二連三地找上門。"},
+  {sel: ".opts", t: "選擇辦法", x: "從 A～D 選一個。結局頁會把你的選擇和<b>原著中王熙鳳的做法</b>、<b>較好的做法</b>並列──原著的做法往往最狠。突發事件還多一個 E：<b>威重令行</b>，不花錢就能壓下來，但很耗心力和人心。"},
+  {sel: "#money", t: "庫銀", x: "一開始 200 兩，每個月倒貼 5 兩。收禮、放利錢、包攬官司都能很快賺到錢，但這些錢多半會留下<b>把柄</b>。<b>歸零就出局！</b>"},
+  {sel: "[data-tour=face]", t: "體面", x: "賈府和你在老太太、外人眼中的面子。<b>歸零出局。</b>"},
+  {sel: "[data-tour=heart]", t: "人心", x: "王熙鳳的人心<b>掉得特別快</b>（扣的時候是探春的 1.5 倍），每個月底還會因為背地裡的怨氣再掉 4 點。要靠下面的<b>公關</b>拉回來。<b>歸零出局。</b>"},
+  {sel: "[data-tour=en]", t: "心力", x: "探春沒有的屬性。生病、受氣、硬撐都會消耗，每個月還會因為操勞減 12。王熙鳳是會心力交瘁的，撐到年底並不容易。<b>歸零就病倒出局。</b>"},
+  {sel: "[data-tour=rels]", t: "人際關係", x: "賈母、平兒、賈璉對你的態度。得罪了老太太，就沒人替你撐腰；得罪了平兒，她就不肯再替你說話、做人情。"},
+  {sel: "[data-tour=comp]", t: "告狀", x: "被告到王夫人跟前就亮一格，<b>滿三格出局</b>。"},
+  {sel: "[data-tour=flow]", t: "每月收支", x: "月底自動結算。借了錢會出現欠帳簿；做了虧心事會出現紫色的<b>把柄</b>，年終查帳時每一件都會被翻出來（體面 −12）。"},
+  {sel: "[data-tour=pr]", t: "公關：收買人心", x: "每個月可以打點一次：散賞錢、請老太太看戲、捨米佈施、寬放規矩、讓平兒施恩、結交鴛鴦、閉門靜養……各有各的花費和效果。"},
+  {sel: "[data-tour=adv]", t: "請教", x: "當家奶奶沒什麼人能商量。<b>平兒</b>怕你的威勢，問了不一定敢說真話；交情越好越敢開口，不敢開口時不扣次數。前兩個月，病中的<b>秦可卿</b>會主動派人來出主意。賈璉、旺兒媳婦也常湊過來：一個只想息事寧人，一個只看錢。"},
+  {sel: ".sidebtns", t: "人物關係圖與說明", x: "忘了誰是誰，按「人物關係圖」；想再看一次說明，按「操作說明」。"},
+  {sel: "#snd", t: "聲音", x: "背景音樂和音效的開關在這裡。"},
+  {sel: "", t: "最後提醒", x: "婆婆<b>邢夫人</b>隨時會來找碴！倒數結束前一定要處理：請老太太撐腰、叫平兒周旋、送銀子，或賠笑吞下去。<b>當面頂撞或不理不睬，就是不孝，直接出局。</b><br><br><b>通關條件</b>：撐過 12 個月，年終庫銀不少於 200 兩，體面、人心都在 50 以上。手上沒有把柄，才是真正的通關。"}
+];
+let TOUR = TOUR_TAN;
+let ti = 0;
+function startTour() { ti = 0; closeSay(); $("tour").classList.add("on"); tourStep(); }
+function endTour() { $("tour").classList.remove("on"); try { localStorage.setItem("rb-tour", "1"); } catch (e) {} }
+function tourStep() {
+  const st = TOUR[ti], el = st.sel ? document.querySelector(st.sel) : null;
+  if (st.sel && !el) { if (++ti < TOUR.length) return tourStep(); return endTour(); }
+  if (el) el.scrollIntoView({block: "center", behavior: "instant"});
+  const last = ti === TOUR.length - 1;
+  $("tTip").innerHTML = `<div class="tstep">操作說明　${ti + 1}／${TOUR.length}</div><h3>${st.t}</h3><p>${st.x}</p>
+    <div class="tbtns"><button type="button" id="tSkip" class="tlink">跳過說明</button>${ti ? `<button type="button" id="tPrev" class="btn ghost">上一步</button>` : ""}<button type="button" id="tNext" class="btn">${last ? "開始理家" : "下一步"}</button></div>`;
+  $("tSkip").onclick = endTour;
+  if (ti) $("tPrev").onclick = () => { ti--; tourStep(); };
+  $("tNext").onclick = () => { if (last) return endTour(); ti++; tourStep(); };
+  requestAnimationFrame(() => tourPlace(el));
+}
+function tourPlace(el) {
+  const hole = $("tHole"), tip = $("tTip"), vw = innerWidth, vh = innerHeight, pad = 8;
+  if (!el) { hole.style.cssText = `left:${vw / 2}px;top:${vh / 2}px;width:0;height:0`; tip.style.cssText = `left:${Math.max(12, (vw - tip.offsetWidth) / 2)}px;top:${Math.max(12, (vh - tip.offsetHeight) / 2)}px`; return; }
+  const r = el.getBoundingClientRect();
+  hole.style.cssText = `left:${r.left - pad}px;top:${r.top - pad}px;width:${r.width + pad * 2}px;height:${r.height + pad * 2}px`;
+  const tw = tip.offsetWidth, th = tip.offsetHeight;
+  let left, top;
+  if (r.left > vw / 2 && r.left - tw - 24 > 0) { left = r.left - tw - 24; top = r.top + r.height / 2 - th / 2; }      // 右側的區塊：提示放左邊
+  else if (r.bottom + th + 24 < vh) { left = r.left; top = r.bottom + 20; }                                             // 放下面
+  else { left = r.left; top = r.top - th - 20; }                                                                         // 放上面
+  tip.style.cssText = `left:${Math.max(12, Math.min(vw - tw - 12, left))}px;top:${Math.max(12, Math.min(vh - th - 12, top))}px`;
+}
+addEventListener("resize", () => { if ($("tour").classList.contains("on")) tourPlace(TOUR[ti].sel ? document.querySelector(TOUR[ti].sel) : null); });
+
+// ===== 人物關係圖 =====
+function relMap() {
+  const N = {
+    jia: [450, 62, "賈母", "老太太・全府輩分最高"],
+    she: [150, 212, "賈赦", "大老爺・賈母長子"],
+    zheng: [450, 212, "賈政", "二老爺・賈母次子"],
+    zhao: [290, 212, "趙姨娘", "賈政的妾"],
+    wang: [610, 212, "王夫人", "賈政的正室"],
+    dai: [800, 62, "黛玉", "賈母的外孫女"],
+    feng: [150, 372, "王熙鳳", "賈赦的兒媳・王夫人的姪女"],
+    tan: [340, 372, "探春", "趙姨娘生・庶出"],
+    yu: [520, 372, "寶玉", "王夫人生・嫡出"],
+    wan: [680, 372, "李紈", "王夫人的兒媳（丈夫早逝）"],
+    chai: [820, 262, "寶釵", "王夫人的外甥女"],
+    ping: [150, 530, "平兒", "王熙鳳的心腹丫鬟"]
+  };
+  const feng = MODE === "feng";
+  // 王熙鳳模式：拿掉趙姨娘，加上婆婆邢夫人
+  if (feng) {
+    delete N.zhao;
+    N.she = [100, 212, "賈赦", "大老爺・賈母長子"]; N.xingf = [270, 212, "邢夫人", "你的婆婆"];
+    N.feng = [150, 372, "王熙鳳", "賈璉之妻・邢夫人的兒媳"]; N.tan = [340, 372, "探春", "賈政的庶出女兒"]; N.wang = [610, 212, "王夫人", "賈政的正室・你的姑媽"];
+  }
+  const pic = {jia: 0, she: 0, zheng: 0, wang: 0};
+  const solid = "#ebbd60", dash = "#8a7a62";
+  const ln = (a, b, d, label, lx, ly) => `<path d="${d}" fill="none" stroke="${label === "dash" ? dash : solid}" stroke-width="2" ${label === "dash" ? 'stroke-dasharray="6 5"' : ""}/>`;
+  const L = feng ? [
+    `<path d="M450 92V140H100V176M450 140V176" fill="none" stroke="${solid}" stroke-width="2"/>`,
+    `<path d="M132 212H238" stroke="${solid}" stroke-width="4"/>`,
+    `<path d="M480 212H578" stroke="${solid}" stroke-width="4"/>`,
+    `<path d="M185 212V300H150V336" fill="none" stroke="${solid}" stroke-width="2"/>`,
+    `<path d="M418 212H340V336" fill="none" stroke="${solid}" stroke-width="2"/>`,
+    `<path d="M610 248V300H520V336M610 300H680V336" fill="none" stroke="${solid}" stroke-width="2"/>`,
+    `<path d="M150 452V494" stroke="${dash}" stroke-width="2" stroke-dasharray="6 5"/>`,
+    `<path d="M480 62H768" stroke="${dash}" stroke-width="2" stroke-dasharray="6 5"/>`,
+    `<path d="M642 228L790 254" stroke="${dash}" stroke-width="2" stroke-dasharray="6 5"/>`
+  ].join("") : [
+    `<path d="M450 92V140H150V176M450 140V176" fill="none" stroke="${solid}" stroke-width="2"/>`,
+    `<path d="M420 212H322" stroke="${dash}" stroke-width="2" stroke-dasharray="6 5"/>`,
+    `<path d="M480 212H578" stroke="${solid}" stroke-width="4"/>`,
+    `<path d="M290 248V300H340V336" fill="none" stroke="${solid}" stroke-width="2"/>`,
+    `<path d="M610 248V300H520V336M610 300H680V336" fill="none" stroke="${solid}" stroke-width="2"/>`,
+    `<path d="M150 248V336" stroke="${solid}" stroke-width="2"/>`,
+    `<path d="M150 452V494" stroke="${dash}" stroke-width="2" stroke-dasharray="6 5"/>`,
+    `<path d="M480 62H768" stroke="${dash}" stroke-width="2" stroke-dasharray="6 5"/>`,
+    `<path d="M642 228L790 254" stroke="${dash}" stroke-width="2" stroke-dasharray="6 5"/>`,
+    `<path d="M596 246C590 330 420 320 368 350" fill="none" stroke="${dash}" stroke-width="2" stroke-dasharray="6 5"/>`
+  ].join("");
+  const tags = feng ? `<text x="185" y="204" class="rl">正室</text><text x="530" y="204" class="rl">正室</text><text x="352" y="290" class="rl" style="text-anchor:start">庶出</text>
+    <text x="600" y="54" class="rl">外孫女</text><text x="162" y="478" class="rl" style="text-anchor:start">主僕</text><text x="728" y="232" class="rl">外甥女</text>` : `<text x="530" y="204" class="rl">正室</text><text x="370" y="204" class="rl">妾</text>
+    <text x="236" y="296" class="rl">生母</text><text x="470" y="331" class="rl">名分上的母親（嫡母）</text>
+    <text x="600" y="54" class="rl">外孫女</text><text x="162" y="478" class="rl" style="text-anchor:start">主僕</text><text x="728" y="232" class="rl">外甥女</text>`;
+  const me = feng ? "feng" : "tan";
+  const node = (k) => {
+    const [x, y, name, role] = N[k];
+    const id = "c" + k;
+    const img = ART.has(k) ? `<clipPath id="${id}"><circle cx="${x}" cy="${y}" r="30"/></clipPath><image href="art/face/${k}.webp" x="${x - 52}" y="${y - 34}" width="104" height="139" clip-path="url(#${id})" preserveAspectRatio="xMidYMin slice"/>`
+      : `<text x="${x}" y="${y + 10}" class="rg">${name.slice(0, 1)}</text>`;
+    return `<g><circle cx="${x}" cy="${y}" r="32" fill="#2a1d18" stroke="${k === me ? "#ec4b3e" : "#a8742a"}" stroke-width="${k === me ? 4 : 2}"/>${img}
+      <text x="${x}" y="${y + 52}" class="rn">${name}</text><text x="${x}" y="${y + 70}" class="rr">${role}</text></g>`;
+  };
+  return `<svg class="relmap" viewBox="20 20 900 580" role="img" aria-label="紅樓夢主要人物關係圖">
+    <text x="20" y="90" class="rgen">第一代</text><text x="20" y="240" class="rgen">第二代</text><text x="20" y="400" class="rgen">第三代</text>
+    ${L}${tags}${Object.keys(N).map(node).join("")}</svg>`;
+}
+function showRel() {
+  $("fbBox").innerHTML = `<h3>人物關係</h3><div class="relwrap">${relMap()}</div>
+    <p class="explain">實線是血緣或婚姻，虛線是親戚或主僕。${MODE === "feng" ? "王熙鳳（紅框）嫁給賈赦的兒子賈璉，婆婆是邢夫人；她管家的卻是姑媽王夫人這一房。" : "探春（紅框）是趙姨娘生的庶出女兒，名分上的母親是王夫人。"}</p><button class="btn" id="fbOk">回到遊戲</button>`;
+  $("fbBox").classList.add("wide");
+  $("fb").classList.add("on");
+  $("fbOk").onclick = () => { $("fb").classList.remove("on"); $("fbBox").classList.remove("wide"); };
+}
+
+// ===== 前情提要 =====
+const STORY_TAN = [
+  {n: "壹", img: "scene_fu", h: "這是榮國府", p: "賈家是世襲爵位的大家族，上上下下一千多口人，吃穿用度都靠公中的錢。為了迎接當上貴妃的大小姐元春回家省親，還蓋了一座大觀園。"},
+  {n: "貳", img: "scene_money", h: "錢從哪裡來？", p: "主要靠田莊的租子和農產。可是年年「出的多，進的少」，帳面早就撐不住，只是外人看不出來。如今公中的現銀，只剩一百五十兩。"},
+  {n: "參", img: "scene_sick", h: "當家的倒了", p: "管家多年、精明能幹的王熙鳳病倒了。王夫人把家務交給三個人：寡居的大嫂李紈、表姊寶釵，以及還沒出嫁的三姑娘──賈探春。"},
+  {n: "肆", duo: 1, h: "你是探春", p: "你是<b>庶出</b>，生母趙姨娘三天兩頭鬧事。管事的媳婦們看你年輕，等著看你出醜。",
+    note: "<b>什麼是庶出？</b>古代大戶人家一夫一妻多妾。正室（大老婆）生的孩子叫「嫡出」，妾（姨娘）生的叫「庶出」，嫡出的地位比庶出高。探春是賈政的妾趙姨娘生的，所以是庶出；照規矩，她要稱正室王夫人為母親（嫡母），親生母親趙姨娘只能叫「姨娘」。"},
+  {n: "伍", rel: 1, h: "人物關係", p: "實線是血緣或婚姻，虛線是親戚或主僕。越上面輩分越高。遊戲中隨時可以按左邊的「人物關係」再看一次。"},
+  {n: "陸", img: "scene_hall", h: "你的任務", p: "撐過這一年。年終算帳時，庫銀不能少於開始時的 150 兩，體面、人心都要維持在 50 以上。任何一項歸零，或被告到太太跟前三次，你就出局。"},
+  {n: "柒", h: "你的理家團隊", team: 1}
+];
+const STORY_FENG = [
+  {n: "壹", img: "scene_fu", h: "你是王熙鳳", p: "你是大老爺賈赦的兒媳、賈璉的妻子，也是王夫人的親姪女。因為精明能幹，姑媽王夫人把榮國府的家務都交給你。上上下下一千多口人，見了你都要恭恭敬敬喊一聲「二奶奶」。"},
+  {n: "貳", img: "scene_money", h: "架子大，裡子空", p: "只有你最清楚這個家的帳：「家裡出去的多，進來的少……若不趁早兒料理省儉之計，再幾年就都賠盡了！」（第55回）公中現銀只剩 200 兩，每個月還要倒貼 5 兩。"},
+  {n: "參", duo: 1, h: "內外交迫", p: "你嫁到大老爺那一房，卻替二老爺這一房管家。婆婆<b>邢夫人</b>心裡早就不平，三天兩頭找你的碴；丈夫賈璉在外頭也不安分；府外還有一堆求你辦事、送錢上門的人。",
+    note: "<b>為什麼婆婆不是王夫人？</b>王熙鳳嫁的是大老爺賈赦的兒子賈璉，所以婆婆是賈赦的正室邢夫人。王夫人是她的親姑媽、二老爺賈政的妻子。小倆口住在二老爺這邊替王夫人管家，邢夫人自然覺得媳婦「胳膊往外彎」。"},
+  {n: "肆", rel: 1, h: "人物關係", p: "實線是血緣或婚姻，虛線是親戚或主僕。越上面輩分越高。遊戲中隨時可以按左邊的「人物關係圖」再看一次。"},
+  {n: "伍", img: "scene_hall", h: "你的任務", p: "撐過這一年：年終庫銀不少於 200 兩，體面、人心都在 50 以上。你賺錢比探春容易得多──收禮、放利錢、包攬官司，錢會自己送上門；可是人心也掉得快。你還多了一項<b>心力</b>：生病、受氣、硬撐都會消耗，歸零就病倒出局。"},
+  {n: "陸", h: "當家奶奶，沒有人可以商量", team: "feng"}
+];
+let STORY = STORY_TAN;
+let sp = 0;
+function renderStory() {
+  const s = STORY[sp];
+  $("pg").innerHTML = s.team === "feng" ? `<div class="num">${s.n}</div><h2>${s.h}</h2>
+    <p style="font-size:18px;color:var(--muted)">探春有一整個理家團隊，你卻幾乎只能靠自己。每個月可以用「公關」打點一次人心；遇到難題只有平兒能問，而她未必敢說真話。</p>
+    <div class="team">
+      <div class="pcard frame">${av("ping")}<div><b>平兒・你的心腹丫鬟</b><small>唯一能問的人，卻怕你的威勢，不一定敢說真話。也能替你施恩、去婆婆那裡周旋。</small></div></div>
+      <div class="pcard frame">${av("qin")}<div><b>秦可卿・寧府的小媳婦</b><small>和你最知心。前兩個月病中會主動派人來出主意，第三個月托夢後過世。</small></div></div>
+      <div class="pcard frame">${av("jia")}<div><b>賈母・老太太</b><small>你最大的靠山。婆婆找碴時可以請她撐腰，但不能常用。</small></div></div>
+      <div class="pcard frame">${av("lian")}<div><b>賈璉・丈夫</b><small>「何苦來」是他的口頭禪，只想息事寧人。在外頭也不安分。</small></div></div>
+      <div class="pcard frame">${av("wanger")}<div><b>旺兒媳婦・心腹</b><small>替你在外頭放帳。她指的辦法最來錢，也最見不得光。</small></div></div>
+      <div class="pcard frame">${av("xingf")}<div><b>邢夫人・婆婆</b><small>隨時會來找碴。賠笑、送錢、搬靠山都行，當面頂撞就完了。</small></div></div>
+    </div>` : s.team ? `<div class="num">${s.n}</div><h2>${s.h}</h2>
+    <p style="font-size:18px;color:var(--muted)">每回遇到難題，可以請教顧問。李紈、寶釵、平兒各能請教 2 次；黛玉隨時都在。寶玉、王熙鳳、黛玉也常不請自來出主意──聽誰的，你自己決定。和寶釵、平兒交好後，請教她們不用花次數；和王熙鳳交好，她每月會指點你一次。</p>
+    <div class="team">
+      <div class="pcard frame">${av("wan")}<div><b>李紈・寡居的大嫂</b><small>熟悉物產行情，告訴你哪個辦法最划算。</small></div></div>
+      <div class="pcard frame">${av("chai")}<div><b>寶釵・表姊</b><small>深謀遠慮，提醒你哪個辦法會留下後患。</small></div></div>
+      <div class="pcard frame">${av("ping")}<div><b>平兒・鳳姐的心腹</b><small>知道舊規矩背後的人情，告訴你下人會不會服氣。</small></div></div>
+      <div class="pcard frame">${av("dai")}<div><b>黛玉・表妹</b><small>不管事，但帳算得很清楚。她的警告很準，對策嘛……</small></div></div>
+      <div class="pcard frame">${av("yu")}<div><b>寶玉・同父異母的哥哥</b><small>最怕女孩子受委屈。他的建議，聽聽就好。</small></div></div>
+      <div class="pcard frame">${av("feng")}<div><b>王熙鳳・原本的當家</b><small>病中也會派人傳話。手段高明，但往往太狠。</small></div></div>
+      <div class="pcard frame">${av("zhao")}<div><b>趙姨娘・生母（賈政的妾）</b><small>隨時會殺到。請人來勸最穩當，正面吵回去就完了。</small></div></div>
+    </div>` : `<div class="num">${s.n}</div><h2>${s.h}</h2><p>${s.p}</p>${s.note ? `<p class="defn">${s.note}</p>` : ""}
+    ${s.img ? `<div class="scene frame"><img src="art/${s.img}.webp" alt="" onerror="this.parentNode.remove()"></div>` : ""}
+    ${s.duo && MODE === "feng" ? `<div class="duo"><figure><img src="art/feng.webp" alt="王熙鳳"><figcaption>王熙鳳（你）</figcaption></figure><span class="vs">VS</span><figure><img src="art/xingf.webp" alt="邢夫人"><figcaption>婆婆邢夫人</figcaption></figure></div>` : ""}
+    ${s.duo && MODE !== "feng" ? `<div class="duo"><figure><img src="art/tan.webp" alt="探春"><figcaption>探春（你）</figcaption></figure><span class="vs">VS</span><figure><img src="art/zhao.webp" alt="趙姨娘"><figcaption>生母趙姨娘</figcaption></figure></div>` : ""}
+    ${s.rel ? `<div class="relwrap frame">${relMap()}</div>` : ""}`;
+  $("dots").innerHTML = STORY.map((_, i) => `<i class="${i === sp ? "on" : ""}"></i>`).join("");
+  $("next").textContent = sp === STORY.length - 1 ? "開始理家" : "下一頁";
+}
+$("next").onclick = () => { if (sp < STORY.length - 1) { sp++; renderStory(); } else beginPlay(); };
+$("skip").onclick = beginPlay;
+document.addEventListener("click", e => {
+  // 前情提要點畫面也能翻頁（人物卡那頁除外，免得誤觸直接開始）
+  if ($("intro").classList.contains("on") && e.target.closest(".pg") && !STORY[sp].team) $("next").click();
+});
+
+// 從首頁進來每次都導覽（平板可能多人輪流用）；結局按「再玩一次」就不導覽
+let wantTour = true;
+function startGame(fromHome, mode) { if (typeof mode === "string") setMode(mode); wantTour = fromHome === true; AU.start(); sp = 0; renderStory(); show("intro"); }
+function beginPlay() {
+  newGame(); notes = []; marks = {}; planMonth(); renderSide(); renderCard(); show("game");
+  if (wantTour) { wantTour = false; setTimeout(startTour, 400); }
+}
+function renderHome() {
+  let pass = false;
+  try { pass = localStorage.getItem("rb-pass") === "1"; } catch (e) {}
+  $("fengBox").innerHTML = pass ? `<button class="btn" id="startFeng" type="button">挑戰王熙鳳模式</button>` : "王熙鳳模式（困難）<br>探春模式通關後解鎖";
+  $("fengBox").classList.toggle("lockbox", !pass);
+  if (pass) $("startFeng").onclick = () => startGame(true, "feng");
+}
+// ===== 聲音：全部即時合成，沒有音樂檔 =====
+// 撥弦用 Karplus-Strong 物理模擬（接近古箏的真實撥弦），再加殘響；趙姨娘出場是柔和的救護車警笛
+const AU = (() => {
+  let ctx, master, music, sfx, verb, on = true, timer = null, step = 0, nextT = 0, siren = null;
+  try { on = localStorage.getItem("rb-sound") !== "0"; } catch (e) {}
+  // D 宮五聲音階：D E F# A B，兩個八度
+  const SC = [293.66, 329.63, 369.99, 440, 493.88, 587.33, 659.25, 739.99, 880, 987.77];
+  const MEL = [[4, -1, 5, 7, 5, -1, 4, 2], [4, -1, -1, 2, 1, 2, 4, -1], [7, -1, 8, 7, 5, -1, 4, 5], [4, -1, 2, -1, 1, -1, -1, -1],
+               [2, 4, 5, -1, 7, -1, 5, 4], [5, -1, 7, 8, 9, -1, 8, 7], [5, 4, 2, -1, 4, -1, 2, 1], [0, -1, -1, -1, -1, -1, -1, -1]];
+  const BASS = [146.83, 146.83, 196, 110, 146.83, 196, 123.47, 146.83];
+  // 氣派：慢、低音厚、加鼓；緊張：小調五聲、快速頑固音型、密集鼓點
+  const SCM = [293.66, 349.23, 392, 440, 523.25, 587.33, 698.46, 783.99, 880, 1046.5];
+  const SETS = {
+    light: {bpm: 92, sc: SC, mel: MEL, bass: BASS, wood: [2, 6], drum: [], dv: 0},
+    grand: {bpm: 70, sc: SC, mel: [[0, -1, -1, 4, -1, -1, 5, -1], [7, -1, -1, 5, -1, 4, -1, -1], [4, -1, 5, -1, 7, -1, 8, -1], [9, -1, -1, -1, 7, -1, -1, -1],
+      [5, -1, 7, -1, 8, -1, 7, 5], [4, -1, -1, 2, 4, -1, 5, -1], [7, -1, 5, -1, 4, -1, 2, -1], [0, -1, -1, -1, 4, -1, -1, -1]],
+      bass: [146.83, 196, 220, 146.83, 196, 220, 196, 146.83], wood: [], drum: [0, 4], dv: 0.32, chord: 1},
+    tense: {bpm: 132, sc: SCM, mel: [[0, 0, 2, 0, 1, 0, 2, 3], [0, 0, 2, 0, 4, 3, 2, 1], [0, 0, 2, 0, 1, 0, 2, 3], [5, 4, 3, 2, 1, 2, 1, 0],
+      [3, 3, 5, 3, 4, 3, 2, 1], [0, 0, 2, 0, 4, 3, 2, 1], [5, 5, 6, 5, 4, 3, 2, 3], [0, -1, 0, -1, 1, 2, 3, 4]],
+      bass: [146.83, 146.83, 130.81, 146.83, 110, 146.83, 130.81, 146.83], wood: [1, 3, 5, 7], drum: [0, 2, 4, 6], dv: 0.22}
+  };
+  let cur = "light";
+  // 真實錄音：audio/ 資料夾裡有 light／grand／tense.mp3 就播檔案，沒有就用上面的合成曲
+  const FILES = {light: "audio/light.mp3", grand: "audio/grand.mp3", tense: "audio/tense.mp3"};
+  const FILE_VOL = 0.5, tracks = {};
+  let duck = 1, fadeTimer = null;
+  const fileOk = m => tracks[m] && tracks[m].ok;
+  const fadeFiles = () => {
+    clearInterval(fadeTimer);
+    fadeTimer = setInterval(() => {
+      let done = true;
+      for (const m in tracks) {
+        const a = tracks[m].el, target = on && m === cur && fileOk(m) ? FILE_VOL * duck : 0;
+        const v = a.volume + Math.max(-0.04, Math.min(0.04, target - a.volume));
+        a.volume = Math.max(0, Math.min(1, v));
+        if (target > 0 && a.paused) a.play().catch(() => {});
+        if (target === 0 && a.volume === 0 && !a.paused) a.pause();
+        if (Math.abs(a.volume - target) > 0.001) done = false;
+      }
+      if (done) clearInterval(fadeTimer);
+    }, 50);
+  };
+  const loadFiles = () => {
+    for (const m in FILES) {
+      const a = new Audio(FILES[m]);
+      a.loop = true; a.preload = "auto"; a.volume = 0;
+      tracks[m] = {el: a, ok: false};
+      a.addEventListener("canplaythrough", () => { tracks[m].ok = true; fadeFiles(); }, {once: true});
+    }
+  };
+  const cache = new Map(), MUSIC_VOL = 0.22;
+  // Karplus-Strong：一段噪音在延遲線裡來回衰減，就是撥弦聲
+  const ks = (f, dur = 2.2, bright = 0.22) => {
+    const key = f + "|" + dur + "|" + bright;
+    if (cache.has(key)) return cache.get(key);
+    const sr = ctx.sampleRate, len = Math.floor(sr * dur), N = Math.max(2, Math.round(sr / f));
+    const b = ctx.createBuffer(1, len, sr), y = b.getChannelData(0);
+    let last = 0;
+    for (let i = 0; i < N; i++) { const r = Math.random() * 2 - 1; last = bright * r + (1 - bright) * last; y[i] = last; }
+    const decay = 0.4985 + 0.0013 * Math.min(1, 220 / f);
+    for (let i = N; i < len; i++) y[i] = decay * (y[i - N] + y[i - N - 1 < 0 ? 0 : i - N - 1]);
+    let peak = 0;
+    for (let i = 0; i < len; i++) peak = Math.max(peak, Math.abs(y[i]));
+    for (let i = 0; i < len; i++) y[i] /= peak || 1;
+    const fade = Math.floor(sr * 0.06);
+    for (let i = 0; i < fade; i++) y[len - 1 - i] *= i / fade;
+    cache.set(key, b);
+    return b;
+  };
+  const pluck = (f, t, vol, dest = music, dur = 2.2, bright = 0.22) => {
+    const s = ctx.createBufferSource(), g = ctx.createGain();
+    s.buffer = ks(f, dur, bright); g.gain.value = vol;
+    s.connect(g); g.connect(dest); s.start(t);
+  };
+  // 木魚：短促、帶共鳴的敲擊
+  const wood = (t, vol) => {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = "sine"; o.frequency.setValueAtTime(520, t); o.frequency.exponentialRampToValueAtTime(400, t + 0.08);
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
+    o.connect(g); g.connect(music); o.start(t); o.stop(t + 0.15);
+  };
+  // 低沉的鼓（選錯時）
+  const drum = (t, vol) => {
+    const o = ctx.createOscillator(), g = ctx.createGain(), lp = ctx.createBiquadFilter();
+    o.frequency.setValueAtTime(110, t); o.frequency.exponentialRampToValueAtTime(45, t + 0.4);
+    lp.type = "lowpass"; lp.frequency.value = 400;
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.5);
+    o.connect(lp); lp.connect(g); g.connect(sfx); o.start(t); o.stop(t + 0.55);
+  };
+  // 殘響：用衰減的噪音做出廳堂的空間感
+  const makeVerb = () => {
+    const sr = ctx.sampleRate, len = Math.floor(sr * 2.4), ir = ctx.createBuffer(2, len, sr);
+    for (let c = 0; c < 2; c++) { const a = ir.getChannelData(c); for (let i = 0; i < len; i++) a[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3); }
+    const cv = ctx.createConvolver(); cv.buffer = ir;
+    const wet = ctx.createGain(); wet.gain.value = 0.35;
+    cv.connect(wet); wet.connect(master);
+    return cv;
+  };
+  const init = () => {
+    if (ctx) return true;
+    const C = window.AudioContext || window.webkitAudioContext;
+    if (!C) return false;
+    ctx = new C();
+    master = ctx.createGain(); master.gain.value = on ? 1 : 0; master.connect(ctx.destination);
+    verb = makeVerb();
+    // 背景音樂先過低通濾波再出聲，去掉刺耳的高頻
+    const soft = ctx.createBiquadFilter(); soft.type = "lowpass"; soft.frequency.value = 1600; soft.Q.value = 0.5;
+    soft.connect(master); soft.connect(verb);
+    music = ctx.createGain(); music.gain.value = MUSIC_VOL; music.connect(soft);
+    sfx = ctx.createGain(); sfx.gain.value = 0.8; sfx.connect(master); sfx.connect(verb);
+    SC.forEach(f => { ks(f); ks(f / 2); ks(f / 4); ks(f * 0.75); }); SCM.forEach(f => ks(f / 2)); BASS.forEach(f => { ks(f, 3, 0.15); ks(f / 2, 3, 0.15); });
+    return true;
+  };
+  // 依目前氣氛播放：8 小節循環，偶爾換音
+  const mdrum = (t, vol) => {
+    const o = ctx.createOscillator(), g = ctx.createGain(), lp = ctx.createBiquadFilter();
+    o.frequency.setValueAtTime(95, t); o.frequency.exponentialRampToValueAtTime(42, t + 0.35);
+    lp.type = "lowpass"; lp.frequency.value = 300;
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.45);
+    o.connect(lp); lp.connect(g); g.connect(music); o.start(t); o.stop(t + 0.5);
+  };
+  const tick = () => {
+    const S = SETS[cur], beat = 60 / S.bpm / 2;
+    while (nextT < ctx.currentTime + 0.3) {
+      const bar = Math.floor(step / 8) % 8, pos = step % 8;
+      if (fileOk(cur)) { step++; nextT += beat; continue; }
+      let n = S.mel[bar][pos];
+      if (n >= 0 && cur === "light" && Math.random() < 0.1) n = Math.max(0, Math.min(9, n + (Math.random() < 0.5 ? -1 : 1)));
+      if (n >= 0) pluck(S.sc[n] / 2, nextT + Math.random() * 0.012, cur === "tense" ? 0.24 : 0.3);
+      if (S.chord && n >= 0 && pos % 4 === 0) { pluck(S.sc[n] / 2 * 1.5, nextT + 0.02, 0.14); pluck(S.sc[n] / 4, nextT, 0.18, music, 3, 0.15); }
+      if (pos === 0) pluck(S.bass[bar] / 2, nextT, 0.28, music, 3, 0.15);
+      if (pos === 4) pluck(S.bass[bar], nextT, 0.14, music, 3, 0.15);
+      if (S.wood.includes(pos)) wood(nextT, 0.025);
+      if (S.drum.includes(pos)) mdrum(nextT, S.dv);
+      step++; nextT += beat;
+    }
+  };
+  const api = {
+    start() {
+      if (!init()) return;
+      ctx.resume();
+      if (!timer) { nextT = ctx.currentTime + 0.1; timer = setInterval(tick, 80); loadFiles(); }
+      fadeFiles();
+    },
+    toggle() {
+      on = !on;
+      try { localStorage.setItem("rb-sound", on ? "1" : "0"); } catch (e) {}
+      if (init()) { ctx.resume(); master.gain.setTargetAtTime(on ? 1 : 0, ctx.currentTime, 0.05); api.start(); }
+      fadeFiles();
+      return on;
+    },
+    isOn: () => on,
+    // 換氣氛：從下一個小節開始換曲
+    mood(m) { if (m === cur || !SETS[m]) return; cur = m; step = Math.ceil(step / 8) * 8 % 64; fadeFiles(); },
+    good() { if (!ctx) return; const t = ctx.currentTime; [4, 7, 9].forEach((n, i) => pluck(SC[n], t + i * 0.08, 0.45, sfx)); },
+    bad() { if (!ctx) return; const t = ctx.currentTime; drum(t, 0.6); pluck(SC[1] / 2, t + 0.05, 0.4, sfx, 2.2, 0.3); pluck(SC[2] / 2 * 0.944, t + 0.05, 0.3, sfx, 2.2, 0.3); },
+    tick() { if (!ctx) return; pluck(SC[5], ctx.currentTime, 0.3, sfx); },
+    coin() { if (!ctx) return; const t = ctx.currentTime; pluck(SC[9] * 2, t, 0.22, sfx, 1.2, 0.8); pluck(SC[7] * 2, t + 0.09, 0.2, sfx, 1.2, 0.8); },
+    win() { if (!ctx) return; const t = ctx.currentTime; [0, 2, 4, 5, 7, 9].forEach((n, i) => pluck(SC[n], t + i * 0.1, 0.45, sfx)); },
+    lose() { if (!ctx) return; const t = ctx.currentTime; [5, 4, 2, 0].forEach((n, i) => pluck(SC[n] / 2, t + i * 0.28, 0.45, sfx, 2.6, 0.3)); },
+    // 趙姨娘：音樂壓低，播放柔和的雙音警笛（喔咿喔咿），直到處理完
+    tenseStart() {
+      if (!ctx) return;
+      api.tenseStop();
+      const t = ctx.currentTime;
+      music.gain.setTargetAtTime(0.08, t, 0.08);
+      duck = 0.2; fadeFiles();
+      const o = ctx.createOscillator(), o2 = ctx.createOscillator(), g = ctx.createGain(), lp = ctx.createBiquadFilter();
+      o.type = "triangle"; o2.type = "sine";
+      lp.type = "lowpass"; lp.frequency.value = 1800;
+      const hi = 760, lo = 600, half = 0.42;
+      for (let i = 0; i < 80; i++) {
+        const f = i % 2 ? lo : hi, at = t + i * half;
+        o.frequency.setTargetAtTime(f, at, 0.05); o2.frequency.setTargetAtTime(f * 2, at, 0.05);
+      }
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.09, t + 0.25);
+      const g2 = ctx.createGain(); g2.gain.value = 0.25;
+      o.connect(lp); o2.connect(g2); g2.connect(lp); lp.connect(g); g.connect(sfx);
+      o.start(t); o2.start(t);
+      siren = {o, o2, g};
+    },
+    tenseStop() {
+      if (!ctx) return;
+      if (siren) { const t = ctx.currentTime; siren.g.gain.setTargetAtTime(0.0001, t, 0.1); siren.o.stop(t + 0.6); siren.o2.stop(t + 0.6); siren = null; }
+      music.gain.setTargetAtTime(MUSIC_VOL, ctx.currentTime, 0.4);
+      duck = 1; fadeFiles();
+    }
+  };
+  return api;
+})();
+$("sayOk").onclick = closeSay;
+$("say").onclick = e => { if (e.target.id === "say") closeSay(); };
+const sndLabel = () => { $("snd").textContent = AU.isOn() ? "♪ 聲音：開" : "♪ 聲音：關"; };
+$("snd").onclick = () => { AU.toggle(); sndLabel(); };
+sndLabel();
+$("startTan").onclick = () => startGame(true, "tan");
+renderHome();
+// 預先載入立繪；飄動的金色光點
+ART.forEach(k => { const im = new Image(); im.src = `art/${k}.webp`; });
+$("embers").innerHTML = Array.from({length: 18}, () =>
+  `<i style="left:${Math.random() * 100}%;animation-duration:${8 + Math.random() * 10}s;animation-delay:${-Math.random() * 18}s;transform:scale(${0.5 + Math.random()})"></i>`).join("");
+</script>
+</body>
+</html>
