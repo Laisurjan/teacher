@@ -2265,7 +2265,8 @@ function showRel() {
 
 // ===== 前情提要 =====
 const STORY_TAN = [
-  {n: "壹", img: "scene_fu", h: "這是榮國府", p: "賈家是世襲爵位的大家族，上上下下一千多口人，吃穿用度都靠公中的錢。為了迎接當上貴妃的大小姐元春回家省親，還蓋了一座大觀園。"},
+  {n: "壹", img: "scene_fu", h: "這是榮國府", p: "賈家是世襲爵位的大家族，上上下下一千多口人，吃穿用度都靠公中的錢。為了迎接當上貴妃的大小姐元春回家省親，還蓋了一座大觀園。",
+    note: "<b>什麼是公中？</b>就是全家共用的公帳、公款。田莊的租子等收入都繳進公中，全家的月錢（每月零用錢）、伙食、衣裳、婚喪喜慶，也都由公中支出。各人自己存的錢叫「梯己」（私房錢），和公中分開算。在這個遊戲裡，公中的現銀就是你的「庫銀」。"},
   {n: "貳", img: "scene_money", h: "錢從哪裡來？", p: "主要靠田莊的租子和農產。可是年年「出的多，進的少」，帳面早就撐不住，只是外人看不出來。如今公中的現銀，只剩一百五十兩。"},
   {n: "參", img: "scene_sick", h: "當家的倒了", p: "管家多年、精明能幹的王熙鳳病倒了。王夫人把家務交給三個人：寡居的大嫂李紈、表姊寶釵，以及還沒出嫁的三姑娘──賈探春。"},
   {n: "肆", duo: 1, h: "你是探春", p: "你是<b>庶出</b>，生母趙姨娘三天兩頭鬧事。管事的媳婦們看你年輕，等著看你出醜。",
@@ -2362,8 +2363,19 @@ const AU = (() => {
   const FILE_VOL = 0.5, tracks = {};
   let duck = 1, fadeTimer = null;
   const fileOk = m => tracks[m] && tracks[m].ok;
+  // iPad／iPhone 的 Safari 不讓網頁改 audio 的音量（永遠是 1），只能直接靜音、暫停
+  const VOL_OK = (() => { try { const t = new Audio(); t.volume = 0.5; return t.volume === 0.5; } catch (e) { return false; } })();
   const fadeFiles = () => {
     clearInterval(fadeTimer);
+    if (!VOL_OK) {
+      for (const m in tracks) {
+        const a = tracks[m].el, play = on && m === cur && fileOk(m);
+        a.muted = !play;
+        if (play && a.paused) a.play().catch(() => {});
+        if (!play && !a.paused) a.pause();
+      }
+      return;
+    }
     fadeTimer = setInterval(() => {
       let done = true;
       for (const m in tracks) {
