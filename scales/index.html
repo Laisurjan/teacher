@@ -467,12 +467,12 @@ const EV = {
     ]},
 
   // ---------- 固定事件 ----------
-  d16: {who: "wife", t: "缺一桿稱仔", x: "<p>尾牙過後，你又四處找了幾天零工，都沒有著落。眼看送神就要到了，到了廿三，你決定拿這筆本錢上鎮賣菜。</p><p>吃過早飯，正要上鎮，妻子才覺到：家裡沒有稱仔。</p><p>稱仔是官廳的專利品，不是便宜的東西。</p>",
+  d16: {who: "wife", t: "缺一桿稱仔", x: () => `<p>尾牙過後，你又四處找了幾天零工，都沒有著落。${G.hua === "none" ? "保正借的三圓" : "金花當來的四圓"}，這幾天已經用掉一些：還了米店賒的米錢，補了竹籃，換了扁擔的索仔，花去 ${G.prep} 錢，只剩 ${G.s} 錢。</p><p>眼看送神就要到了，到了廿三，你決定拿剩下的本錢上鎮賣菜。吃過早飯，正要上鎮，妻子才覺到：家裡沒有稱仔。</p><p>稱仔是官廳的專利品，不是便宜的東西。</p>`,
     q: "「怎麼好？」得參想，「要買一桿，可是官廳的專利品，不是便宜的東西，那兒來得錢？」", qs: "課文", o: [
       {t: "到隔鄰去借一桿。", orig: 1, e: {scale: "nb", card: "nb"}, r: "鄰家把一桿還新新的稱仔借給你。鄰家順口說：這稱仔是官廳賣的，有打印。秤要是不合格，官廳可以扣走，還可以毀掉。你記住了。",
         q: "她妻子趕快到隔鄰去借一桿回來，幸鄰家的好意，把一桿尚覺新新的借來。", n: "妻子特地借「新」的，因為巡警專在搜索小民的細故，日常一舉一動都在法的干涉範圍裡。"},
       {t: "向保正借他家那桿舊秤。", e: {scale: "old", set: "bzFavor"}, r: "保正家的舊秤，稱花磨得有些模糊。保正說：別在巡查面前用太久。", n: "舊秤在臨檢的時候會被扣，在巡警面前更危險。"},
-      {t: `到度量衡販賣所買一桿新的。${cost(150)}`, e: {s: -150, scale: "own", item: "receipt"}, r: "一桿有官廳打印的新稱仔。買菜的本錢少了一半，今天的擔子輕了不少。", cond: () => G.s >= 150, lock: "錢不夠", n: "1924 年《臺灣度量衡規則》：度量衡器的製作、修理、販賣專屬政府。售價依本期估算，待考。"}
+      {t: `到度量衡販賣所買一桿新的。${cost(150)}`, e: {s: -150, scale: "own", item: "receipt"}, r: "一桿有官廳打印的新稱仔。本錢一下子去了一大半，今天的擔子輕了不少。", cond: () => G.s >= 150, lock: "錢不夠", n: "1924 年《臺灣度量衡規則》：度量衡器的製作、修理、販賣專屬政府。售價依本期估算，待考。"}
     ]},
   d20: {who: "narr", t: "想換一換氣象", x: "<p>糧食足了。你想：今年家運太壞，明年家裡總要換一換氣象才好。</p>",
     q: "第一廳上奉祀的觀音畫像，要買新的，同時門聯亦要換，不可缺的金銀紙，香燭、亦要買。", qs: "課文", o: [{t: "記在心裡。傍晚去鎮上看看。", e: {}, r: "年貨的清單一樣一樣排在心裡。"}]},
@@ -973,6 +973,8 @@ function floatStat(k, v) {
 
 // ===== 一天的流程 =====
 const HUA_PAWN = 400, HUA_BACK = 440;   // 月利一成，待考
+// 本錢不會全部留到廿三：找零工那幾天的家用、補竹籃、換扁擔的索仔，先用掉一部分（使用者指定開場金額要降）
+let PREP = 200;
 const LOAD = 50;   // 批一擔生菜的本錢，待考
 // ===== 數值說明（開場導覽，比照大觀園理家記）=====
 const TOUR = [
@@ -1031,7 +1033,7 @@ function dayStart() {
   if (G.day > 30) return collect();
   if (G.day > FIRST) AU.sfx("rooster", .3);
   G.trace.push({d: G.day, s: G.s, g: G.g, b: G.b, p: G.p, w: G.w, o: G.o});
-  if (G.day === FIRST) { Q = ["d16", () => market()]; return next(); }
+  if (G.day === FIRST) { G.prep = Math.min(G.s, PREP); G.s -= G.prep; Q = ["d16", () => market()]; return next(); }
   if (G.day === 30) return card("d30");
   if (G.day === 28) { delete G.flag.roadDay; return morningOrMap(); }   // 廿八一定上鎮：寒熱不發、修路不排
   if (G.flag.roadDay) { delete G.flag.roadDay; return card("roadDo"); }
@@ -1104,7 +1106,7 @@ function evening(home) {
   if (G.mapMode && !home) return eveTown();
   const items = home ? [] : eveItems();
   const vis = home ? [] : [["youth", "騎樓下，有人在念報紙"], ["docVisit", "醫館，那位不收窮人錢的醫生"], ...(G.day === 23 || G.day === 26 ? [["talk", "媽祖廟前，今晚有演講"]] : [])];
-  const capNote = !home && G.day === FIRST && G.hua !== "home" ? `<p>身上的錢有 ${G.hua === "none" ? "300 是保正借的" : "400 是金花當來的"}本錢，不是賺的。</p>` : "";
+  const capNote = !home && G.day === FIRST && G.hua !== "home" ? `<p>身上的錢有 ${(G.hua === "none" ? 300 : HUA_PAWN) - (G.prep || 0)} 是${G.hua === "none" ? "保正借的" : "金花當來的"}本錢剩下的，不是賺的。</p>` : "";
   const soldLine = home ? "" : capNote + salePie();
   renderEvening(home, items, vis, soldLine);
 }
@@ -2005,7 +2007,7 @@ function walkMap(mode, pos) {
 function eveTown() {
   if (G.eveDay !== G.day) {
     G.eveDay = G.day;
-    const capNote = G.day === FIRST && G.hua !== "home" ? `<p>身上的錢有 ${G.hua === "none" ? "300 是保正借的" : "400 是金花當來的"}本錢，不是賺的。</p>` : "";
+    const capNote = G.day === FIRST && G.hua !== "home" ? `<p>身上的錢有 ${(G.hua === "none" ? 300 : HUA_PAWN) - (G.prep || 0)} 是${G.hua === "none" ? "保正借的" : "金花當來的"}本錢剩下的，不是賺的。</p>` : "";
     EV._sum = {who: "narr", t: "市散了", x: capNote + salePie() + `<p>米店、雜貨店、當鋪都在街上。<b>明天批菜要留 ${LOAD} 錢。</b></p>`, o: [
       {t: "去街上買東西、辦事", e: {}, quiet: 1, go: () => { G.phase = "eve"; walkMap("eve", G.evePos || {x: 8.5 * TS, y: 9.6 * TS}); toast("市散了，午後。走到店門口進去買東西，走到左邊出口就回家。"); }},
       {t: "什麼都不買，直接回家", e: {}, quiet: 1, go: () => night()}
