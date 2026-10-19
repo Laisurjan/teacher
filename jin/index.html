@@ -245,7 +245,7 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
 .nav{position:absolute;left:0;top:0;width:25%;height:100%;z-index:15;cursor:w-resize}
 /* 觸控放大 */
 #stage.zs{transition:transform .3s ease}
-#unzoom{position:fixed;right:16px;bottom:16px;z-index:50;display:none;font:700 22px var(--sans);color:#fff;background:rgba(179,48,42,.92);border:none;border-radius:30px;padding:12px 22px;box-shadow:0 4px 14px rgba(0,0,0,.4);cursor:pointer}
+#unzoom{position:absolute;transform-origin:100% 100%;white-space:nowrap;z-index:50;display:none;font:700 22px var(--sans);color:#fff;background:rgba(179,48,42,.92);border:none;border-radius:30px;padding:12px 22px;box-shadow:0 4px 14px rgba(0,0,0,.4);cursor:pointer}
 body.zoomed #unzoom{display:block}
 </style>
 </head>
@@ -999,36 +999,49 @@ body.zoomed #unzoom{display:block}
 <script>
 /* ===== 縮放到視窗 ===== */
 const stage=document.getElementById('stage');
-// 用版面視窗尺寸，不用 inner 尺寸：iPad Safari 被系統縮放時它會跟著變，舞台就歪掉
-const VW=()=>document.documentElement.clientWidth,VH=()=>document.documentElement.clientHeight;
-let Z=1,TX=0,TY=0;const baseK=()=>Math.min(VW()/1920,VH()/1080);
+// 一律對準「眼睛實際看到的範圍」（visualViewport）：iPad Safari 可能記住先前的頁面縮放，
+// 只看版面視窗會讓舞台跑出畫面，只剩左上角。座標一律用文件座標（client + scroll）。
+function VV(){const v=window.visualViewport;
+  if(v)return{x:v.pageLeft,y:v.pageTop,w:v.width,h:v.height,s:v.scale||1};
+  return{x:scrollX,y:scrollY,w:innerWidth,h:innerHeight,s:1};}
+let Z=1,TX=0,TY=0;const baseK=()=>{const v=VV();return Math.min(v.w/1920,v.h/1080);};
+const unz=document.getElementById('unzoom');
 function clampZ(){const k=baseK();Z=Math.max(1,Math.min(5,Z));
   const mx=1920*k*(Z-1)/2,my=1080*k*(Z-1)/2;TX=Math.max(-mx,Math.min(mx,TX));TY=Math.max(-my,Math.min(my,TY));}
-function fit(){clampZ();stage.style.transform=`translate(-50%,-50%) translate(${TX}px,${TY}px) scale(${baseK()*Z})`;document.body.classList.toggle('zoomed',Z>1);}
-addEventListener('resize',fit);addEventListener('orientationchange',()=>setTimeout(fit,300));fit();
+function fit(){clampZ();const v=VV();
+  stage.style.left=(v.x+v.w/2)+'px';stage.style.top=(v.y+v.h/2)+'px';
+  stage.style.transform=`translate(-50%,-50%) translate(${TX}px,${TY}px) scale(${baseK()*Z})`;
+  unz.style.left=(v.x+v.w-12/v.s)+'px';unz.style.top=(v.y+v.h-12/v.s)+'px';unz.style.transform=`translate(-100%,-100%) scale(${1/v.s})`;
+  document.body.classList.toggle('zoomed',Z>1);}
+// 載入時請 Safari 把殘留的頁面縮放歸回 1（暫時加 maximum-scale=1 再拿掉）
+(()=>{const m=document.querySelector('meta[name=viewport]'),c=m.content;m.content=c+', maximum-scale=1';setTimeout(()=>{m.content=c;scrollTo(0,0);fit();},300);})();
+addEventListener('resize',fit);addEventListener('orientationchange',()=>setTimeout(fit,300));
+if(window.visualViewport){visualViewport.addEventListener('resize',fit);visualViewport.addEventListener('scroll',fit);}
+fit();
+const CX=()=>{const v=VV();return v.x+v.w/2},CY=()=>{const v=VV();return v.y+v.h/2};
 
 /* ===== 觸控放大：雙指縮放、單指拖曳；放大時不換頁 ===== */
 const zoomed=()=>Z>1;
 function unzoom(){stage.classList.add('zs');Z=1;TX=TY=0;fit();setTimeout(()=>stage.classList.remove('zs'),320);}
 function zoomAt(px,py,z){ // 以螢幕點 (px,py) 為中心縮放到 z
-  const k=baseK(),cx=VW()/2,cy=VH()/2;
+  const k=baseK(),cx=CX(),cy=CY();
   const ux=(px-cx-TX)/(k*Z),uy=(py-cy-TY)/(k*Z);
   Z=Math.max(1,Math.min(5,z));TX=px-cx-ux*k*Z;TY=py-cy-uy*k*Z;fit();}
 const pts=new Map();let g=null,moved=false,blockUntil=0,lastTap=0;
 addEventListener('pointerdown',e=>{
   if(e.target.id==='unzoom')return;
-  pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
-  if(pts.size===1){moved=false;g={x:e.clientX,y:e.clientY,tx:TX,ty:TY};}
+  const P0={x:e.clientX+scrollX,y:e.clientY+scrollY};pts.set(e.pointerId,P0);
+  if(pts.size===1){moved=false;g={x:P0.x,y:P0.y,tx:TX,ty:TY};}
   if(pts.size===2){moved=true;const[a,b]=[...pts.values()];
     const mx=(a.x+b.x)/2,my=(a.y+b.y)/2,k=baseK();
-    g={pinch:1,d:Math.hypot(a.x-b.x,a.y-b.y)||1,z:Z,ux:(mx-VW()/2-TX)/(k*Z),uy:(my-VH()/2-TY)/(k*Z)};}
+    g={pinch:1,d:Math.hypot(a.x-b.x,a.y-b.y)||1,z:Z,ux:(mx-CX()-TX)/(k*Z),uy:(my-CY()-TY)/(k*Z)};}
 });
 addEventListener('pointermove',e=>{
-  if(!pts.has(e.pointerId)||!g)return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(!pts.has(e.pointerId)||!g)return;const P1={x:e.clientX+scrollX,y:e.clientY+scrollY};pts.set(e.pointerId,P1);
   if(g.pinch&&pts.size>=2){const[a,b]=[...pts.values()];const k0=baseK();
     Z=Math.max(1,Math.min(5,g.z*Math.hypot(a.x-b.x,a.y-b.y)/g.d));const k=k0*Z;
-    TX=(a.x+b.x)/2-VW()/2-g.ux*k;TY=(a.y+b.y)/2-VH()/2-g.uy*k;fit();}
-  else if(!g.pinch){const dx=e.clientX-g.x,dy=e.clientY-g.y;
+    TX=(a.x+b.x)/2-CX()-g.ux*k;TY=(a.y+b.y)/2-CY()-g.uy*k;fit();}
+  else if(!g.pinch){const dx=P1.x-g.x,dy=P1.y-g.y;
     if(Math.hypot(dx,dy)>10)moved=true;
     if(moved&&zoomed()){TX=g.tx+dx;TY=g.ty+dy;fit();}}
 });
@@ -1046,7 +1059,7 @@ addEventListener('pointerup',up);addEventListener('pointercancel',up);
 addEventListener('click',e=>{if(e.target.id==='unzoom')return;if(zoomed()||Date.now()<blockUntil){e.stopPropagation();e.preventDefault();}},true);
 // 觸控板雙指縮放（Ctrl＋滾輪）
 addEventListener('wheel',e=>{if(!e.ctrlKey&&!zoomed())return;e.preventDefault();
-  if(e.ctrlKey)zoomAt(e.clientX,e.clientY,Z*Math.exp(-e.deltaY/200));else{TX-=e.deltaX;TY-=e.deltaY;fit();}
+  if(e.ctrlKey)zoomAt(e.clientX+scrollX,e.clientY+scrollY,Z*Math.exp(-e.deltaY/200));else{TX-=e.deltaX;TY-=e.deltaY;fit();}
   if(Z<1.02)unzoom();},{passive:false});
 ['gesturestart','gesturechange','gestureend'].forEach(t=>addEventListener(t,e=>e.preventDefault()));
 // iPad Safari 不一定遵守 touch-action，雙指時擋掉系統縮放，交給上面的程式處理
