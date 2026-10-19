@@ -8,7 +8,7 @@
 <meta property="og:title" content="年關：一桿「稱仔」">
 <meta property="og:description" content="1925 年的年關。賣菜、辦年貨、贖金花，還要躲過巡警。你能撐到元旦嗎？">
 <script>
-// 從 LINE、FB、IG 等 App 裡點連結開啟時，跳到正式瀏覽器：安卓開 Chrome，iPhone／iPad 開 Safari
+// 從 LINE、FB、IG、Claude 等 App 裡點連結開啟時，請學生改用正式瀏覽器：安卓開 Chrome，iPhone／iPad 開 Safari
 // App 內建的瀏覽器常擋聲音、記不住進度（localStorage 會被清）
 (function () {
   var ua = navigator.userAgent, u = location.href;
@@ -16,9 +16,8 @@
   if (!inApp) return;
   // LINE 有官方參數：網址加 openExternalBrowser=1 就用手機預設瀏覽器開
   if (/Line\//i.test(ua) && !/openExternalBrowser=1/.test(u)) { location.replace(u + (u.indexOf("?") < 0 ? "?" : "&") + "openExternalBrowser=1"); return; }
-  if (/Android/.test(ua)) { location.href = "intent://" + u.replace(/^https?:\/\//, "") + "#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=" + encodeURIComponent(u) + ";end"; return; }
-  // iPhone、iPad：其他 App 沒辦法直接叫出 Safari，畫面上教學生自己開
-  window.__inAppIOS = true;
+  // 其他 App：不自動跳（有些 App 的內建瀏覽器看不懂 intent://，會變成打不開的錯誤頁，例如 Claude App），改在畫面上給按鈕
+  window.__inApp = /Android/.test(ua) ? "android" : "ios";
 })();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -99,7 +98,7 @@ h1,h2,h3{font-family:var(--serif);margin:0;line-height:1.35}
 .sndpanel .btn{min-height:38px;font-size:15px}
 .inapp{position:fixed;inset:0;z-index:60;background:rgba(5,6,8,.92);display:flex;align-items:center;justify-content:center;padding:16px}
 .inapp .frame{max-width:420px;padding:20px 22px;display:grid;gap:10px}
-.inapp h2{margin:0;color:var(--gold);font-size:22px}.inapp p{margin:0;font-size:16px}.inapp b{color:var(--gold)}
+.inapp h2{margin:0;color:var(--gold);font-size:22px}.inapp p{margin:0;font-size:16px}.inapp b{color:var(--gold)}.inapp a.btn{text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center}
 .tourbtn{width:30px;height:30px;border-radius:50%;border:1px solid var(--gold2);background:transparent;color:var(--gold);font:900 16px/1 var(--sans);cursor:pointer;padding:0}
 .tour{position:fixed;inset:0;z-index:40;display:none}
 .tour.on{display:block}
@@ -233,7 +232,7 @@ body.quake .main{animation:quake .6s}
 </style>
 </head>
 <body>
-<div class="inapp" id="inapp" hidden><div class="frame"><h2>請用 Safari 開啟</h2><p>你現在是在 App 裡面看這個網頁，聲音和遊戲進度可能會出問題。</p><p>點右上角（或右下角）的 <b>⋯</b>，選<b>「在 Safari 中開啟」</b>或<b>「用瀏覽器開啟」</b>。</p><button class="btn" id="inappCopy" type="button">複製網址</button><button class="btn ghost" id="inappStay" type="button">還是在這裡玩</button></div></div>
+<div class="inapp" id="inapp" hidden><div class="frame"><h2 id="inappH">請用 Safari 開啟</h2><p>你現在是在 App 裡面看這個網頁，聲音和遊戲進度可能會出問題。</p><p id="inappHow">點右上角（或右下角）的 <b>⋯</b>，選<b>「在 Safari 中開啟」</b>或<b>「用瀏覽器開啟」</b>。</p><a class="btn" id="inappChrome" hidden>用 Chrome 開啟</a><button class="btn ghost" id="inappCopy" type="button">複製網址</button><button class="btn ghost" id="inappStay" type="button">還是在這裡玩</button></div></div>
 
 <!-- 首頁 -->
 <section class="screen on" id="home">
@@ -2052,9 +2051,16 @@ function renderHome() {
   // 只清知識卡；圖鑑與成就是收集紀錄，不給清（使用者指定）
   const r = $("reset"); if (r) r.onclick = () => { if (!confirm("清除知識卡，下一局從頭聽起？結局圖鑑和成就會留著。")) return; KEPT = []; save(CARD_KEY, []); renderHome(); };
 }
-// iPhone、iPad 在 App 裡開：提示改用 Safari（安卓和 LINE 已在 <head> 直接跳走）
-if (window.__inAppIOS) {
+// 在 App 裡開：安卓給「用 Chrome 開啟」按鈕，iPhone、iPad 教學生點 ⋯ 改用 Safari（LINE 已在 <head> 直接換瀏覽器）
+if (window.__inApp) {
   $("inapp").hidden = false;
+  if (window.__inApp === "android") {
+    const u = location.href.split("#")[0];
+    $("inappH").textContent = "請用 Chrome 開啟";
+    $("inappHow").innerHTML = "按下面的按鈕換到 Chrome。沒反應的話，點右上角的 <b>⋮</b>，選<b>「用瀏覽器開啟」</b>，或複製網址貼到 Chrome。";
+    $("inappChrome").hidden = false;
+    $("inappChrome").href = "intent://" + u.replace(/^https?:\/\//, "") + "#Intent;scheme=https;package=com.android.chrome;end";
+  }
   $("inappCopy").onclick = () => { const u = location.href.split("#")[0]; (navigator.clipboard ? navigator.clipboard.writeText(u) : Promise.reject()).then(() => { $("inappCopy").textContent = "已複製，貼到 Safari"; }).catch(() => { prompt("複製這個網址，貼到 Safari：", u); }); };
   $("inappStay").onclick = () => { $("inapp").hidden = true; };
 }
