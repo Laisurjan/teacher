@@ -2,12 +2,12 @@
 <html lang="zh-Hant-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="robots" content="noindex,nofollow,noarchive">
 <title>名與利：春秋棋局</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;900&family=Noto+Sans+TC:wght@600;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
   --paper:#f2e8d5; --paper2:#e6d6b8; --ink:#1c1813; --ink2:#4a4034;
@@ -18,7 +18,7 @@
   --sans:"Noto Sans TC","Microsoft JhengHei",sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;height:100%;background:#0d0b09;overflow:hidden;color:var(--ink);font-family:var(--serif)}
+html,body{width:100%;height:100%;background:#0d0b09;overflow:hidden;color:var(--ink);font-family:var(--serif);font-weight:600;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center center;overflow:hidden;background:var(--paper)}
 /* 宣紙紋理 */
 #stage::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5;
@@ -47,7 +47,7 @@ html,body{width:100%;height:100%;background:#0d0b09;overflow:hidden;color:var(--
 .card.v .crack{animation:stamp .6s .5s ease both}
 .era{position:absolute;left:110px;right:110px;top:280px;display:flex;height:84px;color:#fff;font-size:34px;font-weight:900}
 .era div{display:flex;align-items:center;justify-content:center;gap:16px}
-.era small{font-family:var(--sans);font-size:20px;font-weight:400;opacity:.9}
+.era small{font-family:var(--sans);font-size:20px;font-weight:600;opacity:.9}
 .cmp{position:absolute;left:110px;top:400px;border-collapse:collapse;font-size:32px;width:1700px}
 .cmp th{font-size:44px;padding:10px;text-align:left}
 .cmp td{padding:16px 18px;border-top:2px solid #d8c6a2;line-height:1.45;color:var(--ink2)}
@@ -235,7 +235,7 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
 .qs{position:absolute;left:110px;right:110px;top:330px;display:flex;gap:44px}
 .qs .qq{flex:1;background:#fbf6ea;border:3px solid var(--ink);padding:44px 36px;font-size:44px;font-weight:900;line-height:1.5;position:relative}
 .qs .qq::before{content:attr(data-n);position:absolute;left:-22px;top:-30px;width:64px;height:64px;border-radius:50%;background:var(--red);color:#fff;font-size:36px;display:flex;align-items:center;justify-content:center;font-family:var(--sans)}
-.qs .hint{font-family:var(--sans);font-size:24px;font-weight:400;color:#8a7a62;margin-top:20px;line-height:1.5}
+.qs .hint{font-family:var(--sans);font-size:24px;font-weight:600;color:#8a7a62;margin-top:20px;line-height:1.5}
 
 /* 出處頁 */
 .refs{position:absolute;left:110px;right:110px;top:250px;columns:2;column-gap:80px;font-size:27px;line-height:1.65;color:var(--ink2)}
@@ -243,6 +243,10 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
 .refs p{margin-bottom:16px;break-inside:avoid}
 
 .nav{position:absolute;left:0;top:0;width:25%;height:100%;z-index:15;cursor:w-resize}
+/* 觸控放大 */
+#stage.zs{transition:transform .3s ease}
+#unzoom{position:fixed;right:16px;bottom:16px;z-index:50;display:none;font:700 22px var(--sans);color:#fff;background:rgba(179,48,42,.92);border:none;border-radius:30px;padding:12px 22px;box-shadow:0 4px 14px rgba(0,0,0,.4);cursor:pointer}
+body.zoomed #unzoom{display:block}
 </style>
 </head>
 <body>
@@ -990,12 +994,60 @@ svg.map{position:absolute;inset:0;width:100%;height:100%}
 <div id="pg"></div>
 <div class="nav" id="nav"></div>
 </div>
+<button id="unzoom" type="button">↺ 還原大小才能換頁</button>
 
 <script>
 /* ===== 縮放到視窗 ===== */
 const stage=document.getElementById('stage');
-function fit(){const k=Math.min(innerWidth/1920,innerHeight/1080);stage.style.transform=`translate(-50%,-50%) scale(${k})`;}
+let Z=1,TX=0,TY=0;const baseK=()=>Math.min(innerWidth/1920,innerHeight/1080);
+function clampZ(){const k=baseK();Z=Math.max(1,Math.min(5,Z));
+  const mx=1920*k*(Z-1)/2,my=1080*k*(Z-1)/2;TX=Math.max(-mx,Math.min(mx,TX));TY=Math.max(-my,Math.min(my,TY));}
+function fit(){clampZ();stage.style.transform=`translate(-50%,-50%) translate(${TX}px,${TY}px) scale(${baseK()*Z})`;document.body.classList.toggle('zoomed',Z>1);}
 addEventListener('resize',fit);fit();
+
+/* ===== 觸控放大：雙指縮放、單指拖曳；放大時不換頁 ===== */
+const zoomed=()=>Z>1;
+function unzoom(){stage.classList.add('zs');Z=1;TX=TY=0;fit();setTimeout(()=>stage.classList.remove('zs'),320);}
+function zoomAt(px,py,z){ // 以螢幕點 (px,py) 為中心縮放到 z
+  const k=baseK(),cx=innerWidth/2,cy=innerHeight/2;
+  const ux=(px-cx-TX)/(k*Z),uy=(py-cy-TY)/(k*Z);
+  Z=Math.max(1,Math.min(5,z));TX=px-cx-ux*k*Z;TY=py-cy-uy*k*Z;fit();}
+const pts=new Map();let g=null,moved=false,blockUntil=0,lastTap=0;
+addEventListener('pointerdown',e=>{
+  if(e.target.id==='unzoom')return;
+  pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pts.size===1){moved=false;g={x:e.clientX,y:e.clientY,tx:TX,ty:TY};}
+  if(pts.size===2){moved=true;const[a,b]=[...pts.values()];
+    const mx=(a.x+b.x)/2,my=(a.y+b.y)/2,k=baseK();
+    g={pinch:1,d:Math.hypot(a.x-b.x,a.y-b.y)||1,z:Z,ux:(mx-innerWidth/2-TX)/(k*Z),uy:(my-innerHeight/2-TY)/(k*Z)};}
+});
+addEventListener('pointermove',e=>{
+  if(!pts.has(e.pointerId)||!g)return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(g.pinch&&pts.size>=2){const[a,b]=[...pts.values()];const k0=baseK();
+    Z=Math.max(1,Math.min(5,g.z*Math.hypot(a.x-b.x,a.y-b.y)/g.d));const k=k0*Z;
+    TX=(a.x+b.x)/2-innerWidth/2-g.ux*k;TY=(a.y+b.y)/2-innerHeight/2-g.uy*k;fit();}
+  else if(!g.pinch){const dx=e.clientX-g.x,dy=e.clientY-g.y;
+    if(Math.hypot(dx,dy)>10)moved=true;
+    if(moved&&zoomed()){TX=g.tx+dx;TY=g.ty+dy;fit();}}
+});
+function up(e){
+  if(!pts.delete(e.pointerId))return;
+  if(moved||g&&g.pinch)blockUntil=Date.now()+400;
+  if(pts.size===0){
+    if(g&&g.pinch&&Z<1.08)unzoom();
+    else if(!moved&&zoomed()){const t=Date.now();if(t-lastTap<350){unzoom();lastTap=0;}else lastTap=t;}
+    g=null;}
+  else if(pts.size===1){const[a]=[...pts.values()];g={x:a.x,y:a.y,tx:TX,ty:TY};}
+}
+addEventListener('pointerup',up);addEventListener('pointercancel',up);
+// 放大中或剛做完手勢：攔下所有點擊（換頁、目錄等）
+addEventListener('click',e=>{if(e.target.id==='unzoom')return;if(zoomed()||Date.now()<blockUntil){e.stopPropagation();e.preventDefault();}},true);
+// 觸控板雙指縮放（Ctrl＋滾輪）
+addEventListener('wheel',e=>{if(!e.ctrlKey&&!zoomed())return;e.preventDefault();
+  if(e.ctrlKey)zoomAt(e.clientX,e.clientY,Z*Math.exp(-e.deltaY/200));else{TX-=e.deltaX;TY-=e.deltaY;fit();}
+  if(Z<1.02)unzoom();},{passive:false});
+['gesturestart','gesturechange'].forEach(t=>addEventListener(t,e=>e.preventDefault()));
+document.getElementById('unzoom').addEventListener('click',e=>{e.stopPropagation();unzoom();});
 
 /* ===== 地圖資料（經緯度 → 座標，示意） ===== */
 const P=(lon,lat)=>[(lon-105.6)*118,(40.2-lat)*128];
@@ -1130,6 +1182,7 @@ function next(){
 }
 function prev(){let j=cur-1;while(j>0&&isOpt(j))j--;if(j>=0&&j!==cur)show(j,true);}
 addEventListener('keydown',e=>{
+  if(zoomed()){if(e.key==='Escape'||e.key==='0'){e.preventDefault();unzoom();}else if(!['f','F'].includes(e.key)){e.preventDefault();return;}}
   if(['ArrowRight','ArrowDown',' ','PageDown','Enter'].includes(e.key)){e.preventDefault();next();}
   else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev();}
   else if(e.key==='Home')show(0);else if(e.key==='End')show(S.length-1,true);
