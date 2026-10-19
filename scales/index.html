@@ -169,6 +169,7 @@ h1,h2,h3{font-family:var(--serif);margin:0;line-height:1.35}
 .joyring i{position:absolute;left:50%;top:50%;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;background:rgba(255,255,255,.45)}
 .mbub{position:absolute;transform:translate(-50%,-100%);background:#fffaf0;color:#2a1d14;border:2px solid #2a1d14;border-radius:8px;padding:4px 10px;font:800 clamp(12px,1.4vw,16px)/1.35 var(--sans);white-space:nowrap;pointer-events:none;box-shadow:0 3px 0 rgba(0,0,0,.35)}
 .mbub::after{content:"";position:absolute;left:50%;bottom:-8px;margin-left:-6px;border:6px solid transparent;border-top-color:#2a1d14;border-bottom:0}
+.mrot .btn{min-height:40px;padding:4px 16px;font-size:16px;margin:4px 8px}.mrot small{display:block;color:var(--muted);font-size:13px;font-weight:600}
 .mrot{margin:2px 0;color:var(--gold);font-weight:800;font-size:14px}
 @media (pointer:coarse){.mact{min-width:150px;min-height:64px;font-size:20px;right:12px;bottom:12px}}
 .mhelp{color:var(--muted);font-size:13px;margin:4px 8px;line-height:1.4;text-align:center}
@@ -259,9 +260,9 @@ body.quake .main{animation:quake .6s}
 <div class="tour" id="tour"><div class="hole" id="tHole"></div><div class="tip frame" id="tTip"></div></div>
   <div class="mapwrap" id="mapwrap" hidden>
     <div class="mclock" id="mClock"></div>
+    <p class="mrot" id="mRot" hidden>手機橫著拿，畫面會大一些。<button class="btn" id="rotBtn" type="button" hidden>轉成橫向</button><small id="rotTip">轉不過來的話，打開手機的「自動旋轉」。</small></p>
     <div class="mapbox"><canvas id="mapCv" width="640" height="352" aria-label="鎮上地圖"></canvas><div class="mlabels" id="mLabels"></div><div class="vign" id="vign"></div>
       <div class="mtoast" id="mToast"></div><canvas class="mmini" id="mMini" width="128" height="70" hidden></canvas><div class="mbub" id="mBub" hidden></div><div class="joyring" id="joyRing" hidden><i id="joyKnob"></i></div><button class="mact" id="mAct" type="button">　</button></div>
-    <p class="mrot" id="mRot" hidden>手機橫著拿，畫面會大一些。</p>
     <p class="mhelp">方向鍵或 WASD 走路，空白鍵擺攤、收攤。手機：在地圖上按住拖曳走路，按右下角的按鈕擺攤。</p>
   </div>
   <main class="main" id="main"></main>
@@ -1898,10 +1899,16 @@ function openShop(k) {
   render();
 }
 function bang(g, x, y, c) { g.fillStyle = c; g.fillRect(Math.round(x) - 1, Math.round(y) - 28, 3, 6); g.fillRect(Math.round(x) - 1, Math.round(y) - 20, 3, 2); }
+$("rotBtn").onclick = async () => {
+  try { await document.documentElement.requestFullscreen({navigationUI: "hide"}); await screen.orientation.lock("landscape"); }
+  catch (e) { $("rotTip").textContent = "這支手機不能自動轉，請打開「自動旋轉」再橫著拿。"; }
+};
 function fitMap() {
   const w = $("mapwrap"), cv = $("mapCv");
   const top = document.querySelector("#game .top").offsetHeight, W = w.clientWidth;
-  const H = window.innerHeight - top - $("mClock").offsetHeight - document.querySelector(".mhelp").offsetHeight - 24;
+  // 直拿手機時地圖上方多一行「轉成橫向」，先顯示再量高度
+  $("mRot").hidden = !(W < 900 && window.innerHeight > window.innerWidth);
+  const H = window.innerHeight - top - $("mClock").offsetHeight - $("mRot").offsetHeight - document.querySelector(".mhelp").offsetHeight - 24;
   const full = Math.min(W / sceneCv.width, H / sceneCv.height);
   let s, vw, vh;
   if (W >= 900 && full >= 1) { CAM.on = false; s = full; vw = sceneCv.width; vh = sceneCv.height; }   // 桌機、投影：整張地圖
@@ -1918,6 +1925,9 @@ function fitMap() {
   $("mMini").hidden = !CAM.on;
   $("mMini").parentElement.classList.toggle("hasmini", CAM.on);
   $("mRot").hidden = !(CAM.on && window.innerHeight > window.innerWidth);
+  // 安卓 Chrome：全螢幕後可以強制橫向，手機鎖了直向也轉得過去；iPhone 不支援，只留文字提示
+  const canLock = !!(screen.orientation && screen.orientation.lock && document.documentElement.requestFullscreen);
+  $("rotBtn").hidden = !canLock; $("rotTip").textContent = canLock ? "" : "轉不過來的話，打開手機的「自動旋轉」。";
   if (MAP) drawTown();
 }
 function mapLoop(ts) {
