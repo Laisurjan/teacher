@@ -233,6 +233,30 @@ body.quake .main{animation:quake .6s}
   .item{grid-template-columns:1fr;gap:6px}
 }
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+/* 橫拿手機（矮螢幕）：頂欄、事件卡、選項都縮一點，兩個選項以內並排，不用往下捲（使用者要求） */
+@media (max-height:500px) and (orientation:landscape){
+  .topin{padding:3px 10px;gap:8px}
+  .cal small{font-size:10px;letter-spacing:1px}.cal b{font-size:16px}
+  .st{padding:1px 2px}.st .lab{font-size:10px;letter-spacing:0}.st .val{font-size:15px}.st .bar{margin-top:1px}
+  .sub2{font-size:12px;padding:0 10px 3px;gap:10px}
+  .tourbtn{width:26px;height:26px;font-size:14px}
+  .main{padding:8px 10px 40px}
+  .ev{padding:10px 14px 10px;margin-bottom:8px}
+  .ev .who{font-size:15px}.ev h2{font-size:19px;margin:2px 0 6px}
+  .ev .x{font-size:16px;line-height:1.6}.ev .x p{margin:0 0 6px}
+  .quote{font-size:15px;line-height:1.6;padding:6px 10px;margin:6px 0}
+  .explain,.hint{font-size:13px;margin-top:4px}
+  .opts{gap:6px;margin-top:8px}
+  .opt{padding:7px 12px;font-size:15px;line-height:1.45}
+  .opts.few{grid-template-columns:1fr 1fr}
+  .box{padding:14px 16px 12px}.box h3{font-size:18px;margin-bottom:4px}.deltas{margin:6px 0}
+  .btn{min-height:42px;padding:8px 20px;font-size:16px}
+}
+/* 再矮一點（網址列佔掉高度的手機）：內文再小一號 */
+@media (max-height:340px) and (orientation:landscape){
+  .ev .x{font-size:15px;line-height:1.55}.quote{font-size:14px;line-height:1.55;padding:4px 10px}
+  .ev h2{font-size:17px}.ev .who{font-size:14px}.ev{padding:8px 12px 8px}.main{padding-top:6px}
+}
 </style>
 </head>
 <body>
@@ -856,7 +880,7 @@ function card(id) {
     <div class="x">${val(ev.x)}</div>
     ${val(ev.q) ? `<div class="quote">${val(ev.q)}</div>` : ""}
     ${hint ? `<p class="hint">${hint}</p>` : ""}
-    <div class="opts">${opts.map(({o, i}) => { const locked = why(o); return `<button class="opt" data-i="${i}" ${locked ? "disabled" : ""}>${o.t}${locked ? `<span class="lock">${locked}</span>` : ""}</button>`; }).join("")}</div></div>`;
+    <div class="opts ${opts.length <= 2 ? "few" : ""}">${opts.map(({o, i}) => { const locked = why(o); return `<button class="opt" data-i="${i}" ${locked ? "disabled" : ""}>${o.t}${locked ? `<span class="lock">${locked}</span>` : ""}</button>`; }).join("")}</div></div>`;
   $("main").querySelectorAll(".opt").forEach(b => b.onclick = () => choose(id, +b.dataset.i));
   renderTop();
   window.scrollTo(0, 0);
