@@ -157,8 +157,11 @@ h1,h2,h3{font-family:var(--serif);margin:0;line-height:1.35}
 .mclock{display:flex;align-items:center;gap:12px;margin:0 0 4px;font:900 22px/1.15 var(--serif);color:var(--gold)}
 .mclock small{font:700 14px/1.3 var(--sans);color:var(--muted)}
 .sbar{display:block;width:160px;height:10px;background:#141a16;border:1px solid #000}.sbar i{display:block;height:100%;background:#7cc05a}
-.mtoast{position:absolute;left:50%;top:10px;transform:translateX(-50%);background:rgba(30,26,20,.95);border:2px solid var(--gold2);color:var(--ink);padding:6px 14px;border-radius:6px;font:800 15px/1.4 var(--sans);opacity:0;transition:opacity .3s;pointer-events:none;max-width:62%;text-align:center}
+.mtoast{position:absolute;left:8px;right:8px;margin:0 auto;width:fit-content;top:10px;background:rgba(30,26,20,.95);border:2px solid var(--gold2);color:var(--ink);padding:6px 14px;border-radius:6px;font:800 15px/1.4 var(--sans);opacity:0;transition:opacity .3s;pointer-events:none;text-align:center}
 .mtoast.on{opacity:1}
+/* 手機開小地圖時，訊息框讓出右上角，不被小地圖蓋住 */
+.mapbox.hasmini .mtoast{right:150px}
+@media (max-width:560px){.mapbox.hasmini .mtoast{right:114px}}
 .mact{position:absolute;right:10px;bottom:10px;min-width:120px;min-height:52px;font:900 17px/1.2 var(--sans);color:#fff;background:linear-gradient(135deg,#e2573f,#8a2418);border:0;border-radius:8px;box-shadow:0 3px 0 #3a0a06;padding:6px 14px}
 .mact:disabled{opacity:.35}
 .mmini{position:absolute;right:8px;top:8px;width:128px;height:70px;image-rendering:pixelated;border:2px solid rgba(20,16,12,.85);border-radius:4px;opacity:.92;pointer-events:none}
@@ -1743,11 +1746,15 @@ function bubble(cv) {
     else if (MAP.t > 8) t = "天色暗了，早點回家歇著。往左走 ←";
   }
   b.hidden = !t;
+  $("mMini").style.opacity = "";
   if (!t) return;
   const k = cv.offsetWidth / cv.width;
   b.textContent = t;
   const half = b.offsetWidth / 2 + 4, W = cv.offsetWidth;
   b.style.left = Math.max(half, Math.min(W - half, (MAP.me.x - CAM.x) * k)) + "px"; b.style.top = Math.max(b.offsetHeight + 4, (MAP.me.y - 24 - CAM.y) * k) + "px";
+  // 泡泡框碰到右上角的小地圖時，小地圖淡掉，讓字看得到
+  const mm = $("mMini");
+  if (!mm.hidden) { const r1 = b.getBoundingClientRect(), r2 = mm.getBoundingClientRect(); if (r1.right > r2.left && r1.left < r2.right && r1.bottom > r2.top && r1.top < r2.bottom) mm.style.opacity = ".15"; }
 }
 function drawMini() {
   const m = $("mMini"), g = m.getContext("2d"), k = m.width / sceneCv.width, cv = $("mapCv");
@@ -1907,6 +1914,7 @@ function fitMap() {
   lab.style.width = cv.style.width; lab.style.height = cv.style.height;
   lab.innerHTML = LABELS.map(([t]) => `<span>${t}</span>`).join("");
   $("mMini").hidden = !CAM.on;
+  $("mMini").parentElement.classList.toggle("hasmini", CAM.on);
   $("mRot").hidden = !(CAM.on && window.innerHeight > window.innerWidth);
   if (MAP) drawTown();
 }
