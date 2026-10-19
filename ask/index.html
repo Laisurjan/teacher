@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>AI 學檔教練提問句</title>
+<style>
+:root{--ink:#1f2a44;--sub:#4a5672;--bg:#f4f6f9;--card:#fff;--acc:#d9622b;--ok:#2e7d55;--line:#d8dde6}
+@media (prefers-color-scheme:dark){:root{--ink:#e8ecf3;--sub:#b5bfd0;--bg:#141821;--card:#1f2533;--acc:#f08a4b;--ok:#5cc08b;--line:#343c4d}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif;font-weight:600;line-height:1.7}
+main{max-width:720px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:1.5rem;margin:.2em 0 .3em}
+.lead{color:var(--sub);margin:0 0 1em}
+.rule{background:var(--card);border:2px solid var(--acc);border-radius:12px;padding:12px 14px;margin:0 0 18px}
+.rule b{color:var(--acc)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin:0 0 18px}
+.card h2{font-size:1.15rem;margin:0 0 .2em}
+.card p.when{color:var(--sub);margin:0 0 .6em;font-size:.95rem}
+pre{white-space:pre-wrap;word-break:break-word;background:var(--bg);border-radius:8px;padding:12px;margin:0 0 10px;font:inherit;font-weight:600;font-size:.95rem}
+button{width:100%;border:0;border-radius:10px;padding:12px;font:inherit;font-size:1.05rem;background:var(--acc);color:#fff;cursor:pointer}
+button.done{background:var(--ok)}
+.foot{color:var(--sub);font-size:.9rem}
+.foot a{color:var(--acc)}
+</style>
+</head>
+<body>
+<main>
+<h1>AI 學檔教練提問句</h1>
+<p class="lead">按「複製」，貼到你常用的 AI（ChatGPT、Gemini、Claude 都可以），把底線＿＿換成你自己的資料。</p>
+<div class="rule"><b>規則：</b>AI 負責追問，你負責回答。它問出來的細節是你的，寫出來的句子也要是你自己的。教授一天看幾十份，AI 寫的句子每一份都長得差不多。</div>
+
+<section class="card">
+<h2>① 整理素材，找出能力主題（寫 D1 前）</h2>
+<p class="when">適合：手上有一堆證照、比賽、幹部、服務，不知道怎麼串起來。</p>
+<pre id="p1">你是我的學習歷程教練。請不要幫我寫完整文章，只能提問和給建議。
+我是高職商管群＿＿科高三學生，想申請＿＿大學＿＿系。
+我的多元表現素材有（每項一句話，寫我做了什麼）：
+1. ＿＿
+2. ＿＿
+3. ＿＿
+請你：
+(1) 把這些素材歸納成 2～3 個「能力主題」，說明每個主題可以用哪幾件素材當證據，以及它跟這個系有什麼關係。
+(2) 一次只針對一個主題，問我 2 個問題，問出具體細節：數字、遇到的困難、我怎麼解決、別人給我的回饋。
+(3) 等我回答完再問下一個主題。
+請用繁體中文。</pre>
+<button data-t="p1">複製</button>
+</section>
+
+<section class="card">
+<h2>② 學習歷程自述訪談（寫 D2 前）</h2>
+<p class="when">適合：不知道反思、動機、計畫要寫什麼。</p>
+<pre id="p2">你是我的學習歷程教練。請不要幫我寫完整文章，只能提問。
+我想申請＿＿大學＿＿系，要寫學習歷程自述，包含「學習歷程反思、就讀動機、未來學習計畫與生涯規劃」三部分。
+請你一次只問我一個問題，等我回答再問下一題，依序問：
+(1) 高中三年，哪一次學習方法的改變或挫折讓我進步？請追問前後的具體變化（例如成績、名次、花的時間）。
+(2) 我是在什麼時候、因為什麼事情想讀這個領域？
+(3) 這個系有哪一門課、哪一項資源，跟我的經驗接得上？（如果我不知道，請提醒我去查系網的課程地圖，不要替我編造。）
+(4) 入學前、大學四年、畢業後，我各有什麼做得到的具體計畫？
+請用繁體中文。</pre>
+<button data-t="p2">複製</button>
+</section>
+
+<section class="card">
+<h2>③ 檢查我寫好的段落</h2>
+<p class="when">適合：已經寫好一段，想知道哪裡不夠好。</p>
+<pre id="p3">請你扮演四技甄選的審查教授，讀我寫的段落（貼在下面），只做三件事，不要幫我重寫：
+(1) 標出空泛的句子（例如只有「細心、負責、團隊合作」這類形容詞，卻沒有事件）。
+(2) 標出缺少具體事件、數字或結果的地方，並問我一個問題，讓我補上細節。
+(3) 指出哪裡沒有連到我申請的＿＿系。
+我的段落：
+＿＿</pre>
+<button data-t="p3">複製</button>
+</section>
+
+<p class="foot">先把素材記下來：<a href="https://laisurjan.github.io/Learning-Portfolio/">學習歷程素材小工具</a>（不用登入，一分鐘留下一筆）</p>
+</main>
+<script>
+document.querySelectorAll('button[data-t]').forEach(function(b){
+  b.addEventListener('click',function(){
+    var t=document.getElementById(b.dataset.t).innerText;
+    function ok(){b.textContent='已複製，去貼到 AI 吧';b.classList.add('done');setTimeout(function(){b.textContent='複製';b.classList.remove('done')},2500)}
+    if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(ok,fb)}else{fb()}
+    function fb(){var a=document.createElement('textarea');a.value=t;a.setAttribute('readonly','');a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();a.setSelectionRange(0,t.length);try{document.execCommand('copy');ok()}catch(e){b.textContent='請長按上方文字手動複製'}document.body.removeChild(a)}
+  });
+});
+</script>
+</body>
+</html>
