@@ -55,13 +55,37 @@ h1,h2,h3{font-family:var(--serif);margin:0;line-height:1.35}
 .dex li.got{color:var(--ink);border-color:var(--gold2)}
 .dex li b{color:var(--gold);margin-right:6px;font-family:var(--serif)}
 .dex li.got b{color:var(--jade)}
+.egg h2{color:var(--gold)}
+.achs{list-style:none;margin:6px 0;padding:0;display:grid;gap:6px}
+.achs li{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;font-size:16px;padding:6px 10px;border:1px solid var(--gold2);border-radius:3px}
+.achs i{font-style:normal;font-size:20px}.achs b{color:var(--gold)}.achs small{color:var(--muted)}
+.achs em{font-style:normal;font-size:12px;font-weight:800;color:#1a1208;background:var(--gold);border-radius:3px;padding:0 5px}
+.achs span{flex-basis:100%;color:var(--ink);font-size:15px}
+.dex li small{color:var(--muted);font-size:.85em}
 .dex .cards{margin-top:10px;font-size:15px;color:var(--muted)}
 .dex .cards b{color:var(--gold)}
 @media (max-width:640px){.dex ol{grid-template-columns:1fr}}
 
 /* 遊戲 */
 .top{position:sticky;top:0;z-index:5;background:rgba(13,17,22,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(6px)}
-.topin{max-width:860px;margin:0 auto;padding:8px 12px;display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center}
+.topin{max-width:860px;margin:0 auto;padding:8px 12px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
+.snd{position:fixed;left:10px;bottom:10px;z-index:30}
+.sndbtn{width:40px;height:40px;border-radius:50%;border:1px solid var(--gold2);background:rgba(13,17,22,.9);color:var(--gold);font:900 18px/1 var(--sans);cursor:pointer;padding:0}
+.sndbtn.off{color:var(--muted);border-color:var(--line)}
+.sndpanel{position:absolute;left:0;bottom:48px;width:230px;padding:12px 14px;display:grid;gap:10px}
+.sndpanel label{display:grid;grid-template-columns:3em 1fr;align-items:center;gap:8px;font-size:15px;font-weight:700;color:var(--ink)}
+.sndpanel input{width:100%;accent-color:var(--gold);min-height:28px}
+.sndpanel .btn{min-height:38px;font-size:15px}
+.tourbtn{width:30px;height:30px;border-radius:50%;border:1px solid var(--gold2);background:transparent;color:var(--gold);font:900 16px/1 var(--sans);cursor:pointer;padding:0}
+.tour{position:fixed;inset:0;z-index:40;display:none}
+.tour.on{display:block}
+.tour .hole{position:fixed;border-radius:4px;box-shadow:0 0 0 9999px rgba(5,3,2,.8),0 0 24px 4px rgba(235,189,96,.6);outline:2px solid var(--gold);transition:all .3s ease;pointer-events:none}
+.tour .tip{position:fixed;width:min(400px,92vw);padding:16px 18px;transition:top .3s ease,left .3s ease}
+.tour .tstep{font-size:12px;color:var(--muted);letter-spacing:1px}
+.tour .tip h3{font-size:22px;color:var(--gold);margin:2px 0 6px}
+.tour .tip p{font-size:16px;font-weight:600;line-height:1.75;margin:0 0 12px;color:var(--ink)}
+.tour .tbtns{display:flex;gap:8px;justify-content:flex-end;align-items:center;flex-wrap:wrap}
+.tour .tlink{background:none;border:0;color:var(--muted);text-decoration:underline;font-size:14px;margin-right:auto;cursor:pointer;min-height:40px}
 .cal{font-family:var(--serif);font-weight:900;line-height:1.2;white-space:nowrap}
 .cal small{display:block;font-size:12px;color:var(--gold);letter-spacing:2px;font-family:var(--sans)}
 .cal b{font-size:20px}
@@ -199,12 +223,13 @@ body.quake .main{animation:quake .6s}
     </div>
   </div>
   <div class="dex frame" id="dex"></div>
-  <div class="foot">賴和〈一桿「稱仔」〉課前引導遊戲・事件與對話取自原文，法令與物價依 1925 年前後史料<br>花蓮高工柯貞伊老師、花蓮高商賴士鈞老師合作<br><span style="opacity:.7">第三期試作 2.1：鎮上傍晚、威麗村地圖</span></div>
+  <div class="foot">賴和〈一桿「稱仔」〉課前引導遊戲・法令與物價依 1925 年前後史料<br>花蓮高工柯貞伊老師、花蓮高商賴士鈞老師合作<br>音樂：ChineseZenMusic、kaazoom、leberch、Viacheslav Starostin；音效與環境音：Pixabay<br><span style="opacity:.7">第三期試作 2.1：鎮上傍晚、威麗村地圖</span></div>
 </section>
 
 <!-- 遊戲 -->
 <section class="screen" id="game">
-  <div class="top"><div class="topin"><div class="cal" id="cal"></div><div class="stats" id="stats"></div></div><div class="sub2" id="sub2"></div></div>
+  <div class="top"><div class="topin"><div class="cal" id="cal"></div><div class="stats" id="stats"></div><button class="tourbtn" id="tourBtn" type="button" aria-label="數值說明">？</button></div><div class="sub2" id="sub2"></div></div>
+<div class="tour" id="tour"><div class="hole" id="tHole"></div><div class="tip frame" id="tTip"></div></div>
   <div class="mapwrap" id="mapwrap" hidden>
     <div class="mclock" id="mClock"></div>
     <div class="mapbox"><canvas id="mapCv" width="640" height="352" aria-label="鎮上地圖"></canvas><div class="mlabels" id="mLabels"></div><div class="vign" id="vign"></div>
@@ -220,6 +245,7 @@ body.quake .main{animation:quake .6s}
 
 <div class="ov" id="fb"><div class="box frame" id="fbBox"></div></div>
 
+<div class="snd" id="snd"><button class="sndbtn" id="sndBtn" type="button" aria-label="聲音">♪</button><div class="sndpanel frame" id="sndPanel" hidden><label>音樂<input type="range" id="sndM" min="0" max="100"></label><label>音效<input type="range" id="sndS" min="0" max="100"></label><button type="button" class="btn ghost" id="sndOff">全部關閉</button></div></div>
 <script>
 "use strict";
 const $ = id => document.getElementById(id);
@@ -251,16 +277,39 @@ const whoTag = k => P[k].n ? `<div class="who">${P[k].n}<span class="role">${P[k
 
 // ===== 知識卡（跨局保留）=====
 const CARDS = {
-  old: {t: "「大人說稱稱看，意思是不用稱。」", from: "市集老人", use: "巡警買菜時，多一個聽懂暗示的選項"},
-  nb: {t: "「稱仔是官廳專賣的。不合格的秤，官廳可以扣走，還可以毀掉。」", from: "鄰家", use: "巡警說「不堪用了」時，知道他在套哪條法"},
-  liao: {t: "「廖添丁沒有死，躲在觀音山裡當義賊。」", from: "廟埕的講古仙", use: "除夕夜多一條路：學廖添丁，逃進觀音山"},
-  jud: {t: "「即決不服，三天內可請求正式裁判。」", from: "騎樓下讀報的青年", use: "郡衙判後出現「我要正式裁判」"},
-  minpao: {t: "「《臺灣民報》會登小老百姓的冤。」", from: "醫生", use: "可以請認得你的人代筆投書"},
-  union: {t: "「二林的蔗農組了組合，跟會社討價。」", from: "文化協會的演講", use: "除夕夜多一條路：去找組合"},
-  east: {t: "「花蓮港廳在招人開墾。」", from: "外地來的挑夫、讀報的青年", use: "除夕夜多一條路：全家去東部"},
-  paper: {t: "「跟官廳打交道，嘴講的不算，要白紙黑字。」", from: "村裡的漢文先生", use: "知道書狀可以找他寫"}
+  old: {t: "「大人說稱稱看，意思是不用稱。」", from: "市集老人", use: "官人說的話，未必是字面上的意思"},
+  nb: {t: "「稱仔是官廳專賣的。不合格的秤，官廳可以扣走，還可以毀掉。」", from: "鄰家", use: "官人挑你毛病時，背後都有一條法"},
+  liao: {t: "「廖添丁沒有死，躲在觀音山裡當義賊。」", from: "廟埕的講古仙", use: "走投無路的人，聽說都往山裡去"},
+  jud: {t: "「即決不服，三天內可請求正式裁判。」", from: "騎樓下讀報的青年", use: "郡衙判了，不一定就算數"},
+  minpao: {t: "「《臺灣民報》會登小老百姓的冤。」", from: "醫生", use: "小老百姓的冤，也能讓全島的人知道"},
+  union: {t: "「二林的蔗農組了組合，跟會社討價。」", from: "文化協會的演講", use: "一個人講不贏會社，一群人呢？"},
+  east: {t: "「花蓮港廳在招人開墾。」", from: "外地來的挑夫、讀報的青年", use: "這裡活不下去，臺灣還有別的地方"},
+  paper: {t: "「跟官廳打交道，嘴講的不算，要白紙黑字。」", from: "村裡的漢文先生", use: "你不識字，總有人識字"}
 };
-const CARD_KEY = "sc-cards", DEX_KEY = "sc-ends";
+const CARD_KEY = "sc-cards", DEX_KEY = "sc-ends", EGG_KEY = "sc-eggs";
+// 成就（彩蛋）：跟結局分開記，不影響走到哪個結局
+// t 台語詞、zh 國語、i 小圖示（劇情彩蛋 big:1，第 4 期要畫立繪）；hint 沒拿到時的提示，不寫門檻
+const EGGS = {
+  hua: {t: "金花", zh: "劇情彩蛋", i: "★", big: 1, hint: "妻子最在意的那一件事，你先替她做到了嗎？", p: "除夕夜，妻子把金花插在髮上給你看。"},
+  rich: {t: "好額人", zh: "有錢人", i: "💰", hint: "有人說，賣菜也能賣出一間厝。", p: "身上的錢一度超過二十圓。"},
+  ox: {t: "勇甲若牛", zh: "體壯如牛", i: "💪", hint: "年關再忙，也要顧身體。", p: "身體到了 9。"},
+  bad: {t: "歹名聲", zh: "惡名昭彰", i: "🚨", hint: "巡警的小帳子上，有人的名字寫滿一頁。", p: "官符到了 9。"},
+  sick: {t: "定定破病", zh: "常常生病", i: "🤒", hint: "那年冬天，青草壓不住寒熱。", p: "寒熱發了三次以上。"},
+  unlucky: {t: "衰尾", zh: "倒楣透頂", i: "🌧️", hint: "有的日子，什麼事都找上你。", p: "同一天碰滿三件倒楣事。"},
+  rice: {t: "米甕滿滿", zh: "米缸滿滿", i: "🍚", hint: "新春半個月萬事停辦，米能備多少？", p: "除夕存糧 20 天以上。"},
+  swallow: {t: "吞忍", zh: "忍氣吞聲", i: "🤐", hint: "什麼都吞得下去的人。", p: "骨氣掉到 0。"},
+  bone: {t: "硬骨", zh: "骨氣十足", i: "🦴", hint: "什麼都不肯吞的人。", p: "骨氣到了 10。"},
+  cold: {t: "灶跤冷吱吱", zh: "家裡冷冰冰", i: "🥶", hint: "妻子不再跟你說話。", p: "妻子的心掉到 1。"},
+  tools: {t: "家私齊全", zh: "工具齊全", i: "🎒", hint: "鎮上、村裡，到處都有帶得走的東西。", p: "一局帶齊 5 樣隨身道具。"},
+  book: {t: "照起工", zh: "照規矩來", i: "📖", hint: "把得參的這個年關，照他本來的樣子走一遍。", p: "每一個選擇都跟得參本人一樣。"}
+};
+// 數值類成就：每次更新頂欄時檢查，達到過就算
+function achCheck() {
+  const a = G.ach; if (!a) return;
+  if (G.s >= 2000) a.add("rich"); if (G.b >= 9) a.add("ox"); if (G.o >= 9) a.add("bad");
+  if (G.p <= 0) a.add("swallow"); if (G.p >= 10) a.add("bone"); if (G.w <= 1) a.add("cold");
+  if ((G.malN || 0) >= 3) a.add("sick"); if (G.items.size >= 5) a.add("tools");
+}
 const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } };
 const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
 let KEPT = load(CARD_KEY, []);
@@ -281,7 +330,7 @@ const UNIT = {s: " 錢", g: " 天", b: "", p: "", w: "", o: ""};
 let G;
 function newGame() {
   G = {day: 16, s: 0, debts: [], items: new Set(), fine: 300, g: 3, b: 5, p: 6, w: 7, o: 1, hua: "sis", scale: "none", flag: {}, cards: new Set(KEPT), prev: new Set(KEPT), newCards: [],
-    hist: [], used: new Set(), vDone: [], vv: 0, visited: 0, stall: "", jail: 0, trace: [], over: false, shopDone: {}, ricePrice: 60, phase: "pro", daysOut: 0, hungry: 0};
+    hist: [], ach: new Set(), malN: 0, used: new Set(), vDone: [], vv: 0, visited: 0, stall: "", jail: 0, trace: [], over: false, shopDone: {}, ricePrice: 60, phase: "pro", daysOut: 0, hungry: 0};
 }
 const clamp10 = v => Math.max(0, Math.min(10, v));
 
@@ -299,12 +348,12 @@ const EV = {
     q: "若做會社的勞工呢，有同牛馬一樣，他母親又不肯，只在家裡，等著做些散工。", qs: "課文", o: [
       {t: "照會社的租聲去贌田。", e: {debt: ["land", "欠業主的租穀", 200, "lord"]}, r: "田是租到了，可是租太重，年年都欠業主一些租穀。今年也欠著，年底要清。", n: "1925 年前後，製糖會社用高租搶田，農民租不到田，或租到了也繳不起。這筆帳除夕前要還。"},
       {t: "去會社做工，同牛馬一樣。", e: {b: -1, p: -1}, r: "母親不肯，你還是去了半年。賺的錢都貼進家用，身體跟骨氣都磨掉一些。"},
-      {t: "在家等散工。", orig: 1, e: {}, r: "因為你氣力大，做事勤敏，每天都有人喚你去工作。母親刻儉，漸漸積下些錢。", n: "原著的得參走這條路。十八歲娶妻、二十一歲生子，日子一度過得去。"}
+      {t: "在家等散工。", orig: 1, e: {}, r: "因為你氣力大，做事勤敏，每天都有人喚你去工作。母親刻儉，漸漸積下些錢。", n: "得參本人走的是這條路。十八歲娶妻、二十一歲生子，日子一度過得去。"}
     ]},
   pro3: {who: "wife", t: "二十五歲", x: "<p>母親死了。妻子要照顧孩子，不能跟你出門，進款少了一半。你加倍工作，四年下來，身體伏下病根。</p><p>早季收穫的時候，你患了瘧疾，病了四五天，看過一次西醫，花去兩塊多錢。腳手還是乏力。晚上寒熱又發起來。</p>",
     q: "他心裡想，三天的工作，還不夠吃一服藥，那得那麼些錢花？", qs: "課文", o: [
       {t: "到鎮上找那位「聽說不收窮人錢」的醫生。", e: {b: 2, w: -1, o: 1, set: "sawDoc", card: "minpao"}, r: "收穫季跑一趟鎮上，少做了好幾天工，妻子一個人下田。醫生看完病，沒有收錢，只叮囑你多休息。他的案上放著一疊報紙。醫館對面，有個巡查一直站著。", n: "鎮上這位醫生對窮人不收錢，也參加文化運動，在警察的名單上。進出他的醫館，就會被看見。病是好了，沒有留下病根。"},
-      {t: "不看了。煎些不用錢的青草。", orig: 1, e: {set: "malaria"}, r: "隔兩三天發一回寒熱，拖了好幾個月才不再發作。腹卻脹滿了。有人說是青草吃多，有人說是西藥所致。", n: "原著的得參沒有再看西醫：第一次已經花去兩塊多，三天的工作還不夠吃一服藥。病根留在身上，年關前隨時會再發。"}
+      {t: "不看了。煎些不用錢的青草。", orig: 1, e: {set: "malaria"}, r: "隔兩三天發一回寒熱，拖了好幾個月才不再發作。腹卻脹滿了。有人說是青草吃多，有人說是西藥所致。", n: "得參本人沒有再看西醫：第一次已經花去兩塊多，三天的工作還不夠吃一服藥。病根留在身上，年關前隨時會再發。"}
     ]},
   pro4: {who: "wife", t: "尾牙前夕", x: "<p>一直到年末，你才能做些輕的工作。尾牙到了，還找不到相應的工作。一到新春萬事停辦，更沒有做工的機會，得先積下新春半個月的食糧。</p><p>聽說鎮上生菜的販路很好。可是沒有本錢。</p>",
     q: "無奈缺少本錢，又因心地坦白，不敢向人家告借，沒有法子，只得教他妻到外家走一遭。", qs: "課文", o: [
@@ -439,7 +488,7 @@ const EV = {
       {t: "亮出保正的名帖。", item: "namecard", e: {useItem: "namecard", unkick: 1}, r: "巡警看了看名帖，哼了一聲，揮手叫你繼續擺。", n: "保甲制度下，保正替派出所辦事。保正的面子，巡警多少會給。名帖只能用一次。"}
     ]},
   hz_cart: {who: "narr", t: "人力車", x: "<p>一輛人力車從大路上衝過來，車夫大喊讓開。你的擔子擋在路中間。</p>",
-    n: "課文：「什麼通行取締、道路規則……舉凡日常生活中的一舉一動，通在法的干涉、取締範圍中。」擔子擋路，就是妨礙通行。", o: [
+    n: "「什麼通行取締、道路規則……舉凡日常生活中的一舉一動，通在法的干涉、取締範圍中。」擔子擋路，就是妨礙通行。", o: [
       {t: "趕緊閃開，賠不是。", e: {p: -1}, r: "車上的人罵了一句，揚長而去。"},
       {t: "「路是大家的。」", e: {p: 1, o: 1}, r: "路口的巡查聽見了，把你的名字記下來。"}
     ]},
@@ -449,7 +498,7 @@ const EV = {
       {t: "站著不動。", e: {b: -2, o: 1, p: 1, hit: 1}, r: "巡查一棍打在你肩上。"}
     ]},
   hz_health: {who: "health", t: "衛生巡查", x: "<p>衛生巡查走到擔前，用棍子撥了撥你的菜：「菜葉掉滿地，也沒有蓋。」</p>",
-    n: "課文說的「飲食物規則」：賣吃的要遮蓋、保持清潔，衛生警察可以當場取締。", o: () => [
+    n: "「飲食物規則」：賣吃的要遮蓋、保持清潔，衛生警察可以當場取締。", o: () => [
       {t: "趕快掃乾淨，賠笑臉。", e: {mul: .9}, r: "他在簿子上寫了幾個字，說下次再這樣就罰。"},
       {t: `塞幾個錢給他。${cost(20)}`, cond: () => G.s >= 20, lock: "身上沒有錢", e: {s: -20}, r: "他把錢收進口袋，什麼也沒寫。"}
     ]},
@@ -460,7 +509,7 @@ const EV = {
       {t: "離開。", e: {}, quiet: 1}
     ]},
   _herb: {who: "narr", t: "廟口的青草攤", go: () => eveTown(), x: "<p>廟口一排青草攤，曬乾的青草一把一把綁好。攤上也賣青草膏，擦瘀青的。</p>", o: () => [
-      {t: `買一罐青草膏。${cost(10)}`, cond: () => G.s >= 10 && !hasItem("herb"), lock: () => hasItem("herb") ? "已經有一罐了" : "身上沒有錢", e: {s: -10, item: "herb"}, r: "你把青草膏收進懷裡。", n: "課文裡老人說：「汝還未嘗到他，青草膏的滋味。」被巡警打了，就要擦這個。"},
+      {t: `買一罐青草膏。${cost(10)}`, cond: () => G.s >= 10 && !hasItem("herb"), lock: () => hasItem("herb") ? "已經有一罐了" : "身上沒有錢", e: {s: -10, item: "herb"}, r: "你把青草膏收進懷裡。", n: "老人說過：「汝還未嘗到他，青草膏的滋味。」被巡警打了，就要擦這個。"},
       {t: "離開。", e: {}, quiet: 1}
     ]},
 
@@ -568,7 +617,7 @@ const EV = {
     ]},
   c2boy: {who: "boy", t: "郡衙的庭裡", x: () => `<p>一個十四來歲的小使在庭裡掃地，抬頭看了你一眼。</p>${hasCard("jud") ? "<p>他小聲說：「判了要是不服，三天內可以具狀。」</p>" : "<p>他什麼也沒說。</p>"}`,
     o: [{t: "跟著巡警進去。", e: {}, r: "郡守在堂上。你跪在地上。", go: () => card("c2c")},
-      {t: "從懷裡拿出一塊年糕，分給小使。", item: "cake", e: {useItem: "cake", set: "boyCake"}, r: "小使愣了一下，接過去，小聲說：「我去跟你家裡說一聲。」", n: "課文說這個小使「童心還在，不會倚勢欺人」。你坐監的話，他會跑去告訴你妻子怎麼繳錢。", go: () => card("c2c")}]},
+      {t: "從懷裡拿出一塊年糕，分給小使。", item: "cake", e: {useItem: "cake", set: "boyCake"}, r: "小使愣了一下，接過去，小聲說：「我去跟你家裡說一聲。」", n: "這個小使「童心還在，不會倚勢欺人」。你坐監的話，他會跑去告訴你妻子怎麼繳錢。", go: () => card("c2c")}]},
   c2c: {who: "judge", t: "「汝秦得參嗎？」", x: "<p>法官在座上問。「是，小人，是。」你跪在地上回答。</p>", q: "「汝曾犯過罪嗎？」", qs: "法官", o: [
       {t: "「小人生來將三十歲了，曾未犯過一次法。」", orig: 1, e: {}, r: "「以前不管他，這回違犯著度量衡規則。」法官說。", go: () => card("c2d")},
       {t: "「我沒有做錯事。」", e: {p: 1, o: 1}, r: "法官的臉變了。「這回違犯著度量衡規則。」", go: () => card("c2d")}
@@ -587,8 +636,8 @@ const EV = {
 
   // ---------- 除夕夜 ----------
   eve: {who: "narr", t: "圍爐", x: () => G.flag.c1done
-      ? `<p>圍過爐，孩子們因明早要絕早起來開正，各已睡下，在作他們幸福的夢。</p><p>${G.hua === "home" ? "金花放在妻子的枕邊。" : G.hua === "none" ? "" : "金花還在當鋪裡。當鋪已經關門，要到正月十六才開。"}你尚在室內踱來蹀去。妻子幾次催你睡，你總沒有聽見似的。</p>`
-      : `<p>圍過爐，孩子們因明早要絕早起來開正，各已睡下。</p><p>這幾天，你沒有在鎮上的市場擺攤。${G.hua === "home" ? "金花放在妻子的枕邊。" : ""}</p>`,
+      ? `<p>圍過爐，孩子們因明早要絕早起來開正，各已睡下，在作他們幸福的夢。</p><p>${G.hua === "home" ? HUA_EVE() : G.hua === "none" ? "" : "金花還在當鋪裡。當鋪已經關門，要到正月十六才開。"}你尚在室內踱來蹀去。妻子幾次催你睡，你總沒有聽見似的。</p>`
+      : `<p>圍過爐，孩子們因明早要絕早起來開正，各已睡下。</p><p>這幾天，你沒有在鎮上的市場擺攤。${G.hua === "home" ? HUA_EVE() : ""}</p>`,
     q: () => G.flag.c1done ? "心裡只在想，總覺有一種，不明瞭的悲哀，只不住漏出幾聲的嘆息。" : "", qs: "課文", o: () => {
       const roads = [
         {t: "正月就去找組合的人。", prev: "union", cond: () => (G.flag.talks || 0) >= 2, lock: () => `演講只聽過 ${G.flag.talks || 0} 場，你還不認識組合的人（要 2 場）`, req: {p: 6}, e: {}, r: "你想起媽祖廟前那張桌子，和台下那麼多人。", go: () => finish("union")},
@@ -597,7 +646,7 @@ const EV = {
       if (!G.flag.c1done) return [{t: "這個年，總算平安過去了。", e: {}, r: "", quiet: 1, go: () => finish("hide")}, ...roads];
       return [
         {t: "「人不像個人，畜生，誰願意做。這是什麼世間？活著倒不若死了快樂。」", orig: 1, cond: () => G.p >= 6, lock: () => `骨氣只有 ${G.p}，這句話你說不出口`, e: {}, r: "你喃喃地獨語著，忽又回憶到母親死時快樂的容貌。", go: () => finish("ciNian")},
-        {t: "「人不像個人，畜生，誰願意做。」你決定不再忍：學廖添丁，逃進觀音山。", need: "liao", req: {b: 4}, cond: () => G.p >= 6, lock: () => `骨氣只有 ${G.p}，你走不出這個門`, e: {}, r: "你推開門，走進夜裡。",
+        {t: "「人不像個人，畜生，誰願意做。」你推開門，去找那個巡警。事情了結，就學廖添丁，逃進觀音山。", need: "liao", req: {b: 4}, cond: () => G.p >= 6, lock: () => `骨氣只有 ${G.p}，你走不出這個門`, e: {}, r: "你走進夜裡。",
           go: () => {
             const lack = [];
             if (!G.prev.has("liao")) lack.push("你第一次聽說觀音山，不知道上山的路怎麼走");
@@ -613,6 +662,115 @@ const EV = {
       ];
     }}
 };
+
+// ===== 聲音 =====
+// 音樂、環境音是 audio/ 裡的 mp3（Pixabay），接進 Web Audio 用 gain 控制音量：iPhone、iPad 不能改 audio.volume，gain 可以
+// 一個場景＝一首音樂＋一段環境音；換場景時交叉淡入淡出。音效先解碼成 buffer，事件發生時點一下
+const AU = (() => {
+  const IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const MUSIC = ["calm", "sad", "tense", "festive"], AMB = ["market", "village", "night"], SFX = ["coin", "whistle", "slap", "break", "firecracker", "rooster", "chime", "gong"];
+  // 各音效的相對音量（打斷稱仔那聲使用者嫌大聲）
+  const SFX_VOL = {coin: .5, whistle: .45, slap: .7, break: .55, firecracker: .35, rooster: .4, chime: .45, gong: .6};
+  let set = {on: true, m: .6, s: .8};
+  try { set = {...set, ...JSON.parse(localStorage.getItem("sc-snd") || "{}")}; } catch (e) {}
+  let ctx = null, mBus, sBus, cur = {m: "", a: "", ml: 1}, started = false;
+  const tr = {}, buf = {};
+  const save_ = () => { try { localStorage.setItem("sc-snd", JSON.stringify(set)); } catch (e) {} };
+  const now = () => ctx.currentTime;
+  function init() {
+    if (ctx) return true;
+    const C = window.AudioContext || window.webkitAudioContext; if (!C) return false;
+    ctx = new C();
+    mBus = ctx.createGain(); sBus = ctx.createGain(); mBus.connect(ctx.destination); sBus.connect(ctx.destination);
+    apply_();
+    [...MUSIC, ...AMB].forEach(k => {
+      const a = new Audio(`audio/${k}.mp3`); a.loop = true; a.preload = MUSIC.includes(k) && k !== "calm" ? "none" : "auto"; a.crossOrigin = "anonymous"; a.setAttribute("playsinline", "");
+      const g = ctx.createGain(); g.gain.value = 0;
+      let direct = false;   // 接不進 Web Audio 的舊瀏覽器：退回直接控制 audio 元素
+      try { ctx.createMediaElementSource(a).connect(g); } catch (e) { direct = true; a.muted = true; }
+      g.connect(mBus); tr[k] = {a, g, direct};
+    });
+    SFX.forEach(k => fetch(`audio/${k}.mp3`).then(r => r.arrayBuffer()).then(b => new Promise((ok, no) => ctx.decodeAudioData(b, ok, no))).then(b => buf[k] = b).catch(() => {}));
+    return true;
+  }
+  function apply_() {
+    if (!ctx) return;
+    mBus.gain.setTargetAtTime(set.on ? set.m : 0, now(), .1);
+    sBus.gain.setTargetAtTime(set.on ? set.s : 0, now(), .05);
+  }
+  // 讓一軌淡到目標音量；淡到 0 就暫停省電
+  function fade(k, v) {
+    const t = tr[k]; if (!t) return;
+    clearTimeout(t.stop);
+    if (v > 0 && t.a.paused) t.a.play().catch(() => {});
+    t.g.gain.setTargetAtTime(v, now(), .6);
+    if (t.direct) { t.a.muted = !(v > 0 && set.on); try { t.a.volume = Math.min(1, v * set.m); } catch (e) {} }
+    // iPhone、iPad：音樂一旦暫停，不是使用者點擊時就叫不回來，所以只靜音不暫停
+    if (v === 0 && !IOS) t.stop = setTimeout(() => t.a.pause(), 3000);
+  }
+  // iOS 只在使用者點擊的當下允許 audio 開始播：第一次點擊時把每一軌都播起來（音量 0），之後換曲才放得出聲
+  function unlock() { Object.values(tr).forEach(t => { if (t.a.paused) t.a.play().catch(() => {}); }); }
+  const api = {
+    // 第一次點擊後才能出聲（瀏覽器規定）
+    start() { if (started) { if (ctx.state !== "running") ctx.resume(); return; } if (!init()) return; ctx.resume(); started = true; if (IOS) unlock(); const c = cur; cur = {m: "", a: "", ml: 1}; api.scene(c.m || "calm", c.a, c.ml); },
+    // m：音樂、a：環境音、ml：音樂音量比例（市場以人聲為主，音樂壓低）
+    scene(m, a = "", ml = 1) {
+      if (cur.m === m && cur.a === a && cur.ml === ml) return;
+      const was = cur; cur = {m, a, ml};
+      if (!started) return;
+      MUSIC.forEach(k => { if (k === m) fade(k, .55 * ml); else if (k === was.m || tr[k] && !tr[k].a.paused) fade(k, 0); });
+      AMB.forEach(k => { if (k === a) fade(k, .5); else if (k === was.a || tr[k] && !tr[k].a.paused) fade(k, 0); });
+    },
+    sfx(k, delay = 0) {
+      if (!ctx || !started || !set.on || !buf[k]) return;
+      const s = ctx.createBufferSource(), g = ctx.createGain();
+      s.buffer = buf[k]; g.gain.value = SFX_VOL[k] || .5; s.connect(g); g.connect(sBus); s.start(now() + delay);
+    },
+    get: () => set,
+    setVol(k, v) { set[k] = v; if (v > 0) set.on = true; save_(); apply_(); },
+    toggle() { set.on = !set.on; save_(); apply_(); return set.on; },
+    // 測試用：看現在哪幾軌在播、音效載入了沒
+    dbg: () => ({state: ctx && ctx.state, cur, playing: Object.keys(tr).filter(k => !tr[k].a.paused).map(k => k + ":" + tr[k].g.gain.value.toFixed(2)), sfx: Object.keys(buf)})
+  };
+  return api;
+})();
+// 依目前畫面決定場景：在地圖上看模式和巡警，事件卡看編號，晚上回家是蟲鳴
+const TENSE_EV = /^(c1|c2|stop106|cop_|inspect|gift|beat|weeds|jail)/;
+function sceneNow() {
+  if (!G || G.over) return;
+  if (MAP && MAP.on) {
+    if (MAP.mode === "village") return AU.scene("calm", "village");
+    if (MAP.mode === "eve") return AU.scene("calm", "market", .5);
+    const cop = MAP.cops.some(c => c.mode === "chase" || c.mode === "script");
+    return cop ? AU.scene("tense", "market") : AU.scene("calm", "market", .35);
+  }
+  const id = G.cur || "";
+  if (TENSE_EV.test(id) || G.phase === "jail") return AU.scene("tense", "");
+  if (id === "d30") return AU.scene("festive", "village", .7);
+  if (id === "eve" || G.phase === "night" || id === "_night") return AU.scene("sad", "night");
+  if (G.phase === "market") return AU.scene("calm", "market", .35);
+  if (G.phase === "eve") return AU.scene("calm", "market", .5);
+  return AU.scene("calm", G.phase === "pro" ? "" : "village");
+}
+// 聲音面板：角落的 ♪ 鈕，展開有音樂、音效兩條滑桿和全部關閉
+function sndUi() {
+  const s = AU.get();
+  $("sndBtn").textContent = s.on ? "♪" : "♪̸";
+  $("sndBtn").classList.toggle("off", !s.on);
+  $("sndM").value = Math.round(s.m * 100); $("sndS").value = Math.round(s.s * 100);
+  $("sndOff").textContent = s.on ? "全部關閉" : "打開聲音";
+}
+$("sndBtn").onclick = e => { e.stopPropagation(); AU.start(); $("sndPanel").hidden = !$("sndPanel").hidden; sndUi(); };
+$("sndM").oninput = e => { AU.setVol("m", e.target.value / 100); sndUi(); };
+$("sndS").oninput = e => { AU.setVol("s", e.target.value / 100); sndUi(); };
+$("sndS").onchange = () => AU.sfx("coin");
+$("sndOff").onclick = () => { AU.toggle(); sndUi(); };
+// iOS 的 Safari 認 touchend、click 為「使用者動作」，pointerdown 不一定算：三種都接
+["pointerdown", "touchend", "click"].forEach(ev => document.addEventListener(ev, () => AU.start(), {passive: true}));
+document.addEventListener("pointerdown", e => { if (!e.target.closest("#snd")) $("sndPanel").hidden = true; }, {passive: true});
+// 切到別的 App 再回來，iOS 會把聲音暫停：回來時接上
+document.addEventListener("visibilitychange", () => { if (!document.hidden) AU.start(); });
+sndUi();
 
 // ===== 引擎 =====
 let Q = [];
@@ -642,6 +800,8 @@ function apply(e, d) {
   if (e.card && !G.cards.has(e.card)) { G.cards.add(e.card); G.newCards.push(e.card); d.card = e.card; KEPT = [...new Set([...KEPT, e.card])]; save(CARD_KEY, KEPT); }
   if (e.mul) G.mul = (G.mul || 1) * e.mul;
   if (e.add) G.add = (G.add || 0) + e.add;
+  if (e.scale === "broken") AU.sfx("break"); else if (e.hit && d.b) AU.sfx("slap");
+  if (d.card || d.item) AU.sfx("chime", .15);
 }
 function deltaHtml(d) {
   return Object.keys(d).map(k => {
@@ -654,14 +814,14 @@ function deltaHtml(d) {
 }
 function card(id) {
   const ev = EV[id];
-  G.cur = id;
+  G.cur = id; sceneNow();
   const opts = val(ev.o).map((o, i) => ({o, i})).filter(({o}) => !(o.need && !hasCard(o.need)) && !(o.prev && !hasCard(o.prev)) && !(o.item && !hasItem(o.item)) && (!o.cond || o.cond() || o.lock));
   // prev：夢幻結局的路，要上一輪就聽過那張知識卡；這一輪才聽到的，灰掉並提示下一輪
   const why = o => o.prev && !G.prev.has(o.prev) ? "你這一輪才聽說這件事，來不及準備（下一輪就能走這條路）" : o.cond && !o.cond() ? val(o.lock) : reqLock(o);
   const hint = ev.hint ? val(ev.hint) : "";
   $("main").innerHTML = `<div class="ev frame ${ev.cop ? "cop" : ""} ${G.phase === "night" ? "night" : ""}">${whoTag(val(ev.who))}${val(ev.t) ? `<h2>${val(ev.t)}</h2>` : ""}
     <div class="x">${val(ev.x)}</div>
-    ${val(ev.q) ? `<div class="quote"><cite>原文${ev.qs ? "・" + ev.qs : ""}</cite>${val(ev.q)}</div>` : ""}
+    ${val(ev.q) ? `<div class="quote">${val(ev.q)}</div>` : ""}
     ${hint ? `<p class="hint">${hint}</p>` : ""}
     <div class="opts">${opts.map(({o, i}) => { const locked = why(o); return `<button class="opt" data-i="${i}" ${locked ? "disabled" : ""}>${o.t}${locked ? `<span class="lock">${locked}</span>` : ""}</button>`; }).join("")}</div></div>`;
   $("main").querySelectorAll(".opt").forEach(b => b.onclick = () => choose(id, +b.dataset.i));
@@ -678,7 +838,7 @@ function reqLock(o) {
 function choose(id, i) {
   const ev = EV[id], o = val(ev.o)[i], d = {};
   apply(o.e, d);
-  if (ev.o && val(ev.o).some(x => x.orig)) G.hist.push({id, t: ev.t, mine: o.t, orig: (val(ev.o).find(x => x.orig) || {}).t, same: !!o.orig, day: G.phase === "pro" ? 0 : G.day});
+  if (ev.o && val(ev.o).some(x => x.orig)) G.hist.push({id, t: val(ev.t), mine: o.t, orig: (val(ev.o).find(x => x.orig) || {}).t, same: !!o.orig, day: G.phase === "pro" ? 0 : G.day});
   renderTop();
   const after = () => { $("fb").classList.remove("on"); if (dead()) return; (o.go || ev.go || next)(); };
   const q = o.q || "", qs = o.qs || "";
@@ -686,8 +846,8 @@ function choose(id, i) {
   if (!o.r && !o.n && !Object.keys(d).length) return after();
   $("fbBox").innerHTML = `${o.r ? `<h3>${o.r}</h3>` : ""}
     <div class="deltas">${deltaHtml(d) || "<span>沒有變化</span>"}</div>
-    ${d.card ? `<div class="cardbox"><b>知識卡</b> ${CARDS[d.card].t}<small>${CARDS[d.card].use}。知識卡會留到下一局。</small></div>` : ""}
-    ${q ? `<div class="quote"><cite>原文${qs ? "・" + qs : ""}</cite>${q}</div>` : ""}
+    ${d.card ? `<div class="cardbox"><b>知識卡</b> ${CARDS[d.card].t}<small>${CARDS[d.card].use}。這句話，你下一輩子還記得。</small></div>` : ""}
+    ${q ? `<div class="quote">${q}</div>` : ""}
     ${o.n || val(ev.n) ? `<p class="explain">${o.n || val(ev.n)}</p>` : ""}
     <button class="btn" id="fbOk">繼續</button>`;
   $("fb").classList.add("on");
@@ -707,6 +867,7 @@ function renderTop() {
   $("cal").innerHTML = `<small>${G.phase === "pro" ? "前半生" : G.phase === "night" ? "夜裡" : G.phase === "eve" ? "午後" : G.phase === "market" ? "鎮上" : "早上"}</small><b>${G.phase === "pro" ? (EV[G.cur] || {}).t || "" : dayName(G.day)}</b>`;
   const st = (k, max) => `<div class="st ${k === "o" ? (G[k] >= 7 ? "hi" : "") : (G[k] <= (k === "s" ? 100 : k === "g" ? 1 : 2) ? "low" : "")}" id="st-${k}"><div class="lab">${LABEL[k]}</div><div class="val">${G[k]}${UNIT[k]}</div>${max ? `<div class="bar"><i style="width:${G[k] / max * 100}%"></i></div>` : ""}</div>`;
   $("stats").innerHTML = st("s") + st("g", 15) + st("b", 10) + st("p", 10) + st("w", 10) + st("o", 10);
+  achCheck();
   const sc = {none: "沒有稱仔", nb: "鄰家的新秤", nb2: "鄰家的舊秤", old: "保正的舊秤", own: "自己的新秤", broken: "被打斷了"}[G.scale];
   $("sub2").innerHTML = G.phase === "pro" ? "" : `<span>金花：<b>${G.hua === "home" ? "贖回來了" : G.hua === "none" ? "沒有拿去當" : G.hua === "lost" ? "流當" : `在當鋪（贖回要 ${HUA_BACK} 錢）`}</b></span><span>稱仔：<b>${sc}</b></span><span>知識卡：<b>${G.cards.size}</b> 張</span>${G.items.size ? `<span>隨身：<b>${[...G.items].map(k => ITEMS[k]).join("、")}</b></span>` : ""}${G.debts.some(d => !d.done) ? `<span>除夕要還：<b>${G.debts.filter(d => !d.done).reduce((a, d) => a + d.amt, 0)} 錢</b></span>` : ""}`;
 }
@@ -719,6 +880,45 @@ function floatStat(k, v) {
 // ===== 一天的流程 =====
 const HUA_PAWN = 400, HUA_BACK = 440;   // 月利一成，待考
 const LOAD = 50;   // 批一擔生菜的本錢，待考
+// ===== 數值說明（開場導覽，比照大觀園理家記）=====
+const TOUR = [
+  {t: "從尾牙撐到元旦", x: "你是秦得參，在鎮上賣菜。每天早上決定上鎮、休息還是去找人。<b>上面這一排數值</b>，決定你走得到哪一個結局。"},
+  {sel: "#st-s", t: "錢", x: "100 錢是 1 圓。批菜、買米、辦年貨、贖金花都要用錢。每筆金額旁邊會換算成今天的多少元。"},
+  {sel: "#st-g", t: "糧", x: "家裡的米還夠吃幾天，每晚吃掉 1。米要在鎮上糴；連著兩天沒米，這個年就過不去。"},
+  {sel: "#st-b", t: "身體", x: "挑擔、挨打、發寒熱都會扣。太低就上不了鎮，在家休息可以慢慢補回來。"},
+  {sel: "#st-p", t: "骨氣", x: "被欺負時敢不敢頂回去。骨氣夠，才說得出某些話、走得了某些路；骨氣太低，只能低頭。"},
+  {sel: "#st-w", t: "妻子的心", x: "妻子對你的信任。她信你，緊要關頭會替你想辦法；贖金花、辦年貨、說到做到，她都看在眼裡。"},
+  {sel: "#st-o", t: "官符", x: "你被官廳盯上的程度。官符越高，巡警越常找上你，有些人也越不敢幫你。"},
+  {sel: "#sub2", t: "金花、稱仔、知識卡", x: "金花在當鋪裡，要記得贖。聽來的消息會變成知識卡，<b>下一輩子還記得</b>。路上撿到的東西也列在這裡。"},
+  {sel: "#sndBtn", t: "聲音", x: "音樂和音效的大小在這裡調，也可以全部關掉。"},
+  {sel: "#tourBtn", t: "忘了就按這裡", x: "隨時按右上角的「？」，再看一次這份說明。"}
+];
+let ti = 0;
+function startTour() { ti = 0; $("tour").classList.add("on"); tourStep(); }
+function endTour() { $("tour").classList.remove("on"); save("sc-tour", 1); }
+function tourStep() {
+  const st = TOUR[ti];
+  let el = st.sel ? document.querySelector(st.sel) : null;
+  if (el && (!el.offsetWidth || !el.textContent.trim())) el = null;   // 序章時金花那一列還是空的：說明框放中間
+  const last = ti === TOUR.length - 1;
+  $("tTip").innerHTML = `<div class="tstep">數值說明　${ti + 1}／${TOUR.length}</div><h3>${st.t}</h3><p>${st.x}</p>
+    <div class="tbtns"><button type="button" id="tSkip" class="tlink">跳過說明</button>${ti ? `<button type="button" id="tPrev" class="btn ghost">上一步</button>` : ""}<button type="button" id="tNext" class="btn">${last ? "開始" : "下一步"}</button></div>`;
+  $("tSkip").onclick = endTour;
+  if (ti) $("tPrev").onclick = () => { ti--; tourStep(); };
+  $("tNext").onclick = () => { if (last) return endTour(); ti++; tourStep(); };
+  requestAnimationFrame(() => tourPlace(el));
+}
+function tourPlace(el) {
+  const hole = $("tHole"), tip = $("tTip"), vw = innerWidth, vh = innerHeight, pad = 6;
+  if (!el) { hole.style.cssText = `left:${vw / 2}px;top:${vh / 2}px;width:0;height:0`; tip.style.cssText = `left:${Math.max(12, (vw - tip.offsetWidth) / 2)}px;top:${Math.max(12, (vh - tip.offsetHeight) / 2)}px`; return; }
+  const r = el.getBoundingClientRect(), tw = tip.offsetWidth;
+  hole.style.cssText = `left:${r.left - pad}px;top:${r.top - pad}px;width:${r.width + pad * 2}px;height:${r.height + pad * 2}px`;
+  // 數值都在畫面頂端：說明框一律放在下面
+  tip.style.cssText = `left:${Math.max(12, Math.min(vw - tw - 12, r.left + r.width / 2 - tw / 2))}px;top:${r.bottom + 18}px`;
+}
+addEventListener("resize", () => { if (!$("tour").classList.contains("on")) return; const el = TOUR[ti].sel && document.querySelector(TOUR[ti].sel); tourPlace(el && el.offsetWidth && el.textContent.trim() ? el : null); });
+$("tourBtn").onclick = startTour;
+
 function startGame(quick) {
   newGame();
   G.mapMode = quick !== true;   // 第一輪只有地圖模式；玩過一輪才能選快速模式
@@ -726,10 +926,12 @@ function startGame(quick) {
   Q = ["pro1", "pro2", "pro3", "pro4", () => dayStart()];
   show("game");
   next();
+  if (!load("sc-tour", 0)) setTimeout(startTour, 300);   // 第一次玩：先說明數值
 }
 function dayStart() {
   G.phase = "morning"; G.mul = 1; G.add = 0; G.stall = ""; delete G.flag.sold;
   if (G.day > 30) return collect();
+  if (G.day > 16) AU.sfx("rooster", .3);
   G.trace.push({d: G.day, s: G.s, g: G.g, b: G.b, p: G.p, w: G.w, o: G.o});
   if (G.day === 16) { Q = ["d16", () => market()]; return next(); }
   if (G.day === 30) return card("d30");
@@ -737,7 +939,7 @@ function dayStart() {
   if (G.flag.roadDay) { delete G.flag.roadDay; return card("roadDo"); }
   if (G.flag.force) return card("morning");
   // 廿九是準備正式裁判的唯一一天，不讓寒熱把路堵死
-  if (G.flag.malaria && G.b < 4 && G.day !== 29 && chance(.5)) { Q = [() => rest(true)]; return card("malaria"); }   // 只有留下病根的人會復發
+  if (G.flag.malaria && G.b < 4 && G.day !== 29 && chance(.5)) { Q = [() => rest(true)]; G.malN++; return card("malaria"); }   // 只有留下病根的人會復發
   if (G.day === 20 && !G.flag.d20) { G.flag.d20 = 1; Q = [() => morningOrMap()]; return card("d20"); }
   if (G.day === 29 && G.flag.c1day === 28) return card("d29");
   morningOrMap();
@@ -813,14 +1015,17 @@ function eveItems() {
   const it = (k, nm, sub, price, fn, once) => items.push({k, nm, sub, price, fn, once});
   {
     it("rice", "糴米", `新春半個月萬事停辦，糧要備到元宵。一次糴 3 天的米。`, G.ricePrice, () => { G.g += 3; G.flag["rice" + G.day] = 1; }, false);
-    if (G.hua === "sis") it("hua", "贖回金花", "當鋪不滿一個月也算一個月的利息。", HUA_BACK, () => { G.hua = "home"; G.w = clamp10(G.w + 2); delete G.flag.promise; }, true);
-    if (G.day >= 20) {
-    it("guan", "觀音畫像", "廳上奉祀的，要買新的。", 40, () => { G.flag.guan = 1; G.w = clamp10(G.w + 1); }, true);
+    // 除夕以前就贖回（原著是除夕才贖）：妻子的心 +3
+    if (G.hua === "sis") it("hua", "贖回金花", "當鋪不滿一個月也算一個月的利息。", HUA_BACK, () => { G.hua = "home"; G.w = clamp10(G.w + (G.day < 30 ? 3 : 2)); delete G.flag.promise; }, true);
+    // 年貨從尾牙隔天（十七）就能買：先顧家裡、還是先贖金花，讓學生自己選（使用者要求提前開放，增加誘惑）
+    const first = () => { if (G.hua === "sis") G.flag.goodsFirst = 1; };   // 金花還在當鋪就先辦年貨：沒有除夕彩蛋
+    if (G.day >= 17) {
+    it("guan", "觀音畫像", "廳上奉祀的，要買新的。", 40, () => { first(); G.flag.guan = 1; G.w = clamp10(G.w + 1); }, true);
     it("lian", "門聯", "也要換。", 20, () => { G.flag.lian = 1; }, true);
-    it("zhi", "金銀紙、香燭", "不可缺的。", 60, () => { G.flag.zhi = 1; G.w = clamp10(G.w + 1); }, true);
+    it("zhi", "金銀紙、香燭", "不可缺的。", 60, () => { first(); G.flag.zhi = 1; G.w = clamp10(G.w + 1); }, true);
     }
-    if (G.day >= 22) it("gao", "糖米（炊一灶年糕）", "生意屢好的時候，得參想到的。", 100, () => { G.flag.gao = 1; G.w = clamp10(G.w + 1); if (G.mapMode) G.items.add("cake"); }, true);
-    if (G.day >= 24) it("bu", "剪幾尺花布", "新年不能有件新衣裳給孩子，做父親的義務有點不克盡的缺憾。", 100, () => { G.flag.bu = 1; G.w = clamp10(G.w + 2); delete G.flag.wantCloth; }, true);
+    if (G.day >= 17) it("gao", "糖米（炊一灶年糕）", "生意屢好的時候，得參想到的。", 100, () => { first(); G.flag.gao = 1; G.w = clamp10(G.w + 1); if (G.mapMode) G.items.add("cake"); }, true);
+    if (G.day >= 17) it("bu", "剪幾尺花布", "新年不能有件新衣裳給孩子，做父親的義務有點不克盡的缺憾。", 100, () => { first(); G.flag.bu = 1; G.w = clamp10(G.w + 2); delete G.flag.wantCloth; }, true);
     if (G.scale === "broken" && !G.flag.paidNb) it("nbpay", "買一桿新稱仔還鄰家", "打斷的是鄰家的秤。", 150, () => { G.flag.paidNb = 1; G.scale = "none"; }, true);
     else if (G.scale === "none") it("scale", "買一桿自己的稱仔", "度量衡販賣所，有官廳打印，附檢定收據。", 150, () => { G.scale = "own"; if (G.mapMode) G.items.add("receipt"); }, true);
   }
@@ -835,8 +1040,9 @@ function renderEvening(home, items, vis, soldLine) {
     $("main").querySelectorAll("[data-v]").forEach(b => b.onclick = () => { G.visited = G.day; card(b.dataset.v); });
     $("main").querySelectorAll("[data-k]").forEach(b => b.onclick = () => {
       const x = items.find(y => y.k === b.dataset.k); if (!x || G.s < x.price) return;
-      G.s -= x.price; x.fn(); if (x.once) G.shopDone[x.k] = 1;
-      renderTop(); floatStat("s", -x.price); render();
+      const w0 = G.w, g0 = G.g;
+      G.s -= x.price; x.fn(); if (x.once) G.shopDone[x.k] = 1; AU.sfx("coin");
+      renderTop(); floatStat("s", -x.price); if (G.w !== w0) floatStat("w", G.w - w0); if (G.g !== g0) floatStat("g", G.g - g0); render();
     });
     $("goHome").onclick = () => night();
     renderTop();
@@ -854,7 +1060,7 @@ function salePie() {
   const grad = all.map(([, v, c]) => { const a = acc / sum * 360, b = (acc += v) / sum * 360; return `${c} ${a}deg ${b}deg`; }).join(",");
   return `<div class="pie"><div class="disc" style="background:conic-gradient(${grad})"></div><div><p style="margin:0 0 6px">今天${lost}賣得 <b>${G.gross} 錢</b>：</p>
     ${all.map(([n, v, c]) => `<div class="pl"><i style="background:${c}"></i>${n}<b>${v} 錢</b></div>`).join("")}
-    <p class="explain" style="margin-top:6px">淨賺的 ${net} 錢${net >= 100 ? "，就是課文說的「一塊多錢」" : ""}。明天批菜，要從身上另外留 ${LOAD} 錢。</p></div></div>${left}`;
+    <p class="explain" style="margin-top:6px">淨賺的 ${net} 錢${net >= 100 ? "，就是「一塊多錢」" : ""}。明天批菜，要從身上另外留 ${LOAD} 錢。</p></div></div>${left}`;
 }
 function rest(forced) {
   G.phase = "eve"; G.daysOut = 0;
@@ -888,6 +1094,8 @@ function appeal() {
     n: "1904 年《犯罪即決例》：聲請正式裁判之後，即決就不算數，案子改由法院審。", o: [{t: "走出郡衙。", e: {}, r: "", quiet: 1, go: () => street()}]};
   card("_appeal");
 }
+// 除夕圍爐：妻子的心滿了、而且金花是先於年貨贖回的，她把金花戴給你看（彩蛋，不改結局）
+const HUA_EVE = () => G.w >= 10 && !G.flag.goodsFirst ? (G.ach.add("hua"), "妻子把贖回來的金花插在髮上，在燈下轉過頭給你看，像剛嫁過來那年。看了好一會兒，她才把它收到枕邊。") : "金花放在妻子的枕邊。";
 function night() {
   G.phase = "night";
   G.g = Math.max(0, G.g - 1);
@@ -911,8 +1119,13 @@ function night() {
   else if (G.b <= 2) { lines.push("妻子摸摸你的額頭：「明天歇一天罷。」"); }
   else if (G.hua === "sis" && G.day === 27) { lines.push("妻子輕聲說：「金花……」然後沒有說下去。"); G.w = clamp10(G.w - 1); }
   else if (G.flag.wantCloth && !G.flag.bu && G.day > 26) { lines.push("孩子問：新衣裳呢？妻子看了你一眼。"); G.w = clamp10(G.w - 1); delete G.flag.wantCloth; }
+  else if (G.w >= 10) lines.push(rnd(["妻子替你揉肩，說今天的擔子挑得太重了。", ...(G.hua === "home" ? ["她把金花拿出來看了又看，又小心收好。"] : []), "她在燈下哼著歌，孩子聽著聽著就睡著了。", "妻子把熱水端到你腳邊：「燙一燙，明天才走得動。」"]));
   else lines.push(rnd(["孩子們睡了。妻子在燈下補衣裳。", "風從門縫鑽進來。妻子把孩子的被角掖好。", "妻子數了數今天的錢，沒有說話。", "遠遠有人家在試爆竹。"]));
+  // 妻子的心滿了：今天挨打或發寒熱（晚回家扣的不算），她會照顧你，身體 +1
+  const am = G.trace.find(x => x.d === G.day);
+  if (G.w >= 10 && am && am.b > G.b + (late ? 1 : 0) && G.b > 0) { G.b = clamp10(G.b + 1); lines.push("妻子看你臉色不對，煮了一碗薑湯，守著你喝完。（身體 +1）"); renderTop(); }
   if (G.g === 0 && G.hungry >= 2) return G.why = "糧連續兩天歸零。米要在鎮上傍晚糴，一次 3 天。", finish("hunger");
+  if (G.day >= 23 && chance(.4)) AU.sfx("firecracker", 1.5);   // 年近了，遠遠有人家在放爆竹
   EV._night = {who: "wife", t, x: `<p>${lines.join("</p><p>")}</p>`, q, qs, o};
   Q = [() => dayEnd()];
   card("_night");
@@ -1238,8 +1451,8 @@ function townMap() {
   if (G.day >= 20 && chance(.35)) MAP.events.push({at: .3 + Math.random() * .4, type: "lord"});
   for (let i = 0; i < n; i++) MAP.events.push({at: .12 + Math.random() * .7, type: rnd(pool)});
   // 固定劇情：廿八以後第一次在鎮上擺攤的近午，巡警走到擔前；除夕被帶去郡衙；白送過菜的人，巡警每天來拿
-  if (G.day >= 28 && !G.flag.c1done) MAP.script = {at: .3, kind: "c1"};
-  else if (G.day === 30 && G.flag.c1done && G.flag.c1day < 30 && !G.flag.gift) MAP.script = {at: .35, kind: "c2"};
+  if (G.day >= 28 && !G.flag.c1done) MAP.script = {at: .5, kind: "c1"};
+  else if (G.day === 30 && G.flag.c1done && G.flag.c1day < 30 && !G.flag.gift) MAP.script = {at: .5, kind: "c2"};
   else if (G.flag.gift) MAP.script = {at: .2, kind: "gift"};
   // 巡警出現的那天（對峙一、郡衙）：人潮擠滿街，只能付錢進市場擺攤；守法也照樣被找上
   MAP.crowd = !!MAP.script && MAP.script.kind !== "gift";
@@ -1253,6 +1466,7 @@ function townMap() {
 function newCop(delay) { return {x: 34.5 * TS, y: 15.6 * TS, dir: "down", fr: 0, wp: 0, mode: "patrol", cool: delay, alert: 0, lk: LOOK.cop}; }
 const COP_WP = [[34.5, 16.5], [30, 9.5], [20, 7.5], [9, 7.5], [2, 7.5], [8.5, 9.5], [8.5, 13.5], [8.5, 16.5], [8.5, 10.5], [20, 9.5], [37.5, 7.5], [34.5, 16.5]];
 function showMap(on) {
+  setTimeout(sceneNow, 0);
   $("mapwrap").hidden = !on; $("main").hidden = on;
   if (on) { $("main").innerHTML = ""; fitMap(); }
 }
@@ -1265,7 +1479,7 @@ function mapResume() {
 }
 // 白天裡的事件：先停下地圖，跳事件卡；結束後回到地圖（endsDay 的不回來）
 function mapEvent(id, kick) {
-  MAP.paused = true; MAP.kick = !!kick; keys = {}; MAP.hits++;
+  MAP.paused = true; MAP.kick = !!kick; keys = {}; MAP.hits++; if (MAP.hits >= HIT_MAX) G.ach.add("unlucky");
   // 被趕走的事件：損失的是時間（時鐘往前跳將近一個鐘頭，還要重新找位置），不再另外扣一次收入
   if (kick) { MAP.mul0 = G.mul; MAP.t = Math.min(DUR - 1, MAP.t + DUR * .15); }
   showMap(false); Q = [() => mapResume()];
@@ -1279,6 +1493,7 @@ function computeSale() {
   G.stall = tot ? Object.keys(T).reduce((a, z) => T[z] > T[a] ? z : a, "in") : "in";
 }
 function endMarket(how) {
+  AU.sfx("coin");
   if (!MAP) return;
   G.evePos = {x: MAP.me.x, y: MAP.me.y}; G.eveDay = 0;
   MAP.on = false; showMap(false);
@@ -1357,7 +1572,9 @@ function mapTick(dt) {
     me.dir = Math.abs(ix) > Math.abs(iy) ? (ix > 0 ? "right" : "left") : (iy > 0 ? "down" : "up");
     me.fr += sp / 6; me.moving = true;
   }
-  if (M.selling) { M.sellT[M.selling] += dt; if (M.selling === "fr") M.frT += dt; }
+  // 巡警找上門的那天（對峙一、郡衙）：菜賣到一半就停住，等巡警走到擔前
+  const hold = M.script && M.script.kind !== "gift" && M.sellT.in + M.sellT.st + M.sellT.fr >= SELL_NEED * .5;
+  if (M.selling && !hold) { M.sellT[M.selling] += dt; if (M.selling === "fr") M.frT += dt; }
   // 有固定劇情的那天，劇情發生前不會提早收工
   if (!M.script && M.sellT.in + M.sellT.st + M.sellT.fr >= SELL_NEED) { toast("菜賣完了，今天提早收工。"); return endMarket(); }
   const quiet = M.hits >= HIT_MAX;   // 今天已經夠倒楣了：不再有人找上門
@@ -1370,7 +1587,7 @@ function mapTick(dt) {
     const d = Math.hypot(c.x - me.x, c.y - me.y) / TS;
     const illegal = (M.selling === "st" || M.selling === "fr") && d < 9;
     if (quiet) { if (c.mode === "chase") c.mode = "patrol"; }
-    else if (c.mode !== "chase" && (illegal || c.alert || (G.o >= 6 && d < 7) && M.copHits < 2)) c.mode = "chase";
+    else if (c.mode !== "chase" && (illegal || c.alert || (G.o >= 6 && d < 7) && M.copHits < 2)) { c.mode = "chase"; AU.sfx("whistle"); }
     if (c.mode === "chase") {
       steer(c, me.x, me.y, c.alert ? 80 : 60, dt);
       if (Math.hypot(c.x - me.x, c.y - me.y) < 10) {
@@ -1426,9 +1643,10 @@ function mapTick(dt) {
   }
   M.agents = M.agents.filter(a => !a.gone);
   // 固定劇情
-  if (M.script && M.t >= M.script.at * DUR) {
+  // 菜賣到三成巡警就出現；一直沒擺攤的話，照時間出現
+  if (M.script && (M.t >= M.script.at * DUR || (M.script.kind !== "gift" && M.sellT.in + M.sellT.st + M.sellT.fr >= SELL_NEED * .3))) {
     const s = M.script;
-    if (!s.cop) { s.cop = newCop(0); s.cop.mode = "script"; M.cops.push(s.cop); toast(s.kind === "c2" ? "那個巡警又出現了。" : "一個巡警朝你這邊走過來。"); }
+    if (!s.cop) { AU.sfx("whistle"); s.cop = newCop(0); s.cop.mode = "script"; M.cops.push(s.cop); toast(s.kind === "c2" ? "那個巡警又出現了。" : "一個巡警朝你這邊走過來。"); }
     if (steer(s.cop, me.x, me.y, 70, dt) || Math.hypot(s.cop.x - me.x, s.cop.y - me.y) < 12) {
       M.script = null; M.cops = M.cops.filter(c => c !== s.cop);
       if (s.kind === "c1") { G.flag.c1done = 1; G.flag.c1day = G.day; G.stall = M.selling || "in"; return leaveForScene("c1"); }
@@ -1522,6 +1740,7 @@ function drawEntities(g) {
 }
 function hudTown() {
   const M = MAP, me = M.me;
+  sceneNow();
   if (M.mode !== "market") { $("vign").style.opacity = 0; return hudWalk(); }
   // 巡警靠近時畫面邊緣變暗
   const near = Math.min(99, ...M.cops.map(c => Math.hypot(c.x - me.x, c.y - me.y) / TS));
@@ -1622,14 +1841,15 @@ function openShop(k) {
   G.phase = "eve";
   const render = () => {
     const items = eveItems().filter(x => SHOP_ITEMS[k].includes(x.k));
-    const empty = {goods: G.day < 20 ? "年貨還早，二十以後再來辦。" : "該買的都買了。", pawn: G.hua === "sis" ? "" : "當鋪裡沒有你的東西。", scale: "稱仔不用再買了。", rice: ""}[k];
+    const empty = {goods: G.day < 17 ? "年貨還早，過幾天再來辦。" : "該買的都買了。", pawn: G.hua === "sis" ? "" : "當鋪裡沒有你的東西。", scale: "稱仔不用再買了。", rice: ""}[k];
     $("main").innerHTML = `<div class="ev frame">${whoTag("narr")}<h2>${SHOP_NAME[k]}</h2><div class="x"><p>身上有 ${G.s} 錢。<b style="color:${G.s < LOAD ? "#ff8a78" : "var(--gold)"}">明天批菜要留 ${LOAD} 錢。</b></p></div>
       ${items.length ? `<div class="shop">${items.map(x => `<div class="item ${G.shopDone[x.k] ? "done" : ""}"><div class="nm">${x.nm}<small>${x.sub}</small></div><button data-k="${x.k}" ${G.s < x.price || G.shopDone[x.k] ? "disabled" : ""}>${G.shopDone[x.k] ? "買了" : cost(x.price)}</button></div>`).join("")}</div>` : `<p class="explain">${empty}</p>`}
       <div class="opts"><button class="opt" id="shopLeave">走出店門</button></div></div>`;
     $("main").querySelectorAll("[data-k]").forEach(b => b.onclick = () => {
       const x = items.find(y => y.k === b.dataset.k); if (!x || G.s < x.price) return;
-      G.s -= x.price; x.fn(); if (x.once) G.shopDone[x.k] = 1;
-      renderTop(); floatStat("s", -x.price); render();
+      const w0 = G.w, g0 = G.g;
+      G.s -= x.price; x.fn(); if (x.once) G.shopDone[x.k] = 1; AU.sfx("coin");
+      renderTop(); floatStat("s", -x.price); if (G.w !== w0) floatStat("w", G.w - w0); if (G.g !== g0) floatStat("g", G.g - g0); render();
     });
     $("shopLeave").onclick = () => eveTown();
     renderTop();
@@ -1695,8 +1915,8 @@ function mapLoop(ts) {
 
 // ===== 結局 =====
 const ENDS = {
-  ciNian: {no: 1, kind: "原著", t: "辭年", hint: "除夕夜，一個人在室內踱來踱去。",
-    p: `<div class="quote"><cite>原文・課文末段</cite>元旦，參的家裡，忽譁然發生一陣叫喊、哀嗚、啼哭。隨後，又聽著說：「什麼都沒有嗎？」「只銀紙備辦在，別的什麼都沒有。」<br><br>同時，市上亦盛傳著，一個夜巡的警吏，被殺在道上。</div><div class="blank">小說在這裡停筆。遊戲也在這裡停下，不畫，不演。</div>`,
+  ciNian: {no: 1, kind: "宿命", t: "辭年", hint: "除夕夜，一個人在室內踱來踱去。",
+    p: `<div class="quote">元旦，參的家裡，忽譁然發生一陣叫喊、哀嗚、啼哭。隨後，又聽著說：「什麼都沒有嗎？」「只銀紙備辦在，別的什麼都沒有。」<br><br>同時，市上亦盛傳著，一個夜巡的警吏，被殺在道上。</div><div class="blank">小說在這裡停筆。遊戲也在這裡停下，不畫，不演。</div>`,
     fact: "小說刊在 1926 年 2 月 14 日的《臺灣民報》，那天是舊曆正月初二。讀者是在過年期間讀到這個除夕的。",
     ask: "賴和把元旦這一段寫得很短，連發生了什麼都沒有直說。他想讓讀者看見什麼？又不想讓讀者看見什麼？", life: 1},
   bow: {no: 2, kind: "活下來", t: "低頭", hint: "骨氣掉光了，人還在。",
@@ -1704,13 +1924,13 @@ const ENDS = {
     fact: "葉榮鐘回憶日本時代的市場：小販看見巡警，先把好貨揀出來。這是大多數人的活法。", ask: "得參跟「低頭」的你，差在哪一步？那一步值不值得？"},
   fever: {no: 3, kind: "病", t: "寒熱", hint: "身體撐不住年關。",
     p: "<p>寒熱一天比一天重。妻子煎的青草已經沒有用了。</p><p>你沒有撐到元旦。</p>",
-    fact: "1913 年起《瘧疾防遏規則》強制採血、服藥，由警察執行。看一次西醫要兩塊多錢，是得參三天多的工錢。", ask: "課文裡的得參「不敢再請西醫診治」。他是在省錢，還是沒有選擇？"},
+    fact: "1913 年起《瘧疾防遏規則》強制採血、服藥，由警察執行。看一次西醫要兩塊多錢，是得參三天多的工錢。", ask: "得參「不敢再請西醫診治」。他是在省錢，還是沒有選擇？"},
   hunger: {no: 4, kind: "窮", t: "餓過年", hint: "新春半個月，萬事停辦。",
     p: "<p>孩子先哭。妻子帶著孩子回外家，沒有再回來。</p><p>新春半個月萬事停辦，沒有人會喚你去做工。</p>",
-    fact: "課文：「須積蓄些新春半個月的食糧」。年關前的生意，是為了撐過新春那半個月沒有工可做的日子。", ask: "得參一家「雖不至餓死」，卻「多陷入營養不良」。這種窮，跟餓死差在哪裡？"},
+    fact: "「須積蓄些新春半個月的食糧」。年關前的生意，是為了撐過新春那半個月沒有工可做的日子。", ask: "得參一家「雖不至餓死」，卻「多陷入營養不良」。這種窮，跟餓死差在哪裡？"},
   pawnLost: {no: 5, kind: "親情", t: "金花流當", hint: "正月十六，當鋪開門。",
     p: "<p>你在拘留所過除夕，初二回家。</p><p>正月十六，當鋪開門，金花流當了。嫂子從此不來往。</p><p>人還在。最後一點情義沒了。</p>",
-    fact: "課文：「這法子，在她當得帶了幾分危險」。金花是妻子的嫂子唯一的裝飾品，當了就是拿別人的情義做本錢。", ask: "妻子為什麼沒有來衙門？是她的心不夠，還是你讓她的心掉到不夠？"},
+    fact: "「這法子，在她當得帶了幾分危險」。金花是妻子的嫂子唯一的裝飾品，當了就是拿別人的情義做本錢。", ask: "妻子為什麼沒有來衙門？是她的心不夠，還是你讓她的心掉到不夠？"},
   jailEve: {no: 6, kind: "平淡", t: "監裡的除夕", hint: "三天，換三塊錢。",
     p: "<p>你在拘留所過除夕，初二回家。金花在妻子的枕邊。</p><p>妻子說：「明年快就出運，亦不一定。」</p>",
     fact: "1904 年《犯罪即決例》：科料一圓折抵一日。三圓就是三天。得參算得很清楚：新春閒時，三天不關係什麼。", ask: "得參有三塊錢卻選擇坐監。這是精明，還是沒有別的選擇？"},
@@ -1735,11 +1955,11 @@ const ENDS = {
     fact: "日治時期花蓮港廳設了吉野、豐田、林田等官營移民村，地是給日本移民的。從西部來的臺灣人多半自己來，做工、租地、開墾溪邊的荒地。1920 年代從西部到花蓮，主要靠基隆的船。船票價格待考。",
     ask: "離開，是逃避，還是另一種反抗？"},
   mount: {no: 12, kind: "反賊", t: "觀音山", hint: "有人在廟埕講廖添丁的故事。", life: 1,
-    p: `<div class="quote"><cite>原文・課文末段</cite>同時，市上亦盛傳著，一個夜巡的警吏，被殺在道上。</div><p>那個被殺的夜巡警察，是你殺的。你沒有自盡，連夜往北逃，想學廖添丁躲進觀音山當義賊。</p><p>你一路白天躲在甘蔗園，夜裡趕路，逃不到幾天就撐不下去了。官廳貼出告示：抓到你的人，賞兩千圓，是你八年的工錢。</p><p>你去投靠同庄出去的舊識。他收留了你，正月還沒過完，就帶著巡警來抓你。殺了警察，等著你的是死刑。</p><p>妻子和孩子被保甲叫去問了好幾回。</p>`,
+    p: `<div class="quote">同時，市上亦盛傳著，一個夜巡的警吏，被殺在道上。</div><p>那個被殺的夜巡警察，盛傳是你殺的。你沒有自盡，連夜往北逃，想學廖添丁躲進觀音山當義賊。</p><p>你一路白天躲在甘蔗園，夜裡趕路，逃不到幾天就撐不下去了。官廳貼出告示：抓到你的人，賞兩千圓，是你八年的工錢。</p><p>你去投靠同庄出去的舊識。他收留了你，正月還沒過完，就帶著巡警來抓你。殺了警察，等著你的是死刑。</p><p>妻子和孩子被保甲叫去問了好幾回。</p>`,
     fact: "廖添丁 1909 年 11 月 19 日死在八里的山洞，下手的是他的舊識楊林，用的是鋤頭。楊林領了兩千圓賞金，後來也因殺人罪入獄。",
     ask: "廖添丁死在熟人手上。兩千圓的懸賞，對一個跟你一樣窮的人來說，是什麼意思？"},
   legend: {no: 13, kind: "傳說", t: "飛天梟賊", hint: "要逃得遠，身體和盤纏缺一不可。", life: 1,
-    p: `<div class="quote"><cite>原文・課文末段</cite>同時，市上亦盛傳著，一個夜巡的警吏，被殺在道上。</div><p>那個被殺的夜巡警察，是你殺的。你沒有自盡，帶走家裡所有的錢，連夜逃進觀音山，學廖添丁當義賊。元旦那天，妻子翻遍了屋裡，只剩下金銀紙。</p><p>官廳懸賞兩千圓抓你，告示貼滿了每個庄頭，上面叫你「兇賊」。一直沒有人找到你。</p><p>妻子和孩子被保甲連坐喚問，村裡沒有人敢跟她說話。</p><p>過了幾年，廟埕上開始有人講你的故事。講古仙說你劫富濟貧、飛簷走壁，人稱飛天梟賊。那些事，你一件也沒做過。</p>`,
+    p: `<div class="quote">同時，市上亦盛傳著，一個夜巡的警吏，被殺在道上。</div><p>那個被殺的夜巡警察，盛傳是你殺的。你沒有自盡，帶走家裡所有的錢，連夜逃進觀音山，學廖添丁當義賊。元旦那天，妻子翻遍了屋裡，只剩下金銀紙。</p><p>官廳懸賞兩千圓抓你，告示貼滿了每個庄頭，上面叫你「兇賊」。一直沒有人找到你。</p><p>妻子和孩子被保甲連坐喚問，村裡沒有人敢跟她說話。</p><p>過了幾年，廟埕上開始有人講你的故事。講古仙說你劫富濟貧、飛簷走壁，人稱飛天梟賊。那些事，你一件也沒做過。</p>`,
     fact: "「飛天梟賊」「稀代兇賊」是日本官方對廖添丁的稱呼。他死後不久就有「他沒死」的傳說；劫富濟貧、專打日本人的形象，多半來自死後的講古、布袋戲和歌仔戲。",
     ask: "一個人的暴力，怎麼被講成英雄傳說？傳說裡少了誰？"}
 };
@@ -1754,19 +1974,29 @@ function finish(key) {
   if (G.over) return; G.over = true;
   if (!key) key = "ciNian";
   const E = {...ENDS[key]}, SC = calcScore(key);
+  // 結局的聲音：辭年只響一聲銅鑼；走出去的路是熱鬧的年節曲，其他是悲傷曲
+  if (key === "ciNian") { AU.scene("", ""); AU.sfx("gong", .4); }
+  else AU.scene(["paper", "union", "trial", "east", "hide"].includes(key) ? "festive" : "sad", key === "hide" ? "village" : "");
   if (key === "trial" && hasItem("broken")) E.p += "<p>法院把那桿斷秤當作證物：秤桿上的證印，清清楚楚。</p>";
   else if (hasItem("broken") && !["mount", "legend"].includes(key)) E.p += "<p>那桿斷秤，你留到了正月。</p>";
   if (G.fine === 100) E.p = E.p.replace("初二回家", "元旦早上回家");
   if (key === "paper" && G.flag.letterDoc) E.p += "<p>很多年以後，有人說那位醫生寫過一篇小說：一個賣菜的人，一桿稱仔，一個除夕。</p>";
   if (G.hua !== "home") E.p = E.p.replace("金花在妻子的枕邊。", "").replace("金花、年糕、門聯", "年糕、門聯");
   const dex = load(DEX_KEY, []); if (!dex.includes(key)) { dex.push(key); save(DEX_KEY, dex); }
+  achCheck(); if (G.g >= 20) G.ach.add("rice");
+  const origRows = G.hist.filter(h => h.orig);
+  if (key === "ciNian" && origRows.length >= 10 && origRows.every(h => h.same)) G.ach.add("book");
+  const eggDex = load(EGG_KEY, []), eggs = Object.keys(EGGS).filter(k => G.ach.has(k)), fresh = eggs.filter(k => !eggDex.includes(k));
+  save(EGG_KEY, [...eggDex, ...fresh]);
+  if (fresh.length) AU.sfx("chime", 1.2);
   const rows = G.hist.filter(h => h.orig).map(h => `<tr><td>${h.day >= 16 && h.day <= 30 ? "十二月" + CN[h.day] : h.day > 30 ? "除夕夜" : "前半生"}<br><span class="q">${h.t}</span></td><td>${h.mine}${h.same ? ' <span class="same">✓</span>' : ""}</td><td>${h.orig}</td></tr>`).join("");
   $("endWrap").innerHTML = `
     <div class="endhead frame"><div class="kind">結局 ${E.no}・${E.kind}${G.day <= 30 ? "・十二月" + CN[G.day] : ""}</div><h1 class="gild">${E.t}</h1>${E.p}${G.why ? `<p class="hint">為什麼走到這裡：${G.why}</p>` : ""}${G.flag.nbLoan300 ? `<p class="hint">欠鄰右 300 錢，正月要還。</p>` : ""}${G.debts.some(d => d.done !== "paid") ? `<p class="hint">還欠著：${G.debts.filter(d => d.done !== "paid").map(d => d.n + " " + d.amt + " 錢").join("、")}。</p>` : ""}</div>
     ${E.life ? `<div class="sec lifeline"><b>如果你或身邊的人撐不下去</b>：安心專線 <b>1925</b>（依舊愛我），24 小時免費。這個故事發生在一百年前，但這句話是給今天的你。</div>` : ""}
+    ${eggs.length ? `<div class="sec frame egg"><h2>這一局的成就</h2><ul class="achs">${eggs.map(k => `<li><i>${EGGS[k].i}</i><b>${EGGS[k].t}</b><small>（${EGGS[k].zh}）</small>${fresh.includes(k) ? '<em>新</em>' : ""}<span>${EGGS[k].p}</span></li>`).join("")}</ul><p class="explain">成就不影響結局，會留在首頁的圖鑑裡。</p></div>` : ""}
     <div class="sec frame"><h2>史實依據</h2><p class="explain" style="font-size:16px">${E.fact}</p></div>
-    <div class="sec frame"><h2>你的選擇・原著的選擇</h2><p class="explain">打勾的是跟原著得參一樣的選擇。讀課文的時候，會在這些句子停下來。</p>
-      <div style="overflow-x:auto"><table><thead><tr><th>時候</th><th>你</th><th>原著</th></tr></thead><tbody>${rows || "<tr><td colspan=3>還沒走到課文裡的場面。</td></tr>"}</tbody></table></div></div>
+    <div class="sec frame"><h2>你的選擇・得參的選擇</h2><p class="explain">打勾的是跟得參本人一樣的選擇。</p>
+      <div style="overflow-x:auto"><table><thead><tr><th>時候</th><th>你</th><th>得參</th></tr></thead><tbody>${rows || "<tr><td colspan=3>還沒走到得參遇過的那些場面。</td></tr>"}</tbody></table></div></div>
     <div class="sec frame"><h2>分數：<span class="gild" style="font-size:1.3em">${SC.total}</span></h2><p class="score">基本 ${SC.base}・撐過的日子 ${SC.days}／25・糧備到元宵 ${SC.food}／10・金花 ${SC.hua}／10・知識卡 ${SC.cards}／15・找到的路 ${SC.road}／15<br>分數看的是「撐得有多清楚」：知道自己在做什麼、付了什麼代價。結局不分好壞。</p>
       ${G.newCards.length ? `<p class="hint">這一局拿到的知識卡：${G.newCards.map(k => CARDS[k].from).join("、")}。下一局還會在。</p>` : ""}</div>
     <div class="sec frame"><h2>想一想</h2><p style="font-size:17px">${E.ask}</p></div>
@@ -1778,11 +2008,14 @@ function finish(key) {
 
 // ===== 首頁：結局圖鑑 =====
 function renderHome() {
+  AU.scene("calm", "");
   const dex = load(DEX_KEY, []);
   $("quickBtn").hidden = !dex.length;
   $("dex").innerHTML = `<h2>結局圖鑑</h2><ol>${Object.keys(ENDS).map(k => { const E = ENDS[k], got = dex.includes(k); return `<li class="${got ? "got" : ""}"><b>${E.no}</b>${got ? E.t + "・" + E.kind : E.hint + (E.p ? "" : "（第二期）")}</li>`; }).join("")}</ol>
-    <div class="cards">知識卡：<b>${KEPT.length}</b> 張${KEPT.length ? "・" + KEPT.map(k => CARDS[k].from).join("、") : "。聽來的消息會留到下一局。"}${KEPT.length || dex.length ? ` <button class="btn ghost" id="reset" style="min-height:30px;padding:2px 10px;font-size:13px;margin-left:8px">清除</button>` : ""}</div>`;
-  const r = $("reset"); if (r) r.onclick = () => { if (!confirm("清除知識卡與圖鑑，從頭開始？")) return; KEPT = []; save(CARD_KEY, []); save(DEX_KEY, []); renderHome(); };
+    <h2 style="margin-top:14px">成就　<small style="font-size:14px;color:var(--muted)">${load(EGG_KEY, []).length}／${Object.keys(EGGS).length}</small></h2><ol>${Object.keys(EGGS).map(k => { const E = EGGS[k], got = load(EGG_KEY, []).includes(k); return `<li class="${got ? "got" : ""}"><b>${got ? E.i : "？"}</b>${got ? `${E.t}<small>（${E.zh}）</small>・${E.p}` : E.hint}</li>`; }).join("")}</ol>
+    <div class="cards">知識卡：<b>${KEPT.length}</b> 張${KEPT.length ? "・" + KEPT.map(k => CARDS[k].from).join("、") : "。聽來的消息會留到下一局。"}${KEPT.length ? ` <button class="btn ghost" id="reset" style="min-height:30px;padding:2px 10px;font-size:13px;margin-left:8px">清除知識卡</button>` : ""}</div>`;
+  // 只清知識卡；圖鑑與成就是收集紀錄，不給清（使用者指定）
+  const r = $("reset"); if (r) r.onclick = () => { if (!confirm("清除知識卡，下一局從頭聽起？結局圖鑑和成就會留著。")) return; KEPT = []; save(CARD_KEY, []); renderHome(); };
 }
 $("startBtn").onclick = () => startGame(false);
 $("quickBtn").onclick = () => startGame(true);
