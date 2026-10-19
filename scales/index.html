@@ -7,6 +7,20 @@
 <meta name="description" content="扮演秦得參，從尾牙撐到元旦：賴和〈一桿「稱仔」〉課前引導遊戲。">
 <meta property="og:title" content="年關：一桿「稱仔」">
 <meta property="og:description" content="1925 年的年關。賣菜、辦年貨、贖金花，還要躲過巡警。你能撐到元旦嗎？">
+<script>
+// 從 LINE、FB、IG 等 App 裡點連結開啟時，跳到正式瀏覽器：安卓開 Chrome，iPhone／iPad 開 Safari
+// App 內建的瀏覽器常擋聲音、記不住進度（localStorage 會被清）
+(function () {
+  var ua = navigator.userAgent, u = location.href;
+  var inApp = /Line\/|FBAN|FBAV|FB_IAB|Instagram|MicroMessenger|Threads|Messenger|KAKAOTALK/i.test(ua) || (/Android/.test(ua) && /; wv\)/.test(ua));
+  if (!inApp) return;
+  // LINE 有官方參數：網址加 openExternalBrowser=1 就用手機預設瀏覽器開
+  if (/Line\//i.test(ua) && !/openExternalBrowser=1/.test(u)) { location.replace(u + (u.indexOf("?") < 0 ? "?" : "&") + "openExternalBrowser=1"); return; }
+  if (/Android/.test(ua)) { location.href = "intent://" + u.replace(/^https?:\/\//, "") + "#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=" + encodeURIComponent(u) + ";end"; return; }
+  // iPhone、iPad：其他 App 沒辦法直接叫出 Safari，畫面上教學生自己開
+  window.__inAppIOS = true;
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&display=swap" rel="stylesheet">
@@ -49,6 +63,13 @@ h1,h2,h3{font-family:var(--serif);margin:0;line-height:1.35}
 .lockbox{border:1px dashed var(--line);color:var(--muted);padding:10px 18px;font-size:15px;border-radius:4px}
 .foot{max-width:760px;margin:30px auto 0;padding:0 20px;color:var(--muted);font-size:14px;text-align:center;line-height:1.7}
 .dex{max-width:760px;margin:30px auto 0;padding:14px 18px;text-align:left}
+.fold summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:6px 0;min-height:44px;touch-action:manipulation}
+.fold summary::-webkit-details-marker{display:none}
+.fold summary::after{content:"展開 ▾";margin-left:auto;font-size:14px;color:var(--gold);border:1px solid var(--gold2);border-radius:3px;padding:0 8px;white-space:nowrap}
+.fold[open] summary::after{content:"收起 ▴"}
+.fold summary h2{margin:0}.fold summary h2 small{font-size:14px;color:var(--muted)}
+.fold+.fold{border-top:1px solid var(--line);margin-top:6px}
+.fold ol{margin-bottom:10px}
 .dex h2{font-size:20px;color:var(--gold);margin-bottom:8px}
 .dex ol{margin:0;padding-left:0;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;font-size:15px}
 .dex li{padding:6px 10px;border:1px solid var(--line);border-radius:3px;color:var(--muted)}
@@ -76,6 +97,9 @@ h1,h2,h3{font-family:var(--serif);margin:0;line-height:1.35}
 .sndpanel label{display:grid;grid-template-columns:3em 1fr;align-items:center;gap:8px;font-size:15px;font-weight:700;color:var(--ink)}
 .sndpanel input{width:100%;accent-color:var(--gold);min-height:28px}
 .sndpanel .btn{min-height:38px;font-size:15px}
+.inapp{position:fixed;inset:0;z-index:60;background:rgba(5,6,8,.92);display:flex;align-items:center;justify-content:center;padding:16px}
+.inapp .frame{max-width:420px;padding:20px 22px;display:grid;gap:10px}
+.inapp h2{margin:0;color:var(--gold);font-size:22px}.inapp p{margin:0;font-size:16px}.inapp b{color:var(--gold)}
 .tourbtn{width:30px;height:30px;border-radius:50%;border:1px solid var(--gold2);background:transparent;color:var(--gold);font:900 16px/1 var(--sans);cursor:pointer;padding:0}
 .tour{position:fixed;inset:0;z-index:40;display:none}
 .tour.on{display:block}
@@ -209,6 +233,7 @@ body.quake .main{animation:quake .6s}
 </style>
 </head>
 <body>
+<div class="inapp" id="inapp" hidden><div class="frame"><h2>請用 Safari 開啟</h2><p>你現在是在 App 裡面看這個網頁，聲音和遊戲進度可能會出問題。</p><p>點右上角（或右下角）的 <b>⋯</b>，選<b>「在 Safari 中開啟」</b>或<b>「用瀏覽器開啟」</b>。</p><button class="btn" id="inappCopy" type="button">複製網址</button><button class="btn ghost" id="inappStay" type="button">還是在這裡玩</button></div></div>
 
 <!-- 首頁 -->
 <section class="screen on" id="home">
@@ -223,7 +248,7 @@ body.quake .main{animation:quake .6s}
     </div>
   </div>
   <div class="dex frame" id="dex"></div>
-  <div class="foot">賴和〈一桿「稱仔」〉課前引導遊戲・法令與物價依 1925 年前後史料<br>花蓮高工柯貞伊老師、花蓮高商賴士鈞老師合作<br>音樂：ChineseZenMusic、kaazoom、leberch、Viacheslav Starostin；音效與環境音：Pixabay<br><span style="opacity:.7">第三期試作 2.1：鎮上傍晚、威麗村地圖</span></div>
+  <div class="foot">賴和〈一桿「稱仔」〉課前引導遊戲・法令與物價依 1925 年前後史料<br>花蓮高工柯貞伊老師、花蓮高商賴士鈞老師合作<br>音樂：ChineseZenMusic、kaazoom、leberch、Viacheslav Starostin；音效與環境音：Pixabay<br><span style="opacity:.7">試作 2.4：地圖、道具、成就、音樂音效</span></div>
 </section>
 
 <!-- 遊戲 -->
@@ -681,6 +706,8 @@ const AU = (() => {
     if (ctx) return true;
     const C = window.AudioContext || window.webkitAudioContext; if (!C) return false;
     ctx = new C();
+    // iOS 17 以後：照「播放媒體」處理，不跟著鈴聲靜音鍵（否則學生的 iPhone 多半沒聲音）
+    try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch (e) {}
     mBus = ctx.createGain(); sBus = ctx.createGain(); mBus.connect(ctx.destination); sBus.connect(ctx.destination);
     apply_();
     [...MUSIC, ...AMB].forEach(k => {
@@ -702,17 +729,20 @@ const AU = (() => {
   function fade(k, v) {
     const t = tr[k]; if (!t) return;
     clearTimeout(t.stop);
-    if (v > 0 && t.a.paused) t.a.play().catch(() => {});
+    t.want = v;
+    if (v > 0 && t.a.paused) t.a.play().then(() => { t.ok = 1; }).catch(() => {});
     t.g.gain.setTargetAtTime(v, now(), .6);
     if (t.direct) { t.a.muted = !(v > 0 && set.on); try { t.a.volume = Math.min(1, v * set.m); } catch (e) {} }
     // iPhone、iPad：音樂一旦暫停，不是使用者點擊時就叫不回來，所以只靜音不暫停
     if (v === 0 && !IOS) t.stop = setTimeout(() => t.a.pause(), 3000);
   }
   // iOS 只在使用者點擊的當下允許 audio 開始播：第一次點擊時把每一軌都播起來（音量 0），之後換曲才放得出聲
-  function unlock() { Object.values(tr).forEach(t => { if (t.a.paused) t.a.play().catch(() => {}); }); }
+  function unlock() { Object.values(tr).forEach(t => { if (t.a.paused) t.a.play().then(() => { t.ok = 1; }).catch(() => {}); }); }
+  // 手機上第一下觸碰（pointerdown）不一定算「使用者動作」，播放會被擋：之後每次點擊都補播該出聲的曲目
+  function retry() { Object.values(tr).forEach(t => { if (t.a.paused && (t.want > 0 || (IOS && !t.ok))) t.a.play().then(() => { t.ok = 1; }).catch(() => {}); }); }
   const api = {
     // 第一次點擊後才能出聲（瀏覽器規定）
-    start() { if (started) { if (ctx.state !== "running") ctx.resume(); return; } if (!init()) return; ctx.resume(); started = true; if (IOS) unlock(); const c = cur; cur = {m: "", a: "", ml: 1}; api.scene(c.m || "calm", c.a, c.ml); },
+    start() { if (started) { if (ctx.state !== "running") ctx.resume(); retry(); return; } if (!init()) return; ctx.resume(); started = true; if (IOS) unlock(); const c = cur; cur = {m: "", a: "", ml: 1}; api.scene(c.m || "calm", c.a, c.ml); },
     // m：音樂、a：環境音、ml：音樂音量比例（市場以人聲為主，音樂壓低）
     scene(m, a = "", ml = 1) {
       if (cur.m === m && cur.a === a && cur.ml === ml) return;
@@ -913,8 +943,11 @@ function tourPlace(el) {
   if (!el) { hole.style.cssText = `left:${vw / 2}px;top:${vh / 2}px;width:0;height:0`; tip.style.cssText = `left:${Math.max(12, (vw - tip.offsetWidth) / 2)}px;top:${Math.max(12, (vh - tip.offsetHeight) / 2)}px`; return; }
   const r = el.getBoundingClientRect(), tw = tip.offsetWidth;
   hole.style.cssText = `left:${r.left - pad}px;top:${r.top - pad}px;width:${r.width + pad * 2}px;height:${r.height + pad * 2}px`;
-  // 數值都在畫面頂端：說明框一律放在下面
-  tip.style.cssText = `left:${Math.max(12, Math.min(vw - tw - 12, r.left + r.width / 2 - tw / 2))}px;top:${r.bottom + 18}px`;
+  // 說明框放在目標下面；下面放不下（例如左下角的聲音鈕）就改放上面
+  const th = tip.offsetHeight;
+  let top = r.bottom + 18;
+  if (top + th > vh - 12) top = Math.max(12, r.top - th - 18);
+  tip.style.cssText = `left:${Math.max(12, Math.min(vw - tw - 12, r.left + r.width / 2 - tw / 2))}px;top:${top}px`;
 }
 addEventListener("resize", () => { if (!$("tour").classList.contains("on")) return; const el = TOUR[ti].sel && document.querySelector(TOUR[ti].sel); tourPlace(el && el.offsetWidth && el.textContent.trim() ? el : null); });
 $("tourBtn").onclick = startTour;
@@ -2011,11 +2044,19 @@ function renderHome() {
   AU.scene("calm", "");
   const dex = load(DEX_KEY, []);
   $("quickBtn").hidden = !dex.length;
-  $("dex").innerHTML = `<h2>結局圖鑑</h2><ol>${Object.keys(ENDS).map(k => { const E = ENDS[k], got = dex.includes(k); return `<li class="${got ? "got" : ""}"><b>${E.no}</b>${got ? E.t + "・" + E.kind : E.hint + (E.p ? "" : "（第二期）")}</li>`; }).join("")}</ol>
-    <h2 style="margin-top:14px">成就　<small style="font-size:14px;color:var(--muted)">${load(EGG_KEY, []).length}／${Object.keys(EGGS).length}</small></h2><ol>${Object.keys(EGGS).map(k => { const E = EGGS[k], got = load(EGG_KEY, []).includes(k); return `<li class="${got ? "got" : ""}"><b>${got ? E.i : "？"}</b>${got ? `${E.t}<small>（${E.zh}）</small>・${E.p}` : E.hint}</li>`; }).join("")}</ol>
+  // 圖鑑、成就預設收起來，點標題才展開
+  const eggN = load(EGG_KEY, []).length;
+  $("dex").innerHTML = `<details class="fold"><summary><h2>結局圖鑑　<small>${dex.filter(k => ENDS[k]).length}／${Object.keys(ENDS).length}</small></h2></summary><ol>${Object.keys(ENDS).map(k => { const E = ENDS[k], got = dex.includes(k); return `<li class="${got ? "got" : ""}"><b>${E.no}</b>${got ? E.t + "・" + E.kind : E.hint + (E.p ? "" : "（第二期）")}</li>`; }).join("")}</ol></details>
+    <details class="fold"><summary><h2>成就　<small>${eggN}／${Object.keys(EGGS).length}</small></h2></summary><ol>${Object.keys(EGGS).map(k => { const E = EGGS[k], got = load(EGG_KEY, []).includes(k); return `<li class="${got ? "got" : ""}"><b>${got ? E.i : "？"}</b>${got ? `${E.t}<small>（${E.zh}）</small>・${E.p}` : E.hint}</li>`; }).join("")}</ol></details>
     <div class="cards">知識卡：<b>${KEPT.length}</b> 張${KEPT.length ? "・" + KEPT.map(k => CARDS[k].from).join("、") : "。聽來的消息會留到下一局。"}${KEPT.length ? ` <button class="btn ghost" id="reset" style="min-height:30px;padding:2px 10px;font-size:13px;margin-left:8px">清除知識卡</button>` : ""}</div>`;
   // 只清知識卡；圖鑑與成就是收集紀錄，不給清（使用者指定）
   const r = $("reset"); if (r) r.onclick = () => { if (!confirm("清除知識卡，下一局從頭聽起？結局圖鑑和成就會留著。")) return; KEPT = []; save(CARD_KEY, []); renderHome(); };
+}
+// iPhone、iPad 在 App 裡開：提示改用 Safari（安卓和 LINE 已在 <head> 直接跳走）
+if (window.__inAppIOS) {
+  $("inapp").hidden = false;
+  $("inappCopy").onclick = () => { const u = location.href.split("#")[0]; (navigator.clipboard ? navigator.clipboard.writeText(u) : Promise.reject()).then(() => { $("inappCopy").textContent = "已複製，貼到 Safari"; }).catch(() => { prompt("複製這個網址，貼到 Safari：", u); }); };
+  $("inappStay").onclick = () => { $("inapp").hidden = true; };
 }
 $("startBtn").onclick = () => startGame(false);
 $("quickBtn").onclick = () => startGame(true);
