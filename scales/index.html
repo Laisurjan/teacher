@@ -1465,6 +1465,8 @@ function setWorld(w) { TG = w === "village" ? VG : TOWN_G; BG = w === "village" 
 const TOWN_LABELS = [...SHOPS.map(s => [s.n, (s.x0 + s.x1 + 1) / 2, 2.5]), ["市場", 8.5, 14], ["媽祖廟", 23.5, 12], ["派出所", 34.5, 11.5], ["← 回威麗村", 1.8, 7.3], ["往隔壁庄 →", 37.6, 7.3]];
 
 // ---------- 白天的狀態 ----------
+// 得參走路的速度（像素／秒）：原本 64，使用者試玩嫌慢，加快兩成半；再快走起來會像在飄
+const WALK_SP = 80;
 let MAP = null;
 const SELL_RANGE = {in: [150, 190], st: [175, 215], fr: [200, 240]};
 const HAZ = {   // 會走過來的人和車：對應課文「通行取締、道路規則、飲食物規則、行旅法規、度量衡規紀」
@@ -1583,7 +1585,7 @@ function moveMe(dt) {
   if (joy) { const jx = (joy.x - joy.ox) / 30, jy = (joy.y - joy.oy) / 30, L = Math.hypot(jx, jy); if (L > .2) { ix = jx / Math.max(1, L); iy = jy / Math.max(1, L); } }
   me.moving = false;
   if ((ix || iy) && !M.selling) {
-    const L = Math.hypot(ix, iy), sp = 64 * dt;
+    const L = Math.hypot(ix, iy), sp = WALK_SP * dt;
     const nx = me.x + ix / L * sp, ny = me.y + iy / L * sp;
     if (freeAt(nx, me.y, 4)) me.x = nx; if (freeAt(me.x, ny, 4)) me.y = ny;
     me.dir = Math.abs(ix) > Math.abs(iy) ? (ix > 0 ? "right" : "left") : (iy > 0 ? "down" : "up");
@@ -1601,7 +1603,7 @@ function mapTick(dt) {
   if (joy) { const jx = (joy.x - joy.ox) / 30, jy = (joy.y - joy.oy) / 30, L = Math.hypot(jx, jy); if (L > .2) { ix = jx / Math.max(1, L); iy = jy / Math.max(1, L); } }
   me.moving = false;
   if ((ix || iy) && !M.selling) {
-    const L = Math.hypot(ix, iy), sp = 64 * dt;
+    const L = Math.hypot(ix, iy), sp = WALK_SP * dt;
     const nx = me.x + ix / L * sp, ny = me.y + iy / L * sp;
     if (freeAt(nx, me.y, 4)) me.x = nx; if (freeAt(me.x, ny, 4)) me.y = ny;
     me.dir = Math.abs(ix) > Math.abs(iy) ? (ix > 0 ? "right" : "left") : (iy > 0 ? "down" : "up");
@@ -1624,7 +1626,7 @@ function mapTick(dt) {
     if (quiet) { if (c.mode === "chase") c.mode = "patrol"; }
     else if (c.mode !== "chase" && (illegal || c.alert || (G.o >= 6 && d < 7) && M.copHits < 2)) { c.mode = "chase"; AU.sfx("whistle"); }
     if (c.mode === "chase") {
-      steer(c, me.x, me.y, c.alert ? 80 : 60, dt);
+      steer(c, me.x, me.y, (c.alert ? 80 : 60) * WALK_SP / 64, dt);   // 巡警追人的速度跟著得參的速度調，難度不變
       if (Math.hypot(c.x - me.x, c.y - me.y) < 10) {
         c.mode = "patrol"; c.cool = 18; c.alert = 0; M.copHits++;
         if (hasItem("minbao")) { G.items.delete("minbao"); G.o = clamp10(G.o + 2); toast("巡警搜出你懷裡的《臺灣民報》，沒收了。官符 +2"); }
