@@ -1352,7 +1352,7 @@ function steer(e, tx, ty, spd, dt) {
 // ---------- 像素人物（12×18）----------
 const LOOK = {
   me: {skin: "#e8b98c", top: "#3d5f8c", bottom: "#2b2a30", hat: "douli", pole: 1},
-  cop: {skin: "#e8bf98", top: "#1c2030", bottom: "#1c2030", hat: "cap", sword: 1},
+  cop: {skin: "#e8bf98", top: "#1c2030", bottom: "#1c2030", hat: "cap", sword: 1, big: 1.5},
   spy: {skin: "#e2b48a", top: "#77746a", bottom: "#3a3832", hat: "bowler"},
   health: {skin: "#e8bf98", top: "#e6e3d6", bottom: "#e6e3d6", hat: "capw"},
   meter: {skin: "#e8bf98", top: "#4b5a70", bottom: "#2c3340", hat: "bowler", rod: 1},
@@ -1363,8 +1363,10 @@ const LOOK = {
 // 圍過來買菜的人：男女都有（盤髻、包頭巾的是女人）
 LOOK.buyer = [...LOOK.folk, {skin: "#ecc29c", top: "#4a6a8a", bottom: "#3a2e3a", hat: "bun"}, {skin: "#e8b98c", top: "#b8935a", bottom: "#4a3a2a", hat: "scarf"}, {skin: "#d9a77c", top: "#7a4a5a", bottom: "#2b2a30", hat: "scarf"}];
 function drawMan(g, x, y, lk, dir, fr, still) {
-  const ox = Math.round(x) - 6, oy = Math.round(y) - 18;
-  const o = (a, b, w, h, c) => { g.fillStyle = c; g.fillRect(ox + a, oy + b, w, h); };
+  // lk.big：放大倍數（巡警 1.5 倍，使用者要求「警察放大」，比一般人高大、有壓迫感）；腳底位置不變，座標取整數，像素才不會糊
+  const k = lk.big || 1, ox = Math.round(x) - 6 * k, oy = Math.round(y) - 18 * k;
+  const o = k === 1 ? (a, b, w, h, c) => { g.fillStyle = c; g.fillRect(ox + a, oy + b, w, h); }
+    : (a, b, w, h, c) => { const x0 = Math.round(ox + a * k), y0 = Math.round(oy + b * k); g.fillStyle = c; g.fillRect(x0, y0, Math.round(ox + (a + w) * k) - x0, Math.round(oy + (b + h) * k) - y0); };
   g.fillStyle = "rgba(0,0,0,.25)"; g.fillRect(ox + 2, oy + 17, 8, 2);
   const st = still ? 0 : Math.floor(fr) % 4, l = st === 1 ? 1 : 0, r = st === 3 ? 1 : 0;
   o(3, 13, 2, 4 - l, lk.bottom); o(7, 13, 2, 4 - r, lk.bottom);
@@ -1578,17 +1580,25 @@ function mapResume() {
   if (!MAP || G.over) return;
   G.phase = "market";
   if (MAP.kick) { MAP.selling = ""; MAP.kick = false; }
+  MAP.cops = MAP.cops.filter(c => c.mode !== "gone");
   if (MAP.mul0 != null) { G.mul = MAP.mul0; MAP.mul0 = null; toast("被趕走，耽誤了快一個鐘頭。"); }
   MAP.paused = false; showMap(true); renderTop();
 }
 // 白天裡的事件：先停下地圖，跳事件卡；結束後回到地圖（endsDay 的不回來）
-function mapEvent(id, kick) {
-  MAP.paused = true; MAP.kick = !!kick; keys = {}; MAP.hits++; MAP.buyers = []; MAP.say = null; if (MAP.hits >= HIT_MAX) G.ach.add("unlucky");
+function mapEvent(id, kick, who) {
+  MAP.paused = true; MAP.kick = !!kick; keys = {}; joy = null; MAP.hits++; MAP.buyers = []; MAP.say = null; if (MAP.hits >= HIT_MAX) G.ach.add("unlucky");
   // 被趕走的事件：損失的是時間（時鐘往前跳將近一個鐘頭，還要重新找位置），不再另外扣一次收入
   if (kick) { MAP.mul0 = G.mul; MAP.t = Math.min(DUR - 1, MAP.t + DUR * .15); }
-  showMap(false); Q = [() => mapResume()];
-  card(id);
+  focusThen(who, () => { showMap(false); Q = [() => mapResume()]; card(id); });
 }
+// 有人找上門的事件：鏡頭先拉近到得參和那個人身上，停一下再跳事件卡（使用者要求）。落雨、米價這類沒有對象的事件直接跳
+const FOCUS_T = 1.1;
+function focusThen(who, then) {
+  if (!who) return then();
+  MAP.paused = true; keys = {}; joy = null;
+  MAP.focus = {x: (MAP.me.x + who.x) / 2, y: (MAP.me.y + who.y) / 2 - 10, t: 0, then};
+}
+function focusEnd() { const f = MAP && MAP.focus; if (!f) return; MAP.focus = null; f.then(); }
 function computeSale() {
   const T = MAP.sellT, tot = T.in + T.st + T.fr;
   G.sellFrac = Math.min(1, tot / SELL_NEED);
@@ -1684,7 +1694,7 @@ function mapTick(dt) {
   if (!M.script && M.sellT.in + M.sellT.st + M.sellT.fr >= SELL_NEED) { toast("菜賣完了，今天提早收工。"); return endMarket(); }
   const quiet = M.hits >= HIT_MAX;   // 今天已經夠倒楣了：不再有人找上門
   // 店家出來趕人
-  if (!quiet && M.selling === "fr" && M.frT > 3 && !M.shopDone) { M.shopDone = 1; return mapEvent("shopfront", true); }
+  if (!quiet && M.selling === "fr" && M.frT > 3 && !M.shopDone) { M.shopDone = 1; return mapEvent("shopfront", true, {x: me.x, y: me.y - 24}); }
   // 巡警
   for (const c of M.cops) {
     if (c.mode === "script") continue;   // 固定劇情的巡警由下面另外帶路
@@ -1699,7 +1709,7 @@ function mapTick(dt) {
         c.mode = "patrol"; c.cool = 18; c.alert = 0; M.copHits++;
         if (hasItem("minbao")) { G.items.delete("minbao"); G.o = clamp10(G.o + 2); toast("巡警搜出你懷裡的《臺灣民報》，沒收了。官符 +2"); }
         const ev = M.selling === "st" ? "stop106" : M.selling === "fr" ? "cop_fr" : "cop_any";
-        return mapEvent(ev, M.selling === "st" || M.selling === "fr");
+        return mapEvent(ev, M.selling === "st" || M.selling === "fr", c);
       }
       if (!illegal && !c.alert && !(G.o >= 6 && d < 9)) c.mode = "patrol";
     } else {
@@ -1723,7 +1733,7 @@ function mapTick(dt) {
       a.x += (a.dir === "right" ? 1 : -1) * a.spd * dt;
       if (a.x < -40 || a.x > MW * TS + 40) a.gone = 1;
       const onRoad = me.y > 6 * TS && me.y < 9 * TS;
-      if (!a.hit && !quiet && onRoad && Math.abs(a.x - me.x) < 12 && Math.abs(a.y - me.y) < 10) { a.hit = 1; return mapEvent(a.type === "lord" ? "hz_lord" : "hz_cart"); }
+      if (!a.hit && !quiet && onRoad && Math.abs(a.x - me.x) < 12 && Math.abs(a.y - me.y) < 10) { a.hit = 1; return mapEvent(a.type === "lord" ? "hz_lord" : "hz_cart", false, a); }
     } else if (a.type === "spy") {
       const d = Math.hypot(a.x - me.x, a.y - me.y) / TS;
       if (a.run) { if (steer(a, 34.5 * TS, 15.6 * TS, 70, dt)) { a.gone = 1; const c = M.cops.find(c => c.cool <= 0) || M.cops[0]; c.cool = 0; c.alert = 1; c.mode = "chase"; c.x = 34.5 * TS; c.y = 15.6 * TS; toast("派出所裡衝出一個巡警。"); } }
@@ -1734,7 +1744,7 @@ function mapTick(dt) {
         if ((a.life -= dt) <= 0) a.gone = 1;
       }
     } else if (a.type === "jia") {
-      if (steer(a, me.x, me.y, 46, dt) || Math.hypot(a.x - me.x, a.y - me.y) < 10) { a.gone = 1; if (!quiet) return mapEvent("road"); }
+      if (steer(a, me.x, me.y, 46, dt) || Math.hypot(a.x - me.x, a.y - me.y) < 10) { a.gone = 1; if (!quiet) return mapEvent("road", false, a); }
     } else {   // 衛生巡查、度量衡吏員：一攤一攤走
       const w = a.route[a.i];
       if (!w) { a.gone = 1; continue; }
@@ -1742,7 +1752,7 @@ function mapTick(dt) {
       if (M.selling && !a.checked && Math.hypot(a.x - me.x, a.y - me.y) < 18) {
         a.checked = 1;
         if (quiet || (M.selling === "in" && Math.random() < .6)) { toast(a.type === "health" ? "衛生巡查看了看你的菜，點點頭走了。" : "吏員看了看你的秤，沒說什麼。"); continue; }
-        a.gone = 1; return mapEvent(a.type === "health" ? "hz_health" : "inspect");
+        a.gone = 1; return mapEvent(a.type === "health" ? "hz_health" : "inspect", false, a);
       }
     }
   }
@@ -1753,10 +1763,11 @@ function mapTick(dt) {
     const s = M.script;
     if (!s.cop) { AU.sfx("whistle"); s.cop = newCop(0); s.cop.mode = "script"; M.cops.push(s.cop); toast(s.kind === "c2" ? "那個巡警又出現了。" : "一個巡警朝你這邊走過來。"); }
     if (steer(s.cop, me.x, me.y, 70, dt) || Math.hypot(s.cop.x - me.x, s.cop.y - me.y) < 12) {
-      M.script = null; M.cops = M.cops.filter(c => c !== s.cop);
-      if (s.kind === "c1") { G.flag.c1done = 1; G.flag.c1day = G.day; G.stall = M.selling || "in"; return leaveForScene("c1"); }
-      if (s.kind === "c2") { computeSale(); settleSale(); return leaveForScene("c2"); }
-      return mapEvent("gift");
+      // 巡警留在畫面上讓鏡頭拉近；白送菜那天等事件卡結束（mapResume）才離開
+      M.script = null; s.cop.mode = "gone";
+      if (s.kind === "c1") { G.flag.c1done = 1; G.flag.c1day = G.day; G.stall = M.selling || "in"; M.buyers = []; M.say = null; return focusThen(s.cop, () => leaveForScene("c1")); }
+      if (s.kind === "c2") { computeSale(); settleSale(); M.buyers = []; M.say = null; return focusThen(s.cop, () => leaveForScene("c2")); }
+      return mapEvent("gift", false, s.cop);
     }
   }
   // 市場裡的其他事（落雨、生意屢好、挑夫、米價……）
@@ -1851,14 +1862,21 @@ function drawTown() {
     CAM.x = Math.round(Math.max(0, Math.min(sceneCv.width - cv.width, MAP.me.x - cv.width / 2)));
     CAM.y = Math.round(Math.max(0, Math.min(sceneCv.height - cv.height, MAP.me.y - 10 - cv.height / 2)));
   } else { CAM.x = 0; CAM.y = 0; }
-  out.drawImage(sceneCv, CAM.x, CAM.y, cv.width, cv.height, 0, 0, cv.width, cv.height);
-  // 招牌跟著鏡頭移動；出了畫面就藏起來
+  const F = MAP.focus;
+  if (F) {   // 拉近：0.45 秒內放大到大約 10 格寬，對準得參和找上門的人
+    const e = Math.min(1, F.t / .45), s = e * e * (3 - 2 * e), Z = 1 + s * (Math.min(2.6, Math.max(1.4, cv.width / (10 * TS))) - 1);
+    const sw = cv.width / Z, sh = cv.height / Z;
+    const cx = CAM.x + cv.width / 2 + (F.x - CAM.x - cv.width / 2) * s, cy = CAM.y + cv.height / 2 + (F.y - CAM.y - cv.height / 2) * s;
+    out.drawImage(sceneCv, Math.max(0, Math.min(sceneCv.width - sw, cx - sw / 2)), Math.max(0, Math.min(sceneCv.height - sh, cy - sh / 2)), sw, sh, 0, 0, cv.width, cv.height);
+  } else out.drawImage(sceneCv, CAM.x, CAM.y, cv.width, cv.height, 0, 0, cv.width, cv.height);
+  // 招牌跟著鏡頭移動；出了畫面就藏起來（拉近時全藏）
   document.querySelectorAll("#mLabels span").forEach((el, i) => {
     const [, x, y] = LABELS[i], lx = (x * TS - CAM.x) / cv.width, ly = (y * TS - CAM.y) / cv.height;
-    el.style.left = lx * 100 + "%"; el.style.top = ly * 100 + "%"; el.style.display = lx < -.05 || lx > 1.05 || ly < -.05 || ly > 1.05 ? "none" : "";
+    el.style.left = lx * 100 + "%"; el.style.top = ly * 100 + "%"; el.style.display = F || lx < -.05 || lx > 1.05 || ly < -.05 || ly > 1.05 ? "none" : "";
   });
   if (CAM.on) drawMini();
   bubble(cv); sayBub(cv);
+  if (F) $("mMini").style.opacity = "0";
 }
 // 傍晚不倒數，用泡泡框提醒：先糴米，買完就回家歇著
 function bubble(cv) {
@@ -1893,7 +1911,7 @@ function drawMini() {
 function drawEntities(g) {
   const M = MAP, me = M.me, list = [];
   list.push({y: me.y, f: () => { drawMan(g, me.x, me.y, LOOK.me, M.selling ? "down" : me.dir, me.fr, !me.moving); drawLoad(g, me.x, me.y, !!M.selling); }});
-  M.cops.forEach(c => list.push({y: c.y, f: () => { drawMan(g, c.x, c.y, c.lk, c.dir || "down", c.fr || 0, !c.moving); if (c.mode === "chase" || c.mode === "script") bang(g, c.x, c.y, "#e8483a"); }}));
+  M.cops.forEach(c => list.push({y: c.y, f: () => { drawMan(g, c.x, c.y, c.lk, c.dir || "down", c.fr || 0, !c.moving); if (c.mode === "chase" || c.mode === "script") bang(g, c.x, c.y - 9, "#e8483a"); }}));
   M.folks.forEach(f => list.push({y: f.y, f: () => drawMan(g, f.x, f.y, f.lk, f.dir || "down", f.fr || 0, !f.moving)}));
   M.agents.forEach(a => list.push({y: a.y, f: () => {
     if (a.type === "cart" || a.type === "lord") return drawCart(g, a.x, a.y, a.dir, a.type === "lord");
@@ -2060,7 +2078,10 @@ function fitMap() {
 }
 function mapLoop(ts) {
   const dt = Math.min(.05, (ts - lastFrame) / 1000 || 0); lastFrame = ts;
-  if (MAP && MAP.on && !$("mapwrap").hidden) { mapTick(dt); drawTown(); }
+  if (MAP && MAP.on && !$("mapwrap").hidden) {
+    if (MAP.focus && (MAP.focus.t += dt) >= FOCUS_T) { drawTown(); focusEnd(); }
+    else { mapTick(dt); drawTown(); }
+  }
   requestAnimationFrame(mapLoop);
 }
 (function bindMap() {
