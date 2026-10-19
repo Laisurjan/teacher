@@ -1,0 +1,1792 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>年關：一桿「稱仔」</title>
+<meta name="description" content="扮演秦得參，從尾牙撐到元旦：賴和〈一桿「稱仔」〉課前引導遊戲。">
+<meta property="og:title" content="年關：一桿「稱仔」">
+<meta property="og:description" content="1925 年的年關。賣菜、辦年貨、贖金花，還要躲過巡警。你能撐到元旦嗎？">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1116;--panel:#171d25;--panel2:#1f2733;--ink:#efe6d3;--muted:#a79a85;--line:#3a4453;
+  --gold:#d9b36a;--gold2:#8d6f36;--red:#d9452f;--red2:#7a1f14;--jade:#5cc3a4;--blue:#7fa6d9;
+  --serif:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --sans:system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--ink);font:18px/1.75 var(--sans);font-weight:600;-webkit-tap-highlight-color:transparent;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;z-index:-2;background:
+  radial-gradient(ellipse 60% 50% at 0% 0%,rgba(60,90,140,.35),transparent 70%),
+  radial-gradient(ellipse 55% 45% at 100% 100%,rgba(140,60,40,.25),transparent 70%),var(--bg)}
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.05;background:repeating-linear-gradient(135deg,var(--gold) 0 1px,transparent 1px 26px)}
+button{font:inherit;color:inherit;cursor:pointer}
+h1,h2,h3{font-family:var(--serif);margin:0;line-height:1.35}
+.gild{background:linear-gradient(180deg,#fff3d6 0%,#e4c27a 50%,#a2762f 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.screen{display:none;min-height:100dvh;position:relative;z-index:1}
+.screen.on{display:block}
+.wrap{max-width:860px;margin:0 auto;padding:24px 16px 48px}
+.btn{border:0;padding:12px 26px;min-height:52px;font-weight:800;font-size:18px;letter-spacing:2px;color:#fff;background:linear-gradient(135deg,#e2573f,#8a2418);box-shadow:0 0 18px rgba(217,69,47,.35);border-radius:4px}
+.btn:active{transform:translateY(2px)}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--line)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.chip{display:inline-block;font-size:13px;padding:0 9px;border:1px solid var(--gold2);color:var(--gold);font-weight:700;background:rgba(217,179,106,.08);border-radius:3px;vertical-align:2px}
+.frame{position:relative;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.frame::before,.frame::after{content:"";position:absolute;width:16px;height:16px;border:2px solid var(--gold);pointer-events:none}
+.frame::before{top:-1px;left:-1px;border-right:0;border-bottom:0}
+.frame::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+
+/* 首頁 */
+.hero{max-width:760px;margin:0 auto;padding:8vh 20px 24px;text-align:center}
+.kicker{color:var(--gold);letter-spacing:6px;font-size:15px;font-weight:800}
+.hero h1{font-size:clamp(40px,9vw,72px);font-weight:900;margin:6px 0}
+.hero .sub{color:var(--muted);font-size:18px;margin:0 0 26px}
+.modes{display:flex;flex-direction:column;gap:12px;align-items:center}
+.lockbox{border:1px dashed var(--line);color:var(--muted);padding:10px 18px;font-size:15px;border-radius:4px}
+.foot{max-width:760px;margin:30px auto 0;padding:0 20px;color:var(--muted);font-size:14px;text-align:center;line-height:1.7}
+.dex{max-width:760px;margin:30px auto 0;padding:14px 18px;text-align:left}
+.dex h2{font-size:20px;color:var(--gold);margin-bottom:8px}
+.dex ol{margin:0;padding-left:0;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;font-size:15px}
+.dex li{padding:6px 10px;border:1px solid var(--line);border-radius:3px;color:var(--muted)}
+.dex li.got{color:var(--ink);border-color:var(--gold2)}
+.dex li b{color:var(--gold);margin-right:6px;font-family:var(--serif)}
+.dex li.got b{color:var(--jade)}
+.dex .cards{margin-top:10px;font-size:15px;color:var(--muted)}
+.dex .cards b{color:var(--gold)}
+@media (max-width:640px){.dex ol{grid-template-columns:1fr}}
+
+/* 遊戲 */
+.top{position:sticky;top:0;z-index:5;background:rgba(13,17,22,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(6px)}
+.topin{max-width:860px;margin:0 auto;padding:8px 12px;display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center}
+.cal{font-family:var(--serif);font-weight:900;line-height:1.2;white-space:nowrap}
+.cal small{display:block;font-size:12px;color:var(--gold);letter-spacing:2px;font-family:var(--sans)}
+.cal b{font-size:20px}
+.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:4px}
+.st{text-align:center;border:1px solid var(--line);border-radius:4px;padding:3px 2px;background:rgba(255,255,255,.02);position:relative;line-height:1.2}
+.st .lab{font-size:11px;color:var(--muted);letter-spacing:1px}
+.st .val{font-family:var(--serif);font-weight:900;font-size:18px}
+.st.low .val{color:#ff7a68}
+.st.hi .val{color:#ff7a68}
+.st .bar{height:3px;background:#2a333f;margin:3px 4px 0;border-radius:2px;overflow:hidden}
+.st .bar i{display:block;height:100%;background:var(--gold);transition:width .4s}
+.st.low .bar i{background:#ff7a68}
+.st .float{position:absolute;right:2px;top:-4px;font:900 16px var(--serif);color:#ff7a68;pointer-events:none;animation:floatup 1.3s ease-out forwards}
+.st .float.up{color:var(--jade)}
+@keyframes floatup{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-30px)}}
+.sub2{max-width:860px;margin:0 auto;padding:0 12px 6px;font-size:13px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap}
+.sub2 b{color:var(--ink)}
+.main{max-width:860px;margin:0 auto;padding:18px 12px 60px}
+.ev{padding:20px 20px 16px;margin-bottom:14px}
+.ev .who{font-family:var(--serif);font-weight:900;color:var(--gold);font-size:17px}
+.ev .who .role{color:var(--muted);font-size:13px;font-weight:600;margin-left:8px;font-family:var(--sans)}
+.ev h2{font-size:24px;margin:4px 0 10px}
+.ev .x{font-size:18px;line-height:1.8}
+.ev .x p{margin:0 0 10px}
+.quote{border-left:3px solid var(--gold2);background:rgba(217,179,106,.07);padding:10px 14px;margin:10px 0;font-family:var(--serif);font-size:18px;line-height:1.8}
+.quote cite{display:block;font-style:normal;font-size:12px;color:var(--gold);letter-spacing:2px;margin-bottom:4px;font-family:var(--sans)}
+.explain{color:var(--muted);font-size:15px;line-height:1.7;margin:8px 0 0}
+.opts{display:grid;gap:8px;margin-top:14px}
+.opt{text-align:left;border:1px solid var(--line);background:rgba(255,255,255,.03);padding:12px 14px;border-radius:4px;font-size:17px;line-height:1.55;transition:border-color .15s,background .15s;display:block;width:100%}
+.opt:hover:not(:disabled){border-color:var(--gold);background:rgba(217,179,106,.08)}
+.opt:disabled{opacity:.5;cursor:not-allowed}
+.opt .tag{font-size:12px;color:var(--gold);border:1px solid var(--gold2);padding:0 6px;border-radius:3px;margin-left:8px;vertical-align:2px;font-weight:700}
+.opt .lock{display:block;font-size:13px;color:#ff9a8a;margin-top:2px}
+.opt .lock::before{content:"🔒 "}
+.cost{display:inline-block;font-size:14px;color:var(--gold);margin-left:6px;font-weight:700}
+.vh{font-size:17px;margin:16px 0 0;color:var(--gold)}
+.vh small{font-size:13px;color:var(--muted);margin-left:8px;font-family:var(--sans)}
+[hidden]{display:none!important}
+.mapwrap{padding:4px 0 0;display:flex;flex-direction:column;align-items:center}
+.mapbox{position:relative;line-height:0}
+#mapCv{image-rendering:pixelated;image-rendering:crisp-edges;display:block;touch-action:none;background:#000}
+.mlabels{position:absolute;left:0;top:0;pointer-events:none;overflow:hidden}
+@media (max-width:560px){.mclock{gap:8px;font-size:18px}.mclock small{font-size:12px;white-space:nowrap}.sbar{width:70px}.mmini{width:96px;height:53px}}
+.mlabels span{position:absolute;transform:translate(-50%,-50%);font:800 clamp(10px,1.4vw,16px)/1.2 var(--sans);color:#fff;background:rgba(20,16,12,.72);padding:1px 6px;border-radius:3px;white-space:nowrap}
+.vign{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 90px 30px rgba(120,0,0,.85);opacity:0;transition:opacity .3s}
+.mclock{display:flex;align-items:center;gap:12px;margin:0 0 4px;font:900 22px/1.15 var(--serif);color:var(--gold)}
+.mclock small{font:700 14px/1.3 var(--sans);color:var(--muted)}
+.sbar{display:block;width:160px;height:10px;background:#141a16;border:1px solid #000}.sbar i{display:block;height:100%;background:#7cc05a}
+.mtoast{position:absolute;left:50%;top:10px;transform:translateX(-50%);background:rgba(30,26,20,.95);border:2px solid var(--gold2);color:var(--ink);padding:6px 14px;border-radius:6px;font:800 15px/1.4 var(--sans);opacity:0;transition:opacity .3s;pointer-events:none;max-width:62%;text-align:center}
+.mtoast.on{opacity:1}
+.mact{position:absolute;right:10px;bottom:10px;min-width:120px;min-height:52px;font:900 17px/1.2 var(--sans);color:#fff;background:linear-gradient(135deg,#e2573f,#8a2418);border:0;border-radius:8px;box-shadow:0 3px 0 #3a0a06;padding:6px 14px}
+.mact:disabled{opacity:.35}
+.mmini{position:absolute;right:8px;top:8px;width:128px;height:70px;image-rendering:pixelated;border:2px solid rgba(20,16,12,.85);border-radius:4px;opacity:.92;pointer-events:none}
+.joyring{position:absolute;width:96px;height:96px;margin:-48px 0 0 -48px;border-radius:50%;border:2px solid rgba(255,255,255,.5);background:rgba(255,255,255,.08);pointer-events:none}
+.joyring i{position:absolute;left:50%;top:50%;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;background:rgba(255,255,255,.45)}
+.mbub{position:absolute;transform:translate(-50%,-100%);background:#fffaf0;color:#2a1d14;border:2px solid #2a1d14;border-radius:8px;padding:4px 10px;font:800 clamp(12px,1.4vw,16px)/1.35 var(--sans);white-space:nowrap;pointer-events:none;box-shadow:0 3px 0 rgba(0,0,0,.35)}
+.mbub::after{content:"";position:absolute;left:50%;bottom:-8px;margin-left:-6px;border:6px solid transparent;border-top-color:#2a1d14;border-bottom:0}
+.mrot{margin:2px 0;color:var(--gold);font-weight:800;font-size:14px}
+@media (pointer:coarse){.mact{min-width:150px;min-height:64px;font-size:20px;right:12px;bottom:12px}}
+.mhelp{color:var(--muted);font-size:13px;margin:4px 8px;line-height:1.4;text-align:center}
+.pie{display:flex;gap:16px;align-items:center;margin:4px 0 10px}
+.pie .disc{flex:none;width:120px;height:120px;border-radius:50%;border:3px solid #0d1116;box-shadow:0 0 0 1px var(--line)}
+.pie .pl{display:flex;align-items:center;gap:8px;font-size:16px;line-height:1.6}
+.pie .pl i{width:14px;height:14px;border-radius:3px;flex:none}
+.pie .pl b{margin-left:auto;padding-left:14px}
+@media (max-width:520px){.pie{flex-direction:column;align-items:flex-start}}
+.cost small{color:var(--muted);font-weight:600;margin-left:4px;font-size:12px}
+.shop{display:grid;gap:8px;margin-top:12px}
+.item{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;border:1px solid var(--line);padding:10px 14px;border-radius:4px;background:rgba(255,255,255,.02)}
+.item .nm{font-weight:800}
+.item .nm small{display:block;font-size:13px;color:var(--muted);font-weight:600}
+.item button{border:1px solid var(--gold2);background:rgba(217,179,106,.1);color:var(--gold);padding:6px 14px;font-weight:800;border-radius:3px;white-space:nowrap}
+.item button:disabled{opacity:.4}
+.item.done{opacity:.55}
+.ov{position:fixed;inset:0;background:rgba(5,8,12,.78);display:none;align-items:center;justify-content:center;padding:16px;z-index:20;overflow:auto}
+.ov.on{display:flex}
+.box{max-width:620px;width:100%;padding:22px 22px 18px;max-height:92dvh;overflow-y:auto;overflow-x:hidden}
+.box h3{font-size:22px;margin-bottom:8px}
+.deltas{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.deltas span{font-size:14px;padding:1px 10px;border-radius:3px;border:1px solid var(--line);font-weight:800}
+.deltas .pos{color:var(--jade);border-color:rgba(92,195,164,.5)}
+.deltas .neg{color:#ff8a78;border-color:rgba(255,138,120,.5)}
+.deltas .card{color:var(--blue);border-color:rgba(127,166,217,.6)}
+.cardbox{border:1px solid var(--blue);background:rgba(127,166,217,.08);padding:10px 14px;margin:10px 0;border-radius:4px}
+.cardbox b{color:var(--blue)}
+.cardbox small{display:block;color:var(--muted);font-size:13px}
+.hint{font-size:13px;color:var(--blue);margin:6px 0 0}
+.night{background:linear-gradient(180deg,#121722,#0d1116)}
+.cop{box-shadow:0 0 40px rgba(217,69,47,.25);border-color:#6a2a22}
+.cop .who{color:#ff8a78}
+body.quake .main{animation:quake .6s}
+@keyframes quake{10%{transform:translate(-8px,3px)}20%{transform:translate(7px,-5px)}30%{transform:translate(-6px,4px)}40%{transform:translate(6px,-2px)}50%{transform:translate(-4px,3px)}60%{transform:translate(3px,-2px)}80%{transform:translate(-1px,1px)}}
+
+/* 結局 */
+.endhead{padding:24px 22px;margin-bottom:14px}
+.endhead .kind{color:var(--gold);letter-spacing:4px;font-size:14px;font-weight:800}
+.endhead h1{font-size:clamp(32px,7vw,54px);font-weight:900;margin:4px 0 10px}
+.endhead p{margin:0 0 8px;font-size:18px}
+.sec{padding:18px 20px;margin-bottom:14px}
+.sec h2{font-size:21px;margin-bottom:8px;color:var(--gold)}
+.sec table{width:100%;border-collapse:collapse;font-size:15px}
+.sec th,.sec td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top}
+.sec th{color:var(--muted);font-size:13px;letter-spacing:1px}
+.sec td .q{color:var(--muted);font-size:13px;font-family:var(--serif)}
+.sec .same{color:var(--jade);font-weight:800}
+.lifeline{border:1px solid var(--jade);background:rgba(92,195,164,.08);padding:12px 16px;border-radius:4px;font-size:16px}
+.lifeline b{color:var(--jade)}
+.endbtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.blank{text-align:center;padding:40px 10px;color:var(--muted);font-family:var(--serif);font-size:17px;letter-spacing:4px}
+.score{font-size:15px;color:var(--muted)}
+.score b{color:var(--ink)}
+@media (max-width:640px){
+  .topin{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(6,1fr);gap:3px}
+  .st .val{font-size:16px}
+  .ev{padding:16px 14px 14px}
+  .ev h2{font-size:21px}
+  .item{grid-template-columns:1fr;gap:6px}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- 首頁 -->
+<section class="screen on" id="home">
+  <div class="hero">
+    <div class="kicker">一九二五・臺灣</div>
+    <h1 class="gild">年關</h1>
+    <p class="sub">尾牙到了，家裡沒有半個錢。賣菜、辦年貨、贖回金花，<br>還要躲過巡警。你能撐到元旦嗎？</p>
+    <div class="modes">
+      <button class="btn" id="startBtn">扮演秦得參</button>
+      <button class="btn ghost" id="quickBtn" hidden>快速模式（文字版，沒有地圖探索的加成）</button>
+      <div class="lockbox">巡警模式：得參模式玩過一次後解鎖（製作中）</div>
+    </div>
+  </div>
+  <div class="dex frame" id="dex"></div>
+  <div class="foot">賴和〈一桿「稱仔」〉課前引導遊戲・事件與對話取自原文，法令與物價依 1925 年前後史料<br>花蓮高工柯貞伊老師、花蓮高商賴士鈞老師合作<br><span style="opacity:.7">第三期試作 2.1：鎮上傍晚、威麗村地圖</span></div>
+</section>
+
+<!-- 遊戲 -->
+<section class="screen" id="game">
+  <div class="top"><div class="topin"><div class="cal" id="cal"></div><div class="stats" id="stats"></div></div><div class="sub2" id="sub2"></div></div>
+  <div class="mapwrap" id="mapwrap" hidden>
+    <div class="mclock" id="mClock"></div>
+    <div class="mapbox"><canvas id="mapCv" width="640" height="352" aria-label="鎮上地圖"></canvas><div class="mlabels" id="mLabels"></div><div class="vign" id="vign"></div>
+      <div class="mtoast" id="mToast"></div><canvas class="mmini" id="mMini" width="128" height="70" hidden></canvas><div class="mbub" id="mBub" hidden></div><div class="joyring" id="joyRing" hidden><i id="joyKnob"></i></div><button class="mact" id="mAct" type="button">　</button></div>
+    <p class="mrot" id="mRot" hidden>手機橫著拿，畫面會大一些。</p>
+    <p class="mhelp">方向鍵或 WASD 走路，空白鍵擺攤、收攤。手機：在地圖上按住拖曳走路，按右下角的按鈕擺攤。</p>
+  </div>
+  <main class="main" id="main"></main>
+</section>
+
+<!-- 結局 -->
+<section class="screen" id="end"><div class="wrap" id="endWrap"></div></section>
+
+<div class="ov" id="fb"><div class="box frame" id="fbBox"></div></div>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const rnd = a => a[Math.floor(Math.random() * a.length)];
+const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const chance = p => Math.random() < p;
+
+// ===== 金額換算 =====
+// 遊戲金額以「錢」為單位，100 錢＝1 圓。換算採勞動折算：得參一天工錢約 0.7 圓，
+// 對應 115 年基本工資時薪 196 元 × 8 小時＝1,568 元，得 1 圓 ≈ 2,200 元。基本工資調整時只改 RATE。
+const RATE = 2200, WAGE = 70;
+const tw = n => Math.round(n).toLocaleString("en-US");
+const yen = n => n >= 100 ? `${n} 錢（${n % 100 ? (n / 100).toFixed(2).replace(/\.?0+$/, "") : n / 100} 圓）` : `${n} 錢`;
+const days = n => { const d = n / WAGE; return d < 1 ? "不到一天" : `約 ${d < 3 ? d.toFixed(1).replace(/\.0$/, "") : Math.round(d)} 天`; };
+const cost = n => `<span class="cost">${yen(n)}<small>${days(n)}工錢・約今天 ${tw(n / 100 * RATE)} 元</small></span>`;
+
+// ===== 人物 =====
+const P = {
+  can: {n: "秦得參", r: "你・威麗村的農民，快三十歲"}, wife: {n: "妻子", r: "村裡種田人家的女兒"}, mom: {n: "母親", r: "織草鞋、養雞鴨把你拉拔大"},
+  nb: {n: "鄰家", r: "隔壁的農家"}, bz: {n: "保正", r: "村裡的頭人，也替官廳辦事"}, old: {n: "市集老人", r: "在鎮上賣了一輩子東西"},
+  cop: {n: "巡警", r: "下級巡警・派出所的巡查"}, judge: {n: "郡守", r: "郡衙堂上，有即決權"}, boy: {n: "小使", r: "郡衙裡十四來歲的雜役"},
+  sis: {n: "嫂子", r: "妻子的外家・金花的主人"}, shop: {n: "店家", r: "鎮上的商人"}, kids: {n: "孩子們", r: "一兒一女"}, narr: {n: "", r: ""},
+  farmer: {n: "村人", r: "同村的農民"}, lord: {n: "業主的人", r: "來收租穀的"}, teller: {n: "講古仙", r: "在廟埕講古的老人"},
+  youth: {n: "讀報的青年", r: "在騎樓下念《臺灣民報》給人聽"}, doc: {n: "醫生", r: "鎮上的醫生，對窮人不收錢"}, sensei: {n: "漢文先生", r: "村裡私塾的先生"},
+  porter: {n: "挑夫", r: "外地來的，口音不是本地的"}, health: {n: "衛生巡查", r: "管飲食物衛生的警察"}, speaker: {n: "演講的人", r: "臺灣文化協會"}
+};
+const TELLER_DAY = () => G.day === 24 || G.day === 29;
+const whoTag = k => P[k].n ? `<div class="who">${P[k].n}<span class="role">${P[k].r}</span></div>` : "";
+
+// ===== 知識卡（跨局保留）=====
+const CARDS = {
+  old: {t: "「大人說稱稱看，意思是不用稱。」", from: "市集老人", use: "巡警買菜時，多一個聽懂暗示的選項"},
+  nb: {t: "「稱仔是官廳專賣的。不合格的秤，官廳可以扣走，還可以毀掉。」", from: "鄰家", use: "巡警說「不堪用了」時，知道他在套哪條法"},
+  liao: {t: "「廖添丁沒有死，躲在觀音山裡當義賊。」", from: "廟埕的講古仙", use: "除夕夜多一條路：學廖添丁，逃進觀音山"},
+  jud: {t: "「即決不服，三天內可請求正式裁判。」", from: "騎樓下讀報的青年", use: "郡衙判後出現「我要正式裁判」"},
+  minpao: {t: "「《臺灣民報》會登小老百姓的冤。」", from: "醫生", use: "可以請認得你的人代筆投書"},
+  union: {t: "「二林的蔗農組了組合，跟會社討價。」", from: "文化協會的演講", use: "除夕夜多一條路：去找組合"},
+  east: {t: "「花蓮港廳在招人開墾。」", from: "外地來的挑夫、讀報的青年", use: "除夕夜多一條路：全家去東部"},
+  paper: {t: "「跟官廳打交道，嘴講的不算，要白紙黑字。」", from: "村裡的漢文先生", use: "知道書狀可以找他寫"}
+};
+const CARD_KEY = "sc-cards", DEX_KEY = "sc-ends";
+const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } };
+const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+let KEPT = load(CARD_KEY, []);
+const hasCard = k => G.cards.has(k);
+// 特殊道具：只有地圖模式拿得到（快速模式沒有探索加成），只在這一局有效
+const ITEMS = {herb: "青草膏", receipt: "檢定收據", broken: "斷掉的稱仔", namecard: "保正的名帖", cake: "年糕", minbao: "一份《臺灣民報》", charm: "平安符"};
+const hasItem = k => G.items.has(k);
+
+// ===== 日曆 =====
+const CN = {16: "十六", 17: "十七", 18: "十八", 19: "十九", 20: "二十", 21: "廿一", 22: "廿二", 23: "廿三", 24: "廿四", 25: "廿五", 26: "廿六", 27: "廿七", 28: "廿八", 29: "廿九", 30: "三十"};
+const FEST = {16: "尾牙", 24: "送神", 30: "除夕"};
+const dayName = d => d > 30 ? "正月初一・開正" : `十二月${CN[d]}${FEST[d] ? "・" + FEST[d] : ""}`;
+
+// ===== 數值 =====
+// s 錢、g 糧（還能吃幾天）、b 身體、p 骨氣、w 妻子的心、o 官符（0～10）
+const LABEL = {s: "錢", g: "糧", b: "身體", p: "骨氣", w: "妻子的心", o: "官符"};
+const UNIT = {s: " 錢", g: " 天", b: "", p: "", w: "", o: ""};
+let G;
+function newGame() {
+  G = {day: 16, s: 0, debts: [], items: new Set(), fine: 300, g: 3, b: 5, p: 6, w: 7, o: 1, hua: "sis", scale: "none", flag: {}, cards: new Set(KEPT), prev: new Set(KEPT), newCards: [],
+    hist: [], used: new Set(), vDone: [], vv: 0, visited: 0, stall: "", jail: 0, trace: [], over: false, shopDone: {}, ricePrice: 60, phase: "pro", daysOut: 0, hungry: 0};
+}
+const clamp10 = v => Math.max(0, Math.min(10, v));
+
+// ===== 事件 =====
+// e：s g b p w o 數值；set 旗標；hua "home"｜"sis"；scale；card 知識卡。orig：原著得參的做法。need：要有某張知識卡才顯示。
+// cond(G)：條件不成立就不顯示。lock：條件不成立時顯示為灰色並附說明（有 lock 才顯示）。go：選完後接哪個流程。
+const EV = {
+  // ---------- 序章 ----------
+  pro1: {who: "mom", t: "九歲", x: "<p>你生下來的時候，父親早就死了。母親招贅了一個後父，他把母親當機器，把你當出氣筒。</p><p>九歲這年，母親跟你說：去替人家看牛，做長工罷。</p>",
+    q: "好容易，到得參九歲的那一年，他母就遣他，去替人家看牛，做長工。", qs: "課文", o: [
+      {t: "去看牛。", orig: 1, e: {}, r: "從此你沒有進過學堂。牛比字好認。", n: "九歲去看牛，所以得參不識字。這件事在後面會一直跟著你。"},
+      {t: "不去。留在家裡。", e: {b: -1, p: 1}, r: "後父的打罵變多了。母親心疼你，卻沒有別的辦法。你一樣沒有進過學堂。", n: "兩條路都不識字，差別在你的身體。"}
+    ]},
+  pro2: {who: "mom", t: "十六歲", x: "<p>母親教你辭了長工回家，想贌幾畝田來種。可是製糖會社出的租聲比農民高，業主的田都給會社贌去了。</p><p>剩下的路只有幾條。</p>",
+    q: "若做會社的勞工呢，有同牛馬一樣，他母親又不肯，只在家裡，等著做些散工。", qs: "課文", o: [
+      {t: "照會社的租聲去贌田。", e: {debt: ["land", "欠業主的租穀", 200, "lord"]}, r: "田是租到了，可是租太重，年年都欠業主一些租穀。今年也欠著，年底要清。", n: "1925 年前後，製糖會社用高租搶田，農民租不到田，或租到了也繳不起。這筆帳除夕前要還。"},
+      {t: "去會社做工，同牛馬一樣。", e: {b: -1, p: -1}, r: "母親不肯，你還是去了半年。賺的錢都貼進家用，身體跟骨氣都磨掉一些。"},
+      {t: "在家等散工。", orig: 1, e: {}, r: "因為你氣力大，做事勤敏，每天都有人喚你去工作。母親刻儉，漸漸積下些錢。", n: "原著的得參走這條路。十八歲娶妻、二十一歲生子，日子一度過得去。"}
+    ]},
+  pro3: {who: "wife", t: "二十五歲", x: "<p>母親死了。妻子要照顧孩子，不能跟你出門，進款少了一半。你加倍工作，四年下來，身體伏下病根。</p><p>早季收穫的時候，你患了瘧疾，病了四五天，看過一次西醫，花去兩塊多錢。腳手還是乏力。晚上寒熱又發起來。</p>",
+    q: "他心裡想，三天的工作，還不夠吃一服藥，那得那麼些錢花？", qs: "課文", o: [
+      {t: "到鎮上找那位「聽說不收窮人錢」的醫生。", e: {b: 2, w: -1, o: 1, set: "sawDoc", card: "minpao"}, r: "收穫季跑一趟鎮上，少做了好幾天工，妻子一個人下田。醫生看完病，沒有收錢，只叮囑你多休息。他的案上放著一疊報紙。醫館對面，有個巡查一直站著。", n: "鎮上這位醫生對窮人不收錢，也參加文化運動，在警察的名單上。進出他的醫館，就會被看見。病是好了，沒有留下病根。"},
+      {t: "不看了。煎些不用錢的青草。", orig: 1, e: {set: "malaria"}, r: "隔兩三天發一回寒熱，拖了好幾個月才不再發作。腹卻脹滿了。有人說是青草吃多，有人說是西藥所致。", n: "原著的得參沒有再看西醫：第一次已經花去兩塊多，三天的工作還不夠吃一服藥。病根留在身上，年關前隨時會再發。"}
+    ]},
+  pro4: {who: "wife", t: "尾牙前夕", x: "<p>一直到年末，你才能做些輕的工作。尾牙到了，還找不到相應的工作。一到新春萬事停辦，更沒有做工的機會，得先積下新春半個月的食糧。</p><p>聽說鎮上生菜的販路很好。可是沒有本錢。</p>",
+    q: "無奈缺少本錢，又因心地坦白，不敢向人家告借，沒有法子，只得教他妻到外家走一遭。", qs: "課文", o: [
+      {t: "教妻子回外家走一遭。", orig: 1, e: {s: 400, hua: "sis"}, r: "嫂子把她唯一的裝飾品，一根金花，借給你妻子，教她去當鋪押幾塊錢。當得四圓。", n: "當鋪不滿一個月也算一個月的利息。這根金花，是妻子跟嫂子之間的情義，流當了就不只是錢的事。"},
+      {t: "去向保正借。", e: {s: 300, hua: "none", debt: ["bz", "保正借的本錢", 330, "bz"]}, r: "保正借你三圓，除夕前要還三圓三十錢。他拍拍你的肩：有事來找我。你知道這句話不是白說的。", n: "保正是村裡的頭人，也是替官廳辦事的人。不用當金花，可是除夕他會來收帳。"},
+      {t: "不做生意了。", e: {set: "noBiz"}, r: "家裡的糧只夠三天。", go: () => finish("hunger")}
+    ]},
+
+  // ---------- 每天 ----------
+  morning: {who: "narr", t: "", x: () => `<p>${G.day === 16 ? "天還沒亮，你已經去買回一擔生菜。" : "天色朦朧，村裡的雞叫了。"}今天要做什麼？</p>`,
+    o: () => G.flag.force ? [{t: "挑擔上鎮，趁菜價好多賣一點。", e: {}, quiet: 1, go: () => market()}] : [
+      {t: `挑擔上鎮賣菜。先批一擔菜 ${cost(LOAD)}`, e: {}, quiet: 1, go: () => market()},
+      {t: "在村裡走動找人", e: {}, quiet: 1, go: () => village()},
+      {t: "在家休息養病", e: {b: 1}, quiet: 1, go: () => rest()}
+    ]},
+  roadDo: {who: "bz", t: "修路", x: "<p>保正一早來喊人。今天全村修路，你得去。</p>", o: [{t: "去。", e: {b: -1}, quiet: 1, go: () => rest(true)}]},
+  stall: {who: "narr", t: "鎮上", x: () => `<p>市上人聲沸騰。${G.day === 24 ? "今天送神，買菜的人特別多，巡警也特別多。" : ""}擔子要擺在哪裡？</p>`,
+    o: () => [
+      {t: `市場裡面，合法，客人少一些。要付市場費。${cost(10)}`, e: {s: -10}, quiet: 1, go: () => sell("in")},
+      {t: "市場外的街邊。不用錢，但路旁擺攤被制止後不聽，就犯違警例第 106 項。", e: {}, quiet: 1, go: () => sell("st")},
+      {t: "別人的店前。人最多，但店家會趕人，犯的是「妨害他人業務」。", e: {}, quiet: 1, go: () => sell("fr")},
+      {t: "挑到隔壁庄的市集。路遠，身體 −1，但那裡的巡警不認得你。", cond: () => !G.flag.force, req: {b: 6}, e: {b: -1}, quiet: 1, go: () => sell("far")}
+    ]},
+
+  // ---------- 固定事件 ----------
+  d16: {who: "wife", t: "缺一桿稱仔", x: "<p>吃過早飯，正要上鎮，妻子才覺到：家裡沒有稱仔。</p><p>稱仔是官廳的專利品，不是便宜的東西。</p>",
+    q: "「怎麼好？」得參想，「要買一桿，可是官廳的專利品，不是便宜的東西，那兒來得錢？」", qs: "課文", o: [
+      {t: "到隔鄰去借一桿。", orig: 1, e: {scale: "nb", card: "nb"}, r: "鄰家把一桿還新新的稱仔借給你。鄰家順口說：這稱仔是官廳賣的，有打印。秤要是不合格，官廳可以扣走，還可以毀掉。你記住了。",
+        q: "她妻子趕快到隔鄰去借一桿回來，幸鄰家的好意，把一桿尚覺新新的借來。", n: "妻子特地借「新」的，因為巡警專在搜索小民的細故，日常一舉一動都在法的干涉範圍裡。"},
+      {t: "向保正借他家那桿舊秤。", e: {scale: "old", set: "bzFavor"}, r: "保正家的舊秤，稱花磨得有些模糊。保正說：別在巡查面前用太久。", n: "舊秤在臨檢的時候會被扣，在巡警面前更危險。"},
+      {t: `到度量衡販賣所買一桿新的。${cost(150)}`, e: {s: -150, scale: "own", item: "receipt"}, r: "一桿有官廳打印的新稱仔。買菜的本錢少了一半，今天的擔子輕了不少。", cond: () => G.s >= 150, lock: "錢不夠", n: "1924 年《臺灣度量衡規則》：度量衡器的製作、修理、販賣專屬政府。售價依本期估算，待考。"}
+    ]},
+  d20: {who: "narr", t: "想換一換氣象", x: "<p>糧食足了。你想：今年家運太壞，明年家裡總要換一換氣象才好。</p>",
+    q: "第一廳上奉祀的觀音畫像，要買新的，同時門聯亦要換，不可缺的金銀紙，香燭、亦要買。", qs: "課文", o: [{t: "記在心裡。傍晚去鎮上看看。", e: {}, r: "年貨的清單一樣一樣排在心裡。"}]},
+  d25: {who: "wife", t: "今天才廿五", x: () => G.flag.gao ? "<p>你把糖米買回來，想炊一灶年糕。妻子忍不住了。</p>" : "<p>妻子數著這幾天的錢，忍不住了。</p>",
+    q: "「剩下的錢積積下，待贖取那金花，不是更要緊嗎？」", qs: "課文", o: [
+      {t: "「是，我亦不是把這事忘卻，不過今天才廿五，那筆錢不怕賺不來。當鋪裡遲早，總要一個月的利息。」", orig: 1, e: {w: -1}, r: "她沒有再說什麼。", n: "得參算得沒錯：當鋪不滿一個月也算一個月，早贖晚贖利息一樣。可是她擔心的不是利息。"},
+      {t: "「明天就去贖。」", e: {w: 1, set: "promise"}, r: "她點點頭。你知道這句話要算數。", n: "答應了沒做到，她的心會掉得更多。"},
+      {t: "「先給孩子剪幾尺花布，再說。」", e: {w: 1, set: "wantCloth"}, r: "她看了孩子一眼，沒有反對。"}
+    ]},
+  d29: {who: "narr", t: "休息過一天", x: "<p>昨天的事還在心裡。妻子說今天不用出去。</p><p>明天就是除夕，只剩得一天的生意。</p>",
+    q: "參休息過一天，看看沒有什麼動靜，況明天就是除夕日，只剩得一天的生意，他就安坐不來。", qs: "課文", o: () => [
+      {t: "聽她的，在家歇一天。", orig: 1, e: {b: 1}, quiet: 1, go: () => rest()},
+      {t: "在村裡走動找人。", e: {}, quiet: 1, go: () => village()},
+      {t: "還是上鎮。", e: {}, quiet: 1, go: () => market()}
+    ]},
+  d30: {who: "narr", t: "除夕", x: "<p>天色還未大亮，市上人聲早就沸騰。你絕早挑上菜擔到鎮上去。</p>",
+    q: "使人愈感到「年華垂盡，人生頃刻」的悵惘。", qs: "課文", o: [{t: "最後一天的生意。", orig: 1, e: {}, quiet: 1, go: () => market()}, {t: "不上鎮了，在家準備過年。", cond: () => !G.flag.force, e: {}, quiet: 1, go: () => rest(true)}]},
+
+  // ---------- 村裡 ----------
+  village: {who: "narr", t: "威麗村", x: () => `<p>${G.vv ? "還有半天。再去一家？" : "村裡安靜。一天可以走兩家。去誰家門口？"}</p>`, o: () => [
+      ...[["nbTalk", "鄰家"], ["bzTalk", "保正家"], ["temple", TELLER_DAY() ? "廟埕，講古仙今天來了" : "廟埕"], ["sensei", "私塾的漢文先生"]]
+        .filter(([id]) => !G.vDone.includes(id)).map(([id, t]) => ({t, e: {}, quiet: 1, go: () => { G.vDone.push(id); card(id); }})),
+      {t: "妻子的外家（要走一整天）", cond: () => !G.vv, lock: "外家遠，今天已經來不及了", e: {}, quiet: 1, go: () => card("sisHome")},
+      {t: "誰也不找，回家。", e: {b: 1}, quiet: 1, go: () => evening(true)}
+    ]},
+  nbTalk: {who: "nb", t: "鄰家門口", go: () => villageNext(), x: () => G.scale === "broken" && !G.flag.paidNb ? "<p>鄰家看著你，沒有先開口。他知道稱仔的事了。</p>" : "<p>鄰家在門口剖竹篾。</p>", o: () => [
+      ...(G.scale === "broken" && !G.flag.paidNb ? [{t: `賠一桿新的稱仔。${cost(150)}`, cond: () => G.s >= 150, lock: "錢不夠", e: {s: -150, set: "paidNb", scale: "none"}, r: "鄰家接過錢，嘆了口氣：不是你的錯。", n: "你自己的稱仔還是沒有。", go: () => card("nbTalk")}] : []),
+      ...(G.scale === "none" || G.scale === "broken" ? [{t: "再借一次稱仔。", e: {scale: "nb2"}, r: "鄰家遲疑了一下，還是拿出一桿舊的。這回不是新的了。", n: "借來的舊秤，在巡警面前比新秤更危險。"}] : []),
+      ...(!hasCard("nb") ? [{t: "問他稱仔的規矩。", e: {card: "nb"}, r: "鄰家說：稱仔是官廳賣的，有打印。秤要是不合格，官廳可以扣走，還可以毀掉。"}] : []),
+      ...(G.flag.c1done && !G.flag.gift && !G.flag.nbWitness ? [{t: "請他到時候替你作證：那桿稱仔是新的。", cond: () => !G.flag.blameNb && G.flag.paidNb,
+        lock: () => G.flag.blameNb ? "你在巡警面前供出他，他不肯" : "還沒賠他稱仔，開不了口", e: {set: "nbWitness"}, r: "鄰家沉默了很久：「秤是我借你的，我知道它是新的。要我講，我就講。」", n: "正式裁判要有證人。即決的時候郡守不聽，到了法院才算數。"}] : []),
+      {t: "閒聊幾句就走。", e: {}, r: "鄰家點點頭，繼續剖他的竹篾。"}
+    ]},
+  bzTalk: {who: "bz", t: "保正家", go: () => villageNext(), x: "<p>保正家是村裡最大的房子。他在廳上喝茶。</p>", o: () => [
+      {t: "請他替你跟派出所說句話。", cond: () => G.o >= 2, reqMax: {o: 6}, e: {o: -1, set: "bzFavor", item: "namecard"}, r: "保正給了你一張名帖。保正說：我跟大人說一聲，看他怎麼說。你欠他一個人情。", n: "保正可以說情，也可以通報。官符太高的時候找他，反而會被記下。"},
+      {t: `借一些錢。${cost(200)}`, cond: () => !G.flag.bzLoan, reqMax: {o: 4}, e: {s: 200, set: "bzLoan", debt: ["bz2", "保正借的兩圓", 220, "bz"]}, r: "保正借你兩圓。除夕前要還兩圓二十錢。"},
+      {t: "坐一坐就走。", e: {}, r: "保正問起你的生意，你說還過得去。"}
+    ]},
+
+  // 講古仙只在廿四送神、廿九來廟埕：送神那天要放棄最好的生意；錯過了，廿九還有一次
+  temple: {who: () => TELLER_DAY() ? "teller" : "narr", t: "廟埕", go: () => villageNext(),
+    x: () => TELLER_DAY() ? "<p>廟埕上圍了一圈人。講古仙說的是廖添丁：偷巡查的槍，搶板橋林家，最後在八里的山洞裡，被相識的人用鋤頭打死，那人領了兩千圓的賞金。</p><p>說到這裡，他壓低聲音：「也有人講，死的不是他。他還躲在觀音山裡，山多洞多，官廳抓不到。」</p><p>觀音山在臺北淡水河口。在講古仙的嘴裡，那是義賊藏身的地方。</p>"
+      : "<p>廟埕冷冷清清，只有幾個老人在曬日頭。</p><p>一個老人說：講古仙送神那天會來，年前廿九還會再講一場。</p>",
+    n: () => TELLER_DAY() ? "廖添丁 1909 年 11 月死在八里，懸賞兩千圓。他死後不久，民間就有「他沒死」的傳說。" : "", o: () => TELLER_DAY() ? [
+      {t: `丟幾個錢打賞。${cost(5)}`, cond: () => G.s >= 5, lock: "身上沒有錢", e: {s: -5, card: "liao"}, r: "講古仙朝你點點頭，又多講了一段：從哪條路上山，山洞在哪裡。"},
+      {t: "聽完就走。", e: {card: "liao"}, r: "廖添丁躲在觀音山。你把這件事記住了。"}
+    ] : [{t: "離開。", e: {}, quiet: 1}]},
+  sensei: {who: "sensei", t: "私塾", go: () => villageNext(), x: "<p>私塾裡，漢文先生在教幾個孩子念《三字經》。他放下書，問你有什麼事。</p>", o: () => [
+      ...(!hasCard("paper") ? [{t: "聽他說話。", e: {card: "paper"}, r: "他說：跟官廳打交道，嘴講的不算，要白紙黑字。你不識字，就要找識字的人替你寫。"}] : []),
+      ...(!G.flag.writerSensei ? [{t: "請他替你寫正式裁判的書狀。", need: "jud", cond: () => G.flag.c1done && !G.flag.gift, lock: "還沒有要告的事", reqMax: {o: 5}, e: {set: "writerSensei"},
+        r: "他猶豫了很久：「你真的要去告，我就替你寫。潤筆一圓，寫好再給。」", n: "得參不識字，書狀要有人代筆。漢文先生怕事：你被盯得太緊，他就不敢寫。"}] : []),
+      ...(!G.flag.writerSensei && hasItem("minbao") && G.flag.c1done && !G.flag.gift && G.o > 5 ? [{t: "把懷裡那份《臺灣民報》拿給他看。", need: "jud", item: "minbao", e: {set: "writerSensei", useItem: "minbao"}, r: "他把報紙從頭看到尾，嘆了口氣：「你這件事，也該有人寫。」他答應替你寫書狀。", n: "讀書人多半同情民報。漢文先生本來怕事，看了報紙，才肯冒這個險。"}] : []),
+      {t: "離開。", e: {}, quiet: 1}
+    ]},
+  sisHome: {who: "sis", t: "妻子的外家", go: () => evening(true), x: "<p>走了大半天，才到妻子的外家。嫂子在灶腳忙，看見你來，擦了擦手。</p>", o: () => [
+      {t: `再向嫂子借一點。${cost(100)}`, cond: () => !G.flag.sisLoan, lock: "已經借過了", e: {s: 100, w: -1, set: "sisLoan"}, r: "嫂子把錢塞給你：「過了年再說。」妻子知道了，臉紅了好一陣。", n: "嫂子的錢不收利息，也不會在除夕上門討。欠下的是情分。"},
+      {t: "替妻子問候嫂子，說金花一定贖回來。", e: {w: 1}, r: "嫂子笑了：「不急。」回到家，妻子問了好幾遍嫂子說了什麼。"}
+    ]},
+
+  // ---------- 傍晚去找人（一晚一處）----------
+  youth: {who: "youth", t: "騎樓下", go: () => evening(false), x: () => [
+      "<p>騎樓下圍著幾個人，一個穿學生服的青年拿著報紙在念。念的是一篇講《犯罪即決例》的文章。</p>",
+      "<p>青年又在騎樓下念報。今天念的是二林的蔗農：他們組了組合，跟製糖會社討價。他說文化協會廿一、廿六晚上在媽祖廟前有演講。</p>",
+      "<p>青年看見你，朝你點點頭：「又來了？」</p>"][Math.min(2, G.flag.yv || 0)],
+    o: () => {
+      const v = G.flag.yv || 0, seen = G.flag.c1done ? {o: 1} : {};
+      if (v === 0) return [{t: "蹲下來聽。", e: {inc: "yv", card: "jud", ...seen}, r: "他念：被即決的人要是不服，三天內可以聲請正式裁判。旁邊的人都笑：誰敢？", n: "1904 年《犯罪即決例》第 3 條：不服即決，可在期限內聲請正式裁判。實際上很少人這樣做。" + (G.flag.c1done ? "巡警記得你了，看見你在這裡聽報。" : "")}];
+      if (v === 1) return [{t: "聽他念完。", e: {inc: "yv", card: "minpao", ...seen}, r: "念完了，他跟你說：《臺灣民報》會登小老百姓的冤，只是要有人寫。" + (G.flag.c1done ? "對街的巡查往這邊看了一眼。" : "")}];
+      return [
+        ...(G.flag.c1done && !G.flag.gift && !G.flag.letter ? [{t: "請他替你寫一封信，投到《臺灣民報》。", need: "minpao", e: {set: "letter", o: 1}, r: "他把你的話一句一句寫下來，說明天就寄去東京。", n: "得參不識字。投書要有人代筆，還要有人肯冒被盯上的險。"}] : []),
+        ...(G.flag.c1done && !G.flag.gift && !G.flag.writerYouth ? [{t: "請他替你寫正式裁判的書狀。", need: "jud", e: {set: "writerYouth", o: 1}, r: "他說：書狀我會寫，不收你錢。只是寫了，你就要走到底。"}] : []),
+        ...(G.mapMode && !hasItem("minbao") ? [{t: "向他要一份《臺灣民報》。", e: {inc: "yv", item: "minbao"}, r: "他把看過的一份給你。你不識字，把報紙摺好收進懷裡。", n: "民報運進臺灣前要先經檢閱，警察看見了會記得。帶在身上，要小心被搜到。"}] : []),
+        {t: "聽他念報。", e: {inc: "yv", ...(hasCard("east") ? {} : {card: "east"})}, r: hasCard("east") ? "今天念的是米價。" : "今天念的是一則告示：花蓮港廳在招人開墾，溪邊的荒地，誰去開就是誰的。"}
+      ];
+    }},
+  docVisit: {who: "doc", t: "醫館", go: () => evening(false), x: "<p>醫館裡坐滿了人。醫生穿著睡衣出來，一個一個看。他的案上放著一疊《臺灣民報》。</p><p>醫館對面，有個巡查站著。</p>", o: () => [
+      {t: "請他看病。", cond: () => !G.flag.treated, lock: "他今年已經替你看過一回，看病的窮人太多", e: {b: 3, o: 1, set: ["sawDoc", "treated"], card: "minpao"}, r: "他看完病，沒有收錢。臨走時說：「有什麼冤，可以寫給《民報》。」", n: "這位醫生對窮人不收錢，也在警察的名單上。進出他的醫館，就會被看見。"},
+      ...(!G.flag.letter ? [{t: "請他替你寫一封信，投到《臺灣民報》。", need: "minpao", cond: () => G.flag.sawDoc && G.flag.c1done && !G.flag.gift, lock: () => !G.flag.sawDoc ? "他還不認得你，先讓他看過病" : "還沒有要寫的冤",
+        e: {set: ["letter", "letterDoc"], o: 1}, r: "他聽你說完，沉默了一會，提筆就寫。寫完說：「這一幕，我會記得。」"}] : []),
+      {t: "坐一下就走。", e: {}, r: "你在長椅上坐了一會。看病的人一個接一個。"}
+    ]},
+  talk: {who: "speaker", t: "媽祖廟前的演講", go: () => evening(false), x: "<p>媽祖廟前搭了一張桌子，文化協會的人站上去演講，台下坐滿了人。最前排坐著一個臨監的警察。</p><p>講的是二林的蔗農怎麼組合起來，跟會社討價。講到激動處，警察站起來喊：「注意！」</p>",
+    n: "1925 年文化協會辦了三百多場演講，被警察中止六十多次。臨監警察坐在台下，講到「過激」就喊注意、中止，再不聽就解散。", o: [
+      {t: "坐到最後，等警察喊解散才走。", e: {inc: "talks", card: "union", p: 1, o: 1}, r: "警察喊了解散。你走得慢，被臨監的警察多看了一眼。"},
+      {t: "聽到警察喊「注意」就先走。", e: {inc: "talks", card: "union"}, r: "你走到街角，還聽得見台上的聲音。"}
+    ]},
+  porter: {who: "porter", t: "外地來的挑夫", pool: "any", x: "<p>市散的時候，一個口音不是本地的挑夫在你擔邊歇腳。他說他剛從東部回來：花蓮港廳在招人開墾，溪邊的地沒人要，誰去開就是誰的。從基隆坐船就到。</p>", o: [
+      {t: "多問幾句。", e: {card: "east", mul: .9}, r: "他說船票不便宜，全家去要好幾圓。去了，第一年最難。"},
+      {t: "不理他，收攤。", e: {}, r: "", quiet: 1}
+    ]},
+
+  // ---------- 地圖上的人和車（第三期）----------
+  cop_fr: {who: "cop", t: "擋著人家店門", x: "<p>巡警走過來，用警棍敲敲你的擔子：「擋在人家店門口，妨害營業。收起來！」</p>", o: [
+      {t: "收起擔子，換個地方。", e: {}, r: "你挑起擔子走開，得重新找位置。", n: "違警例罰「妨害他人業務」。擺在店門口，生意最好，也最容易被趕。"},
+      {t: "「店家都沒說話。」", e: {p: 1, o: 2}, r: "他把你的名字記在小帳子上，你還是得走。"},
+      {t: "亮出保正的名帖。", item: "namecard", e: {useItem: "namecard", unkick: 1}, r: "巡警看了看名帖，哼了一聲，揮手叫你繼續擺。", n: "保甲制度下，保正替派出所辦事。保正的面子，巡警多少會給。名帖只能用一次。"}
+    ]},
+  cop_any: {who: "cop", t: "巡警把你攔下", x: "<p>巡警認得你。他把你攔下來：從哪裡來？賣什麼？稱仔拿出來看看。</p>", n: "被記過名的人，走到哪裡都被盯。", o: [
+      {t: "乖乖拿出稱仔讓他看。", e: {mul: .9}, r: "他翻來覆去看了很久，才放你走。"},
+      {t: "「我又沒犯法。」", e: {p: 1, o: 1, b: -1, hit: 1}, r: "一記耳光。他才放你走。"},
+      {t: "亮出保正的名帖。", item: "namecard", e: {useItem: "namecard", unkick: 1}, r: "巡警看了看名帖，哼了一聲，揮手叫你繼續擺。", n: "保甲制度下，保正替派出所辦事。保正的面子，巡警多少會給。名帖只能用一次。"}
+    ]},
+  hz_cart: {who: "narr", t: "人力車", x: "<p>一輛人力車從大路上衝過來，車夫大喊讓開。你的擔子擋在路中間。</p>",
+    n: "課文：「什麼通行取締、道路規則……舉凡日常生活中的一舉一動，通在法的干涉、取締範圍中。」擔子擋路，就是妨礙通行。", o: [
+      {t: "趕緊閃開，賠不是。", e: {p: -1}, r: "車上的人罵了一句，揚長而去。"},
+      {t: "「路是大家的。」", e: {p: 1, o: 1}, r: "路口的巡查聽見了，把你的名字記下來。"}
+    ]},
+  hz_lord: {who: "narr", t: "郡守的人力車", x: "<p>郡守的人力車從大路經過，前頭的巡查喝令路人讓開。你挑著擔子，閃得慢了一步。</p>",
+    n: "日治時期官員經過，路上的百姓要讓路、行禮；動作慢了，挨打的也有。", o: [
+      {t: "跪在路邊，等車過去。", e: {p: -1}, r: "車輪從你眼前過去。車上的人沒有看你。"},
+      {t: "站著不動。", e: {b: -2, o: 1, p: 1, hit: 1}, r: "巡查一棍打在你肩上。"}
+    ]},
+  hz_health: {who: "health", t: "衛生巡查", x: "<p>衛生巡查走到擔前，用棍子撥了撥你的菜：「菜葉掉滿地，也沒有蓋。」</p>",
+    n: "課文說的「飲食物規則」：賣吃的要遮蓋、保持清潔，衛生警察可以當場取締。", o: () => [
+      {t: "趕快掃乾淨，賠笑臉。", e: {mul: .9}, r: "他在簿子上寫了幾個字，說下次再這樣就罰。"},
+      {t: `塞幾個錢給他。${cost(20)}`, cond: () => G.s >= 20, lock: "身上沒有錢", e: {s: -20}, r: "他把錢收進口袋，什麼也沒寫。"}
+    ]},
+
+  _temple: {who: "narr", t: "媽祖廟", go: () => eveTown(), x: () => `<p>廟裡香煙繚繞，年關前來拜拜的人不少。${G.day === 21 || G.day === 26 ? "廟前搭了一張桌子，今晚文化協會要在這裡演講。" : ""}</p>`, o: () => [
+      {t: `添香油錢，求一張平安符給妻子。${cost(5)}`, cond: () => G.s >= 5 && !hasItem("charm"), lock: () => hasItem("charm") ? "已經求過了" : "身上沒有錢", e: {s: -5, item: "charm", w: 1}, r: "你把平安符收好。回家交給妻子，她把它縫在孩子的衣角。"},
+      ...(G.day === 21 || G.day === 26 ? [{t: "留下來聽演講（晚回家，身體 −1）。", cond: () => G.visited !== G.day, lock: "今晚已經去過別的地方了", e: {}, quiet: 1, go: () => { G.visited = G.day; card("talk"); }}] : []),
+      {t: "離開。", e: {}, quiet: 1}
+    ]},
+  _herb: {who: "narr", t: "廟口的青草攤", go: () => eveTown(), x: "<p>廟口一排青草攤，曬乾的青草一把一把綁好。攤上也賣青草膏，擦瘀青的。</p>", o: () => [
+      {t: `買一罐青草膏。${cost(10)}`, cond: () => G.s >= 10 && !hasItem("herb"), lock: () => hasItem("herb") ? "已經有一罐了" : "身上沒有錢", e: {s: -10, item: "herb"}, r: "你把青草膏收進懷裡。", n: "課文裡老人說：「汝還未嘗到他，青草膏的滋味。」被巡警打了，就要擦這個。"},
+      {t: "離開。", e: {}, quiet: 1}
+    ]},
+
+  // ---------- 市集隨機事件 ----------
+  stop106: {who: "cop", t: "街邊的擔子", pool: "st", x: "<p>一個巡警走過來，用警棍敲敲你的擔子：路旁不可陳列商品，收起來。</p>", o: [
+      {t: "收攤，換到市場裡面去。", e: {mul: .5}, r: "少賣了半天。", n: "違警例第 106 項：在路旁陳列商品，被制止後不聽才算違警。收起來就沒事。"},
+      {t: "等他走遠，再擺出來。", e: {mul: .9, o: 1}, r: "他走遠了。可是他回頭看了你一眼。"},
+      {t: "「大家都擺在這裡，為什麼只趕我？」", e: {p: 1, o: 2, mul: .6}, r: "他把你的名字記在小帳子上。", n: "巡警當場記下姓名住址，就可以告發。被記下一次，之後就容易被盯上。"},
+      {t: "亮出保正的名帖。", item: "namecard", e: {useItem: "namecard", unkick: 1}, r: "巡警看了看名帖，哼了一聲，揮手叫你繼續擺。", n: "保甲制度下，保正替派出所辦事。保正的面子，巡警多少會給。名帖只能用一次。"}
+    ]},
+  shopfront: {who: "shop", t: "店前", pool: "fr", x: "<p>店家出來趕人：擋著我的門做生意，你是要叫巡查來嗎？</p>", o: [
+      {t: "換個位置。", e: {mul: .6}, r: "挪到街角，客人少了一半。"},
+      {t: "跟他爭幾句。", e: {p: 1, o: 1, mul: .5}, r: "店家真的去叫巡查了。你趕緊挑起擔子走。", n: "違警例第 30 項：妨害他人業務。店家一告，巡警一定來。"}
+    ]},
+  inspect: {who: "cop", t: "度量衡臨檢", pool: "any", x: "<p>官吏到市場驗秤。每一攤的稱仔都要拿出來。</p>", o: () => [
+      {t: "拿出稱仔。", e: G.scale === "old" || G.scale === "nb2" ? {scale: "none", mul: .5} : {}, r: G.scale === "old" || G.scale === "nb2" ? "舊秤的稱花模糊，被扣下了。沒有稱仔，下午的生意做不成。" : G.scale === "none" ? "你沒有稱仔。官吏瞪了你一眼：沒有秤做什麼生意？" : "新秤有打印，合格。", n: "1920 年代定期辦度量衡器檢查；不合格的秤依規則可以沒收或破毀。"}
+    ]},
+  beat: {who: "narr", t: "市場裡的叫喊", pool: "any", x: "<p>隔幾攤，一個巡警正在打人。賣菜的跪在地上，沒有人出聲。</p>", o: [
+      {t: "看下去。", e: {p: -1}, r: "你看完了。回到擔前，手還在抖。", n: "葉榮鐘回憶日本時代的巡警「可以隨便打人」，市場裡的小販最常挨打。"},
+      {t: "挑起擔子走開。", e: {mul: .7}, r: "你換了一條街。少賣了半天。"}
+    ]},
+  rain: {who: "narr", t: "落雨", pool: "any", x: "<p>近午落起雨來。買菜的人少了。</p>", o: [{t: "撐到市散。", e: {mul: .6, b: -1}, r: "淋了半天雨。"}]},
+  good: {who: "narr", t: "生意屢好", pool: "any", x: "<p>今天的菜特別新鮮，一下子就賣掉一半。</p>", q: "再過幾天，生意屢好", qs: "課文", o: [{t: "趁勢多賣一會。", e: {add: 40}, r: "多賺了幾十錢。"}]},
+  rumor: {who: "old", t: "市上的傳言", pool: "any", x: () => `<p>收攤的時候，旁邊賣魚的壓低聲音說：前幾天有人在觀音山看見廖添丁。</p><p>「騙肖的，他死十幾年了。」市集老人說，「${G.day <= 24 ? "送神那天講古仙會在你們庄的廟埕講，你去聽就知道。" : "講古仙廿九還會在你們庄的廟埕講一場，你去聽就知道。"}」</p>`,
+    o: [{t: "記在心裡。", e: {}, r: "", quiet: 1}]},
+  riceUp: {who: "narr", t: "米價漲了", pool: "any", x: "<p>米店掛出新價。年關前，米又漲了。</p>", o: [{t: "也只能認了。", e: {rice: 20}, r: "以後糴米更貴。", n: "1920 年代米價起伏大。1922 年中等白米一石約 22 圓，一家四口一天的米約 20 多錢。"}]},
+  gift: {who: "cop", t: "巡警又來了", pool: "gift", x: "<p>那個巡警又走到擔前。這次他什麼都沒說，只看著你的菜。</p>", o: [
+      {t: "揀幾莖好的，用稻草貫著，獻給他。", e: {s: -40, p: -1}, r: "他拿了就走。旁邊的人沒有看你。"},
+      {t: "「大人，今天的要秤。」", e: {p: 2, o: 2, unset: "gift", set: "c1done"}, r: "他冷笑一聲，抽出小帳子，把你的名字記下來。", n: "白送過一次，再想收回來，代價就高了。除夕那天，他會在市上等你。"}
+    ]},
+
+  // ---------- 村裡、休息日的事件 ----------
+  fever: {who: "wife", t: "孩子發燒", pool: "home", x: "<p>小的發燒了。妻子抱著她，一整天不能出門。</p>", o: () => [
+      {t: `去抓一帖漢藥。${cost(60)}`, cond: () => G.s >= 60, lock: "錢不夠", e: {s: -60, w: 1}, r: "藥煎好，孩子夜裡退了燒。"},
+      {t: "煎青草。", e: {w: -1}, r: "孩子哭了一夜。妻子沒有睡。"}
+    ]},
+  road: {who: "bz", t: "保甲修路", pool: "home", cond: () => G.day !== 27 && G.day !== 29, x: "<p>保正來說：明天修路，每戶出一個人。</p>", o: () => [
+      {t: "自己去。", e: {set: "roadDay"}, r: "明天得去修路，上不了鎮。", n: "保甲制度下的義務勞動，不去要罰。"},
+      {t: `出錢找人代。${cost(50)}`, cond: () => G.s >= 50, lock: "錢不夠", e: {s: -50}, r: "找了個閒人去。"}
+    ]},
+  sisAsk: {who: "sis", t: "嫂子來了", pool: "home", cond: () => G.hua !== "none", x: () => G.hua === "home" ? "<p>嫂子來看妹妹。看見金花已經回來了，她笑了。</p>" : "<p>嫂子來看妹妹，順口問起：金花還在當鋪裡？</p>", o: () => [
+      {t: G.hua === "home" ? "留她吃飯。" : "「快了，過幾天就去贖。」", e: G.hua === "home" ? {w: 1} : {w: -1}, r: G.hua === "home" ? "妻子的臉上有了笑。" : "妻子低著頭。嫂子沒有再問。"}
+    ]},
+  weeds: {who: "cop", t: "衛生檢查", pool: "home", x: "<p>衛生警察到村裡檢查。你家庭院有雜草，水缸沒蓋。</p>", o: [
+      {t: "花半天打掃。", e: {b: -1}, r: "清乾淨了。警察沒說什麼就走了。", n: "日本時代的衛生警察會挨家檢查，不合格的門上貼白紙，全村都看得到。"},
+      {t: "不理他。", e: {o: 1}, r: "門上貼了一張白紙。", n: "貼了白紙，派出所就記得你家。"}
+    ]},
+  malaria: {who: "narr", t: "寒熱又發了", x: "<p>天還沒亮你就冷得發抖，接著是燒。瘧疾又發了。今天上不了鎮。</p>", o: () => [
+      {t: "撐到鎮上，找那位不收錢的醫生。", e: {b: 3, o: 1, set: "sawDoc", card: "minpao"}, r: "醫生看完病，沒有收錢。出醫館的時候，對面的巡查看了你一眼。", n: "這位醫生在警察的名單上，進出他的醫館就會被記得。"},
+      {t: "煎青草。", e: {b: 1}, r: "躺了一天。寒熱退了些。"},
+      {t: "硬撐著上鎮。", e: {b: -2, mul: .5}, go: () => market(), r: "你挑起擔子，走到半路差點倒下。"}
+    ]},
+
+  // ---------- 對峙一：廿八近午 ----------
+  c1: {who: "cop", t: "巡警走到擔前", cop: 1, x: "<p>近午，一個下級巡警巡視到你擔前，目光注視到擔上的生菜。你殷勤地問：「大人，要什麼不要？」</p>",
+    q: "「汝的貨色比較新鮮。」", qs: "巡警說", o: [
+      {t: "「是，城市的人，總比鄉下人享用，不是上等東西，是不合脾胃。」", orig: 1, e: {}, r: "巡警問：「花菜賣多少錢？」", go: () => card("c1b")},
+      {t: "「花菜一斤八錢，大人。」", e: {p: 1, o: 1}, r: "巡警的臉沉了一下。「稱稱看。」", go: () => card("c1c")}
+    ]},
+  c1b: {who: "cop", t: "「花菜賣多少錢？」", cop: 1, x: "", o: [
+      {t: "「大人要的，不用問價，肯要我的東西，就算運氣好。」", orig: 1, e: {}, r: "你擇幾莖好的，用稻草貫著，恭敬地獻給他。", q: "「不，稱稱看！」巡警幾番推辭著說。", go: () => card("c1c")},
+      {t: "「一斤八錢。」", e: {p: 1, o: 1}, r: "巡警冷冷地說：「稱稱看。」", go: () => card("c1c")}
+    ]},
+  c1c: {who: "cop", t: "「不，稱稱看！」", cop: 1, x: "<p>巡警幾番推辭著說。</p>", o: () => [
+      {t: "掛上稱仔稱一稱。", orig: 1, e: {}, r: "「大人，真客氣啦！才一斤十四兩。」你說。經過秤稱過，就算買賣，不是白要，也不能說是贈與。", go: () => card("c1d")},
+      {t: "「大人拿去就是，稱什麼。」", need: "old", e: {p: -2, set: "gift"}, r: "巡警拿了菜就走。旁邊的人低著頭。你今天平安，可是他明天還會來。", n: "你聽懂了「稱稱看」的意思。從此他每天都會來。", go: () => afterC1(true)}
+    ]},
+  c1d: {who: "cop", t: "「不錯罷？」", cop: 1, x: "<p>巡警說。</p>", o: [
+      {t: "「不錯，本有兩斤足，因是大人要的……」", orig: 1, e: {}, r: "這句話是平常買賣的口吻，不是贈送的表示。", go: () => card("c1e")},
+      {t: "「正是一斤十四兩，不多不少。」", e: {p: -1}, r: "巡警看著稱仔，沒有看你。", go: () => card("c1e")}
+    ]},
+  c1e: {who: "cop", t: "「稱仔不好罷，兩斤就兩斤，何須打扣？」", cop: 1, x: "<p>巡警變色地說。</p>", hint: () => hasCard("nb") ? "你想起鄰家的話：他在套的是度量衡規則，說你用的秤不合格。" : "", o: [
+      {t: "「不，還新新呢！」", orig: 1, req: {p: 4}, e: {p: 1}, r: "你泰然地回答。", go: () => card("c1f")},
+      {t: "「是我算錯了，兩斤。」", e: {p: -1}, r: "巡警並沒有因此放過你。", go: () => card("c1f")},
+      {t: "不說話。", e: {}, r: "沉默沒有用。", go: () => card("c1f")}
+    ]},
+  c1f: {who: "cop", t: "「拿過來！」", cop: 1, x: "<p>巡警赫怒了。</p>", o: [
+      {t: "「稱花還很明瞭。」從容地捧過去。", orig: 1, e: {}, r: "巡警接在手裡，約略考察一下。", go: () => card("c1g")},
+      {t: "拿著不放。", req: {p: 7}, e: {p: 2, o: 2, b: -2, hit: 1}, r: "一記耳光。稱仔還是到了他手裡。", go: () => card("c1g")}
+    ]},
+  c1g: {who: "cop", t: "「不堪用了，拿到警署去！」", cop: 1, x: "", hint: () => hasCard("nb") ? "度量衡規則第 15、16 條：主管官吏可以扣押證物，也可以把不合格的秤「破毀」。可是這桿秤是新的，稱花也清楚。" : "", o: [
+      {t: "「什麼緣故？修理不可嗎？」", orig: 1, e: {}, r: "「不去嗎？」巡警怒叱著。", go: () => afterC1(false)},
+      {t: "「大人，這秤是鄰家的。」", e: {set: "blameNb"}, r: "巡警把鄰家的名字也記下了。", n: "鄰家因此不會再肯為你作證。", go: () => afterC1(false)},
+      {t: "跪下。", e: {p: -2}, r: "跪下沒有用。", go: () => afterC1(false)}
+    ]},
+  c1end: {who: "cop", t: "「不去？畜生！」", cop: 1, x: "<p>撲的一聲，巡警把稱仔打斷擲棄，隨抽出胸前的小帳子，把你的名姓、住處記下。氣憤憤地，回警署去。</p><p>你突遭這意外的羞辱，空抱著滿腹的憤恨，在擔邊失神地站著。</p>",
+    o: [{t: "……", e: {o: 3, scale: "broken"}, r: "稱仔斷了。名字記下了。", n: "巡警當場記下姓名住址，告發到郡衙，郡守就可以依《犯罪即決例》當場判。"},
+      {t: "……彎腰把斷掉的稱仔撿起來。", cond: () => G.mapMode, e: {o: 3, scale: "broken", item: "broken"}, r: "稱仔斷了。你把兩截撿起來，秤桿上的證印還清清楚楚。", n: "巡警當場記下姓名住址，告發到郡衙。斷秤上的證印，證明這桿秤本來是合格的。"}]},
+  c1old: {who: "old", t: "閑人圍過來", x: "<p>等巡警去遠了，才有幾個閑人近你身邊來。一個較有年紀的說：</p>",
+    q: "「該死的東西，到市上來，只這規紀亦就不懂？要做什麼生意？汝說幾斤幾兩，難道他的錢汝敢拿嗎？」", qs: "課文", o: [
+      {t: "「難道我們的東西，該白送給他的嗎？」", orig: 1, req: {p: 4}, e: {p: 1, card: "old"}, r: "老人嘲笑地說：「唉！汝不曉得他的厲害，汝還未嘗到他，青草膏的滋味。」", n: "青草膏：被打得瘀青，要擦的藥。老人的意思是：大人說「稱稱看」，意思就是不用稱。", go: () => card("c1old2")},
+      {t: "不回嘴。", e: {p: -1, card: "old"}, r: "老人搖搖頭：「大人說稱稱看，就是不用稱。汝還未嘗到他，青草膏的滋味。」", go: () => evening(false)}
+    ]},
+  c1old2: {who: "old", t: "「什麼？做官的就可任意凌辱人民嗎？」", x: "<p>你說。</p>", o: [{t: "……", orig: 1, e: {}, r: "「硬漢！」有人說。眾人議論一回、批評一回，亦就散去。", go: () => evening(false)}]},
+
+  // ---------- 對峙二：郡衙 ----------
+  c2: {who: "cop", t: "又遇到那巡警", cop: 1, x: () => `<p>${G.day === 30 ? "到天亮後，各擔各色貨多要完了，有的人已收起擔頭，要回去圍爐。" : "市上人還不多。"}你又遇到那巡警。</p>`,
+    q: () => G.flag.c1day === 29 ? "「畜生，又是你！」" : "「畜生，昨天跑那兒去？」", qs: "巡警說", o: [
+      {t: "「什麼？怎得隨便罵人？」", orig: 1, req: {p: 5}, e: {p: 1}, r: "「畜生，到衙門去！」巡警說。", go: () => card("c2b")},
+      {t: "低頭不語。", e: {p: -1}, r: "「畜生，到衙門去！」巡警說。", go: () => card("c2b")}
+    ]},
+  c2b: {who: "cop", t: "「畜生，到衙門去！」", cop: 1, x: "", o: [
+      {t: "「去就去呢，什麼畜生？」", orig: 1, e: {}, r: "巡警瞪你一眼，便帶你上衙門去。", go: () => card("c2boy")},
+      {t: "「大人，今天是除夕……」", e: {p: -1}, r: "他沒有聽。", go: () => card("c2boy")}
+    ]},
+  c2boy: {who: "boy", t: "郡衙的庭裡", x: () => `<p>一個十四來歲的小使在庭裡掃地，抬頭看了你一眼。</p>${hasCard("jud") ? "<p>他小聲說：「判了要是不服，三天內可以具狀。」</p>" : "<p>他什麼也沒說。</p>"}`,
+    o: [{t: "跟著巡警進去。", e: {}, r: "郡守在堂上。你跪在地上。", go: () => card("c2c")},
+      {t: "從懷裡拿出一塊年糕，分給小使。", item: "cake", e: {useItem: "cake", set: "boyCake"}, r: "小使愣了一下，接過去，小聲說：「我去跟你家裡說一聲。」", n: "課文說這個小使「童心還在，不會倚勢欺人」。你坐監的話，他會跑去告訴你妻子怎麼繳錢。", go: () => card("c2c")}]},
+  c2c: {who: "judge", t: "「汝秦得參嗎？」", x: "<p>法官在座上問。「是，小人，是。」你跪在地上回答。</p>", q: "「汝曾犯過罪嗎？」", qs: "法官", o: [
+      {t: "「小人生來將三十歲了，曾未犯過一次法。」", orig: 1, e: {}, r: "「以前不管他，這回違犯著度量衡規則。」法官說。", go: () => card("c2d")},
+      {t: "「我沒有做錯事。」", e: {p: 1, o: 1}, r: "法官的臉變了。「這回違犯著度量衡規則。」", go: () => card("c2d")}
+    ]},
+  c2d: {who: "judge", t: "「唉！冤枉啊！」", x: "<p>「什麼？沒有這樣事嗎？」法官。「這事是冤枉的啊！」你說。</p>", q: "「但是，巡警的報告，總沒有錯啊！」", qs: "法官", o: () => [
+      {t: "「實在冤枉啊！」", orig: 1, e: {}, r: "法官不再聽了。", go: () => card("c2e")},
+      {t: "拿出斷秤：「大人，你看，秤桿上有證印。」", item: "broken", e: {o: 1}, r: "「這裡不是法院。」郡守連看都沒看。", n: "即決是郡守當場判，不是審判，沒有人看證物。證物要等聲請正式裁判，到了法院才算數。", go: () => card("c2e")},
+      {t: "「鄰家可以作證，秤是新的。」", cond: () => (G.scale === "broken" || G.flag.paidNb) && !G.flag.blameNb && G.flag.nbWitness, e: {}, r: "「這裡不是法院。」法官說。", n: "即決不是審判，沒有證人這回事。這句話要到正式裁判才用得上。（第二期）", go: () => card("c2e")}
+    ]},
+  c2e: {who: "judge", t: () => G.fine === 100 ? "「……收據是真的。那就罰汝一圓。」" : "「既然違犯了，總不能輕恕，只科罰汝三塊錢，就算是格外恩典。」", x: "<p>官說。</p>", hint: () => "《臺灣度量衡規則》第 18 條：使用不合格的秤，最重一年懲役或五百圓罰金。三圓在法條上確實說得通。", o: () => [
+      {t: `繳${G.fine === 100 ? "一圓" : "三塊錢"}。${cost(G.fine)}`, cond: () => G.s >= G.fine, lock: "沒有錢", e: {s: -G.fine, set: "paid"}, r: "錢繳了。你走出郡衙，市已經散了。", go: () => afterJail("paid")},
+      {t: "拿出檢定收據：「這桿秤是官廳賣的，有證印。」", item: "receipt", cond: () => G.flag.brokeKind === "own" && G.fine === 300, e: {}, r: "郡守看了收據很久，臉色一沉。", n: "度量衡規則第 16 條只准破毀不合格的秤。秤是官廳賣的、有證印，郡守也很難硬說它不合格。", go: () => { G.fine = 100; card("c2e"); }},
+      {t: "「沒有錢！」", orig: 1, e: {set: "jailed"}, r: G.fine === 100 ? "「沒有錢，就坐監一天。」「沒有錢！」你說。一圓折一天，在監裡過除夕。" : "「沒有錢，就坐監三天，有沒有？」「沒有錢！」你說。新春的閒時節，監禁三天不關係什麼，還是三塊錢的用處大。", q: "在他心裡的打算：新春的閒時節，監禁三天，是不關係什麼，還是三塊錢的用處大，所以他就甘心去受監禁。", qs: "課文", go: () => afterJail("jail")},
+      {t: "「我要正式裁判。」", prev: "jud", cond: () => !G.flag.appealFail, e: {}, quiet: 1, go: () => appeal()}
+    ]},
+
+  // ---------- 除夕夜 ----------
+  eve: {who: "narr", t: "圍爐", x: () => G.flag.c1done
+      ? `<p>圍過爐，孩子們因明早要絕早起來開正，各已睡下，在作他們幸福的夢。</p><p>${G.hua === "home" ? "金花放在妻子的枕邊。" : G.hua === "none" ? "" : "金花還在當鋪裡。當鋪已經關門，要到正月十六才開。"}你尚在室內踱來蹀去。妻子幾次催你睡，你總沒有聽見似的。</p>`
+      : `<p>圍過爐，孩子們因明早要絕早起來開正，各已睡下。</p><p>這幾天，你沒有在鎮上的市場擺攤。${G.hua === "home" ? "金花放在妻子的枕邊。" : ""}</p>`,
+    q: () => G.flag.c1done ? "心裡只在想，總覺有一種，不明瞭的悲哀，只不住漏出幾聲的嘆息。" : "", qs: "課文", o: () => {
+      const roads = [
+        {t: "正月就去找組合的人。", prev: "union", cond: () => (G.flag.talks || 0) >= 2, lock: () => `演講只聽過 ${G.flag.talks || 0} 場，你還不認識組合的人（要 2 場）`, req: {p: 6}, e: {}, r: "你想起媽祖廟前那張桌子，和台下那麼多人。", go: () => finish("union")},
+        {t: "正月帶全家去花蓮港。", prev: "east", cond: () => G.s >= 600, lock: () => `全家的船票錢不夠（要 600 錢，現在 ${G.s}）`, req: {w: 7}, e: {}, r: "你跟妻子說了。她看著睡著的孩子，很久才點頭。", go: () => finish("east")}
+      ];
+      if (!G.flag.c1done) return [{t: "這個年，總算平安過去了。", e: {}, r: "", quiet: 1, go: () => finish("hide")}, ...roads];
+      return [
+        {t: "「人不像個人，畜生，誰願意做。這是什麼世間？活著倒不若死了快樂。」", orig: 1, cond: () => G.p >= 6, lock: () => `骨氣只有 ${G.p}，這句話你說不出口`, e: {}, r: "你喃喃地獨語著，忽又回憶到母親死時快樂的容貌。", go: () => finish("ciNian")},
+        {t: "「人不像個人，畜生，誰願意做。」你決定不再忍：學廖添丁，逃進觀音山。", need: "liao", req: {b: 4}, cond: () => G.p >= 6, lock: () => `骨氣只有 ${G.p}，你走不出這個門`, e: {}, r: "你推開門，走進夜裡。",
+          go: () => {
+            const lack = [];
+            if (!G.prev.has("liao")) lack.push("你第一次聽說觀音山，不知道上山的路怎麼走");
+            if (G.b < 7) lack.push(`身體只有 ${G.b}，不到 7，寒熱在路上又發了`);
+            if (G.s < 300) lack.push(`盤纏只有 ${G.s} 錢，不到 300，你只好去投靠人`);
+            if (!lack.length) { G.why = `身體 ${G.b}、盤纏 ${G.s} 錢、骨氣 ${G.p}，還有上一輪就記住的上山的路。全都有，你才逃得掉。`; finish("legend"); }
+            else { G.why = lack.join("；") + "。"; finish("mount"); }
+          }},
+        ...(G.flag.letter ? [{t: "「那封信已經寄出去了。」你決定等。", prev: "minpao", reqMax: {o: 5}, e: {}, r: "你吹熄了燈。", go: () => finish("paper")}] : []),
+        ...(G.flag.appealed ? [{t: "等正月開庭。", e: {}, r: "你數著日子：初二、初三……", go: () => finish("trial")}] : []),
+        ...roads,
+        {t: "「明年快就出運，亦不一定。」", cond: () => G.p < 6, e: {}, r: "你把妻子的話又說了一遍，像在說給自己聽。", go: () => { G.why = `骨氣 ${G.p}，不到 6。這一年的羞辱你吞下去了。`; finish("bow"); }}
+      ];
+    }}
+};
+
+// ===== 引擎 =====
+let Q = [];
+function show(id) { document.querySelectorAll(".screen").forEach(s => s.classList.toggle("on", s.id === id)); window.scrollTo(0, 0); }
+const val = v => typeof v === "function" ? v() : v;
+function apply(e, d) {
+  if (!e) return;
+  // 青草膏：挨打時身體少扣 1
+  if (e.hit && e.b < 0 && hasItem("herb")) { e = {...e, b: e.b + 1}; d.herb = 1; }
+  if (e.scale === "broken") G.flag.brokeKind = G.scale;   // 記下被打斷的是誰的秤
+  if (e.item && G.mapMode && !G.items.has(e.item)) { G.items.add(e.item); d.item = e.item; }
+  if (e.useItem) G.items.delete(e.useItem);
+  if (e.unkick && MAP) { MAP.kick = false; if (MAP.mul0 != null) { G.mul = MAP.mul0; MAP.mul0 = null; } MAP.t = Math.max(0, MAP.t - DUR * .15); }
+  for (const k of ["s", "g", "b", "p", "w", "o"]) {
+    if (!e[k]) continue;
+    const was = G[k];
+    G[k] = k === "s" ? Math.max(0, G[k] + e[k]) : k === "g" ? Math.max(0, G[k] + e[k]) : clamp10(G[k] + e[k]);
+    if (G[k] !== was) d[k] = (d[k] || 0) + G[k] - was;
+  }
+  if (e.set) [].concat(e.set).forEach(f => G.flag[f] = 1);
+  if (e.inc) G.flag[e.inc] = (G.flag[e.inc] || 0) + 1;
+  if (e.unset) delete G.flag[e.unset];
+  if (e.hua) G.hua = e.hua;
+  if (e.debt) G.debts.push({k: e.debt[0], n: e.debt[1], amt: e.debt[2], who: e.debt[3]});
+  if (e.scale) G.scale = e.scale;
+  if (e.rice) G.ricePrice += e.rice;
+  if (e.card && !G.cards.has(e.card)) { G.cards.add(e.card); G.newCards.push(e.card); d.card = e.card; KEPT = [...new Set([...KEPT, e.card])]; save(CARD_KEY, KEPT); }
+  if (e.mul) G.mul = (G.mul || 1) * e.mul;
+  if (e.add) G.add = (G.add || 0) + e.add;
+}
+function deltaHtml(d) {
+  return Object.keys(d).map(k => {
+    if (k === "card") return `<span class="card">知識卡：${CARDS[d.card].from}</span>`;
+    if (k === "item") return `<span class="card">得到：${ITEMS[d.item]}</span>`;
+    if (k === "herb") return `<span class="pos">青草膏：少挨一點痛</span>`;
+    const v = d[k], good = k === "o" ? v < 0 : v > 0;
+    return `<span class="${good ? "pos" : "neg"}">${LABEL[k]} ${v > 0 ? "+" : ""}${v}${UNIT[k]}</span>`;
+  }).join("");
+}
+function card(id) {
+  const ev = EV[id];
+  G.cur = id;
+  const opts = val(ev.o).map((o, i) => ({o, i})).filter(({o}) => !(o.need && !hasCard(o.need)) && !(o.prev && !hasCard(o.prev)) && !(o.item && !hasItem(o.item)) && (!o.cond || o.cond() || o.lock));
+  // prev：夢幻結局的路，要上一輪就聽過那張知識卡；這一輪才聽到的，灰掉並提示下一輪
+  const why = o => o.prev && !G.prev.has(o.prev) ? "你這一輪才聽說這件事，來不及準備（下一輪就能走這條路）" : o.cond && !o.cond() ? val(o.lock) : reqLock(o);
+  const hint = ev.hint ? val(ev.hint) : "";
+  $("main").innerHTML = `<div class="ev frame ${ev.cop ? "cop" : ""} ${G.phase === "night" ? "night" : ""}">${whoTag(val(ev.who))}${val(ev.t) ? `<h2>${val(ev.t)}</h2>` : ""}
+    <div class="x">${val(ev.x)}</div>
+    ${val(ev.q) ? `<div class="quote"><cite>原文${ev.qs ? "・" + ev.qs : ""}</cite>${val(ev.q)}</div>` : ""}
+    ${hint ? `<p class="hint">${hint}</p>` : ""}
+    <div class="opts">${opts.map(({o, i}) => { const locked = why(o); return `<button class="opt" data-i="${i}" ${locked ? "disabled" : ""}>${o.t}${locked ? `<span class="lock">${locked}</span>` : ""}</button>`; }).join("")}</div></div>`;
+  $("main").querySelectorAll(".opt").forEach(b => b.onclick = () => choose(id, +b.dataset.i));
+  renderTop();
+  window.scrollTo(0, 0);
+}
+// 能力門檻：req {b: 6} 要身體 6 以上；reqMax {o: 5} 要官符 5 以下。回傳不夠的原因，夠就回傳空字串
+function reqLock(o) {
+  for (const k in o.req || {}) if (G[k] < o.req[k]) return `${LABEL[k]}不足（要 ${o.req[k]}，現在 ${G[k]}）`;
+  // 官符不寫數字，只說被盯得太緊（使用者要求）
+  for (const k in o.reqMax || {}) if (G[k] > o.reqMax[k]) return k === "o" ? "官符太高，你被盯得太緊了" : `${LABEL[k]}太高（要 ${o.reqMax[k]} 以下，現在 ${G[k]}）`;
+  return "";
+}
+function choose(id, i) {
+  const ev = EV[id], o = val(ev.o)[i], d = {};
+  apply(o.e, d);
+  if (ev.o && val(ev.o).some(x => x.orig)) G.hist.push({id, t: ev.t, mine: o.t, orig: (val(ev.o).find(x => x.orig) || {}).t, same: !!o.orig, day: G.phase === "pro" ? 0 : G.day});
+  renderTop();
+  const after = () => { $("fb").classList.remove("on"); if (dead()) return; (o.go || ev.go || next)(); };
+  const q = o.q || "", qs = o.qs || "";
+  if (o.quiet) { for (const k in d) if (k !== "card") floatStat(k, d[k]); return after(); }
+  if (!o.r && !o.n && !Object.keys(d).length) return after();
+  $("fbBox").innerHTML = `${o.r ? `<h3>${o.r}</h3>` : ""}
+    <div class="deltas">${deltaHtml(d) || "<span>沒有變化</span>"}</div>
+    ${d.card ? `<div class="cardbox"><b>知識卡</b> ${CARDS[d.card].t}<small>${CARDS[d.card].use}。知識卡會留到下一局。</small></div>` : ""}
+    ${q ? `<div class="quote"><cite>原文${qs ? "・" + qs : ""}</cite>${q}</div>` : ""}
+    ${o.n || val(ev.n) ? `<p class="explain">${o.n || val(ev.n)}</p>` : ""}
+    <button class="btn" id="fbOk">繼續</button>`;
+  $("fb").classList.add("on");
+  $("fbOk").onclick = after;
+  if (d.o > 0) { document.body.classList.remove("quake"); void document.body.offsetWidth; document.body.classList.add("quake"); }
+}
+function next() { const st = Q.shift(); if (st) (typeof st === "function" ? st : () => card(st))(); }
+function dead() {
+  if (G.over) return true;
+  if (G.b <= 0) return G.why = "身體歸零。連續上鎮不休息、淋雨、挨打，都會耗掉身體。", finish("fever"), true;
+  if (G.p <= 0) return G.why = "骨氣歸零。白送、跪下、不回嘴，一次扣一點。", finish("bow"), true;
+  return false;
+}
+
+// ===== 畫面上方 =====
+function renderTop() {
+  $("cal").innerHTML = `<small>${G.phase === "pro" ? "前半生" : G.phase === "night" ? "夜裡" : G.phase === "eve" ? "午後" : G.phase === "market" ? "鎮上" : "早上"}</small><b>${G.phase === "pro" ? (EV[G.cur] || {}).t || "" : dayName(G.day)}</b>`;
+  const st = (k, max) => `<div class="st ${k === "o" ? (G[k] >= 7 ? "hi" : "") : (G[k] <= (k === "s" ? 100 : k === "g" ? 1 : 2) ? "low" : "")}" id="st-${k}"><div class="lab">${LABEL[k]}</div><div class="val">${G[k]}${UNIT[k]}</div>${max ? `<div class="bar"><i style="width:${G[k] / max * 100}%"></i></div>` : ""}</div>`;
+  $("stats").innerHTML = st("s") + st("g", 15) + st("b", 10) + st("p", 10) + st("w", 10) + st("o", 10);
+  const sc = {none: "沒有稱仔", nb: "鄰家的新秤", nb2: "鄰家的舊秤", old: "保正的舊秤", own: "自己的新秤", broken: "被打斷了"}[G.scale];
+  $("sub2").innerHTML = G.phase === "pro" ? "" : `<span>金花：<b>${G.hua === "home" ? "贖回來了" : G.hua === "none" ? "沒有拿去當" : G.hua === "lost" ? "流當" : `在當鋪（贖回要 ${HUA_BACK} 錢）`}</b></span><span>稱仔：<b>${sc}</b></span><span>知識卡：<b>${G.cards.size}</b> 張</span>${G.items.size ? `<span>隨身：<b>${[...G.items].map(k => ITEMS[k]).join("、")}</b></span>` : ""}${G.debts.some(d => !d.done) ? `<span>除夕要還：<b>${G.debts.filter(d => !d.done).reduce((a, d) => a + d.amt, 0)} 錢</b></span>` : ""}`;
+}
+function floatStat(k, v) {
+  const el = $("st-" + k); if (!el || !v) return;
+  const f = document.createElement("span"); f.className = "float" + (v > 0 ? " up" : ""); f.textContent = (v > 0 ? "+" : "") + v;
+  el.appendChild(f); setTimeout(() => f.remove(), 1300);
+}
+
+// ===== 一天的流程 =====
+const HUA_PAWN = 400, HUA_BACK = 440;   // 月利一成，待考
+const LOAD = 50;   // 批一擔生菜的本錢，待考
+function startGame(quick) {
+  newGame();
+  G.mapMode = quick !== true;   // 第一輪只有地圖模式；玩過一輪才能選快速模式
+  G.phase = "pro";
+  Q = ["pro1", "pro2", "pro3", "pro4", () => dayStart()];
+  show("game");
+  next();
+}
+function dayStart() {
+  G.phase = "morning"; G.mul = 1; G.add = 0; G.stall = ""; delete G.flag.sold;
+  if (G.day > 30) return collect();
+  G.trace.push({d: G.day, s: G.s, g: G.g, b: G.b, p: G.p, w: G.w, o: G.o});
+  if (G.day === 16) { Q = ["d16", () => market()]; return next(); }
+  if (G.day === 30) return card("d30");
+  if (G.day === 28) { delete G.flag.roadDay; return morningOrMap(); }   // 廿八一定上鎮：寒熱不發、修路不排
+  if (G.flag.roadDay) { delete G.flag.roadDay; return card("roadDo"); }
+  if (G.flag.force) return card("morning");
+  // 廿九是準備正式裁判的唯一一天，不讓寒熱把路堵死
+  if (G.flag.malaria && G.b < 4 && G.day !== 29 && chance(.5)) { Q = [() => rest(true)]; return card("malaria"); }   // 只有留下病根的人會復發
+  if (G.day === 20 && !G.flag.d20) { G.flag.d20 = 1; Q = [() => morningOrMap()]; return card("d20"); }
+  if (G.day === 29 && G.flag.c1day === 28) return card("d29");
+  morningOrMap();
+}
+function market() {
+  // 批貨：錢夠一擔批一擔，只夠半擔就批半擔（只賣得一半），連半擔都不夠就上不了鎮
+  // 連半擔都批不起：可以向菜販賒一擔，市散後多還 10 錢；這是退路，避免錢花光就再也上不了鎮
+  const load = G.s >= LOAD ? LOAD : G.s >= LOAD / 2 ? LOAD / 2 : 0;
+  G.credit = 0;
+  if (!load && !G.creditOk) {
+    EV._noload = {who: "narr", t: "批不了菜", x: `<p>身上只有 ${G.s} 錢，連半擔菜都批不起。</p>`, n: "做小生意要先有本錢。賣完菜，記得留下明天批貨的錢。",
+      o: [{t: `向批發的菜販賒一擔，市散後還 ${cost(LOAD + 10)}`, e: {}, quiet: 1, go: () => { G.creditOk = 1; market(); }},
+        {t: "今天不上鎮了。", cond: () => !G.flag.force, lock: "說好今天要去市場看看", e: {}, quiet: 1, go: () => { G.phase = "eve"; G.daysOut = 0; evening(true); }}]};
+    return card("_noload");
+  }
+  if (!load) { G.credit = LOAD + 10; G.loadMul = 1; delete G.creditOk; }
+  else { delete G.creditOk; G.s -= load; G.loadMul = load / LOAD; floatStat("s", -load); }
+  G.phase = "market"; G.daysOut++; G.flag["m" + G.day] = 1;
+  if (G.daysOut % 3 === 0) { G.b = clamp10(G.b - 1); floatStat("b", -1); }
+  if (dead()) return;
+  if (G.day === 16 && G.scale === "none") { G.mul *= .5; }
+  G.mapSale = null; G.sellFrac = null;
+  if (G.mapMode) return townMap();
+  Q = [() => afterStall()];
+  card("stall");
+}
+function sell(stall) {
+  G.stall = stall;
+  next();
+}
+function afterStall() {
+  // 廿八：對峙；除夕：郡衙
+  if (G.day >= 28 && !G.flag.c1done && G.stall !== "far") { G.flag.c1done = 1; G.flag.c1day = G.day; Q = ["c1"]; return next(); }
+  if (G.day === 30 && G.flag.c1done && G.flag.c1day < 30 && !G.flag.gift && G.stall !== "far") { settleSale(); Q = ["c2"]; return next(); }
+  if (G.flag.gift) { Q = [() => randomEvent()]; return card("gift"); }
+  randomEvent();
+}
+function randomEvent() {
+  const pool = Object.keys(EV).filter(id => EV[id].pool && (EV[id].pool === "any" || EV[id].pool === G.stall) && !G.used.has(id));
+  const riskSt = G.stall === "st" ? .35 + G.o * .05 : 0, riskFr = G.stall === "fr" ? .45 : 0;
+  let id = null;
+  if (G.stall === "st" && chance(riskSt) && !G.used.has("stop106")) id = "stop106";
+  else if (G.stall === "fr" && chance(riskFr) && !G.used.has("shopfront")) id = "shopfront";
+  else if (chance(.55) && pool.length) id = rnd(pool.filter(x => x !== "stop106" && x !== "shopfront"));
+  if (id) { G.used.add(id); if (id === "stop106" || id === "shopfront") G.used.delete(id); Q = [() => evening(false)]; return card(id); }
+  evening(false);
+}
+function settleSale() {
+  if (G.flag.sold) return;
+  G.flag.sold = 1;
+  // 地圖模式：收入照各位置待的時間算（G.mapSale），沒賣完的菜（G.sellFrac）連本錢也收不回來
+  const map = G.mapSale != null, lf = map ? G.sellFrac : 1;
+  const base = map ? G.mapSale * G.sellFrac : {in: ri(150, 190), st: ri(175, 215), fr: ri(200, 240), far: ri(170, 210)}[G.stall] || 0;
+  // 收入＝批貨本錢收回來＋淨利；只批半擔就只賣得一半
+  let v = (LOAD * lf + base * (G.day === 24 ? 1.4 : 1) * (G.b <= 2 ? .7 : 1) * (G.mul || 1) + (G.add || 0)) * (G.loadMul || 1);
+  v = Math.round(v / 5) * 5;
+  G.fee = (G.feeToday || 0) + (G.feeOwed || 0); G.cost = LOAD * (G.loadMul || 1);
+  G.gross = v; G.today = v - G.cost - (G.credit ? 10 : 0) - G.fee; G.s = Math.max(0, G.s + v - (G.credit || 0) - (G.feeOwed || 0)); G.feeOwed = 0; G.feeToday = 0;
+}
+function evening(home) {
+  G.phase = "eve";
+  if (!home) settleSale();
+  renderTop();
+  if (G.mapMode && !home) return eveTown();
+  const items = home ? [] : eveItems();
+  const vis = home ? [] : [["youth", "騎樓下，有人在念報紙"], ["docVisit", "醫館，那位不收窮人錢的醫生"], ...(G.day === 21 || G.day === 26 ? [["talk", "媽祖廟前，今晚有演講"]] : [])];
+  const capNote = !home && G.day === 16 && G.hua !== "home" ? `<p>身上的錢有 ${G.hua === "none" ? "300 是保正借的" : "400 是金花當來的"}本錢，不是賺的。</p>` : "";
+  const soldLine = home ? "" : capNote + salePie();
+  renderEvening(home, items, vis, soldLine);
+}
+function eveItems() {
+  const items = [];
+  const it = (k, nm, sub, price, fn, once) => items.push({k, nm, sub, price, fn, once});
+  {
+    it("rice", "糴米", `新春半個月萬事停辦，糧要備到元宵。一次糴 3 天的米。`, G.ricePrice, () => { G.g += 3; G.flag["rice" + G.day] = 1; }, false);
+    if (G.hua === "sis") it("hua", "贖回金花", "當鋪不滿一個月也算一個月的利息。", HUA_BACK, () => { G.hua = "home"; G.w = clamp10(G.w + 2); delete G.flag.promise; }, true);
+    if (G.day >= 20) {
+    it("guan", "觀音畫像", "廳上奉祀的，要買新的。", 40, () => { G.flag.guan = 1; G.w = clamp10(G.w + 1); }, true);
+    it("lian", "門聯", "也要換。", 20, () => { G.flag.lian = 1; }, true);
+    it("zhi", "金銀紙、香燭", "不可缺的。", 60, () => { G.flag.zhi = 1; G.w = clamp10(G.w + 1); }, true);
+    }
+    if (G.day >= 22) it("gao", "糖米（炊一灶年糕）", "生意屢好的時候，得參想到的。", 100, () => { G.flag.gao = 1; G.w = clamp10(G.w + 1); if (G.mapMode) G.items.add("cake"); }, true);
+    if (G.day >= 24) it("bu", "剪幾尺花布", "新年不能有件新衣裳給孩子，做父親的義務有點不克盡的缺憾。", 100, () => { G.flag.bu = 1; G.w = clamp10(G.w + 2); delete G.flag.wantCloth; }, true);
+    if (G.scale === "broken" && !G.flag.paidNb) it("nbpay", "買一桿新稱仔還鄰家", "打斷的是鄰家的秤。", 150, () => { G.flag.paidNb = 1; G.scale = "none"; }, true);
+    else if (G.scale === "none") it("scale", "買一桿自己的稱仔", "度量衡販賣所，有官廳打印，附檢定收據。", 150, () => { G.scale = "own"; if (G.mapMode) G.items.add("receipt"); }, true);
+  }
+  return items;
+}
+function renderEvening(home, items, vis, soldLine) {
+  const render = () => {
+    $("main").innerHTML = `<div class="ev frame">${whoTag("narr")}<h2>${home ? "回到家" : "市散了"}</h2><div class="x">${soldLine}${home ? "<p>沒有上鎮，就沒有進帳。</p>" : `<p>回家前，先把要買的買了。<b style="color:${G.s < LOAD ? "#ff8a78" : "var(--gold)"}">明天批菜要留 ${LOAD} 錢。</b></p>`}</div>
+      ${home ? "" : `<div class="shop">${items.map(x => `<div class="item ${G.shopDone[x.k] ? "done" : ""}"><div class="nm">${x.nm}<small>${x.sub}</small></div><button data-k="${x.k}" ${G.s < x.price || G.shopDone[x.k] ? "disabled" : ""}>${G.shopDone[x.k] ? "買了" : x.price ? cost(x.price) : "去"}</button></div>`).join("")}</div>`}
+      ${vis.length ? `<h3 class="vh">去找人<small>一晚只能去一個地方</small></h3><div class="shop">${vis.map(([id, nm]) => `<div class="item"><div class="nm">${nm}</div><button data-v="${id}" ${G.visited === G.day ? "disabled" : ""}>${G.visited === G.day ? "今晚去過了" : "去"}</button></div>`).join("")}</div>` : ""}
+      <div class="opts"><button class="opt" id="goHome">回家</button></div></div>`;
+    $("main").querySelectorAll("[data-v]").forEach(b => b.onclick = () => { G.visited = G.day; card(b.dataset.v); });
+    $("main").querySelectorAll("[data-k]").forEach(b => b.onclick = () => {
+      const x = items.find(y => y.k === b.dataset.k); if (!x || G.s < x.price) return;
+      G.s -= x.price; x.fn(); if (x.once) G.shopDone[x.k] = 1;
+      renderTop(); floatStat("s", -x.price); render();
+    });
+    $("goHome").onclick = () => night();
+    renderTop();
+  };
+  render();
+}
+// 收工的帳：賣得的錢拆成「還早上批菜的本錢、市場費、賒帳多還的、淨賺」，用圓餅圖讓學生一眼看懂
+function salePie() {
+  const parts = [["還早上批菜的本錢", G.cost || 0, "#8a6a3a"], ["市場費", G.fee || 0, "#7d8f9c"], ["賒菜多還的", G.credit ? 10 : 0, "#a65a5a"]].filter(x => x[1] > 0);
+  const net = G.today, lost = G.flag.c1day === G.day && !G.flag.gift ? "失神了半天，" : "";
+  const left = G.leftover ? `<p>擔子裡還剩 <b>${G.leftover} 把</b>菜。市場賣的是新鮮菜，不能隔夜，只好丟掉，虧掉約 ${Math.round(G.cost * G.leftover / BUNDLES)} 錢本錢。</p>` : "";
+  if (net <= 0) return `<p>今天${lost}賣得 ${G.gross} 錢，還不夠付早上的本錢，<b style="color:#ff8a78">虧了 ${-net} 錢</b>。</p>${left}`;
+  const all = [...parts, ["淨賺", net, "#5fa64a"]], sum = all.reduce((a, x) => a + x[1], 0);
+  let acc = 0;
+  const grad = all.map(([, v, c]) => { const a = acc / sum * 360, b = (acc += v) / sum * 360; return `${c} ${a}deg ${b}deg`; }).join(",");
+  return `<div class="pie"><div class="disc" style="background:conic-gradient(${grad})"></div><div><p style="margin:0 0 6px">今天${lost}賣得 <b>${G.gross} 錢</b>：</p>
+    ${all.map(([n, v, c]) => `<div class="pl"><i style="background:${c}"></i>${n}<b>${v} 錢</b></div>`).join("")}
+    <p class="explain" style="margin-top:6px">淨賺的 ${net} 錢${net >= 100 ? "，就是課文說的「一塊多錢」" : ""}。明天批菜，要從身上另外留 ${LOAD} 錢。</p></div></div>${left}`;
+}
+function rest(forced) {
+  G.phase = "eve"; G.daysOut = 0;
+  const pool = ["fever", "road", "sisAsk", "weeds"].filter(id => !G.used.has(id) && (!EV[id].cond || EV[id].cond()));
+  if (!forced && chance(.6) && pool.length) { const id = rnd(pool); G.used.add(id); Q = [() => evening(true)]; return card(id); }
+  evening(true);
+}
+function village() {
+  if (G.mapMode) return villageMap();
+  G.phase = "eve"; G.daysOut = 0; G.vv = 0; G.vDone = [];
+  card("village");
+}
+// 村裡一天可以走兩家
+function villageNext() { G.vv++; if (G.vv >= 2) return evening(true); if (G.mapMode) return villageMap(true); card("village"); }
+const morningOrMap = () => G.mapMode && !G.flag.force ? villageMap() : card("morning");
+// 聲請正式裁判：要有人寫書狀、有證人；漢文先生要潤筆一圓。缺了就退回繳錢或坐監，不會卡死
+function appeal() {
+  const writer = G.flag.writerYouth ? "youth" : G.flag.writerSensei ? "sensei" : "", fee = writer === "sensei" ? 100 : 0, lack = [];
+  if (!writer) lack.push("沒有人替你寫書狀。你不識字");
+  const evidence = hasItem("broken") && hasItem("receipt") && G.flag.brokeKind === "own";   // 斷秤＋收據：物證代替證人
+  if (!G.flag.nbWitness && !evidence) lack.push("沒有證人能說那桿稱仔是新的");
+  if (writer && G.s < fee) lack.push(`漢文先生的潤筆一圓，你身上只有 ${G.s} 錢`);
+  if (lack.length) {
+    G.flag.appealFail = 1;
+    EV._appeal = {who: "judge", t: "「三日內具狀。」", x: `<p>郡守冷冷地說：要正式裁判，三天內把書狀遞上來。</p><p>你算了算：除夕、初一、初二。${lack.join("；")}。</p>`,
+      n: "正式裁判要有人代筆、有人作證，這些都要在進郡衙之前準備好。廿九那天，就是準備的時候。", o: [{t: "……", e: {}, r: "", quiet: 1, go: () => card("c2e")}]};
+    return card("_appeal");
+  }
+  G.s -= fee; G.flag.appealed = 1;
+  EV._appeal = {who: "judge", t: "「隨便你。」", x: `<p>郡守冷冷地說：隨便你，三日內具狀。巡警在旁邊瞪著你。</p><p>${writer === "youth" ? "讀報的青年" : "漢文先生"}替你寫的書狀，${fee ? "加上一圓潤筆，" : ""}隔天就遞進去了。鄰家答應正月出庭。你被放了出來，等正月開庭。</p>`,
+    n: "1904 年《犯罪即決例》：聲請正式裁判之後，即決就不算數，案子改由法院審。", o: [{t: "走出郡衙。", e: {}, r: "", quiet: 1, go: () => street()}]};
+  card("_appeal");
+}
+function night() {
+  G.phase = "night";
+  G.g = Math.max(0, G.g - 1);
+  delete G.flag.force;
+  const late = G.visited === G.day && !G.flag["late" + G.day];
+  if (late) { G.flag["late" + G.day] = 1; G.b = Math.max(1, G.b - 1); }   // 晚回家最多扣到剩 1，不會因此病死
+  renderTop();
+  const lines = [];
+  if (late) lines.push("今晚回來得晚，沒歇夠。（身體 −1）");
+  let o = [{t: "睡罷。", e: {}, r: ""}], q = "", qs = "", t = "夜裡";
+  if (G.g > 0) G.hungry = 0;   // 餓過年看的是「連續」兩天斷糧
+  const stayed = G.day >= 26 && G.day < 30 && !G.flag["m" + G.day] && !G.flag["m" + (G.day - 1)];
+  if (G.flag.c1day === G.day && !G.flag.gift && G.day < 30) {
+    t = "回到家"; q = "「寬心罷！」妻子說，「這幾天的所得，買一桿新的還給人家，剩下的猶足贖取那金花回來。休息罷，明天亦不用出去，新春要的物件，大概準備下，但是，今年運氣太壞，怕運裡帶有官符，經這一回事，明年快就出運，亦不一定。」"; qs = "課文";
+    lines.push("夜飯前你吃不下，只悶悶地一句話不說。經妻子殷勤的探問，才把白天所遭的事告訴她。");
+  } else if (G.day === 25 && G.hua === "sis") { Q = [() => dayEnd()]; return card("d25"); }
+  else if (stayed) { G.flag.force = 1; lines.push("隔壁的阿嬸來借火，順口說：聽說年前這幾天，鎮上的菜價一天比一天好，賣菜的都搶著去。"); lines.push("妻子說：「兩天沒上鎮了。明天去罷，不去就可惜了。」"); }
+  else if (G.day === 23) { lines.push("妻子說：明天送神，菜會特別好賣。"); lines.push("隔壁的孩子跑來說：明天廟埕有講古仙，要講廖添丁。"); }
+  else if (G.g === 0) { lines.push("米缸見底了。孩子們餓著睡下。妻子沒有說話。"); G.w = clamp10(G.w - 2); G.hungry++; }
+  else if (G.flag.promise && G.hua === "sis" && G.day > 26) { lines.push("妻子沒有提金花的事。她不提，比提了更難受。"); G.w = clamp10(G.w - 2); delete G.flag.promise; }
+  else if (G.b <= 2) { lines.push("妻子摸摸你的額頭：「明天歇一天罷。」"); }
+  else if (G.hua === "sis" && G.day === 27) { lines.push("妻子輕聲說：「金花……」然後沒有說下去。"); G.w = clamp10(G.w - 1); }
+  else if (G.flag.wantCloth && !G.flag.bu && G.day > 26) { lines.push("孩子問：新衣裳呢？妻子看了你一眼。"); G.w = clamp10(G.w - 1); delete G.flag.wantCloth; }
+  else lines.push(rnd(["孩子們睡了。妻子在燈下補衣裳。", "風從門縫鑽進來。妻子把孩子的被角掖好。", "妻子數了數今天的錢，沒有說話。", "遠遠有人家在試爆竹。"]));
+  if (G.g === 0 && G.hungry >= 2) return G.why = "糧連續兩天歸零。米要在鎮上傍晚糴，一次 3 天。", finish("hunger");
+  EV._night = {who: "wife", t, x: `<p>${lines.join("</p><p>")}</p>`, q, qs, o};
+  Q = [() => dayEnd()];
+  card("_night");
+}
+function dayEnd() {
+  G.day++;
+  dayStart();
+}
+// 對峙一的收尾
+function afterC1(gift) {
+  if (gift) { settleSale(); G.mul = 1; return evening(false); }
+  G.mul *= .7;
+  Q = ["c1end", "c1old"];
+  next();
+}
+// 郡衙之後
+function afterJail(how) {
+  if (how === "paid") { G.flag.paid = 1; Q = [() => street()]; return next(); }
+  G.flag.jailed = 1;
+  // 妻子聽到消息：她的心夠，就會來繳。家裡有錢用家裡的，沒有就是鄰右湊的三塊錢（記成欠鄰家）
+  if (G.w >= 5 || G.flag.boyCake) {   // 妻子的心夠，或小使跑去告訴她
+    G.flag.wifePaid = 1;
+    let how;
+    if (G.s >= G.fine) { G.s -= G.fine; how = "她帶著家裡的錢到衙門去。"; }
+    else { G.flag.nbLoan300 = 1; how = `家裡只剩 ${G.s} 錢，是鄰右湊了${G.fine === 100 ? "一圓" : "三塊錢"}給她。這筆錢正月要還。`; }
+    EV._wife = {who: "wife", t: "「才監禁下，什麼就釋出來？」", x: "<p>你心裡正在懷疑地自問。出來到衙前，看著妻子。</p><p>「為什麼到這兒來？」你問。「聽……說被拉進去！」她微咽著聲回答。</p>",
+      q: "她就哀求他，替伊探查，難得那孩子，童心還在，不會倚勢欺人，誠懇地，替伊設法，教她拿出三塊錢，代繳進去。", qs: "課文",
+      n: "妻子守在家裡哭，後經鄰右的勸慰、教導，才到衙門去。" + how + "是庭裡那個小使教她怎麼繳。",
+      o: [{t: "「不犯到什麼事，不至殺頭怕什麼。」", orig: 1, e: {}, r: "你怏怏地說。", go: () => street()}]};
+    return card("_wife");
+  }
+  // 真的坐三天
+  G.why = `妻子的心只有 ${G.w}，不到 5。她守在家裡哭，沒有人勸得動她到衙門去。`;
+  finish(G.hua === "sis" ? "pawnLost" : "jailEve");
+}
+function street() {
+  const enough = G.hua === "sis" && G.s >= HUA_BACK;
+  EV._street = {who: "narr", t: "街上", x: () => `<p>來到街上，市已經散了，處處聽到「辭年」的爆竹聲。</p>${G.hua === "sis" ? `<p>「金花取回未？」你問。「還未曾出門，就聽到這消息。」妻子回答。</p><p>身上還有 ${G.s} 錢。當鋪怕要關閉了。</p>` : G.hua === "home" ? "<p>金花已經在家裡。你們一起走回去。</p>" : "<p>你們一起走回去。</p>"}`,
+    o: () => G.hua !== "sis" ? [{t: "回家圍爐。", e: {}, r: "", go: () => eveNight()}] : [
+      {t: `把錢給她：「快一點去，取出就回來罷。」${cost(HUA_BACK)}`, orig: 1, cond: () => enough, lock: "錢不夠，贖不回來", e: {s: -HUA_BACK, hua: "home", w: 2}, r: "你挑擔子回去。她趕在當鋪關門前取回金花。", q: "「我挑擔子回去，當舖怕要關閉了，快一點去，取出就回來罷。」", qs: "課文", go: () => eveNight()},
+      {t: "妻子說：「我身上還藏著一點，是織草鞋存的。」", cond: () => !enough && G.s + 100 >= HUA_BACK, lock: "差太多了，她藏的也不夠", req: {w: 8}, e: {s: -G.s, hua: "home", w: 1}, r: "她把手帕裡的銅錢倒出來，跟你的湊在一起，趕在當鋪關門前取回金花。", go: () => eveNight()},
+      {t: "錢留著過年。", e: {w: -2, hua: "lost"}, r: "當鋪關門了。正月十六以後，金花就流當了。", go: () => eveNight()}
+    ]};
+  card("_street");
+}
+function eveNight() { G.day = 31; G.g = Math.max(0, G.g - 1); collect(); }
+// 除夕：年底的帳。舊曆年前要清帳，債主會在圍爐前上門
+function collect() {
+  G.phase = "night";
+  const x = G.debts.find(d => !d.done);
+  if (!x) return card("eve");
+  const bz = x.who === "bz";
+  EV._debt = {who: x.who, t: x.n, x: `<p>除夕，圍爐前，${bz ? "保正" : "業主的人"}上門了。${x.n}，一共 ${x.amt} 錢。</p><p>身上有 ${G.s} 錢。</p>`,
+    n: "舊曆年前要清帳，所以叫「年關」。", o: [
+      {t: `照數還清。${cost(x.amt)}`, cond: () => G.s >= x.amt, lock: `錢不夠，身上只有 ${G.s} 錢`, e: {s: -x.amt}, r: "帳清了。", go: () => { x.done = "paid"; collect(); }},
+      {t: "求他寬限到正月。", e: {w: -1}, r: bz ? "保正答應了，說話很客氣。你知道這個人情又加了一層。" : "他答應了，臉色不好看。妻子在旁邊低著頭。", go: () => { x.done = "late"; collect(); }},
+      {t: "躲在後頭，叫妻子說你不在。", e: bz ? {w: -1, o: 2} : {w: -1, o: 1}, r: bz ? "保正什麼都沒說就走了。他是會向派出所通報的人。" : "他在門口罵了一陣才走。明年的田，大概租不到了。", go: () => { x.done = "hide"; collect(); }}
+    ]};
+  card("_debt");
+}
+
+// ===== 鎮上地圖（第三期）=====
+// 俯視像素地圖：640×352 的低解析畫布，整數倍放大。每格 16 像素。
+// 白天在這裡擺攤：站在哪裡、待多久決定收入；巡警巡邏，課文那串法規變成會走過來的人和車。
+const TS = 16, MW = 40, MH = 22, DUR = 30, SELL_NEED = 12, HIT_MAX = 3, BUNDLES = 24;   // 一個早上（06:00～12:00）實際 30 秒（使用者指定）；一擔 24 把菜，賣滿 12 秒就賣完；一天最多碰上 3 件事
+const SHOPS = [{k: "rice", n: "米店", x0: 1, x1: 6, door: 3}, {k: "goods", n: "雜貨店", x0: 8, x1: 13, door: 10}, {k: "pawn", n: "當鋪", x0: 15, x1: 19, door: 17},
+  {k: "scale", n: "度量衡販賣所", x0: 21, x1: 25, door: 23}, {k: "doc", n: "醫館", x0: 27, x1: 32, door: 29}, {k: "arcade", n: "騎樓", x0: 34, x1: 39, door: 36}];
+let TG = [];
+(function buildTown() {
+  for (let y = 0; y < MH; y++) TG.push(Array(MW).fill("o"));
+  const fill = (x0, y0, x1, y1, c) => { for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) TG[y][x] = c; };
+  fill(0, 0, 39, 3, "#");                 // 一整排店面
+  fill(0, 4, 39, 5, ",");                 // 亭仔腳
+  fill(0, 6, 39, 8, ".");                 // 大路
+  fill(0, 9, 39, 9, "e");                 // 路旁
+  fill(1, 10, 16, 20, "W"); fill(2, 11, 15, 19, "m"); TG[10][8] = "m"; TG[10][9] = "m";   // 市場，大門在上方
+  for (const y of [12, 15, 18]) for (let x = 3; x <= 14; x += 2) TG[y][x] = "S";
+  fill(19, 10, 27, 14, "T"); fill(18, 15, 28, 20, "c");   // 媽祖廟與廟埕
+  fill(31, 10, 37, 14, "P");              // 派出所
+  fill(0, 21, 39, 21, "#");
+  SHOPS.forEach(s => TG[3][s.door] = "d");
+})();
+const WALK = new Set([".", ",", "e", "m", "S", "c", "o", "p"]);
+const tileAt = (px, py) => { const x = Math.floor(px / TS), y = Math.floor(py / TS); return x < 0 || y < 0 || x >= MW || y >= MH ? "#" : TG[y][x]; };
+const walkPx = (px, py) => WALK.has(tileAt(px, py));
+const freeAt = (px, py, r) => walkPx(px - r, py - r) && walkPx(px + r, py - r) && walkPx(px - r, py + 2) && walkPx(px + r, py + 2);
+// 站的位置屬於哪一種擺攤：市場內 in、路旁 st、店前 fr、往隔壁庄 far、回村子 home
+function zoneAt(px, py) {
+  const tx = Math.floor(px / TS), ty = Math.floor(py / TS), c = tileAt(px, py);
+  if (c === "S") return "in";
+  if (c === "e") return "st";
+  if (ty === 4 && SHOPS.some(s => Math.abs(tx - s.door) <= 1)) return "fr";
+  if (ty >= 6 && ty <= 8 && tx >= 39) return "far";
+  if (ty >= 6 && ty <= 8 && tx <= 0) return "home";
+  return "";
+}
+// 簡單的格子尋路（BFS），給巡警、甲長這些會找上門的人用
+function nextStep(sx, sy, tx, ty) {
+  const s = [Math.floor(sx / TS), Math.floor(sy / TS)], t = [Math.floor(tx / TS), Math.floor(ty / TS)];
+  if (s[0] === t[0] && s[1] === t[1]) return [tx, ty];
+  const prev = new Map(), key = (x, y) => y * MW + x, q = [t];
+  prev.set(key(...t), null);
+  while (q.length) {
+    const [x, y] = q.shift();
+    if (x === s[0] && y === s[1]) break;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const nx = x + dx, ny = y + dy;
+      if (nx < 0 || ny < 0 || nx >= MW || ny >= MH || prev.has(key(nx, ny)) || !WALK.has(TG[ny][nx])) continue;
+      prev.set(key(nx, ny), [x, y]); q.push([nx, ny]);
+    }
+  }
+  const p = prev.get(key(...s));
+  return p ? [(p[0] + .5) * TS, (p[1] + .5) * TS] : [tx, ty];
+}
+function steer(e, tx, ty, spd, dt) {
+  const n = e.dumb ? [tx, ty] : ((e.pathT = (e.pathT || 0) - dt) <= 0 || !e.nx ? (e.pathT = .25, e.nx = nextStep(e.x, e.y, tx, ty)) : e.nx);
+  const dx = n[0] - e.x, dy = n[1] - e.y, L = Math.hypot(dx, dy);
+  if (L < 1) { e.nx = null; e.moving = false; return Math.hypot(tx - e.x, ty - e.y) < 3; }
+  const s = Math.min(L, spd * dt);
+  e.x += dx / L * s; e.y += dy / L * s; e.moving = true;
+  e.dir = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "right" : "left") : (dy > 0 ? "down" : "up");
+  e.fr = (e.fr || 0) + s / 6;
+  return false;
+}
+
+// ---------- 像素人物（12×18）----------
+const LOOK = {
+  me: {skin: "#e8b98c", top: "#3d5f8c", bottom: "#2b2a30", hat: "douli", pole: 1},
+  cop: {skin: "#e8bf98", top: "#1c2030", bottom: "#1c2030", hat: "cap", sword: 1},
+  spy: {skin: "#e2b48a", top: "#77746a", bottom: "#3a3832", hat: "bowler"},
+  health: {skin: "#e8bf98", top: "#e6e3d6", bottom: "#e6e3d6", hat: "capw"},
+  meter: {skin: "#e8bf98", top: "#4b5a70", bottom: "#2c3340", hat: "bowler", rod: 1},
+  jia: {skin: "#d9a77c", top: "#7a5a3a", bottom: "#3a2e24", hat: "none", book: 1},
+  folk: [{skin: "#e8b98c", top: "#8a5a44", bottom: "#2b2a30", hat: "none"}, {skin: "#d9a77c", top: "#5a7a5a", bottom: "#33302a", hat: "douli"},
+    {skin: "#e8b98c", top: "#a65a5a", bottom: "#3a2e3a", hat: "bun"}, {skin: "#d9a77c", top: "#6a6a8a", bottom: "#2b2a30", hat: "none"}]
+};
+function drawMan(g, x, y, lk, dir, fr, still) {
+  const ox = Math.round(x) - 6, oy = Math.round(y) - 18;
+  const o = (a, b, w, h, c) => { g.fillStyle = c; g.fillRect(ox + a, oy + b, w, h); };
+  g.fillStyle = "rgba(0,0,0,.25)"; g.fillRect(ox + 2, oy + 17, 8, 2);
+  const st = still ? 0 : Math.floor(fr) % 4, l = st === 1 ? 1 : 0, r = st === 3 ? 1 : 0;
+  o(3, 13, 2, 4 - l, lk.bottom); o(7, 13, 2, 4 - r, lk.bottom);
+  o(3, 17 - l, 2, 1, "#2a2420"); o(7, 17 - r, 2, 1, "#2a2420");
+  o(2, 8, 8, 6, lk.top);
+  if (lk.top === "#1c2030") { o(5, 9, 1, 1, "#d8b44a"); o(5, 11, 1, 1, "#d8b44a"); }
+  const sw = st === 1 ? 1 : st === 3 ? -1 : 0;
+  if (dir !== "left") { o(10, 9 + (sw > 0), 1, 4, lk.top); o(10, 13 + (sw > 0), 1, 1, lk.skin); }
+  if (dir !== "right") { o(1, 9 + (sw < 0), 1, 4, lk.top); o(1, 13 + (sw < 0), 1, 1, lk.skin); }
+  if (lk.sword) o(dir === "left" ? 9 : 1, 11, 1, 6, "#b8bcc4");
+  if (lk.rod) o(dir === "left" ? 0 : 11, 5, 1, 9, "#8a6a3a");
+  if (lk.book) o(dir === "left" ? 8 : 2, 10, 3, 3, "#e8e0c8");
+  o(3, 2, 6, 6, lk.skin);
+  const h = lk.hat;
+  if (h === "douli") { o(0, 1, 12, 1, "#b8913e"); o(2, 0, 8, 1, "#c9a45c"); o(4, -1, 4, 1, "#d6b46a"); }
+  else if (h === "cap") { o(3, 0, 6, 2, "#1c2030"); o(3, 1, 6, 1, "#c94a3a"); if (dir === "down") o(3, 2, 6, 1, "#101420"); }
+  else if (h === "capw") { o(3, 0, 6, 2, "#f2f0e6"); o(3, 2, 6, 1, "#1c2030"); }
+  else if (h === "bowler") { o(2, 1, 8, 1, "#2a2622"); o(3, -1, 6, 2, "#2a2622"); }
+  else if (h === "bun") { o(3, 1, 6, 2, "#1d1a18"); o(5, -1, 2, 2, "#1d1a18"); }
+  else { o(3, 1, 6, 2, "#1d1a18"); }
+  if (dir === "up") return;
+  const eye = "#1f1c1a";
+  if (dir === "down") { o(4, 5, 1, 1, eye); o(7, 5, 1, 1, eye); }
+  else if (dir === "left") o(4, 5, 1, 1, eye); else o(7, 5, 1, 1, eye);
+}
+function drawLoad(g, x, y, sitting) {   // 扁擔與兩籃菜
+  const bx = Math.round(x), by = Math.round(y);
+  const basket = (cx, cy) => { g.fillStyle = "#8a6a3a"; g.fillRect(cx - 4, cy - 4, 8, 5); g.fillStyle = "#5fa64a"; g.fillRect(cx - 4, cy - 6, 8, 2); g.fillStyle = "#7cc05a"; g.fillRect(cx - 2, cy - 7, 3, 1); };
+  if (sitting) { basket(bx - 9, by + 2); basket(bx + 9, by + 2); g.fillStyle = "#7a5a32"; g.fillRect(bx - 12, by + 4, 24, 1); }
+  else { g.fillStyle = "#7a5a32"; g.fillRect(bx - 11, by - 13, 22, 1); basket(bx - 10, by - 6); basket(bx + 10, by - 6); }
+}
+function drawCart(g, x, y, dir, lord) {
+  const bx = Math.round(x), by = Math.round(y), f = dir === "left" ? -1 : 1;
+  g.fillStyle = "rgba(0,0,0,.25)"; g.fillRect(bx - 12, by + 1, 24, 2);
+  g.fillStyle = lord ? "#2a2a34" : "#5a3a22"; g.fillRect(bx - 8, by - 12, 14, 9);
+  g.fillStyle = lord ? "#8a1d1d" : "#3a2a1a"; g.fillRect(bx - 8, by - 14, 14, 2);
+  g.fillStyle = "#1a1a1a"; g.beginPath(); g.arc(bx - 1, by - 2, 4, 0, 7); g.fill();
+  g.fillStyle = "#8a8a8a"; g.fillRect(bx - 2, by - 3, 2, 2);
+  g.fillStyle = "#6a4a2a"; g.fillRect(bx + f * 6, by - 6, f * 10, 1);
+  if (lord) drawMan(g, bx - 1, by - 6, {skin: "#e8bf98", top: "#f2f0e6", bottom: "#f2f0e6", hat: "bowler"}, "down", 0, 1);
+  drawMan(g, bx + f * 16, by + 2, {skin: "#c99a6a", top: "#6a5a44", bottom: "#33302a", hat: "douli"}, dir, (performance.now() / 80) | 0);
+}
+
+// ---------- 靜態地圖 ----------
+const townCv = document.createElement("canvas"); townCv.width = MW * TS; townCv.height = MH * TS;
+const TREES = [[17, 12], [17, 18], [29, 11], [29, 17], [38, 12], [38, 18]];
+TREES.forEach(([x, y]) => TG[y][x] = "Y");   // 樹幹擋路
+(function paintTown() {
+  const g = townCv.getContext("2d");
+  let seed = 7; const r = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  const fr = (x, y, w, h, c) => { g.fillStyle = c; g.fillRect(x, y, w, h); };
+  for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) {
+    const c = TG[y][x], px = x * TS, py = y * TS;
+    if (c === "." || c === "e") { fr(px, py, 16, 16, "#b7a07c"); for (let k = 0; k < 5; k++) fr(px + (r() * 15 | 0), py + (r() * 15 | 0), 1, 1, r() < .5 ? "#a58e6a" : "#c6b08c"); if (c === "e") { fr(px, py + 13, 16, 3, "#7d6a50"); fr(px, py + 13, 16, 1, "#5e4f3a"); } }
+    else if (c === ",") { fr(px, py, 16, 16, "#9a6c52"); for (let k = 0; k < 4; k++) fr(px, py + k * 4, 16, 1, "#86593f"); fr(px + (y % 2 ? 0 : 8), py, 1, 16, "#86593f"); }
+    else if (c === "m") { fr(px, py, 16, 16, "#8c7d68"); fr(px, py + 15, 16, 1, "#7a6c58"); }
+    else if (c === "S") { fr(px, py, 16, 16, "#8c7d68"); fr(px + 1, py + 3, 14, 9, "#a87e4a"); fr(px + 1, py + 3, 14, 2, "#c09a62"); fr(px + 2, py + 12, 2, 3, "#6a4a2a"); fr(px + 12, py + 12, 2, 3, "#6a4a2a"); }
+    else if (c === "W") { fr(px, py, 16, 16, "#6e5a44"); fr(px, py, 16, 3, "#8a7254"); fr(px + (x % 2) * 8, py + 6, 1, 10, "#5a4834"); }
+    else if (c === "c") { fr(px, py, 16, 16, "#cdbd98"); fr(px, py, 16, 1, "#b9a882"); fr(px, py, 1, 16, "#b9a882"); }
+    else if (c === "o" || c === "Y") { fr(px, py, 16, 16, "#8f9a62"); for (let k = 0; k < 4; k++) fr(px + (r() * 15 | 0), py + (r() * 15 | 0), 1, 2, "#7a8652"); }
+    else if (c === "T") { fr(px, py, 16, 16, y < 13 ? "#a8402c" : "#d9c39a"); if (y < 13) { fr(px, py + (y % 2) * 8, 16, 1, "#8a3020"); fr(px + 4, py, 1, 16, "#c25a40"); } else { fr(px + 2, py + 3, 3, 13, "#7a2a1e"); } }
+    else if (c === "P") { fr(px, py, 16, 16, y < 12 ? "#4a505c" : "#e2ded2"); if (y >= 12) { fr(px + 3, py + 4, 4, 6, "#7d8f9c"); } else fr(px, py + 15, 16, 1, "#3a3f48"); }
+    else if (c === "#" || c === "d") {
+      const s = SHOPS.find(z => x >= z.x0 && x <= z.x1) || null;
+      if (y <= 1) { fr(px, py, 16, 16, s ? "#8a3b2b" : "#5a4a3a"); fr(px, py + 7, 16, 1, s ? "#6e2c1f" : "#4a3a2a"); fr(px, py + 15, 16, 1, "#4a2018"); }
+      else if (y === 2) { fr(px, py, 16, 16, s ? "#d6c4a2" : "#6a5a48"); if (s) fr(px + 1, py + 4, 14, 8, "#3a2a1e"); }
+      else if (y === 3) { fr(px, py, 16, 16, s ? "#c9b08a" : "#6a5a48"); if (c === "d") { fr(px + 2, py + 2, 12, 14, "#4a2e1c"); fr(px + 7, py + 2, 1, 14, "#2e1c10"); } else if (s) { fr(px + 3, py + 4, 10, 7, "#7d8f88"); fr(px + 4, py + 5, 8, 5, "#a9c4c8"); } }
+      else fr(px, py, 16, 16, "#3a3028");
+    }
+  }
+  // 亭仔腳的柱子
+  for (let x = 0; x < MW; x += 3) fr(x * TS + 6, 4 * TS, 4, 6, "#7a4a34");
+  // 媽祖廟的燕尾與香爐、派出所門口
+  fr(19 * TS, 10 * TS - 3, 9 * TS, 3, "#c25a40"); fr(19 * TS - 4, 10 * TS - 7, 6, 4, "#c25a40"); fr(28 * TS - 2, 10 * TS - 7, 6, 4, "#c25a40");
+  fr(23 * TS + 2, 16 * TS + 2, 12, 10, "#6a5a4a"); fr(23 * TS + 4, 16 * TS, 8, 3, "#8a7a6a");
+  fr(34 * TS + 3, 13 * TS, 10, 32, "#3a3f48"); fr(34 * TS + 4, 13 * TS + 2, 8, 30, "#20242e");
+  fr(30 * TS + 6, 10 * TS - 20, 1, 24, "#ddd"); fr(30 * TS + 7, 10 * TS - 20, 10, 7, "#f2f0e6"); fr(30 * TS + 10, 10 * TS - 18, 3, 3, "#c0392b");
+  // ---- 斜俯視的立體感：光從左上來，屋簷與建築的影子往下落 ----
+  const sh = (x, y, w, h, a) => fr(x, y, w, h, `rgba(30,18,6,${a})`);
+  sh(0, 4 * TS, MW * TS, 5, .32); sh(0, 4 * TS + 5, MW * TS, 3, .14);          // 店面屋簷落在亭仔腳上
+  fr(0, 2 * TS - 3, MW * TS, 3, "#5a2418");                                    // 屋簷厚度
+  for (let x = 0; x < MW; x += 3) { fr(x * TS + 9, 4 * TS, 1, 6, "#5a3424"); sh(x * TS + 10, 4 * TS + 6, 4, 2, .3); }   // 柱子的暗面與影子
+  for (const z of SHOPS) { fr(z.x0 * TS, 3 * TS, (z.x1 - z.x0 + 1) * TS, 2, "#e6d6b6"); fr(z.x1 * TS + 14, 2 * TS, 2, 2 * TS, "rgba(0,0,0,.18)"); }   // 牆頭亮線、牆角暗面
+  // 市場：圍牆有高度，內側落影
+  fr(1 * TS, 10 * TS, 16 * TS, 5, "#9a8262"); sh(2 * TS, 11 * TS, 14 * TS, 6, .3); sh(2 * TS, 11 * TS, 5, 9 * TS, .18); sh(1 * TS, 21 * TS - 2, 16 * TS, 2, .2);
+  fr(8 * TS, 10 * TS, 2 * TS, 5, "#8c7d68");   // 大門口
+  // 媽祖廟：屋脊、紅燈籠、門，廟埕上的影子
+  fr(19 * TS, 12 * TS + 10, 9 * TS, 6, "#7a2a1e"); sh(19 * TS, 13 * TS, 9 * TS, 4, .25);
+  for (const lx of [21, 25]) { fr(lx * TS + 5, 13 * TS + 4, 6, 7, "#d23b2a"); fr(lx * TS + 6, 13 * TS + 5, 4, 1, "#f2b04a"); }
+  fr(23 * TS, 13 * TS + 2, 2 * TS, 30, "#5a2a1a"); fr(23 * TS + 15, 13 * TS + 2, 2, 30, "#3a1a10");
+  sh(18 * TS, 15 * TS, 11 * TS, 6, .3);
+  fr(19 * TS + 1, 15 * TS + 4, 30, 10, "#8a6a3a"); for (let k = 0; k < 5; k++) fr(19 * TS + 3 + k * 6, 15 * TS + 2, 4, 6, k % 2 ? "#5f9a4a" : "#7cb05a");   // 青草攤
+  // 派出所：洋樓的屋簷、窗框、台階與影子
+  fr(31 * TS, 12 * TS - 2, 7 * TS, 3, "#2e333c"); sh(31 * TS, 12 * TS + 1, 7 * TS, 3, .22);
+  fr(33 * TS + 10, 15 * TS, 20, 4, "#b8b4a8"); sh(31 * TS, 15 * TS, 7 * TS, 5, .28);
+  // 樹：樹幹擋路，樹冠在上面
+  for (const [x, y] of TREES) {
+    const cx = x * TS + 8, cy = y * TS + 12;
+    sh(cx - 6, cy + 1, 16, 4, .3);
+    fr(cx - 2, cy - 8, 4, 10, "#6b4a32");
+    fr(cx - 10, cy - 22, 20, 14, "#3f7a44"); fr(cx - 7, cy - 26, 14, 20, "#3f7a44");
+    fr(cx - 6, cy - 22, 10, 7, "#5a9a52"); fr(cx - 3, cy - 24, 5, 3, "#7fbf6a");
+  }
+})();
+const TOWN_G = TG;
+// ---------- 威麗村 ----------
+const HOUSES = [{k: "nbTalk", n: "鄰家", x0: 1, x1: 6, door: 3}, {k: "home", n: "自家", x0: 9, x1: 14, door: 11},
+  {k: "sensei", n: "私塾", x0: 17, x1: 23, door: 20}, {k: "bzTalk", n: "保正家", x0: 26, x1: 37, door: 31}];
+const VG = [];
+(function buildVillage() {
+  for (let y = 0; y < MH; y++) VG.push(Array(MW).fill("o"));
+  const fill = (x0, y0, x1, y1, c) => { for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) VG[y][x] = c; };
+  HOUSES.forEach(h => { fill(h.x0, 0, h.x1, 3, "#"); VG[3][h.door] = "d"; });
+  fill(0, 4, 39, 5, ",");                  // 門口埕
+  fill(0, 6, 39, 8, ".");                  // 庄頭的路
+  fill(0, 10, 11, 20, "f"); fill(6, 10, 6, 20, "p");      // 稻田與田埂
+  fill(15, 10, 21, 12, "T"); fill(14, 13, 22, 17, "c");   // 廟埕
+  fill(25, 10, 39, 20, "k"); fill(31, 10, 31, 20, "p");   // 會社的甘蔗田
+})();
+const villageCv = document.createElement("canvas"); villageCv.width = MW * TS; villageCv.height = MH * TS;
+(function paintVillage() {
+  const g = villageCv.getContext("2d");
+  let seed = 11; const r = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  const fr = (x, y, w, h, c) => { g.fillStyle = c; g.fillRect(x, y, w, h); };
+  for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) {
+    const c = VG[y][x], px = x * TS, py = y * TS;
+    if (c === "." || c === "p") { fr(px, py, 16, 16, "#a8916a"); for (let k = 0; k < 5; k++) fr(px + (r() * 15 | 0), py + (r() * 15 | 0), 1, 1, r() < .5 ? "#957f5a" : "#b8a27c"); }
+    else if (c === ",") { fr(px, py, 16, 16, "#b9a47e"); fr(px, py + 15, 16, 1, "#a8936c"); }
+    else if (c === "o") { fr(px, py, 16, 16, "#8f9a62"); for (let k = 0; k < 4; k++) fr(px + (r() * 15 | 0), py + (r() * 15 | 0), 1, 2, "#7a8652"); }
+    else if (c === "f") { fr(px, py, 16, 16, "#6f8f9a"); fr(px, py, 16, 1, "#5f7f8a"); for (let k = 0; k < 3; k++) fr(px + 2 + k * 5, py + 4 + (k % 2) * 5, 2, 4, "#7fae5a"); }
+    else if (c === "k") { fr(px, py, 16, 16, "#6f8a44"); for (let k = 0; k < 4; k++) fr(px + 1 + k * 4, py, 2, 16, k % 2 ? "#8fae54" : "#5a7a34"); }
+    else if (c === "c") { fr(px, py, 16, 16, "#cdbd98"); fr(px, py, 16, 1, "#b9a882"); fr(px, py, 1, 16, "#b9a882"); }
+    else if (c === "T") { fr(px, py, 16, 16, y < 12 ? "#a8402c" : "#d9c39a"); if (y < 12) fr(px, py + 8, 16, 1, "#8a3020"); else fr(px + 2, py + 3, 3, 13, "#7a2a1e"); }
+    else if (c === "#" || c === "d") {
+      const h = HOUSES.find(z => x >= z.x0 && x <= z.x1), big = h && h.k === "bzTalk";
+      if (y <= 1) { fr(px, py, 16, 16, big ? "#8a3b2b" : "#6e6a5e"); fr(px, py + 7, 16, 1, big ? "#6e2c1f" : "#5a564c"); }
+      else { fr(px, py, 16, 16, big ? "#d6c4a2" : "#c4a77c"); fr(px, py, 16, 1, "#a88a60"); if (c === "d") { fr(px + 2, py + (y === 3 ? 2 : 16), 12, 14, "#4a2e1c"); } else if (y === 2 && x % 3 === 1) { fr(px + 4, py + 4, 8, 6, "#5a4a3a"); fr(px + 5, py + 5, 6, 4, "#3a2e24"); } }
+    }
+  }
+  const sh = (x, y, w, h, a) => fr(x, y, w, h, `rgba(30,18,6,${a})`);
+  fr(0, 2 * TS - 3, MW * TS, 3, "#4a4238");
+  for (const h of HOUSES) { sh(h.x0 * TS, 4 * TS, (h.x1 - h.x0 + 1) * TS, 5, .3); fr(h.x1 * TS + 14, 2 * TS, 2, 2 * TS, "rgba(0,0,0,.18)"); }
+  sh(14 * TS, 13 * TS, 9 * TS, 5, .28);
+  fr(17 * TS + 6, 14 * TS + 2, 12, 10, "#6a5a4a"); fr(17 * TS + 8, 14 * TS, 8, 3, "#8a7a6a");   // 香爐
+  for (const [x, y] of [[8, 4], [16, 5], [24, 4], [38, 4], [13, 18], [23, 18]]) {   // 竹叢、榕樹
+    const cx = x * TS + 8, cy = y * TS + 12;
+    sh(cx - 6, cy + 1, 16, 4, .3); fr(cx - 2, cy - 8, 4, 10, "#6b4a32");
+    fr(cx - 9, cy - 20, 18, 13, "#4a8a44"); fr(cx - 6, cy - 24, 12, 18, "#4a8a44"); fr(cx - 5, cy - 20, 8, 6, "#6aaa5a");
+  }
+})();
+const VILLAGE_LABELS = [...HOUSES.map(h => [h.n, (h.x0 + h.x1 + 1) / 2, 2.4]), ["廟埕", 18.5, 11.2], ["稻田", 3, 15], ["會社的甘蔗田", 32.5, 15], ["← 往外家", 1.8, 7.3], ["往鎮上 →", 37.6, 7.3]];
+function vilZone(px, py) {
+  const tx = Math.floor(px / TS), ty = Math.floor(py / TS);
+  if (ty === 4) { const h = HOUSES.find(h => Math.abs(tx - h.door) <= 1); if (h) return h.k; }
+  if (ty === 13 && tx >= 16 && tx <= 20) return "temple";
+  if (ty >= 6 && ty <= 8 && tx >= 39) return "town";
+  if (ty >= 10 && [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => (VG[ty + dy] || [])[tx + dx] === "k")) return "cane";
+  if (ty >= 6 && ty <= 8 && tx <= 0) return "sis";
+  return "";
+}
+let BG = townCv, LABELS = null;
+function setWorld(w) { TG = w === "village" ? VG : TOWN_G; BG = w === "village" ? villageCv : townCv; LABELS = w === "village" ? VILLAGE_LABELS : TOWN_LABELS; }
+const TOWN_LABELS = [...SHOPS.map(s => [s.n, (s.x0 + s.x1 + 1) / 2, 2.5]), ["市場", 8.5, 14], ["媽祖廟", 23.5, 12], ["派出所", 34.5, 11.5], ["← 回威麗村", 1.8, 7.3], ["往隔壁庄 →", 37.6, 7.3]];
+
+// ---------- 白天的狀態 ----------
+let MAP = null;
+const SELL_RANGE = {in: [150, 190], st: [175, 215], fr: [200, 240]};
+const HAZ = {   // 會走過來的人和車：對應課文「通行取締、道路規則、飲食物規則、行旅法規、度量衡規紀」
+  cart: "人力車", lord: "郡守的人力車", health: "衛生巡查", meter: "度量衡的吏員", jia: "甲長", spy: "穿長衫的人"
+};
+function townMap() {
+  G.phase = "market"; setWorld("town");
+  const fee0 = G.day === 16 && G.scale === "none";
+  MAP = {mode: "market", on: true, paused: false, t: 0, me: {x: 1.2 * TS, y: 7.5 * TS, dir: "right", fr: 0}, selling: "", sellT: {in: 0, st: 0, fr: 0}, feePaid: false,
+    cops: [], agents: [], folks: [], events: [], cartT: 6, copHits: 0, hits: 0, frT: 0, kick: false, script: null, poolAt: chance(.55) ? .45 + Math.random() * .35 : 0, warn: ""};
+  if (fee0) MAP.noScale = 1;
+  // 巡警：平常一個，官符高、送神那天多一個
+  MAP.cops.push(newCop(0));
+  if (G.o >= 7 || G.day === 24) MAP.cops.push(newCop(5));
+  for (let i = 0; i < (G.day === 24 ? 6 : 4); i++) MAP.folks.push({x: (3 + Math.random() * 34) * TS, y: (4.5 + Math.random() * 4) * TS, lk: LOOK.folk[i % 4], tx: 0, ty: 0, wait: 0});
+  // 今天會出現的人和車
+  const n = 1 + Math.floor((G.day - 16) / 4) + (G.day === 24 ? 2 : 0), pool = ["health", "meter", "spy", "spy"];
+  if (G.day <= 26) pool.push("jia");
+  if (G.day >= 20 && chance(.35)) MAP.events.push({at: .3 + Math.random() * .4, type: "lord"});
+  for (let i = 0; i < n; i++) MAP.events.push({at: .12 + Math.random() * .7, type: rnd(pool)});
+  // 固定劇情：廿八以後第一次在鎮上擺攤的近午，巡警走到擔前；除夕被帶去郡衙；白送過菜的人，巡警每天來拿
+  if (G.day >= 28 && !G.flag.c1done) MAP.script = {at: .3, kind: "c1"};
+  else if (G.day === 30 && G.flag.c1done && G.flag.c1day < 30 && !G.flag.gift) MAP.script = {at: .35, kind: "c2"};
+  else if (G.flag.gift) MAP.script = {at: .2, kind: "gift"};
+  // 巡警出現的那天（對峙一、郡衙）：人潮擠滿街，只能付錢進市場擺攤；守法也照樣被找上
+  MAP.crowd = !!MAP.script && MAP.script.kind !== "gift";
+  if (MAP.crowd) {
+    MAP.events = [];
+    for (let i = 0; i < 14; i++) MAP.folks.push({x: (1 + Math.random() * 38) * TS, y: (4.3 + Math.random() * 5.4) * TS, lk: LOOK.folk[i % 4], tx: 0, ty: 0, wait: 0});
+  }
+  showMap(true); renderTop();
+  toast(MAP.crowd ? "年前最熱鬧的一天，街上擠滿了人。路旁和店門口都沒有空位。" : G.day === 24 ? "今天送神，買菜的人特別多，巡警也特別多。" : "天剛亮。挑著擔子找個地方擺攤。");
+}
+function newCop(delay) { return {x: 34.5 * TS, y: 15.6 * TS, dir: "down", fr: 0, wp: 0, mode: "patrol", cool: delay, alert: 0, lk: LOOK.cop}; }
+const COP_WP = [[34.5, 16.5], [30, 9.5], [20, 7.5], [9, 7.5], [2, 7.5], [8.5, 9.5], [8.5, 13.5], [8.5, 16.5], [8.5, 10.5], [20, 9.5], [37.5, 7.5], [34.5, 16.5]];
+function showMap(on) {
+  $("mapwrap").hidden = !on; $("main").hidden = on;
+  if (on) { $("main").innerHTML = ""; fitMap(); }
+}
+function mapResume() {
+  if (!MAP || G.over) return;
+  G.phase = "market";
+  if (MAP.kick) { MAP.selling = ""; MAP.kick = false; }
+  if (MAP.mul0 != null) { G.mul = MAP.mul0; MAP.mul0 = null; toast("被趕走，耽誤了快一個鐘頭。"); }
+  MAP.paused = false; showMap(true); renderTop();
+}
+// 白天裡的事件：先停下地圖，跳事件卡；結束後回到地圖（endsDay 的不回來）
+function mapEvent(id, kick) {
+  MAP.paused = true; MAP.kick = !!kick; keys = {}; MAP.hits++;
+  // 被趕走的事件：損失的是時間（時鐘往前跳將近一個鐘頭，還要重新找位置），不再另外扣一次收入
+  if (kick) { MAP.mul0 = G.mul; MAP.t = Math.min(DUR - 1, MAP.t + DUR * .15); }
+  showMap(false); Q = [() => mapResume()];
+  card(id);
+}
+function computeSale() {
+  const T = MAP.sellT, tot = T.in + T.st + T.fr;
+  G.sellFrac = Math.min(1, tot / SELL_NEED);
+  G.leftover = Math.round(BUNDLES * (1 - G.sellFrac));
+  G.mapSale = tot ? Object.keys(T).reduce((a, z) => a + ri(...SELL_RANGE[z]) * T[z], 0) / tot : 0;
+  G.stall = tot ? Object.keys(T).reduce((a, z) => T[z] > T[a] ? z : a, "in") : "in";
+}
+function endMarket(how) {
+  if (!MAP) return;
+  G.evePos = {x: MAP.me.x, y: MAP.me.y}; G.eveDay = 0;
+  MAP.on = false; showMap(false);
+  if (how === "far") { G.mapSale = null; G.sellFrac = .9; G.stall = "far"; G.b = clamp10(G.b - 1); }
+  else computeSale();
+  MAP = null;
+  if (dead()) return;
+  evening(false);
+}
+// 劇情要跳離地圖時（對峙一、郡衙）：先把今天賣到的算好
+function leaveForScene(first) { computeSale(); MAP.on = false; showMap(false); const id = first; MAP = null; Q = [id]; next(); }
+
+let keys = {}, joy = null, toastT = 0, lastFrame = 0;
+function toast(m) { const el = $("mToast"); el.textContent = m; el.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove("on"), 2600); }
+function mapAction() {
+  if (!MAP || MAP.paused) return;
+  if (MAP.mode === "eve") return eveAction();
+  if (MAP.mode === "village") return vilAction();
+  const z = zoneAt(MAP.me.x, MAP.me.y);
+  if (MAP.selling) { MAP.selling = ""; toast("收起擔子。"); return; }
+  if (MAP.crowd && z && z !== "in") return toast("人潮擠滿了街，沒有空位。只能付錢進市場擺攤。");
+  if (z === "far") {
+    if (G.flag.force) return toast("說好今天要在鎮上看看菜價。");
+    if (G.b < 6) return toast("身體不夠，走不到隔壁庄。");
+    if (MAP.sellT.in + MAP.sellT.st + MAP.sellT.fr > 3) return toast("已經在這裡擺過了，來不及再去隔壁庄。");
+    return endMarket("far");
+  }
+  if (z === "home") return endMarket("home");
+  if (!z) return toast("這裡不能擺攤。找市場裡的攤位、路旁，或店門口。");
+  if (z === "in" && !MAP.feePaid && MAP.crowd && G.s < 10) { MAP.feePaid = true; toast("付不起市場費，管市場的人揮揮手，讓你先擺。"); }
+  if (z === "in" && !MAP.feePaid && G.s < 10) { MAP.feePaid = true; G.feeOwed = 10; toast("身上不夠付市場費，管市場的人讓你賣完再付。"); }
+  if (z === "in" && !MAP.feePaid) { G.s -= 10; G.feeToday = 10; MAP.feePaid = true; floatStat("s", -10); renderTop(); }
+  MAP.selling = z; MAP.frT = 0;
+  toast({in: "在市場裡擺好攤。合法，客人少一些。", st: "在路旁擺下擔子。巡警看到會趕。", fr: "擺在店門口。人最多，店家會不高興。"}[z]);
+}
+// 走路（傍晚、村子共用）：只有移動、路人、巡警巡邏，不會出事
+function walkTick(dt) {
+  const M = MAP;
+  M.t += dt;
+  moveMe(dt);
+  for (const f of M.folks) {
+    if (f.wait > 0) { f.wait -= dt; f.moving = false; continue; }
+    if (!f.tx || Math.hypot(f.tx - f.x, f.ty - f.y) < 3) { f.tx = (1 + Math.random() * 38) * TS; f.ty = (4.4 + Math.random() * 4) * TS; f.wait = Math.random() * 2; }
+    steer(f, f.tx, f.ty, 26, dt);
+  }
+  for (const c of M.cops) { const w = COP_WP[c.wp]; if (steer(c, w[0] * TS, w[1] * TS, 44, dt)) c.wp = (c.wp + 1) % COP_WP.length; }
+}
+function moveMe(dt) {
+  const M = MAP, me = M.me;
+  let ix = 0, iy = 0;
+  if (keys.left) ix--; if (keys.right) ix++; if (keys.up) iy--; if (keys.down) iy++;
+  if (joy) { const jx = (joy.x - joy.ox) / 30, jy = (joy.y - joy.oy) / 30, L = Math.hypot(jx, jy); if (L > .2) { ix = jx / Math.max(1, L); iy = jy / Math.max(1, L); } }
+  me.moving = false;
+  if ((ix || iy) && !M.selling) {
+    const L = Math.hypot(ix, iy), sp = 64 * dt;
+    const nx = me.x + ix / L * sp, ny = me.y + iy / L * sp;
+    if (freeAt(nx, me.y, 4)) me.x = nx; if (freeAt(me.x, ny, 4)) me.y = ny;
+    me.dir = Math.abs(ix) > Math.abs(iy) ? (ix > 0 ? "right" : "left") : (iy > 0 ? "down" : "up");
+    me.fr += sp / 6; me.moving = true;
+  }
+}
+function mapTick(dt) {
+  if (!MAP || !MAP.on || MAP.paused) return;
+  if (MAP.mode !== "market") return walkTick(dt);
+  const M = MAP, me = M.me;
+  M.t += dt;
+  // 玩家移動（賣菜時不動）
+  let ix = 0, iy = 0;
+  if (keys.left) ix--; if (keys.right) ix++; if (keys.up) iy--; if (keys.down) iy++;
+  if (joy) { const jx = (joy.x - joy.ox) / 30, jy = (joy.y - joy.oy) / 30, L = Math.hypot(jx, jy); if (L > .2) { ix = jx / Math.max(1, L); iy = jy / Math.max(1, L); } }
+  me.moving = false;
+  if ((ix || iy) && !M.selling) {
+    const L = Math.hypot(ix, iy), sp = 64 * dt;
+    const nx = me.x + ix / L * sp, ny = me.y + iy / L * sp;
+    if (freeAt(nx, me.y, 4)) me.x = nx; if (freeAt(me.x, ny, 4)) me.y = ny;
+    me.dir = Math.abs(ix) > Math.abs(iy) ? (ix > 0 ? "right" : "left") : (iy > 0 ? "down" : "up");
+    me.fr += sp / 6; me.moving = true;
+  }
+  if (M.selling) { M.sellT[M.selling] += dt; if (M.selling === "fr") M.frT += dt; }
+  // 有固定劇情的那天，劇情發生前不會提早收工
+  if (!M.script && M.sellT.in + M.sellT.st + M.sellT.fr >= SELL_NEED) { toast("菜賣完了，今天提早收工。"); return endMarket(); }
+  const quiet = M.hits >= HIT_MAX;   // 今天已經夠倒楣了：不再有人找上門
+  // 店家出來趕人
+  if (!quiet && M.selling === "fr" && M.frT > 3 && !M.shopDone) { M.shopDone = 1; return mapEvent("shopfront", true); }
+  // 巡警
+  for (const c of M.cops) {
+    if (c.mode === "script") continue;   // 固定劇情的巡警由下面另外帶路
+    if (c.cool > 0) { c.cool -= dt; continue; }
+    const d = Math.hypot(c.x - me.x, c.y - me.y) / TS;
+    const illegal = (M.selling === "st" || M.selling === "fr") && d < 9;
+    if (quiet) { if (c.mode === "chase") c.mode = "patrol"; }
+    else if (c.mode !== "chase" && (illegal || c.alert || (G.o >= 6 && d < 7) && M.copHits < 2)) c.mode = "chase";
+    if (c.mode === "chase") {
+      steer(c, me.x, me.y, c.alert ? 80 : 60, dt);
+      if (Math.hypot(c.x - me.x, c.y - me.y) < 10) {
+        c.mode = "patrol"; c.cool = 18; c.alert = 0; M.copHits++;
+        if (hasItem("minbao")) { G.items.delete("minbao"); G.o = clamp10(G.o + 2); toast("巡警搜出你懷裡的《臺灣民報》，沒收了。官符 +2"); }
+        const ev = M.selling === "st" ? "stop106" : M.selling === "fr" ? "cop_fr" : "cop_any";
+        return mapEvent(ev, M.selling === "st" || M.selling === "fr");
+      }
+      if (!illegal && !c.alert && !(G.o >= 6 && d < 9)) c.mode = "patrol";
+    } else {
+      const w = COP_WP[c.wp]; if (steer(c, w[0] * TS, w[1] * TS, 44, dt)) c.wp = (c.wp + 1) % COP_WP.length;
+    }
+  }
+  // 路人
+  for (const f of M.folks) {
+    if (f.wait > 0) { f.wait -= dt; f.moving = false; continue; }
+    if (!f.tx || Math.hypot(f.tx - f.x, f.ty - f.y) < 3) { f.tx = (1 + Math.random() * 38) * TS; f.ty = (4.4 + Math.random() * 5) * TS; f.wait = Math.random() * 2; }
+    f.dumb = 0; steer(f, f.tx, f.ty, 26, dt);
+  }
+  // 大路上的人力車、牛車：穿越馬路要看車
+  M.cartT -= dt;
+  if (M.cartT <= 0) { M.cartT = 4 + Math.random() * 3 - Math.min(2, (G.day - 16) * .13); const l = Math.random() < .5; M.agents.push({type: "cart", x: l ? -20 : MW * TS + 20, y: (6.4 + Math.random() * 2.2) * TS, dir: l ? "right" : "left", spd: 82}); }
+  // 今天排定的人和車
+  for (const e of M.events) if (!e.done && M.t >= e.at * DUR) { e.done = 1; spawnHaz(e.type); }
+  for (const a of M.agents) {
+    if (a.gone) continue;
+    if (a.type === "cart" || a.type === "lord") {
+      a.x += (a.dir === "right" ? 1 : -1) * a.spd * dt;
+      if (a.x < -40 || a.x > MW * TS + 40) a.gone = 1;
+      const onRoad = me.y > 6 * TS && me.y < 9 * TS;
+      if (!a.hit && !quiet && onRoad && Math.abs(a.x - me.x) < 12 && Math.abs(a.y - me.y) < 10) { a.hit = 1; return mapEvent(a.type === "lord" ? "hz_lord" : "hz_cart"); }
+    } else if (a.type === "spy") {
+      const d = Math.hypot(a.x - me.x, a.y - me.y) / TS;
+      if (a.run) { if (steer(a, 34.5 * TS, 15.6 * TS, 70, dt)) { a.gone = 1; const c = M.cops.find(c => c.cool <= 0) || M.cops[0]; c.cool = 0; c.alert = 1; c.mode = "chase"; c.x = 34.5 * TS; c.y = 15.6 * TS; toast("派出所裡衝出一個巡警。"); } }
+      else {
+        if (!quiet && (M.selling === "st" || M.selling === "fr") && d < 6) { a.see = (a.see || 0) + dt; if (a.see > 2) { a.run = 1; a.bang = 1; } }
+        if (!a.tx || Math.hypot(a.tx - a.x, a.ty - a.y) < 3) { a.tx = (2 + Math.random() * 36) * TS; a.ty = (4.4 + Math.random() * 5) * TS; }
+        steer(a, a.tx, a.ty, 24, dt);
+        if ((a.life -= dt) <= 0) a.gone = 1;
+      }
+    } else if (a.type === "jia") {
+      if (steer(a, me.x, me.y, 46, dt) || Math.hypot(a.x - me.x, a.y - me.y) < 10) { a.gone = 1; if (!quiet) return mapEvent("road"); }
+    } else {   // 衛生巡查、度量衡吏員：一攤一攤走
+      const w = a.route[a.i];
+      if (!w) { a.gone = 1; continue; }
+      if (steer(a, w[0] * TS, w[1] * TS, 48, dt)) a.i++;
+      if (M.selling && !a.checked && Math.hypot(a.x - me.x, a.y - me.y) < 18) {
+        a.checked = 1;
+        if (quiet || (M.selling === "in" && Math.random() < .6)) { toast(a.type === "health" ? "衛生巡查看了看你的菜，點點頭走了。" : "吏員看了看你的秤，沒說什麼。"); continue; }
+        a.gone = 1; return mapEvent(a.type === "health" ? "hz_health" : "inspect");
+      }
+    }
+  }
+  M.agents = M.agents.filter(a => !a.gone);
+  // 固定劇情
+  if (M.script && M.t >= M.script.at * DUR) {
+    const s = M.script;
+    if (!s.cop) { s.cop = newCop(0); s.cop.mode = "script"; M.cops.push(s.cop); toast(s.kind === "c2" ? "那個巡警又出現了。" : "一個巡警朝你這邊走過來。"); }
+    if (steer(s.cop, me.x, me.y, 70, dt) || Math.hypot(s.cop.x - me.x, s.cop.y - me.y) < 12) {
+      M.script = null; M.cops = M.cops.filter(c => c !== s.cop);
+      if (s.kind === "c1") { G.flag.c1done = 1; G.flag.c1day = G.day; G.stall = M.selling || "in"; return leaveForScene("c1"); }
+      if (s.kind === "c2") { computeSale(); settleSale(); return leaveForScene("c2"); }
+      return mapEvent("gift");
+    }
+  }
+  // 市場裡的其他事（落雨、生意屢好、挑夫、米價……）
+  if (M.poolAt && M.t >= M.poolAt * DUR) {
+    M.poolAt = 0;
+    const pool = Object.keys(EV).filter(id => EV[id].pool === "any" && id !== "inspect" && !G.used.has(id));
+    if (pool.length) { const id = rnd(pool); G.used.add(id); return mapEvent(id); }
+  }
+  if (M.t >= DUR && !M.script) { toast("市散了。"); return endMarket(); }   // 固定劇情一定要發生
+}
+function spawnHaz(type) {
+  const M = MAP;
+  if (type === "lord") { toast("郡守的人力車要經過了，路上的人都要讓路！"); const l = Math.random() < .5; M.agents.push({type, x: l ? -30 : MW * TS + 30, y: 7.5 * TS, dir: l ? "right" : "left", spd: 46}); return; }
+  if (type === "spy") { M.agents.push({type, x: (Math.random() < .5 ? 1 : 38) * TS, y: 5 * TS, lk: LOOK.spy, life: 40}); return; }
+  if (type === "jia") { toast("甲長拿著通知簿，在人群裡找人。"); M.agents.push({type, x: .8 * TS, y: 7.5 * TS, lk: LOOK.jia}); return; }
+  // 衛生巡查從左邊進來，度量衡吏員從右邊：沿店前、路旁，再進市場一排一排看
+  const route = [[2, 4.5], [37, 4.5], [37, 9.5], [9, 9.5], [8.5, 12.5], [14.5, 13.5], [3.5, 13.5], [3.5, 16.5], [14.5, 16.5], [14.5, 19.3], [3.5, 19.3], [8.5, 10.5], [0.5, 7.5]];
+  if (type === "meter") route.reverse();
+  toast(type === "health" ? "衛生巡查來了，一攤一攤看。" : "度量衡的吏員拿著檢查秤，一攤一攤驗。");
+  const s = route[0];
+  M.agents.push({type, x: s[0] * TS, y: s[1] * TS, lk: LOOK[type], route, i: 1});
+}
+
+// ---------- 畫面 ----------
+// 手機等小螢幕：只放大顯示得參周圍那一塊，鏡頭跟著走；大螢幕（投影）照舊整張地圖
+const sceneCv = document.createElement("canvas"); sceneCv.width = MW * TS; sceneCv.height = MH * TS;
+const CAM = {on: false, x: 0, y: 0};
+function drawTown() {
+  const cv = $("mapCv"), g = sceneCv.getContext("2d");
+  g.imageSmoothingEnabled = false;
+  g.drawImage(BG, 0, 0);
+  if (!MAP) return;
+  drawEntities(g);
+  const out = cv.getContext("2d"); out.imageSmoothingEnabled = false;
+  if (CAM.on) {
+    CAM.x = Math.round(Math.max(0, Math.min(sceneCv.width - cv.width, MAP.me.x - cv.width / 2)));
+    CAM.y = Math.round(Math.max(0, Math.min(sceneCv.height - cv.height, MAP.me.y - 10 - cv.height / 2)));
+  } else { CAM.x = 0; CAM.y = 0; }
+  out.drawImage(sceneCv, CAM.x, CAM.y, cv.width, cv.height, 0, 0, cv.width, cv.height);
+  // 招牌跟著鏡頭移動；出了畫面就藏起來
+  document.querySelectorAll("#mLabels span").forEach((el, i) => {
+    const [, x, y] = LABELS[i], lx = (x * TS - CAM.x) / cv.width, ly = (y * TS - CAM.y) / cv.height;
+    el.style.left = lx * 100 + "%"; el.style.top = ly * 100 + "%"; el.style.display = lx < -.05 || lx > 1.05 || ly < -.05 || ly > 1.05 ? "none" : "";
+  });
+  if (CAM.on) drawMini();
+  bubble(cv);
+}
+// 傍晚不倒數，用泡泡框提醒：先糴米，買完就回家歇著
+function bubble(cv) {
+  const b = $("mBub");
+  let t = "";
+  if (MAP.mode === "eve") {
+    const z = eveZone(MAP.me.x, MAP.me.y);
+    if (z === "home") t = "到家門口了，按「回家」休息。";
+    else if (G.visited === G.day) t = "去過了，該回家了。往左走 ←";
+    else if (G.g < 6 && !G.flag["rice" + G.day] && MAP.t < 20) t = "米缸快見底了，先去米店糴米。";
+    else if (MAP.t > 8) t = "天色暗了，早點回家歇著。往左走 ←";
+  }
+  b.hidden = !t;
+  if (!t) return;
+  const k = cv.offsetWidth / cv.width;
+  b.textContent = t;
+  const half = b.offsetWidth / 2 + 4, W = cv.offsetWidth;
+  b.style.left = Math.max(half, Math.min(W - half, (MAP.me.x - CAM.x) * k)) + "px"; b.style.top = Math.max(b.offsetHeight + 4, (MAP.me.y - 24 - CAM.y) * k) + "px";
+}
+function drawMini() {
+  const m = $("mMini"), g = m.getContext("2d"), k = m.width / sceneCv.width, cv = $("mapCv");
+  g.imageSmoothingEnabled = false; g.drawImage(BG, 0, 0, m.width, m.height);
+  g.strokeStyle = "#fff"; g.lineWidth = 1; g.strokeRect(CAM.x * k + .5, CAM.y * k + .5, cv.width * k, cv.height * k);
+  const dot = (x, y, c, r) => { g.fillStyle = c; g.fillRect(Math.round(x * k) - r, Math.round(y * k) - r, r * 2, r * 2); };
+  MAP.cops.forEach(c => dot(c.x, c.y, "#ff3b2f", 2));
+  dot(MAP.me.x, MAP.me.y, "#4fc3ff", 2);
+}
+function drawEntities(g) {
+  const M = MAP, me = M.me, list = [];
+  list.push({y: me.y, f: () => { drawMan(g, me.x, me.y, LOOK.me, M.selling ? "down" : me.dir, me.fr, !me.moving); drawLoad(g, me.x, me.y, !!M.selling); }});
+  M.cops.forEach(c => list.push({y: c.y, f: () => { drawMan(g, c.x, c.y, c.lk, c.dir || "down", c.fr || 0, !c.moving); if (c.mode === "chase" || c.mode === "script") bang(g, c.x, c.y, "#e8483a"); }}));
+  M.folks.forEach(f => list.push({y: f.y, f: () => drawMan(g, f.x, f.y, f.lk, f.dir || "down", f.fr || 0, !f.moving)}));
+  M.agents.forEach(a => list.push({y: a.y, f: () => {
+    if (a.type === "cart" || a.type === "lord") return drawCart(g, a.x, a.y, a.dir, a.type === "lord");
+    drawMan(g, a.x, a.y, a.lk, a.dir || "down", a.fr || 0, !a.moving);
+    if (a.bang) bang(g, a.x, a.y, "#f2c14e");
+  }}));
+  list.sort((a, b) => a.y - b.y).forEach(o => o.f());
+  hudTown();
+}
+function hudTown() {
+  const M = MAP, me = M.me;
+  if (M.mode !== "market") { $("vign").style.opacity = 0; return hudWalk(); }
+  // 巡警靠近時畫面邊緣變暗
+  const near = Math.min(99, ...M.cops.map(c => Math.hypot(c.x - me.x, c.y - me.y) / TS));
+  $("vign").style.opacity = near < 6 ? (1 - near / 6).toFixed(2) : 0;
+  // 時鐘、收入、提示
+  const min = 360 + Math.floor(M.t / DUR * 360), hh = String(Math.floor(min / 60)).padStart(2, "0"), mm = String(min % 60).padStart(2, "0");
+  const tot = M.sellT.in + M.sellT.st + M.sellT.fr;
+  const pct = Math.min(100, Math.round(tot / SELL_NEED * 100)), left = Math.ceil(BUNDLES * (1 - Math.min(1, tot / SELL_NEED)));
+  $("mClock").innerHTML = `${hh}:${mm}<small>${M.selling ? "賣菜中" : "挑著擔子"}</small><span class="sbar"><i style="width:${pct}%"></i></span><small>擔子裡還剩 <b style="color:var(--ink)">${left}</b> 把菜</small>`;
+  const z = zoneAt(me.x, me.y);
+  const p = M.selling ? "收攤" : z === "in" ? `擺攤（市場費 10 錢）` : z === "st" ? "擺攤（路旁）" : z === "fr" ? "擺攤（店門口）" : z === "far" ? "往隔壁庄賣" : z === "home" ? "今天不賣了，回村子" : "";
+  $("mAct").textContent = p || "走到攤位"; $("mAct").disabled = !p;
+}
+const EVE_SHOP = {rice: "進米店（糴米）", goods: "進雜貨店（年貨）", pawn: "進當鋪（贖金花）", scale: "進度量衡販賣所（稱仔）", doc: "進醫館（晚回家，身體 −1）", arcade: "到騎樓下聽報（晚回家，身體 −1）"};
+function eveZone(px, py) {
+  const tx = Math.floor(px / TS), ty = Math.floor(py / TS);
+  if (ty === 4) { const sp = SHOPS.find(z => Math.abs(tx - z.door) <= 1); if (sp) return sp.k; }
+  if (ty === 15 && tx >= 22 && tx <= 25) return "temple";
+  if (ty === 15 && tx >= 19 && tx <= 20) return "herb";
+  if (ty >= 6 && ty <= 8 && tx <= 0) return "home";
+  return "";
+}
+function hudWalk() {
+  const M = MAP, me = M.me;
+  if (M.mode === "eve") {
+    const z = eveZone(me.x, me.y), talkDay = G.day === 21 || G.day === 26;
+    $("mClock").innerHTML = `午後<small>${G.visited === G.day ? "今晚已經去過一個地方，早點回家吧" : "買完東西就回家。去找人會晚回家，沒歇夠"}</small>`;
+    const p = z === "home" ? "回家" : z === "temple" ? (talkDay ? "進媽祖廟（今晚有演講）" : "進媽祖廟") : z === "herb" ? "廟口的青草攤" : EVE_SHOP[z] || "";
+    $("mAct").textContent = p || "走到店門口"; $("mAct").disabled = !p;
+  } else {
+    const z = vilZone(me.x, me.y), H = HOUSES.find(h => h.k === z);
+    $("mClock").innerHTML = `早上・威麗村<small>${G.vv ? `已經過了半天，還能再去 ${2 - G.vv} 家` : "往右上鎮，進家門休息，走到別人門口就是拜訪"}</small>`;
+    const p = z === "cane" ? (G.flag["cane" + G.day] ? "" : "折一根會社的甘蔗") : z === "town" ? "挑擔上鎮" : z === "sis" ? "去妻子的外家（一整天）" : z === "home" ? (G.vv ? "回家" : "在家休息") : z === "temple" ? "去廟埕" : H ? `拜訪${H.n}` : "";
+    $("mAct").textContent = p || "走到門口"; $("mAct").disabled = !p;
+  }
+}
+// 離開地圖去辦事（店舖、找人、拜訪）：記下位置，回來時從原地繼續
+function leaveMap(fn) { G.mapPos = {x: MAP.me.x, y: MAP.me.y}; MAP.on = false; MAP = null; showMap(false); fn(); }
+function eveAction() {
+  const z = eveZone(MAP.me.x, MAP.me.y);
+  if (z === "home") return leaveMap(() => night());
+  if (["rice", "goods", "pawn", "scale"].includes(z)) return leaveMap(() => openShop(z));
+  if (z === "temple") return leaveMap(() => card("_temple"));
+  if (z === "herb") return leaveMap(() => card("_herb"));
+  const id = z === "doc" ? "docVisit" : z === "arcade" ? "youth" : "";
+  if (!id) return;
+  if (G.visited === G.day) return toast("今晚已經去過別的地方了。再去，就太晚回家了。");
+  G.visited = G.day;
+  leaveMap(() => card(id));
+}
+function vilAction() {
+  const z = vilZone(MAP.me.x, MAP.me.y);
+  if (z === "town") { if (G.vv) return toast("已經過了半天，今天不上鎮了。"); return leaveMap(() => market()); }
+  if (z === "home") return leaveMap(() => { if (G.vv) return evening(true); G.b = clamp10(G.b + 1); floatStat("b", 1); rest(); });   // 在家休息：身體 +1，跟文字版一樣
+  if (z === "cane") {
+    if (G.flag["cane" + G.day]) return;
+    G.flag["cane" + G.day] = 1; G.g += 1; floatStat("g", 1);
+    if (Math.random() < .5) { G.o = clamp10(G.o + 2); toast("巡田的人看見了，記下你的名字。官符 +2"); }
+    else toast("沒人看見。一根甘蔗，夠孩子啃一天。糧 +1");
+    renderTop(); return;
+  }
+  if (z === "sis") { if (G.vv) return toast("外家遠，要走一整天，今天來不及了。"); return leaveMap(() => { G.phase = "eve"; G.daysOut = 0; card("sisHome"); }); }
+  if (!z) return;
+  if (G.vDone.includes(z)) return toast("今天已經去過了。");
+  G.vDone.push(z); G.phase = "eve"; G.daysOut = 0;
+  leaveMap(() => card(z));
+}
+function walkMap(mode, pos) {
+  setWorld(mode === "village" ? "village" : "town");
+  MAP = {mode, on: true, paused: false, t: 0, me: {x: pos.x, y: pos.y, dir: "down", fr: 0}, selling: "", sellT: {in: 0, st: 0, fr: 0}, cops: [], agents: [], folks: [], events: [], hits: HIT_MAX};
+  if (mode === "eve") MAP.cops.push(newCop(0));
+  for (let i = 0; i < (mode === "eve" ? 3 : 2); i++) MAP.folks.push({x: (3 + Math.random() * 34) * TS, y: (4.5 + Math.random() * 3.5) * TS, lk: LOOK.folk[i % 4], tx: 0, ty: 0, wait: 0});
+  showMap(true); renderTop();
+}
+// 傍晚：第一次先看今天的帳，再到鎮上買東西；之後從店裡、別人那裡回來就回到地圖
+function eveTown() {
+  if (G.eveDay !== G.day) {
+    G.eveDay = G.day;
+    const capNote = G.day === 16 && G.hua !== "home" ? `<p>身上的錢有 ${G.hua === "none" ? "300 是保正借的" : "400 是金花當來的"}本錢，不是賺的。</p>` : "";
+    EV._sum = {who: "narr", t: "市散了", x: capNote + salePie() + `<p>米店、雜貨店、當鋪都在街上。<b>明天批菜要留 ${LOAD} 錢。</b></p>`, o: [
+      {t: "去街上買東西、辦事", e: {}, quiet: 1, go: () => { G.phase = "eve"; walkMap("eve", G.evePos || {x: 8.5 * TS, y: 9.6 * TS}); toast("市散了，午後。走到店門口進去買東西，走到左邊出口就回家。"); }},
+      {t: "什麼都不買，直接回家", e: {}, quiet: 1, go: () => night()}
+    ]};
+    return card("_sum");
+  }
+  G.phase = "eve"; walkMap("eve", G.mapPos || G.evePos);
+}
+function villageMap(resume) {
+  G.phase = "morning";
+  if (!resume) { G.vv = 0; G.vDone = []; }
+  walkMap("village", resume && G.mapPos ? G.mapPos : {x: 11.5 * TS, y: 4.7 * TS});
+  if (!resume) toast(G.day === 24 || G.day === 29 ? "今天廟埕有講古仙。" : "早上了。往右走上鎮，進家門休息。");
+}
+// 店舖：只賣這家店有的東西
+const SHOP_ITEMS = {rice: ["rice"], goods: ["guan", "lian", "zhi", "gao", "bu"], pawn: ["hua"], scale: ["nbpay", "scale"]};
+const SHOP_NAME = {rice: "米店", goods: "雜貨店", pawn: "當鋪", scale: "度量衡販賣所"};
+function openShop(k) {
+  G.phase = "eve";
+  const render = () => {
+    const items = eveItems().filter(x => SHOP_ITEMS[k].includes(x.k));
+    const empty = {goods: G.day < 20 ? "年貨還早，二十以後再來辦。" : "該買的都買了。", pawn: G.hua === "sis" ? "" : "當鋪裡沒有你的東西。", scale: "稱仔不用再買了。", rice: ""}[k];
+    $("main").innerHTML = `<div class="ev frame">${whoTag("narr")}<h2>${SHOP_NAME[k]}</h2><div class="x"><p>身上有 ${G.s} 錢。<b style="color:${G.s < LOAD ? "#ff8a78" : "var(--gold)"}">明天批菜要留 ${LOAD} 錢。</b></p></div>
+      ${items.length ? `<div class="shop">${items.map(x => `<div class="item ${G.shopDone[x.k] ? "done" : ""}"><div class="nm">${x.nm}<small>${x.sub}</small></div><button data-k="${x.k}" ${G.s < x.price || G.shopDone[x.k] ? "disabled" : ""}>${G.shopDone[x.k] ? "買了" : cost(x.price)}</button></div>`).join("")}</div>` : `<p class="explain">${empty}</p>`}
+      <div class="opts"><button class="opt" id="shopLeave">走出店門</button></div></div>`;
+    $("main").querySelectorAll("[data-k]").forEach(b => b.onclick = () => {
+      const x = items.find(y => y.k === b.dataset.k); if (!x || G.s < x.price) return;
+      G.s -= x.price; x.fn(); if (x.once) G.shopDone[x.k] = 1;
+      renderTop(); floatStat("s", -x.price); render();
+    });
+    $("shopLeave").onclick = () => eveTown();
+    renderTop();
+  };
+  render();
+}
+function bang(g, x, y, c) { g.fillStyle = c; g.fillRect(Math.round(x) - 1, Math.round(y) - 28, 3, 6); g.fillRect(Math.round(x) - 1, Math.round(y) - 20, 3, 2); }
+function fitMap() {
+  const w = $("mapwrap"), cv = $("mapCv");
+  const top = document.querySelector("#game .top").offsetHeight, W = w.clientWidth;
+  const H = window.innerHeight - top - $("mClock").offsetHeight - document.querySelector(".mhelp").offsetHeight - 24;
+  const full = Math.min(W / sceneCv.width, H / sceneCv.height);
+  let s, vw, vh;
+  if (W >= 900 && full >= 1) { CAM.on = false; s = full; vw = sceneCv.width; vh = sceneCv.height; }   // 桌機、投影：整張地圖
+  else {   // 手機、直拿的平板：放大 1.6～2.4 倍，只看得參周圍
+    CAM.on = true;
+    s = Math.max(1.6, Math.min(2.4, W / (15 * TS), H / (9 * TS)));
+    vw = Math.min(sceneCv.width, Math.floor(W / s)); vh = Math.min(sceneCv.height, Math.floor(H / s));
+  }
+  cv.width = vw; cv.height = vh;
+  cv.style.width = Math.floor(vw * s) + "px"; cv.style.height = Math.floor(vh * s) + "px";
+  const lab = $("mLabels");
+  lab.style.width = cv.style.width; lab.style.height = cv.style.height;
+  lab.innerHTML = LABELS.map(([t]) => `<span>${t}</span>`).join("");
+  $("mMini").hidden = !CAM.on;
+  $("mRot").hidden = !(CAM.on && window.innerHeight > window.innerWidth);
+  if (MAP) drawTown();
+}
+function mapLoop(ts) {
+  const dt = Math.min(.05, (ts - lastFrame) / 1000 || 0); lastFrame = ts;
+  if (MAP && MAP.on && !$("mapwrap").hidden) { mapTick(dt); drawTown(); }
+  requestAnimationFrame(mapLoop);
+}
+(function bindMap() {
+  const K = {ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down", a: "left", d: "right", w: "up", s: "down", A: "left", D: "right", W: "up", S: "down"};
+  addEventListener("keydown", e => {
+    if (!MAP || $("mapwrap").hidden) return;
+    if (K[e.key]) { keys[K[e.key]] = true; e.preventDefault(); }
+    if (e.key === " " || e.key === "Enter" || e.key === "e" || e.key === "E") { e.preventDefault(); mapAction(); }
+  });
+  addEventListener("keyup", e => { if (K[e.key]) keys[K[e.key]] = false; });
+  addEventListener("blur", () => { keys = {}; joy = null; });
+  const cv = $("mapCv");
+  const ring = $("joyRing"), knob = $("joyKnob"), box = cv.parentElement;
+  cv.addEventListener("pointerdown", e => {
+    cv.setPointerCapture(e.pointerId); joy = {id: e.pointerId, ox: e.clientX, oy: e.clientY, x: e.clientX, y: e.clientY};
+    if (e.pointerType !== "mouse") { const r = box.getBoundingClientRect(); ring.style.left = e.clientX - r.left + "px"; ring.style.top = e.clientY - r.top + "px"; knob.style.transform = ""; ring.hidden = false; }
+  });
+  cv.addEventListener("pointermove", e => {
+    if (!joy || e.pointerId !== joy.id) return;
+    joy.x = e.clientX; joy.y = e.clientY;
+    const dx = joy.x - joy.ox, dy = joy.y - joy.oy, L = Math.hypot(dx, dy), k = L > 32 ? 32 / L : 1;
+    knob.style.transform = `translate(${dx * k}px,${dy * k}px)`;
+  });
+  const end = e => { if (joy && e.pointerId === joy.id) { joy = null; ring.hidden = true; } };
+  cv.addEventListener("pointerup", end); cv.addEventListener("pointercancel", end);
+  cv.addEventListener("touchstart", e => { if (e.cancelable) e.preventDefault(); }, {passive: false});
+  cv.addEventListener("touchmove", e => { if (e.cancelable) e.preventDefault(); }, {passive: false});
+  $("mAct").onclick = () => mapAction();
+  addEventListener("resize", () => { if (MAP && !$("mapwrap").hidden) fitMap(); });
+  requestAnimationFrame(mapLoop);
+})();
+
+// ===== 結局 =====
+const ENDS = {
+  ciNian: {no: 1, kind: "原著", t: "辭年", hint: "除夕夜，一個人在室內踱來踱去。",
+    p: `<div class="quote"><cite>原文・課文末段</cite>元旦，參的家裡，忽譁然發生一陣叫喊、哀嗚、啼哭。隨後，又聽著說：「什麼都沒有嗎？」「只銀紙備辦在，別的什麼都沒有。」<br><br>同時，市上亦盛傳著，一個夜巡的警吏，被殺在道上。</div><div class="blank">小說在這裡停筆。遊戲也在這裡停下，不畫，不演。</div>`,
+    fact: "小說刊在 1926 年 2 月 14 日的《臺灣民報》，那天是舊曆正月初二。讀者是在過年期間讀到這個除夕的。",
+    ask: "賴和把元旦這一段寫得很短，連發生了什麼都沒有直說。他想讓讀者看見什麼？又不想讓讀者看見什麼？", life: 1},
+  bow: {no: 2, kind: "活下來", t: "低頭", hint: "骨氣掉光了，人還在。",
+    p: "<p>年過得去。巡警每天來擔前拿幾莖菜，你用稻草貫好遞給他，旁邊的人不看你。</p><p>除夕夜你也踱來蹀去，嘴裡也念著那一句：人不像個人。</p><p>只是沒有下一句。</p>",
+    fact: "葉榮鐘回憶日本時代的市場：小販看見巡警，先把好貨揀出來。這是大多數人的活法。", ask: "得參跟「低頭」的你，差在哪一步？那一步值不值得？"},
+  fever: {no: 3, kind: "病", t: "寒熱", hint: "身體撐不住年關。",
+    p: "<p>寒熱一天比一天重。妻子煎的青草已經沒有用了。</p><p>你沒有撐到元旦。</p>",
+    fact: "1913 年起《瘧疾防遏規則》強制採血、服藥，由警察執行。看一次西醫要兩塊多錢，是得參三天多的工錢。", ask: "課文裡的得參「不敢再請西醫診治」。他是在省錢，還是沒有選擇？"},
+  hunger: {no: 4, kind: "窮", t: "餓過年", hint: "新春半個月，萬事停辦。",
+    p: "<p>孩子先哭。妻子帶著孩子回外家，沒有再回來。</p><p>新春半個月萬事停辦，沒有人會喚你去做工。</p>",
+    fact: "課文：「須積蓄些新春半個月的食糧」。年關前的生意，是為了撐過新春那半個月沒有工可做的日子。", ask: "得參一家「雖不至餓死」，卻「多陷入營養不良」。這種窮，跟餓死差在哪裡？"},
+  pawnLost: {no: 5, kind: "親情", t: "金花流當", hint: "正月十六，當鋪開門。",
+    p: "<p>你在拘留所過除夕，初二回家。</p><p>正月十六，當鋪開門，金花流當了。嫂子從此不來往。</p><p>人還在。最後一點情義沒了。</p>",
+    fact: "課文：「這法子，在她當得帶了幾分危險」。金花是妻子的嫂子唯一的裝飾品，當了就是拿別人的情義做本錢。", ask: "妻子為什麼沒有來衙門？是她的心不夠，還是你讓她的心掉到不夠？"},
+  jailEve: {no: 6, kind: "平淡", t: "監裡的除夕", hint: "三天，換三塊錢。",
+    p: "<p>你在拘留所過除夕，初二回家。金花在妻子的枕邊。</p><p>妻子說：「明年快就出運，亦不一定。」</p>",
+    fact: "1904 年《犯罪即決例》：科料一圓折抵一日。三圓就是三天。得參算得很清楚：新春閒時，三天不關係什麼。", ask: "得參有三塊錢卻選擇坐監。這是精明，還是沒有別的選擇？"},
+  hide: {no: 7, kind: "躲", t: "過了這個年", hint: "廿八那天，鎮上少了一個賣菜的。",
+    p: "<p>這個年平安過去了。孩子們絕早起來開正，妻子笑了。</p><p>正月十六，你又挑起擔子上鎮。市場口站著一個巡警。</p>",
+    fact: "1918 年《臺灣違警例》有 122 項，什麼算違警，大半由巡查當場決定。躲得過一天，躲不過每一天。",
+    ask: "躲過了這個年，下一個年呢？如果你是得參，正月十六之後要怎麼過？"},
+  paper: {no: 8, kind: "改命", t: "白紙黑字", hint: "有個醫生，案上放著報紙。",
+    p: "<p>正月裡，那封信寄到了《臺灣民報》。</p><p>過了幾個禮拜，登出來了，一半的字被檢閱刪成○○○。村裡識字的人念給你聽，念到一半就念不下去。</p><p>那個巡警被調到別的派出所。新來的巡警，第一天就到市場驗秤。</p>",
+    fact: "《臺灣民報》1923 年在東京創刊，被稱為「臺灣人唯一的言論機關」。報紙運進臺灣前要先經檢閱，文章常被刪改，整期被扣也不少見。",
+    ask: "一半被刪掉的報導，還有用嗎？寫出來的冤，跟沒寫出來的冤，差在哪裡？"},
+  union: {no: 9, kind: "改命", t: "組合", hint: "媽祖廟前有人在演講。",
+    p: "<p>正月過後，你跟著演講會上認識的人，去找蔗農組合。你不識字，開會時就坐在後面聽。</p><p>第二年，各地的組合連成了臺灣農民組合。有一次抗爭之後，你和幾個人一起被捕，關了幾個月。</p><p>警察的檔案裡，第一次寫下了你的名字，和你做過的事。</p>",
+    fact: "1925 年 1 月，二林蔗農組合成立，四百多人加入；同年 10 月與會社衝突，李應章等人被捕，1927 年判刑。1926 年，各地的組合成立臺灣農民組合。",
+    ask: "一個人吞下去的委屈，跟一群人一起說出來，有什麼不同？代價又是誰在付？"},
+  trial: {no: 10, kind: "改命", t: "正式裁判", hint: "有人說，判了不服可以告。",
+    p: "<p>正月開庭。鄰家站上去作證：那桿稱仔是新的，稱花還很明瞭。</p><p>法院撤銷了即決，三塊錢不用繳。</p><p>正月十六，你挑著擔子上鎮。同一個巡警站在市場口，看著你，什麼都沒說。從那天起，他每天都經過你的擔前。</p>",
+    fact: "1904 年《犯罪即決例》：不服即決，可在期限內聲請正式裁判。實際上極少有人這樣做：要識字、要錢、要有人肯作證，還要撐過之後的日子。這個結局是假設，史料裡很少見到小販這樣翻案。",
+    ask: "你贏了。斷掉的稱仔沒有人賠，巡警也還在。贏的是什麼？"},
+  east: {no: 11, kind: "離鄉", t: "花蓮港", hint: "市集外有個挑夫，口音不是本地的。",
+    p: "<p>正月過後，你們把年貨能賣的都賣了，帶著孩子到基隆搭船。</p><p>船繞過北邊的海，在花蓮港上岸。溪邊沒人要的荒地，石頭比土多。你們搭了一間草寮。</p><p>第一年，瘧疾又來了。妻子說：這裡至少沒有人認得你。</p>",
+    fact: "日治時期花蓮港廳設了吉野、豐田、林田等官營移民村，地是給日本移民的。從西部來的臺灣人多半自己來，做工、租地、開墾溪邊的荒地。1920 年代從西部到花蓮，主要靠基隆的船。船票價格待考。",
+    ask: "離開，是逃避，還是另一種反抗？"},
+  mount: {no: 12, kind: "反賊", t: "觀音山", hint: "有人在廟埕講廖添丁的故事。", life: 1,
+    p: `<div class="quote"><cite>原文・課文末段</cite>同時，市上亦盛傳著，一個夜巡的警吏，被殺在道上。</div><p>那個被殺的夜巡警察，是你殺的。你沒有自盡，連夜往北逃，想學廖添丁躲進觀音山當義賊。</p><p>你一路白天躲在甘蔗園，夜裡趕路，逃不到幾天就撐不下去了。官廳貼出告示：抓到你的人，賞兩千圓，是你八年的工錢。</p><p>你去投靠同庄出去的舊識。他收留了你，正月還沒過完，就帶著巡警來抓你。殺了警察，等著你的是死刑。</p><p>妻子和孩子被保甲叫去問了好幾回。</p>`,
+    fact: "廖添丁 1909 年 11 月 19 日死在八里的山洞，下手的是他的舊識楊林，用的是鋤頭。楊林領了兩千圓賞金，後來也因殺人罪入獄。",
+    ask: "廖添丁死在熟人手上。兩千圓的懸賞，對一個跟你一樣窮的人來說，是什麼意思？"},
+  legend: {no: 13, kind: "傳說", t: "飛天梟賊", hint: "要逃得遠，身體和盤纏缺一不可。", life: 1,
+    p: `<div class="quote"><cite>原文・課文末段</cite>同時，市上亦盛傳著，一個夜巡的警吏，被殺在道上。</div><p>那個被殺的夜巡警察，是你殺的。你沒有自盡，帶走家裡所有的錢，連夜逃進觀音山，學廖添丁當義賊。元旦那天，妻子翻遍了屋裡，只剩下金銀紙。</p><p>官廳懸賞兩千圓抓你，告示貼滿了每個庄頭，上面叫你「兇賊」。一直沒有人找到你。</p><p>妻子和孩子被保甲連坐喚問，村裡沒有人敢跟她說話。</p><p>過了幾年，廟埕上開始有人講你的故事。講古仙說你劫富濟貧、飛簷走壁，人稱飛天梟賊。那些事，你一件也沒做過。</p>`,
+    fact: "「飛天梟賊」「稀代兇賊」是日本官方對廖添丁的稱呼。他死後不久就有「他沒死」的傳說；劫富濟貧、專打日本人的形象，多半來自死後的講古、布袋戲和歌仔戲。",
+    ask: "一個人的暴力，怎麼被講成英雄傳說？傳說裡少了誰？"}
+};
+function calcScore(key) {
+  const d = Math.min(30, (G.day - 16) * 2 + (G.day >= 30 ? 2 : 0));
+  const END_PT = {trial: 15, paper: 15, union: 15, east: 15, legend: 10, hide: 10, jailEve: 10, mount: 5, ciNian: 5};
+  const p = {base: 25, days: Math.round(d * 25 / 30), food: Math.round(10 * Math.min(15, G.g) / 15), hua: G.hua === "home" || G.hua === "none" ? 10 : 0, cards: Math.min(15, G.cards.size * 5), road: END_PT[key] || 0};
+  p.total = Math.min(100, p.base + p.days + p.food + p.hua + p.cards + p.road);
+  return p;
+}
+function finish(key) {
+  if (G.over) return; G.over = true;
+  if (!key) key = "ciNian";
+  const E = {...ENDS[key]}, SC = calcScore(key);
+  if (key === "trial" && hasItem("broken")) E.p += "<p>法院把那桿斷秤當作證物：秤桿上的證印，清清楚楚。</p>";
+  else if (hasItem("broken") && !["mount", "legend"].includes(key)) E.p += "<p>那桿斷秤，你留到了正月。</p>";
+  if (G.fine === 100) E.p = E.p.replace("初二回家", "元旦早上回家");
+  if (key === "paper" && G.flag.letterDoc) E.p += "<p>很多年以後，有人說那位醫生寫過一篇小說：一個賣菜的人，一桿稱仔，一個除夕。</p>";
+  if (G.hua !== "home") E.p = E.p.replace("金花在妻子的枕邊。", "").replace("金花、年糕、門聯", "年糕、門聯");
+  const dex = load(DEX_KEY, []); if (!dex.includes(key)) { dex.push(key); save(DEX_KEY, dex); }
+  const rows = G.hist.filter(h => h.orig).map(h => `<tr><td>${h.day >= 16 && h.day <= 30 ? "十二月" + CN[h.day] : h.day > 30 ? "除夕夜" : "前半生"}<br><span class="q">${h.t}</span></td><td>${h.mine}${h.same ? ' <span class="same">✓</span>' : ""}</td><td>${h.orig}</td></tr>`).join("");
+  $("endWrap").innerHTML = `
+    <div class="endhead frame"><div class="kind">結局 ${E.no}・${E.kind}${G.day <= 30 ? "・十二月" + CN[G.day] : ""}</div><h1 class="gild">${E.t}</h1>${E.p}${G.why ? `<p class="hint">為什麼走到這裡：${G.why}</p>` : ""}${G.flag.nbLoan300 ? `<p class="hint">欠鄰右 300 錢，正月要還。</p>` : ""}${G.debts.some(d => d.done !== "paid") ? `<p class="hint">還欠著：${G.debts.filter(d => d.done !== "paid").map(d => d.n + " " + d.amt + " 錢").join("、")}。</p>` : ""}</div>
+    ${E.life ? `<div class="sec lifeline"><b>如果你或身邊的人撐不下去</b>：安心專線 <b>1925</b>（依舊愛我），24 小時免費。這個故事發生在一百年前，但這句話是給今天的你。</div>` : ""}
+    <div class="sec frame"><h2>史實依據</h2><p class="explain" style="font-size:16px">${E.fact}</p></div>
+    <div class="sec frame"><h2>你的選擇・原著的選擇</h2><p class="explain">打勾的是跟原著得參一樣的選擇。讀課文的時候，會在這些句子停下來。</p>
+      <div style="overflow-x:auto"><table><thead><tr><th>時候</th><th>你</th><th>原著</th></tr></thead><tbody>${rows || "<tr><td colspan=3>還沒走到課文裡的場面。</td></tr>"}</tbody></table></div></div>
+    <div class="sec frame"><h2>分數：<span class="gild" style="font-size:1.3em">${SC.total}</span></h2><p class="score">基本 ${SC.base}・撐過的日子 ${SC.days}／25・糧備到元宵 ${SC.food}／10・金花 ${SC.hua}／10・知識卡 ${SC.cards}／15・找到的路 ${SC.road}／15<br>分數看的是「撐得有多清楚」：知道自己在做什麼、付了什麼代價。結局不分好壞。</p>
+      ${G.newCards.length ? `<p class="hint">這一局拿到的知識卡：${G.newCards.map(k => CARDS[k].from).join("、")}。下一局還會在。</p>` : ""}</div>
+    <div class="sec frame"><h2>想一想</h2><p style="font-size:17px">${E.ask}</p></div>
+    <div class="endbtns"><button class="btn" id="again">再玩一次</button><button class="btn ghost" id="home2">回首頁</button></div>`;
+  $("again").onclick = () => startGame(G.mapMode === false);
+  $("home2").onclick = () => { renderHome(); show("home"); };
+  show("end");
+}
+
+// ===== 首頁：結局圖鑑 =====
+function renderHome() {
+  const dex = load(DEX_KEY, []);
+  $("quickBtn").hidden = !dex.length;
+  $("dex").innerHTML = `<h2>結局圖鑑</h2><ol>${Object.keys(ENDS).map(k => { const E = ENDS[k], got = dex.includes(k); return `<li class="${got ? "got" : ""}"><b>${E.no}</b>${got ? E.t + "・" + E.kind : E.hint + (E.p ? "" : "（第二期）")}</li>`; }).join("")}</ol>
+    <div class="cards">知識卡：<b>${KEPT.length}</b> 張${KEPT.length ? "・" + KEPT.map(k => CARDS[k].from).join("、") : "。聽來的消息會留到下一局。"}${KEPT.length || dex.length ? ` <button class="btn ghost" id="reset" style="min-height:30px;padding:2px 10px;font-size:13px;margin-left:8px">清除</button>` : ""}</div>`;
+  const r = $("reset"); if (r) r.onclick = () => { if (!confirm("清除知識卡與圖鑑，從頭開始？")) return; KEPT = []; save(CARD_KEY, []); save(DEX_KEY, []); renderHome(); };
+}
+$("startBtn").onclick = () => startGame(false);
+$("quickBtn").onclick = () => startGame(true);
+renderHome();
+</script>
+</body>
+</html>
