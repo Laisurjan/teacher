@@ -2,7 +2,7 @@
 <html lang="zh-Hant-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow,noarchive">
 <title>名與利：春秋棋局</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -999,17 +999,19 @@ body.zoomed #unzoom{display:block}
 <script>
 /* ===== 縮放到視窗 ===== */
 const stage=document.getElementById('stage');
-let Z=1,TX=0,TY=0;const baseK=()=>Math.min(innerWidth/1920,innerHeight/1080);
+// 用版面視窗尺寸，不用 inner 尺寸：iPad Safari 被系統縮放時它會跟著變，舞台就歪掉
+const VW=()=>document.documentElement.clientWidth,VH=()=>document.documentElement.clientHeight;
+let Z=1,TX=0,TY=0;const baseK=()=>Math.min(VW()/1920,VH()/1080);
 function clampZ(){const k=baseK();Z=Math.max(1,Math.min(5,Z));
   const mx=1920*k*(Z-1)/2,my=1080*k*(Z-1)/2;TX=Math.max(-mx,Math.min(mx,TX));TY=Math.max(-my,Math.min(my,TY));}
 function fit(){clampZ();stage.style.transform=`translate(-50%,-50%) translate(${TX}px,${TY}px) scale(${baseK()*Z})`;document.body.classList.toggle('zoomed',Z>1);}
-addEventListener('resize',fit);fit();
+addEventListener('resize',fit);addEventListener('orientationchange',()=>setTimeout(fit,300));fit();
 
 /* ===== 觸控放大：雙指縮放、單指拖曳；放大時不換頁 ===== */
 const zoomed=()=>Z>1;
 function unzoom(){stage.classList.add('zs');Z=1;TX=TY=0;fit();setTimeout(()=>stage.classList.remove('zs'),320);}
 function zoomAt(px,py,z){ // 以螢幕點 (px,py) 為中心縮放到 z
-  const k=baseK(),cx=innerWidth/2,cy=innerHeight/2;
+  const k=baseK(),cx=VW()/2,cy=VH()/2;
   const ux=(px-cx-TX)/(k*Z),uy=(py-cy-TY)/(k*Z);
   Z=Math.max(1,Math.min(5,z));TX=px-cx-ux*k*Z;TY=py-cy-uy*k*Z;fit();}
 const pts=new Map();let g=null,moved=false,blockUntil=0,lastTap=0;
@@ -1019,13 +1021,13 @@ addEventListener('pointerdown',e=>{
   if(pts.size===1){moved=false;g={x:e.clientX,y:e.clientY,tx:TX,ty:TY};}
   if(pts.size===2){moved=true;const[a,b]=[...pts.values()];
     const mx=(a.x+b.x)/2,my=(a.y+b.y)/2,k=baseK();
-    g={pinch:1,d:Math.hypot(a.x-b.x,a.y-b.y)||1,z:Z,ux:(mx-innerWidth/2-TX)/(k*Z),uy:(my-innerHeight/2-TY)/(k*Z)};}
+    g={pinch:1,d:Math.hypot(a.x-b.x,a.y-b.y)||1,z:Z,ux:(mx-VW()/2-TX)/(k*Z),uy:(my-VH()/2-TY)/(k*Z)};}
 });
 addEventListener('pointermove',e=>{
   if(!pts.has(e.pointerId)||!g)return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
   if(g.pinch&&pts.size>=2){const[a,b]=[...pts.values()];const k0=baseK();
     Z=Math.max(1,Math.min(5,g.z*Math.hypot(a.x-b.x,a.y-b.y)/g.d));const k=k0*Z;
-    TX=(a.x+b.x)/2-innerWidth/2-g.ux*k;TY=(a.y+b.y)/2-innerHeight/2-g.uy*k;fit();}
+    TX=(a.x+b.x)/2-VW()/2-g.ux*k;TY=(a.y+b.y)/2-VH()/2-g.uy*k;fit();}
   else if(!g.pinch){const dx=e.clientX-g.x,dy=e.clientY-g.y;
     if(Math.hypot(dx,dy)>10)moved=true;
     if(moved&&zoomed()){TX=g.tx+dx;TY=g.ty+dy;fit();}}
@@ -1046,7 +1048,9 @@ addEventListener('click',e=>{if(e.target.id==='unzoom')return;if(zoomed()||Date.
 addEventListener('wheel',e=>{if(!e.ctrlKey&&!zoomed())return;e.preventDefault();
   if(e.ctrlKey)zoomAt(e.clientX,e.clientY,Z*Math.exp(-e.deltaY/200));else{TX-=e.deltaX;TY-=e.deltaY;fit();}
   if(Z<1.02)unzoom();},{passive:false});
-['gesturestart','gesturechange'].forEach(t=>addEventListener(t,e=>e.preventDefault()));
+['gesturestart','gesturechange','gestureend'].forEach(t=>addEventListener(t,e=>e.preventDefault()));
+// iPad Safari 不一定遵守 touch-action，雙指時擋掉系統縮放，交給上面的程式處理
+addEventListener('touchmove',e=>{if(e.touches.length>1||zoomed())e.preventDefault();},{passive:false});
 document.getElementById('unzoom').addEventListener('click',e=>{e.stopPropagation();unzoom();});
 
 /* ===== 地圖資料（經緯度 → 座標，示意） ===== */
