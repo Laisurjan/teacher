@@ -176,6 +176,8 @@ button,.btn,.opt,a,summary{touch-action:manipulation}
 .joyring i{position:absolute;left:50%;top:50%;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;background:rgba(255,255,255,.45)}
 .mbub{position:absolute;transform:translate(-50%,-100%);background:#fffaf0;color:#2a1d14;border:2px solid #2a1d14;border-radius:8px;padding:4px 10px;font:800 clamp(12px,1.4vw,16px)/1.35 var(--sans);white-space:nowrap;pointer-events:none;box-shadow:0 3px 0 rgba(0,0,0,.35)}
 .mbub::after{content:"";position:absolute;left:50%;bottom:-8px;margin-left:-6px;border:6px solid transparent;border-top-color:#2a1d14;border-bottom:0}
+.msay{position:absolute;transform:translate(-50%,-100%);background:#fffaf0;color:#2a1d14;border:2px solid #2a1d14;border-radius:8px;padding:2px 8px;font:800 clamp(11px,1.2vw,14px)/1.3 var(--sans);white-space:nowrap;pointer-events:none}
+.msay::after{content:"";position:absolute;left:50%;bottom:-6px;margin-left:-4px;border:4px solid transparent;border-top-color:#2a1d14;border-bottom:0}
 .mrot .btn{min-height:40px;padding:4px 16px;font-size:16px;margin:4px 8px}.mrot small{display:block;color:var(--muted);font-size:13px;font-weight:600}
 .mrot{margin:2px 0;color:var(--gold);font-weight:800;font-size:14px}
 @media (pointer:coarse){.mact{min-width:150px;min-height:64px;font-size:20px;right:12px;bottom:12px}}
@@ -316,7 +318,7 @@ body.quake .main{animation:quake .6s}
     <div class="mclock" id="mClock"></div>
     <p class="mrot" id="mRot" hidden>橫著拿，畫面會大一些。<button class="btn" id="rotBtn" type="button" hidden>轉成橫向</button><small id="rotTip">轉不過來的話，打開手機的「自動旋轉」。</small></p>
     <div class="mapbox"><canvas id="mapCv" width="640" height="352" aria-label="鎮上地圖"></canvas><div class="mlabels" id="mLabels"></div><div class="vign" id="vign"></div>
-      <div class="mtoast" id="mToast"></div><canvas class="mmini" id="mMini" width="128" height="70" hidden></canvas><div class="mbub" id="mBub" hidden></div><div class="joyring" id="joyRing" hidden><i id="joyKnob"></i></div><button class="mact" id="mAct" type="button">　</button></div>
+      <div class="mtoast" id="mToast"></div><canvas class="mmini" id="mMini" width="128" height="70" hidden></canvas><div class="mbub" id="mBub" hidden></div><div class="msay" id="mSay" hidden></div><div class="joyring" id="joyRing" hidden><i id="joyKnob"></i></div><button class="mact" id="mAct" type="button">　</button></div>
     <p class="mhelp">方向鍵或 WASD 走路，空白鍵擺攤、收攤。手機：在地圖上按住拖曳走路，按右下角的按鈕擺攤。</p>
   </div>
   <main class="main" id="main"></main>
@@ -1358,6 +1360,8 @@ const LOOK = {
   folk: [{skin: "#e8b98c", top: "#8a5a44", bottom: "#2b2a30", hat: "none"}, {skin: "#d9a77c", top: "#5a7a5a", bottom: "#33302a", hat: "douli"},
     {skin: "#e8b98c", top: "#a65a5a", bottom: "#3a2e3a", hat: "bun"}, {skin: "#d9a77c", top: "#6a6a8a", bottom: "#2b2a30", hat: "none"}]
 };
+// 圍過來買菜的人：男女都有（盤髻、包頭巾的是女人）
+LOOK.buyer = [...LOOK.folk, {skin: "#ecc29c", top: "#4a6a8a", bottom: "#3a2e3a", hat: "bun"}, {skin: "#e8b98c", top: "#b8935a", bottom: "#4a3a2a", hat: "scarf"}, {skin: "#d9a77c", top: "#7a4a5a", bottom: "#2b2a30", hat: "scarf"}];
 function drawMan(g, x, y, lk, dir, fr, still) {
   const ox = Math.round(x) - 6, oy = Math.round(y) - 18;
   const o = (a, b, w, h, c) => { g.fillStyle = c; g.fillRect(ox + a, oy + b, w, h); };
@@ -1380,6 +1384,7 @@ function drawMan(g, x, y, lk, dir, fr, still) {
   else if (h === "capw") { o(3, 0, 6, 2, "#f2f0e6"); o(3, 2, 6, 1, "#1c2030"); }
   else if (h === "bowler") { o(2, 1, 8, 1, "#2a2622"); o(3, -1, 6, 2, "#2a2622"); }
   else if (h === "bun") { o(3, 1, 6, 2, "#1d1a18"); o(5, -1, 2, 2, "#1d1a18"); }
+  else if (h === "scarf") { o(2, 1, 8, 3, "#3a3f52"); o(3, 0, 6, 1, "#3a3f52"); }
   else { o(3, 1, 6, 2, "#1d1a18"); }
   if (dir === "up") return;
   const eye = "#1f1c1a";
@@ -1537,7 +1542,7 @@ function townMap() {
   G.phase = "market"; setWorld("town");
   const fee0 = G.day === FIRST && G.scale === "none";
   MAP = {mode: "market", on: true, paused: false, t: 0, me: {x: 1.2 * TS, y: 7.5 * TS, dir: "right", fr: 0}, selling: "", sellT: {in: 0, st: 0, fr: 0}, feePaid: false,
-    cops: [], agents: [], folks: [], events: [], cartT: 6, copHits: 0, hits: 0, frT: 0, kick: false, script: null, poolAt: chance(.55) ? .45 + Math.random() * .35 : 0, warn: ""};
+    cops: [], agents: [], folks: [], buyers: [], buyT: .8, say: null, events: [], cartT: 6, copHits: 0, hits: 0, frT: 0, kick: false, script: null, poolAt: chance(.55) ? .45 + Math.random() * .35 : 0, warn: ""};
   if (fee0) MAP.noScale = 1;
   // 巡警：平常一個，官符高、送神那天多一個
   MAP.cops.push(newCop(0));
@@ -1578,7 +1583,7 @@ function mapResume() {
 }
 // 白天裡的事件：先停下地圖，跳事件卡；結束後回到地圖（endsDay 的不回來）
 function mapEvent(id, kick) {
-  MAP.paused = true; MAP.kick = !!kick; keys = {}; MAP.hits++; if (MAP.hits >= HIT_MAX) G.ach.add("unlucky");
+  MAP.paused = true; MAP.kick = !!kick; keys = {}; MAP.hits++; MAP.buyers = []; MAP.say = null; if (MAP.hits >= HIT_MAX) G.ach.add("unlucky");
   // 被趕走的事件：損失的是時間（時鐘往前跳將近一個鐘頭，還要重新找位置），不再另外扣一次收入
   if (kick) { MAP.mul0 = G.mul; MAP.t = Math.min(DUR - 1, MAP.t + DUR * .15); }
   showMap(false); Q = [() => mapResume()];
@@ -1674,6 +1679,7 @@ function mapTick(dt) {
   // 巡警找上門的那天（對峙一、郡衙）：菜賣到一半就停住，等巡警走到擔前
   const hold = M.script && M.script.kind !== "gift" && M.sellT.in + M.sellT.st + M.sellT.fr >= SELL_NEED * .5;
   if (M.selling && !hold) { M.sellT[M.selling] += dt; if (M.selling === "fr") M.frT += dt; }
+  buyerTick(M, dt, M.selling && !hold);
   // 有固定劇情的那天，劇情發生前不會提早收工
   if (!M.script && M.sellT.in + M.sellT.st + M.sellT.fr >= SELL_NEED) { toast("菜賣完了，今天提早收工。"); return endMarket(); }
   const quiet = M.hits >= HIT_MAX;   // 今天已經夠倒楣了：不再有人找上門
@@ -1773,6 +1779,62 @@ function spawnHaz(type) {
   const s = route[0];
   M.agents.push({type, x: s[0] * TS, y: s[1] * TS, lk: LOOK[type], route, i: 1});
 }
+// 賣菜時圍過來買菜的人（只是畫面，不影響收入）。頭上輪流冒小圖示，偶爾冒一句話；一中斷就全部散掉（使用者指定）
+const BUY_SLOT = [[-22, 2], [22, 2], [-9, 15], [9, 15]];
+const BUY_ICON = ["ask", "leaf", "coin", "dots"];
+const BUY_SAY = ["一把幾錢？", "算俗一點啦", "這菜真青", "秤要給足喔", "再加一把", "過年要煮的", "幫我揀兩把", "明天還有來嗎？"];
+function buyerTick(M, dt, on) {
+  if (!on) { M.buyers = []; M.say = null; return; }
+  const me = M.me;
+  if ((M.buyT -= dt) <= 0) {
+    M.buyT = (M.crowd ? 1 : 1.8) + Math.random() * 1.2;
+    const used = M.buyers.filter(b => !b.go).map(b => b.slot), free = [0, 1, 2, 3].filter(i => !used.includes(i));
+    if (free.length && used.length < (M.crowd ? 4 : 3)) {
+      const slot = rnd(free), s = BUY_SLOT[slot];
+      M.buyers.push({slot, x: me.x + s[0] * 3, y: me.y + 40, lk: rnd(LOOK.buyer), stay: 3 + Math.random() * 2.5, bt: .5 + Math.random(), icon: "", fr: 0});
+    }
+  }
+  for (const b of M.buyers) {
+    const s = BUY_SLOT[b.slot], tx = me.x + s[0] * (b.go ? 3 : 1), ty = b.go ? me.y + 40 : me.y + s[1];
+    const dx = tx - b.x, dy = ty - b.y, L = Math.hypot(dx, dy);
+    if (L > 1) {
+      const st = Math.min(L, 34 * dt); b.x += dx / L * st; b.y += dy / L * st; b.fr += st / 6; b.moving = true;
+      b.dir = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "right" : "left") : (dy > 0 ? "down" : "up");
+      continue;
+    }
+    b.moving = false;
+    if (b.go) { b.gone = 1; continue; }
+    b.dir = Math.abs(s[0]) > 15 ? (s[0] < 0 ? "right" : "left") : "up";
+    if ((b.stay -= dt) <= 0) { b.go = 1; b.icon = "coin"; if (M.say && M.say.b === b) M.say = null; continue; }
+    if ((b.bt -= dt) <= 0) {
+      b.bt = 1.1 + Math.random() * .6;
+      if (!M.say && Math.random() < .3) { M.say = {b, t: 2.2, txt: rnd(BUY_SAY)}; b.icon = ""; }
+      else if (!(M.say && M.say.b === b)) b.icon = rnd(BUY_ICON);
+    }
+  }
+  M.buyers = M.buyers.filter(b => !b.gone);
+  if (M.say && (!M.buyers.includes(M.say.b) || (M.say.t -= dt) <= 0)) M.say = null;
+}
+// 買菜的人頭上的小泡泡：？、菜葉、銅錢、…
+function buyIcon(g, x, y, k) {
+  const X = Math.round(x) - 5, Y = Math.round(y) - 31, ink = "#2a1d14";
+  const o = (a, b, w, h, c) => { g.fillStyle = c; g.fillRect(X + a, Y + b, w, h); };
+  o(0, 1, 11, 7, ink); o(1, 0, 9, 9, ink); o(1, 1, 9, 7, "#fffaf0"); o(4, 9, 2, 1, ink); o(4, 10, 1, 1, ink);
+  if (k === "ask") { o(4, 2, 3, 1, ink); o(7, 3, 1, 1, ink); o(6, 4, 1, 1, ink); o(5, 5, 1, 1, ink); o(5, 7, 1, 1, ink); }
+  else if (k === "leaf") { o(2, 6, 1, 1, "#3a6a2a"); o(3, 5, 2, 1, "#4f9a3c"); o(4, 4, 3, 1, "#5fb04a"); o(5, 3, 3, 1, "#5fb04a"); o(7, 2, 1, 1, "#7cc05a"); }
+  else if (k === "coin") { o(4, 2, 3, 1, "#d8a63a"); o(3, 3, 5, 3, "#d8a63a"); o(4, 6, 3, 1, "#d8a63a"); o(5, 4, 1, 1, "#8a6420"); }
+  else { o(2, 4, 1, 1, ink); o(5, 4, 1, 1, ink); o(8, 4, 1, 1, ink); }
+}
+// 買菜的人偶爾說的一句話：用網頁文字疊在地圖上，手機上才看得清楚
+function sayBub(cv) {
+  const el = $("mSay"), s = MAP.say;
+  el.hidden = !s; if (!s) return;
+  const k = cv.offsetWidth / cv.width;
+  el.textContent = s.txt;
+  const half = el.offsetWidth / 2 + 2, W = cv.offsetWidth;
+  el.style.left = Math.max(half, Math.min(W - half, (s.b.x - CAM.x) * k)) + "px";
+  el.style.top = Math.max(el.offsetHeight + 2, (s.b.y - 22 - CAM.y) * k) + "px";
+}
 
 // ---------- 畫面 ----------
 // 手機等小螢幕：只放大顯示得參周圍那一塊，鏡頭跟著走；大螢幕（投影）照舊整張地圖
@@ -1796,7 +1858,7 @@ function drawTown() {
     el.style.left = lx * 100 + "%"; el.style.top = ly * 100 + "%"; el.style.display = lx < -.05 || lx > 1.05 || ly < -.05 || ly > 1.05 ? "none" : "";
   });
   if (CAM.on) drawMini();
-  bubble(cv);
+  bubble(cv); sayBub(cv);
 }
 // 傍晚不倒數，用泡泡框提醒：先糴米，買完就回家歇著
 function bubble(cv) {
@@ -1838,7 +1900,10 @@ function drawEntities(g) {
     drawMan(g, a.x, a.y, a.lk, a.dir || "down", a.fr || 0, !a.moving);
     if (a.bang) bang(g, a.x, a.y, "#f2c14e");
   }}));
+  const buyers = M.buyers || [];
+  buyers.forEach(b => list.push({y: b.y, f: () => drawMan(g, b.x, b.y, b.lk, b.dir || "up", b.fr, !b.moving)}));
   list.sort((a, b) => a.y - b.y).forEach(o => o.f());
+  buyers.forEach(b => { if (b.icon && !(M.say && M.say.b === b)) buyIcon(g, b.x, b.y, b.icon); });
   hudTown();
 }
 function hudTown() {
