@@ -316,7 +316,7 @@ body.quake .main{animation:quake .6s}
     </div>
   </div>
   <div class="dex frame" id="dex"></div>
-  <div class="foot">賴和〈一桿「稱仔」〉課前引導遊戲・法令與物價依 1925 年前後史料<br>花蓮高工柯貞伊老師、花蓮高商賴士鈞老師合作<br>音樂：ChineseZenMusic、kaazoom、leberch、Viacheslav Starostin；音效與環境音：Pixabay<br><span style="opacity:.7">試作 2.13：地圖、道具、成就、音樂音效、立繪與結局插圖</span></div>
+  <div class="foot">賴和〈一桿「稱仔」〉課前引導遊戲・法令與物價依 1925 年前後史料<br>花蓮高工柯貞伊老師、花蓮高商賴士鈞老師合作<br>音樂：ChineseZenMusic、kaazoom、leberch、Viacheslav Starostin；音效與環境音：Pixabay<br><span style="opacity:.7">試作 2.14：地圖、道具、成就、音樂音效、立繪與結局插圖</span></div>
 </section>
 
 <!-- 遊戲 -->
@@ -1224,7 +1224,9 @@ function night() {
   if (late) lines.push("今晚回來得晚，沒歇夠。（身體 −1）");
   let o = [{t: "睡罷。", e: {}, r: ""}], q = "", qs = "", t = "夜裡";
   if (G.g > 0) G.hungry = 0;   // 餓過年看的是「連續」兩天斷糧
-  const stayed = G.day >= 26 && G.day < 30 && !G.flag["m" + G.day] && !G.flag["m" + (G.day - 1)];
+  // 廿六以後連兩天沒上鎮，隔天被流言逼著上鎮。還沒跟巡警起衝突的人，廿九一天沒上鎮就算（2.14 補漏洞：
+  // 原本廿八隔壁庄、廿九歇、三十在家就能平安過年；使用者要平安過年「非常難」）
+  const stayed = G.day >= 26 && G.day < 30 && !G.flag["m" + G.day] && (!G.flag["m" + (G.day - 1)] || (G.day === 29 && !G.flag.c1done));
   if (G.flag.c1day === G.day && !G.flag.gift && G.day < 30) {
     t = "回到家"; q = "「寬心罷！」妻子說，「這幾天的所得，買一桿新的還給人家，剩下的猶足贖取那金花回來。休息罷，明天亦不用出去，新春要的物件，大概準備下，但是，今年運氣太壞，怕運裡帶有官符，經這一回事，明年快就出運，亦不一定。」"; qs = "課文";
     lines.push("夜飯前你吃不下，只悶悶地一句話不說。經妻子殷勤的探問，才把白天所遭的事告訴她。");
