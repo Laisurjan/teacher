@@ -81,6 +81,12 @@ h1,h2,h3{font-family:var(--serif);margin:0;line-height:1.35}
 .dex li b{color:var(--gold);margin-right:6px;font-family:var(--serif)}
 .dex li.got b{color:var(--jade)}
 .dex li .dpic{display:block;width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:2px;margin-bottom:5px}
+[data-egg]{cursor:pointer}.dex li.wide::after{content:"點開重看 ▸";color:var(--gold);font-size:13px;white-space:nowrap;margin-left:auto}
+.pv{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;padding:16px}
+.pvbox{width:min(640px,100%);max-height:92vh;overflow-y:auto;overflow-x:hidden;padding:16px 18px;text-align:left}
+.pvbox img{display:block;width:100%;max-height:55vh;object-fit:cover;border-radius:3px;border:1px solid var(--gold2)}.pvbox h3{color:var(--gold);margin:12px 0 4px;font-size:20px}.pvbox p{margin:0 0 8px;font-size:17px}.pvbox .btn{margin-top:6px}
+.dex li.wide{grid-column:1/-1;display:flex;align-items:center;gap:12px}.dex li.wide .dpic{width:min(300px,45%);flex:none;margin:0}
+@media (max-width:600px){.dex li.wide{display:block}.dex li.wide .dpic{width:100%;margin-bottom:5px}}
 .endpic{display:block;width:100%;aspect-ratio:3/2;max-height:42vh;object-fit:cover;border-radius:3px;margin:0 0 16px;border:1px solid var(--gold2)}
 .achs li .apic{flex-basis:100%;width:100%;max-width:520px;aspect-ratio:3/2;object-fit:cover;border-radius:3px;margin-top:4px}
 .egg h2{color:var(--gold)}
@@ -310,7 +316,7 @@ body.quake .main{animation:quake .6s}
     </div>
   </div>
   <div class="dex frame" id="dex"></div>
-  <div class="foot">賴和〈一桿「稱仔」〉課前引導遊戲・法令與物價依 1925 年前後史料<br>花蓮高工柯貞伊老師、花蓮高商賴士鈞老師合作<br>音樂：ChineseZenMusic、kaazoom、leberch、Viacheslav Starostin；音效與環境音：Pixabay<br><span style="opacity:.7">試作 2.4：地圖、道具、成就、音樂音效</span></div>
+  <div class="foot">賴和〈一桿「稱仔」〉課前引導遊戲・法令與物價依 1925 年前後史料<br>花蓮高工柯貞伊老師、花蓮高商賴士鈞老師合作<br>音樂：ChineseZenMusic、kaazoom、leberch、Viacheslav Starostin；音效與環境音：Pixabay<br><span style="opacity:.7">試作 2.13：地圖、道具、成就、音樂音效、立繪與結局插圖</span></div>
 </section>
 
 <!-- 遊戲 -->
@@ -333,6 +339,7 @@ body.quake .main{animation:quake .6s}
 <div class="ov" id="fb"><div class="box frame" id="fbBox"></div></div>
 
 <div class="snd" id="snd"><button class="sndbtn" id="sndBtn" type="button" aria-label="聲音">♪</button><div class="sndpanel frame" id="sndPanel" hidden><label>音樂<input type="range" id="sndM" min="0" max="100"></label><label>音效<input type="range" id="sndS" min="0" max="100"></label><button type="button" class="btn ghost" id="sndOff">全部關閉</button></div></div>
+<div class="pv" id="pv" hidden><div class="pvbox frame"><img id="pvImg" alt=""><h3 id="pvT"></h3><div id="pvX"></div><button class="btn" id="pvOk" type="button">收起來</button></div></div>
 <script>
 "use strict";
 const $ = id => document.getElementById(id);
@@ -380,6 +387,9 @@ const CARD_KEY = "sc-cards", DEX_KEY = "sc-ends", EGG_KEY = "sc-eggs";
 // t 台語詞、zh 國語、i 小圖示（劇情彩蛋 big:1，第 4 期要畫立繪）；hint 沒拿到時的提示，不寫門檻
 // 有插圖的結局與劇情彩蛋：art/end/<鍵>.webp（960×640），首頁縮圖在 art/end/s/
 const EGG_ART = {hua: "egg_hua"};
+// 劇情彩蛋點開時重看的那一段（跟當晚畫面上的字一樣）
+const HUA_TXT = "妻子把贖回來的金花插在髮上，在燈下轉過頭給你看，像剛嫁過來那年。看了好一會兒，她才把它收到枕邊。";
+const EGG_STORY = {hua: () => `<p>除夕夜。圍過爐，孩子們因明早要絕早起來開正，各已睡下。</p><p>${HUA_TXT}</p>`};
 const EGGS = {
   hua: {t: "金花", zh: "劇情彩蛋", i: "★", big: 1, hint: "妻子最在意的那一件事，你先替她做到了嗎？", p: "除夕夜，妻子把金花插在髮上給你看。"},
   rich: {t: "好額人", zh: "有錢人", i: "💰", hint: "有人說，賣菜也能賣出一間厝。", p: "身上的錢一度超過二十圓。"},
@@ -898,6 +908,8 @@ function apply(e, d) {
   if (e.card && !G.cards.has(e.card)) { G.cards.add(e.card); G.newCards.push(e.card); d.card = e.card; KEPT = [...new Set([...KEPT, e.card])]; save(CARD_KEY, KEPT); }
   if (e.mul) G.mul = (G.mul || 1) * e.mul;
   if (e.add) G.add = (G.add || 0) + e.add;
+  // 挨打、發寒熱扣的身體記下來：妻子的心滿了，當晚會煮薑湯（疲勞、淋雨扣的不算）
+  if (d.b < 0 && (e.hit || G.cur === "malaria")) G.flag["hurt" + G.day] = 1;
   if (e.scale === "broken") AU.sfx("break"); else if (e.hit && d.b) AU.sfx("slap");
   if (d.card || d.item) AU.sfx("chime", .15);
 }
@@ -1044,7 +1056,7 @@ function dayStart() {
   if (G.flag.roadDay) { delete G.flag.roadDay; return card("roadDo"); }
   if (G.flag.force) return card("morning");
   // 廿九是準備正式裁判的唯一一天，不讓寒熱把路堵死
-  if (G.flag.malaria && G.b < 4 && G.day !== 29 && chance(.5)) { Q = [() => rest(true)]; G.malN++; return card("malaria"); }   // 只有留下病根的人會復發
+  if (G.flag.malaria && G.b < 4 && G.day !== 29 && chance(.5)) { Q = [() => rest(true)]; G.malN++; G.flag["hurt" + G.day] = 1; return card("malaria"); }   // 只有留下病根的人會復發
   if (G.day === 26 && !G.flag.d20) { G.flag.d20 = 1; Q = [() => morningOrMap()]; return card("d20"); }
   if (G.day === 29 && G.flag.c1day === 28) return card("d29");
   morningOrMap();
@@ -1200,7 +1212,7 @@ function appeal() {
   card("_appeal");
 }
 // 除夕圍爐：妻子的心滿了、而且金花是先於年貨贖回的，她把金花戴給你看（彩蛋，不改結局）
-const HUA_EVE = () => G.w >= 10 && !G.flag.goodsFirst ? (G.ach.add("hua"), "妻子把贖回來的金花插在髮上，在燈下轉過頭給你看，像剛嫁過來那年。看了好一會兒，她才把它收到枕邊。") : "金花放在妻子的枕邊。";
+const HUA_EVE = () => G.w >= 10 && !G.flag.goodsFirst ? (G.ach.add("hua"), HUA_TXT) : "金花放在妻子的枕邊。";
 function night() {
   G.phase = "night";
   G.g = Math.max(0, G.g - 1);
@@ -1226,9 +1238,8 @@ function night() {
   else if (G.flag.wantCloth && !G.flag.bu && G.day > 26) { lines.push("孩子問：新衣裳呢？妻子看了你一眼。"); G.w = clamp10(G.w - 1); delete G.flag.wantCloth; }
   else if (G.w >= 10) lines.push(rnd(["妻子替你揉肩，說今天的擔子挑得太重了。", ...(G.hua === "home" ? ["她把金花拿出來看了又看，又小心收好。"] : []), "她在燈下哼著歌，孩子聽著聽著就睡著了。", "妻子把熱水端到你腳邊：「燙一燙，明天才走得動。」"]));
   else lines.push(rnd(["孩子們睡了。妻子在燈下補衣裳。", "風從門縫鑽進來。妻子把孩子的被角掖好。", "妻子數了數今天的錢，沒有說話。", "遠遠有人家在試爆竹。"]));
-  // 妻子的心滿了：今天挨打或發寒熱（晚回家扣的不算），她會照顧你，身體 +1
-  const am = G.trace.find(x => x.d === G.day);
-  if (G.w >= 10 && am && am.b > G.b + (late ? 1 : 0) && G.b > 0) { G.b = clamp10(G.b + 1); lines.push("妻子看你臉色不對，煮了一碗薑湯，守著你喝完。（身體 +1）"); renderTop(); }
+  // 妻子的心滿了：今天挨打或發寒熱，她會照顧你，身體 +1（連日上鎮的疲勞、淋雨、晚回家扣的都不算；115 學年 10/20 使用者選定）
+  if (G.w >= 10 && G.flag["hurt" + G.day] && G.b > 0) { G.b = clamp10(G.b + 1); lines.push("妻子看你臉色不對，煮了一碗薑湯，守著你喝完。（身體 +1）"); renderTop(); }
   if (G.g === 0 && G.hungry >= 2) return G.why = "糧連續兩天歸零。米要在鎮上傍晚糴，一次 3 天。", finish("hunger");
   if (G.day >= 23 && chance(.4)) AU.sfx("firecracker", 1.5);   // 年近了，遠遠有人家在放爆竹
   EV._night = {who: "wife", t, x: `<p>${lines.join("</p><p>")}</p>`, q, qs, o};
@@ -2203,7 +2214,7 @@ function finish(key) {
   $("endWrap").innerHTML = `
     <div class="endhead frame"><img class="endpic" src="art/end/${key}.webp" alt=""><div class="kind">結局 ${E.no}・${E.kind}${G.day <= 30 ? "・十二月" + CN[G.day] : ""}</div><h1 class="gild">${E.t}</h1>${E.p}${G.why ? `<p class="hint">為什麼走到這裡：${G.why}</p>` : ""}${G.flag.nbLoan300 ? `<p class="hint">欠鄰右 300 錢，正月要還。</p>` : ""}${G.debts.some(d => d.done !== "paid") ? `<p class="hint">還欠著：${G.debts.filter(d => d.done !== "paid").map(d => d.n + " " + d.amt + " 錢").join("、")}。</p>` : ""}</div>
     ${E.life ? `<div class="sec lifeline"><b>如果你或身邊的人撐不下去</b>：安心專線 <b>1925</b>（依舊愛我），24 小時免費。這個故事發生在一百年前，但這句話是給今天的你。</div>` : ""}
-    ${eggs.length ? `<div class="sec frame egg"><h2>這一局的成就</h2><ul class="achs">${eggs.map(k => `<li><i>${EGGS[k].i}</i><b>${EGGS[k].t}</b><small>（${EGGS[k].zh}）</small>${fresh.includes(k) ? '<em>新</em>' : ""}<span>${EGGS[k].p}</span>${EGG_ART[k] ? `<img class="apic" src="art/end/${EGG_ART[k]}.webp" alt="">` : ""}</li>`).join("")}</ul><p class="explain">成就不影響結局，會留在首頁的圖鑑裡。</p></div>` : ""}
+    ${eggs.length ? `<div class="sec frame egg"><h2>這一局的成就</h2><ul class="achs">${eggs.map(k => `<li><i>${EGGS[k].i}</i><b>${EGGS[k].t}</b><small>（${EGGS[k].zh}）</small>${fresh.includes(k) ? '<em>新</em>' : ""}<span>${EGGS[k].p}</span>${EGG_ART[k] ? `<img class="apic" src="art/end/${EGG_ART[k]}.webp" alt="" data-egg="${k}" role="button" tabindex="0">` : ""}</li>`).join("")}</ul><p class="explain">成就不影響結局，會留在首頁的圖鑑裡。</p></div>` : ""}
     <div class="sec frame"><h2>史實依據</h2><p class="explain" style="font-size:16px">${E.fact}</p></div>
     <details class="sec frame fold"><summary><h2>你的選擇・得參的選擇　<small>${G.hist.filter(h => h.orig && h.same).length}／${G.hist.filter(h => h.orig).length} 一樣</small></h2></summary><p class="explain">打勾的是跟得參本人一樣的選擇。</p>
       <div style="overflow-x:auto"><table><thead><tr><th>時候</th><th>你</th><th>得參</th></tr></thead><tbody>${rows || "<tr><td colspan=3>還沒走到得參遇過的那些場面。</td></tr>"}</tbody></table></div></details>
@@ -2216,6 +2227,16 @@ function finish(key) {
   show("end");
 }
 
+// 劇情彩蛋：點圖鑑或結局頁的圖，放大重看當時那一段（使用者要求）
+function showEgg(k) {
+  const E = EGGS[k]; if (!E || !EGG_STORY[k]) return;
+  $("pvImg").src = `art/end/${EGG_ART[k]}.webp`; $("pvT").textContent = `${E.i} ${E.t}`; $("pvX").innerHTML = EGG_STORY[k]();
+  $("pv").hidden = false;
+}
+document.addEventListener("click", e => { const t = e.target.closest("[data-egg]"); if (t) showEgg(t.dataset.egg); });
+document.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target.dataset && e.target.dataset.egg) { e.preventDefault(); showEgg(e.target.dataset.egg); } if (e.key === "Escape") $("pv").hidden = true; });
+$("pvOk").onclick = () => { $("pv").hidden = true; };
+$("pv").onclick = e => { if (e.target.id === "pv") $("pv").hidden = true; };
 // ===== 首頁：結局圖鑑 =====
 function renderHome() {
   AU.scene("calm", "");
@@ -2224,7 +2245,7 @@ function renderHome() {
   // 圖鑑、成就預設收起來，點標題才展開
   const eggN = load(EGG_KEY, []).length;
   $("dex").innerHTML = `<details class="fold"><summary><h2>結局圖鑑　<small>${dex.filter(k => ENDS[k]).length}／${Object.keys(ENDS).length}</small></h2></summary><ol>${Object.keys(ENDS).map(k => { const E = ENDS[k], got = dex.includes(k); return `<li class="${got ? "got" : ""}">${got ? `<img class="dpic" src="art/end/s/${k}.webp" alt="" loading="lazy">` : ""}<b>${E.no}</b>${got ? E.t + "・" + E.kind : E.hint + (E.p ? "" : "（第二期）")}</li>`; }).join("")}</ol></details>
-    <details class="fold"><summary><h2>成就　<small>${eggN}／${Object.keys(EGGS).length}</small></h2></summary><ol>${Object.keys(EGGS).map(k => { const E = EGGS[k], got = load(EGG_KEY, []).includes(k); return `<li class="${got ? "got" : ""}">${got && EGG_ART[k] ? `<img class="dpic" src="art/end/s/${EGG_ART[k]}.webp" alt="" loading="lazy">` : ""}<b>${got ? E.i : "？"}</b>${got ? `${E.t}<small>（${E.zh}）</small>・${E.p}` : E.hint}</li>`; }).join("")}</ol></details>
+    <details class="fold"><summary><h2>成就　<small>${eggN}／${Object.keys(EGGS).length}</small></h2></summary><ol>${Object.keys(EGGS).map(k => { const E = EGGS[k], got = load(EGG_KEY, []).includes(k); return `<li class="${got ? "got" : ""}${got && EGG_ART[k] ? " wide" : ""}"${got && EGG_STORY[k] ? ` data-egg="${k}" tabindex="0" role="button"` : ""}>${got && EGG_ART[k] ? `<img class="dpic" src="art/end/s/${EGG_ART[k]}.webp" alt="" loading="lazy"><span>` : ""}<b>${got ? E.i : "？"}</b>${got ? `${E.t}<small>（${E.zh}）</small>・${E.p}` : E.hint}${got && EGG_ART[k] ? "</span>" : ""}</li>`; }).join("")}</ol></details>
     <div class="cards">知識卡：<b>${KEPT.length}</b> 張${KEPT.length ? "・" + KEPT.map(k => CARDS[k].from).join("、") : "。聽來的消息會留到下一局。"}${KEPT.length ? ` <button class="btn ghost" id="reset" style="min-height:30px;padding:2px 10px;font-size:13px;margin-left:8px">清除知識卡</button>` : ""}</div>`;
   // 只清知識卡；圖鑑與成就是收集紀錄，不給清（使用者指定）
   const r = $("reset"); if (r) r.onclick = () => { if (!confirm("清除知識卡，下一局從頭聽起？結局圖鑑和成就會留著。")) return; KEPT = []; save(CARD_KEY, []); renderHome(); };
