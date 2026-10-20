@@ -80,6 +80,9 @@ h1,h2,h3{font-family:var(--serif);margin:0;line-height:1.35}
 .dex li.got{color:var(--ink);border-color:var(--gold2)}
 .dex li b{color:var(--gold);margin-right:6px;font-family:var(--serif)}
 .dex li.got b{color:var(--jade)}
+.dex li .dpic{display:block;width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:2px;margin-bottom:5px}
+.endpic{display:block;width:100%;aspect-ratio:3/2;max-height:42vh;object-fit:cover;border-radius:3px;margin:0 0 16px;border:1px solid var(--gold2)}
+.achs li .apic{flex-basis:100%;width:100%;max-width:520px;aspect-ratio:3/2;object-fit:cover;border-radius:3px;margin-top:4px}
 .egg h2{color:var(--gold)}
 .achs{list-style:none;margin:6px 0;padding:0;display:grid;gap:6px}
 .achs li{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;font-size:16px;padding:6px 10px;border:1px solid var(--gold2);border-radius:3px}
@@ -375,6 +378,8 @@ const CARDS = {
 const CARD_KEY = "sc-cards", DEX_KEY = "sc-ends", EGG_KEY = "sc-eggs";
 // 成就（彩蛋）：跟結局分開記，不影響走到哪個結局
 // t 台語詞、zh 國語、i 小圖示（劇情彩蛋 big:1，第 4 期要畫立繪）；hint 沒拿到時的提示，不寫門檻
+// 有插圖的結局與劇情彩蛋：art/end/<鍵>.webp（960×640），首頁縮圖在 art/end/s/
+const EGG_ART = {hua: "egg_hua"};
 const EGGS = {
   hua: {t: "金花", zh: "劇情彩蛋", i: "★", big: 1, hint: "妻子最在意的那一件事，你先替她做到了嗎？", p: "除夕夜，妻子把金花插在髮上給你看。"},
   rich: {t: "好額人", zh: "有錢人", i: "💰", hint: "有人說，賣菜也能賣出一間厝。", p: "身上的錢一度超過二十圓。"},
@@ -2196,9 +2201,9 @@ function finish(key) {
   if (fresh.length) AU.sfx("chime", 1.2);
   const rows = G.hist.filter(h => h.orig).map(h => `<tr><td>${h.day >= 16 && h.day <= 30 ? "十二月" + CN[h.day] : h.day > 30 ? "除夕夜" : "前半生"}<br><span class="q">${h.t}</span></td><td>${h.mine}${h.same ? ' <span class="same">✓</span>' : ""}</td><td>${h.orig}</td></tr>`).join("");
   $("endWrap").innerHTML = `
-    <div class="endhead frame"><div class="kind">結局 ${E.no}・${E.kind}${G.day <= 30 ? "・十二月" + CN[G.day] : ""}</div><h1 class="gild">${E.t}</h1>${E.p}${G.why ? `<p class="hint">為什麼走到這裡：${G.why}</p>` : ""}${G.flag.nbLoan300 ? `<p class="hint">欠鄰右 300 錢，正月要還。</p>` : ""}${G.debts.some(d => d.done !== "paid") ? `<p class="hint">還欠著：${G.debts.filter(d => d.done !== "paid").map(d => d.n + " " + d.amt + " 錢").join("、")}。</p>` : ""}</div>
+    <div class="endhead frame"><img class="endpic" src="art/end/${key}.webp" alt=""><div class="kind">結局 ${E.no}・${E.kind}${G.day <= 30 ? "・十二月" + CN[G.day] : ""}</div><h1 class="gild">${E.t}</h1>${E.p}${G.why ? `<p class="hint">為什麼走到這裡：${G.why}</p>` : ""}${G.flag.nbLoan300 ? `<p class="hint">欠鄰右 300 錢，正月要還。</p>` : ""}${G.debts.some(d => d.done !== "paid") ? `<p class="hint">還欠著：${G.debts.filter(d => d.done !== "paid").map(d => d.n + " " + d.amt + " 錢").join("、")}。</p>` : ""}</div>
     ${E.life ? `<div class="sec lifeline"><b>如果你或身邊的人撐不下去</b>：安心專線 <b>1925</b>（依舊愛我），24 小時免費。這個故事發生在一百年前，但這句話是給今天的你。</div>` : ""}
-    ${eggs.length ? `<div class="sec frame egg"><h2>這一局的成就</h2><ul class="achs">${eggs.map(k => `<li><i>${EGGS[k].i}</i><b>${EGGS[k].t}</b><small>（${EGGS[k].zh}）</small>${fresh.includes(k) ? '<em>新</em>' : ""}<span>${EGGS[k].p}</span></li>`).join("")}</ul><p class="explain">成就不影響結局，會留在首頁的圖鑑裡。</p></div>` : ""}
+    ${eggs.length ? `<div class="sec frame egg"><h2>這一局的成就</h2><ul class="achs">${eggs.map(k => `<li><i>${EGGS[k].i}</i><b>${EGGS[k].t}</b><small>（${EGGS[k].zh}）</small>${fresh.includes(k) ? '<em>新</em>' : ""}<span>${EGGS[k].p}</span>${EGG_ART[k] ? `<img class="apic" src="art/end/${EGG_ART[k]}.webp" alt="">` : ""}</li>`).join("")}</ul><p class="explain">成就不影響結局，會留在首頁的圖鑑裡。</p></div>` : ""}
     <div class="sec frame"><h2>史實依據</h2><p class="explain" style="font-size:16px">${E.fact}</p></div>
     <details class="sec frame fold"><summary><h2>你的選擇・得參的選擇　<small>${G.hist.filter(h => h.orig && h.same).length}／${G.hist.filter(h => h.orig).length} 一樣</small></h2></summary><p class="explain">打勾的是跟得參本人一樣的選擇。</p>
       <div style="overflow-x:auto"><table><thead><tr><th>時候</th><th>你</th><th>得參</th></tr></thead><tbody>${rows || "<tr><td colspan=3>還沒走到得參遇過的那些場面。</td></tr>"}</tbody></table></div></details>
@@ -2218,8 +2223,8 @@ function renderHome() {
   $("quickBtn").hidden = !dex.length;
   // 圖鑑、成就預設收起來，點標題才展開
   const eggN = load(EGG_KEY, []).length;
-  $("dex").innerHTML = `<details class="fold"><summary><h2>結局圖鑑　<small>${dex.filter(k => ENDS[k]).length}／${Object.keys(ENDS).length}</small></h2></summary><ol>${Object.keys(ENDS).map(k => { const E = ENDS[k], got = dex.includes(k); return `<li class="${got ? "got" : ""}"><b>${E.no}</b>${got ? E.t + "・" + E.kind : E.hint + (E.p ? "" : "（第二期）")}</li>`; }).join("")}</ol></details>
-    <details class="fold"><summary><h2>成就　<small>${eggN}／${Object.keys(EGGS).length}</small></h2></summary><ol>${Object.keys(EGGS).map(k => { const E = EGGS[k], got = load(EGG_KEY, []).includes(k); return `<li class="${got ? "got" : ""}"><b>${got ? E.i : "？"}</b>${got ? `${E.t}<small>（${E.zh}）</small>・${E.p}` : E.hint}</li>`; }).join("")}</ol></details>
+  $("dex").innerHTML = `<details class="fold"><summary><h2>結局圖鑑　<small>${dex.filter(k => ENDS[k]).length}／${Object.keys(ENDS).length}</small></h2></summary><ol>${Object.keys(ENDS).map(k => { const E = ENDS[k], got = dex.includes(k); return `<li class="${got ? "got" : ""}">${got ? `<img class="dpic" src="art/end/s/${k}.webp" alt="" loading="lazy">` : ""}<b>${E.no}</b>${got ? E.t + "・" + E.kind : E.hint + (E.p ? "" : "（第二期）")}</li>`; }).join("")}</ol></details>
+    <details class="fold"><summary><h2>成就　<small>${eggN}／${Object.keys(EGGS).length}</small></h2></summary><ol>${Object.keys(EGGS).map(k => { const E = EGGS[k], got = load(EGG_KEY, []).includes(k); return `<li class="${got ? "got" : ""}">${got && EGG_ART[k] ? `<img class="dpic" src="art/end/s/${EGG_ART[k]}.webp" alt="" loading="lazy">` : ""}<b>${got ? E.i : "？"}</b>${got ? `${E.t}<small>（${E.zh}）</small>・${E.p}` : E.hint}</li>`; }).join("")}</ol></details>
     <div class="cards">知識卡：<b>${KEPT.length}</b> 張${KEPT.length ? "・" + KEPT.map(k => CARDS[k].from).join("、") : "。聽來的消息會留到下一局。"}${KEPT.length ? ` <button class="btn ghost" id="reset" style="min-height:30px;padding:2px 10px;font-size:13px;margin-left:8px">清除知識卡</button>` : ""}</div>`;
   // 只清知識卡；圖鑑與成就是收集紀錄，不給清（使用者指定）
   const r = $("reset"); if (r) r.onclick = () => { if (!confirm("清除知識卡，下一局從頭聽起？結局圖鑑和成就會留著。")) return; KEPT = []; save(CARD_KEY, []); renderHome(); };
