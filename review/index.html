@@ -56,7 +56,8 @@ main{max-width:1240px;margin:0 auto;padding:8px 16px 64px;display:grid;gap:24px;
 .stage{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
 .screen{background:#000;display:flex;align-items:center;justify-content:center}
 .box{position:relative;width:100%;aspect-ratio:1280/890;overflow:hidden;background:#000}
-.box iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.box iframe,.box video{position:absolute;inset:0;width:100%;height:100%;border:0}
+.box video{object-fit:contain;background:#000}
 .cover{position:absolute;inset:0;width:100%;height:100%;border:0;background:radial-gradient(ellipse at 50% 40%,#3a2f2a,#171311);color:#f5ecdc;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(8px,2vw,18px)}
 .cv-lesson{font-family:var(--serif);font-weight:900;font-size:clamp(28px,6vw,60px);letter-spacing:.2em;text-indent:.2em}
 .cv-play{width:clamp(56px,9vw,84px);aspect-ratio:1;border-radius:50%;background:#a8322a;display:grid;place-items:center;font-size:clamp(20px,3.4vw,32px);padding-left:.15em;transition:transform .15s}
@@ -165,6 +166,12 @@ const BOOKS = [
       {c:"3-1-4", t:"第三段",               id:"aa377b9c00434ae5a8ac46dc2cb21ca0", s:726,  st:1},
       {c:"3-1-5", t:"第四段",               id:"8f5cb6a74d364eb9921ce21546094122", s:1136, st:2},
       {c:"3-1-6", t:"第五段和習題",         id:"6cfadba4cd3b4e938e9640088160bd0f", s:1511, st:2}
+    ]},
+    // src：自製影片直接放在 v/（不經 Loom），由 <video> 播放
+    {no:"第四課", title:"燭之武退秦師", author:"左丘明", eps:[
+      {c:"3-4-1", t:"國學概要",       src:"v/3-4-1.mp4", s:506, st:0},
+      {c:"3-4-2", t:"秦晉歷史",       src:"v/3-4-2.mp4", s:573, st:0},
+      {c:"3-4-3", t:"重耳流亡到稱霸", src:"v/3-4-3.mp4", s:683, st:0}
     ]}
   ]},
   {book:"第二冊", lessons:[
@@ -319,11 +326,24 @@ function play(i, auto) {
   const from = resumeAt(e);
   clearInterval(readyTimer);
   // 首次進頁面先顯示自製封面，點了才載入 Loom（部分影片的 Loom 預覽縮圖方向是歪的，正片正常）
-  $("box").innerHTML = auto
+  $("box").innerHTML = auto && e.src
+    ? `<video src="${e.src}" title="${e.c} ${e.t}" controls autoplay playsinline preload="metadata"></video>`
+    : auto
     ? `<iframe src="${LOOM}/embed/${e.id}?hide_owner=true&hide_share=true&hide_title=true&hideEmbedTopBar=true&autoplay=1" title="${e.c} ${e.t}" allow="autoplay; fullscreen" allowfullscreen></iframe>`
     : `<button class="cover" id="cover"><span class="cv-lesson">${e.lesson.title}</span><span class="cv-play" aria-hidden="true">▶</span><span class="cv-t">${e.c}　${e.t}${from > e.st ? `・從 ${clock(from)} 接著看` : ""}</span></button>`;
   if (!auto) $("cover").onclick = () => play(i, true);
-  else {
+  else if (e.src) {
+    // 自製影片：直接讀寫 <video> 的播放時間，存法與 Loom 影片相同
+    const v = $("box").querySelector("video");
+    need = null;
+    if (from) v.addEventListener("loadedmetadata", () => { v.currentTime = from; }, {once: true});
+    v.ontimeupdate = () => {
+      const t = v.currentTime;
+      if (t > e.s - 15) delete pos[e.c]; else pos[e.c] = Math.floor(t);
+      if (Date.now() - posAt > 3000) savePos();
+    };
+    v.onended = () => { delete pos[e.c]; savePos(); };
+  } else {
     need = from || null; tries = 0; ready = false;
     // 播放器載入後才收得到訊息，重複敲門直到它回 ready（最多 30 秒）
     let n = 0;
@@ -333,7 +353,8 @@ function play(i, auto) {
   }
   $("nowLesson").textContent = `${e.book}・${e.lesson.title}`;
   $("nowTitle").textContent = `${e.c}　${e.t}`;
-  $("open").href = "https://www.loom.com/share/" + e.id;
+  $("open").href = e.src || "https://www.loom.com/share/" + e.id;
+  $("open").textContent = e.src ? "在新分頁開啟 ↗" : "在 Loom 開啟 ↗";
   $("prev").disabled = i === 0;
   $("next").disabled = i === ALL.length - 1;
   if (auto) { seen[e.c] = 1; saveSeen(); history.replaceState(null, "", "#" + e.c); count(e.c); }
