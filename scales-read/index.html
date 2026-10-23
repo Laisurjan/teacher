@@ -1,0 +1,940 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>一桿稱仔・讀</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;900&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f3ead6;--paper2:#e8dcc0;--ink:#2b2118;--ink2:#6b5944;--red:#8e2b1f;--gold:#c9a24a;--ok:#3f6b3a;--bad:#a8382a}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#d8d3c5;font-family:"Noto Serif TC",serif;font-weight:600;color:var(--ink);user-select:none;-webkit-user-select:none}
+button{font:inherit;cursor:pointer}
+#cv{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+#vig{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 58%,rgba(45,28,12,.38))}
+.hide{display:none!important}
+mark{background:linear-gradient(transparent 55%,rgba(201,162,74,.6) 55%);color:inherit;padding:0 2px}
+#hudL{position:fixed;left:16px;top:14px;background:rgba(32,24,18,.84);color:#f3e7cf;padding:9px 16px 9px 10px;border-radius:4px;display:flex;gap:12px;align-items:center;border:1px solid rgba(201,162,74,.55)}
+#seal{width:46px;height:46px;border-radius:50%;background:var(--red);color:#f3e7cf;display:grid;place-items:center;font-size:22px;font-weight:900;border:2px solid var(--gold)}
+#hudL small{font-size:12px;color:#c8b48a;display:block}
+#hudL b{font-size:16px}
+#hp{width:150px;height:8px;background:#4a3a2c;border-radius:4px;overflow:hidden;margin:5px 0 2px}
+#hp i{display:block;height:100%;background:linear-gradient(90deg,#b43a28,#d9603c);width:100%;transition:width .4s}
+#hpN{font-size:12px;color:#e8d9b8}
+#hudR{position:fixed;right:16px;top:14px;background:rgba(32,24,18,.84);color:#f3e7cf;padding:10px 14px;border-radius:4px;border:1px solid rgba(201,162,74,.55);min-width:210px;max-width:320px}
+#hudR small{color:var(--gold);font-size:12px;display:flex;align-items:center;gap:6px}
+#hudR small:before{content:"";width:7px;height:7px;background:var(--gold);transform:rotate(45deg)}
+#taskT{font-size:16px;margin-top:4px;display:flex;align-items:center;gap:10px}
+#arrow{width:22px;height:22px;flex:none;transition:transform .1s}
+#side{position:fixed;right:16px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px}
+#side button{background:rgba(32,24,18,.8);color:#f3e7cf;border:1px solid rgba(201,162,74,.5);border-radius:4px;padding:8px 6px;font-size:13px;writing-mode:vertical-rl;letter-spacing:4px}
+#fps{position:fixed;left:16px;bottom:10px;font:12px/1.3 monospace;color:#3b2f22;background:rgba(243,234,214,.75);padding:3px 6px;border-radius:3px}
+#prompt{position:fixed;left:50%;bottom:16%;transform:translateX(-50%);background:var(--paper);border:2px solid var(--gold);color:var(--ink);padding:12px 26px;font-size:19px;border-radius:4px;box-shadow:0 6px 24px rgba(0,0,0,.3);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{box-shadow:0 6px 34px rgba(201,162,74,.9)}}
+#dlg{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);width:min(900px,94vw);background:var(--paper);border:1px solid #b9a37a;outline:3px double rgba(142,43,31,.45);outline-offset:-8px;border-radius:3px;padding:20px 30px 26px;display:flex;gap:22px;align-items:flex-start;box-shadow:0 10px 40px rgba(0,0,0,.35);cursor:pointer;min-height:130px}
+#dlgPic{width:96px;height:128px;object-fit:cover;border-radius:4px;border:1px solid #b9a37a;flex:none;background:#e8dcc0}
+#dlgWho{font-size:15px;color:var(--red);font-weight:900;letter-spacing:2px}
+#dlgNarr{font-size:17px;color:var(--ink2);line-height:1.75;margin:4px 0 2px}
+#dlgNarr.big{font-size:21px;color:var(--ink)}
+#dlgTxt{font-size:23px;line-height:1.75;margin:4px 0 0}
+#dlgPost{font-size:17px;color:var(--ink2);line-height:1.75;margin:2px 0 0}
+#crisis{margin-top:14px;padding:10px 14px;border:1px solid #b9a37a;background:#fbf6ea;font-size:16px;line-height:1.7}
+#dlgNext{position:absolute;right:20px;bottom:8px;font-size:13px;color:var(--ink2);animation:blink 1.2s infinite}
+#dlgSrc{position:absolute;left:30px;bottom:8px;font-size:12px;color:#a08e70}
+@keyframes blink{50%{opacity:.3}}
+#panel{position:fixed;inset:0;display:grid;place-items:center;background:rgba(20,14,8,.45);z-index:5}
+#pBox{background:var(--paper);width:min(860px,94vw);max-height:92vh;overflow:auto;border-radius:4px;padding:26px 34px 24px;box-shadow:0 20px 60px rgba(0,0,0,.45);border:1px solid #b9a37a;position:relative}
+#pBox .tag{display:inline-block;background:var(--red);color:#f3e7cf;font-size:13px;padding:3px 10px;border-radius:2px;letter-spacing:2px}
+#pBox h3{font-size:22px;line-height:1.6;margin:12px 0 14px}
+#pBox .src{background:var(--paper2);border-left:4px solid var(--gold);padding:10px 16px;font-size:18px;line-height:1.8;margin:0 0 14px}
+#pBox p.note{font-size:17px;line-height:1.8}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt{background:#fbf6ea;border:1px solid #b9a37a;border-radius:4px;padding:12px 14px;font-size:18px;text-align:left;color:var(--ink);line-height:1.5}
+.opt:hover:not(:disabled){border-color:var(--red);background:#fff}
+.opt.ok{background:#dfe9d4;border-color:var(--ok);color:var(--ok)}
+.opt.bad{background:#f2d9d2;border-color:var(--bad);color:var(--bad);text-decoration:line-through}
+.opt.on{outline:3px solid var(--gold);background:#fff7df}
+.opt:disabled{cursor:default}
+.hint{min-height:28px;font-size:17px;line-height:1.7;margin:14px 0 0;color:var(--bad)}
+.hint.ex{color:var(--ok)}
+.hint.info{color:var(--ink2)}
+.go{text-align:right;margin-top:10px;display:flex;gap:10px;justify-content:flex-end}
+.btn{background:var(--red);color:#f3e7cf;border:1px solid var(--gold);border-radius:3px;padding:10px 26px;font-size:18px}
+.btn.alt{background:#fbf6ea;color:var(--ink);border-color:#b9a37a}
+#scv{width:100%;height:auto;display:block;background:linear-gradient(#efe4cb,#e6d8b9);border-radius:4px;touch-action:none;cursor:grab}
+.pool{display:flex;flex-wrap:wrap;gap:10px;min-height:52px;padding:10px;border:1px dashed #b9a37a;border-radius:4px;margin-bottom:14px}
+.chip{background:#fff;border:1px solid #b9a37a;border-radius:3px;padding:8px 16px;font-size:19px;color:var(--ink);text-align:left;line-height:1.45}
+.chip.sel{outline:3px solid var(--gold);background:#fff7df}
+.chip.bad{border-color:var(--bad);background:#f2d9d2}
+.chip.ok{border-color:var(--ok);background:#dfe9d4}
+.bins{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.bin{border:2px solid #b9a37a;border-radius:4px;padding:10px;min-height:150px;background:#fbf6ea;display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;cursor:pointer}
+.bin .who{width:100%;display:flex;align-items:center;gap:10px;font-size:18px;color:var(--red)}
+.bin .who img{width:44px;height:58px;object-fit:cover;border-radius:3px}
+.seq{display:flex;flex-direction:column;gap:8px;min-height:60px;padding:10px;border:2px solid #b9a37a;border-radius:4px;background:#fbf6ea;counter-reset:n}
+.seq .chip{counter-increment:n;display:flex;gap:10px;align-items:flex-start}
+.seq .chip:before{content:counter(n);flex:none;width:26px;height:26px;border-radius:50%;background:var(--red);color:#f3e7cf;display:grid;place-items:center;font-size:14px;margin-top:2px}
+.seqEmpty{color:#a08e70;font-size:16px}
+#title{position:fixed;inset:0;display:grid;place-items:center;z-index:8;background:radial-gradient(ellipse at center,rgba(243,234,214,.25),rgba(40,28,16,.35));overflow:auto;padding:16px}
+#tBox{background:rgba(243,234,214,.95);padding:30px 44px 24px;text-align:center;border:1px solid #b9a37a;outline:3px double rgba(142,43,31,.4);outline-offset:-10px;box-shadow:0 20px 60px rgba(0,0,0,.35);max-width:720px;width:100%}
+#tBox h1{font-size:60px;font-weight:900;margin:0;letter-spacing:6px;line-height:1.2}
+#tBox .au{display:inline-block;background:var(--red);color:#f3e7cf;padding:3px 14px;font-size:16px;margin:10px 0 6px;letter-spacing:3px}
+#tBox p{margin:6px 0;color:var(--ink2)}
+#lvls{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0 6px}
+.lv{background:#fbf6ea;border:1px solid #b9a37a;border-radius:4px;padding:14px 10px;text-align:center;color:var(--ink)}
+.lv:hover{border-color:var(--red);background:#fff}
+.lv b{display:block;font-size:20px;margin:4px 0}
+.lv small{display:block;font-size:13px;color:var(--ink2)}
+.lv .st{color:var(--gold);font-size:16px;letter-spacing:2px;margin-top:6px}
+.lv .cont{font-size:12px;color:var(--red);margin-top:4px}
+#tBox .cr{font-size:13px;margin-top:14px}
+#joy{position:fixed;left:28px;bottom:28px;width:130px;height:130px;border-radius:50%;background:rgba(32,24,18,.35);border:2px solid rgba(243,234,214,.6);touch-action:none}
+#knob{position:absolute;left:40px;top:40px;width:50px;height:50px;border-radius:50%;background:rgba(243,234,214,.85)}
+#toast{position:fixed;left:50%;top:18%;transform:translateX(-50%);background:rgba(32,24,18,.85);color:#f3e7cf;padding:10px 22px;border-radius:4px;font-size:17px;transition:opacity .4s;pointer-events:none}
+#fade{position:fixed;inset:0;background:#1d150e;opacity:0;pointer-events:none;transition:opacity .6s;z-index:7}
+@media (max-width:700px){.opts,.bins,#lvls{grid-template-columns:1fr}#tBox h1{font-size:42px}#dlgPic{width:64px;height:86px}#dlgTxt{font-size:19px}#dlgNarr.big{font-size:18px}}
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="vig"></div>
+<div id="hudL" class="hide"><div id="seal">稱</div><div><small id="lvNo"></small><b id="lvName"></b><div id="hp"><i></i></div><span id="hpN">體力 100</span></div></div>
+<div id="hudR" class="hide"><small>任務</small><div id="taskT"><svg id="arrow" viewBox="0 0 24 24"><path d="M12 2l7 18-7-4-7 4z" fill="#c9a24a"/></svg><span id="taskS"></span></div></div>
+<div id="side" class="hide"><button id="bHelp">說明</button><button id="bRe">重來</button><button id="bHome">選關</button></div>
+<div id="fps"></div>
+<button id="prompt" class="hide"></button>
+<div id="dlg" class="hide"><img id="dlgPic" alt=""><div style="flex:1"><div id="dlgWho"></div><div id="dlgNarr"></div><p id="dlgTxt"></p><div id="dlgPost"></div></div><span id="dlgNext">▼ 點一下或按空白鍵</span></div>
+<div id="panel" class="hide"><div id="pBox"></div></div>
+<div id="joy" class="hide"><div id="knob"></div></div>
+<div id="toast" style="opacity:0"></div>
+<div id="fade"></div>
+
+<div id="title"><div id="tBox">
+  <h1>一桿「稱仔」</h1>
+  <div class="au">賴　和</div>
+  <p>邊讀邊玩・第一人稱課文探索</p>
+  <div id="lvls"></div>
+  <p style="font-size:13px">課讀到哪一段，就玩到哪一關。每關過完自動存檔。</p>
+  <p class="cr">花蓮高工 柯貞伊・花蓮高商 賴士鈞</p>
+</div></div>
+
+<script type="module">
+import * as THREE from 'three';
+import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
+
+const TXT={"1": "鎮南威麗村裡，住的人家，大都是勤儉、耐苦、平和、從順的農民。村中除了包辦官業的幾家勢豪，從事公職的幾家下級官吏，其餘都是窮苦的占多數。", "3": "村中，秦得參的一家，尤其是窮困的慘痛，當他生下的時候，他父親早就死了。他在世，雖曾贌得幾畝田地耕作，他死了後，只剩下可憐的妻兒。若能得到業主的恩恤，田地繼續租給他們，雇用工人替她們種作，猶可得稍少利頭，以維持生計。但是富家人，誰肯讓他們的利益，給人家享。若然就不能成其富戶了。所以業主多得幾斗租穀，就轉租給別人。他父親在世，汗血換來的錢，亦被他帶到地下去。他母子倆的生路，怕要絕望了。", "5": "鄰右看她母子倆的孤苦，多為之傷心，有些上了年紀的人，就替他們設法，因為餓死已經不是小事了。結局因鄰人的做媒，他母親就招贅一個夫婿進來。本來做後父的人，很少能體恤前夫的兒子。他後父，把他母親亦只視作一種機器，所以得參，不僅不能得到幸福，又多挨些打罵，他母親因此和後夫就不十分和睦。", "7": "幸他母親，耐勞苦、會打算，自己織草鞋、蓄雞鴨、養豚，辛辛苦苦，始能度那近於似人的生活。好容易，到得參九歲的那一年，他母就遣他，去替人家看牛，做長工。這時候，他後父已不大顧到家內，雖然他們母子倆，自己的勞力，經已可免凍餒的威脅。", "9": "得參十六歲的時候，他母親教他辭去了長工，回家裡來，想贌幾畝田耕作，可是這時候，贌田就不容易了。因為製糖會社，糖的利益大，雖農民們受過會社刻虧、剝奪，不願意種蔗，會社就加上租聲向業主爭贌，業主們若自己有利益，那管到農民的痛苦，田地就多被會社贌去了。有幾家說是有良心的業主，肯贌給農民，亦要同會社一樣的租聲，得參就租不到田地。若做會社的勞工呢，有同牛馬一樣，他母親又不肯，只在家裡，等著做些散工。因他的氣力大，做事勤敏，就每天有人喚他工作，比較他做長工的時候，勞力輕省，得錢又多。又得他母親的刻儉，漸積下些錢來。光陰似矢，容易地又過了三年。到得參十八歲的時候，他母親唯一未了的心事，就是為得參娶妻。經她艱難勤苦積下的錢，已夠娶妻之用，就在村中，娶了一個種田的女兒。幸得過門以後，和得參還協力，到田裡工作，不讓一個男人。又值年成好，他一家的生計，暫不覺得困難。", "11": "得參的母親，在他二十一歲那年，得了一個男孫子，以後臉上已見時現著笑容，可是亦已衰老了。她心裡的欣慰，使她責任心亦漸放下，因為做母親的義務，經已克盡了。但二十年來的勞苦，使她有限的肉體，再不能支持。亦因責任觀念已弛，精神失了緊張，病魔遂乘虛侵入，病臥幾天，她面上現著十分滿足、快樂的樣子歸到天國去了。這時得參的後父，和他只存了名義上的關係，況他母已死，就各不相干了。", "13": "可憐的得參，他的幸福，已和他慈愛的母親，一併失去。", "15": "翌年，他又生下一女孩子。家裡頭因失去了母親，須他妻子自己照管，並且有了兒子的拖累，不能和他出外工作，進款就減少一半，所以得參自己不能不加倍工作，這樣辛苦著，過有四年，他的身體，就因過勞，伏下病根。在早季收穫的時候，他患著瘧疾，病了四、五天，才診過一次西醫，花去兩塊多錢，雖則輕快些，腳手尚覺乏力，在這煩忙的時候，而又是勤勉的得參，就不敢閒著在家裡，亦即耐苦到田裡去。到晚上回家，就覺得有點不好過，睡到夜半，寒熱再發起來，翌天已不能離床，這回他不敢再請西醫診治了。他心裡想，三天的工作，還不夠吃一服藥，那得那麼些錢花？但亦不能放他病著，就煎些不用錢的青草，或不多花錢的漢藥服食。雖未全都無效，總隔兩三天，發一回寒熱，經過有好幾個月，纔不再發作。但腹已很脹滿。有人說，他是吃過多的青草致來的，有人說，那就叫脾腫，是吃過西藥所致。在得參總不介意，只礙不能工作，是他最煩惱的所在。", "17": "當得參病的時候，他妻子不能不出門去工作，只有讓孩子們在家裡啼哭，和得參呻吟聲相和著。一天或兩餐或一餐，雖不至餓死，一家人多陷入營養不良，猶其是孩子們，猶幸他妻子不再生育。……", "19": "一直到年末。得參自己，才能做些輕的工作，看看尾衙到了，尚找不到相應的工作，若一至新春，萬事停辦了，更沒有做工的機會，所以須積蓄些新春半個月的食糧，得參的心裡，因此就分外煩惱而恐惶了。", "21": "末了，聽說鎮上生菜的販路很好。他就想做這項生意，無奈缺少本錢，又因心地坦白，不敢向人家告借，沒有法子，只得教他妻到外家走一遭。", "23": "一個小農民的妻子，那有闊的外家，得不到多大幫助，本是應該情理中的事，總難得她嫂子，待她還好，把她唯一的裝飾品──一根金花──借給她，教她去當舖裡，押幾塊錢。暫作資本，這法子，在她當得帶了幾分危險，其外又別無法子，只得從權了。", "25": "一天早上，得參買一擔生菜回來，想吃過早飯，就到鎮上去，這時候，他妻子纔覺到缺少一桿稱仔。「怎麼好？」得參想，「要買一桿，可是官廳的專利品，不是便宜的東西，那兒來得錢？」她妻子趕快到隔鄰去借一桿回來，幸鄰家的好意，把一桿尚覺新新的借來。因為巡警們，專在搜索小民的細故，來做他們的成績，犯罪的事件，發見得多，他們的高昇就快。所以無中生有的事故，含冤莫訴的人們，向來是不勝枚舉。什麼通行取締、道路規則、飲食物規則、行旅法規、度量衡規紀，舉凡日常生活中的一舉一動，通在法的干涉、取締範圍中。──她妻子為慮萬一，就把新的稱仔借來。", "27": "這一天的生意，總算不壞，到市散，亦賺到一塊多錢，他就先糴(ㄉㄧˊ)些米，預備新春的糧食。過了幾天糧食足了，他就想，「今年家運太壞，明年家裡，總要換一換氣像纔好，第一廳上奉祀的觀音畫像，要買新的，同時門聯亦要換，不可缺的金銀紙，香燭、亦要買。」再過幾天，生意屢好，他又想炊一灶年糕，就把糖米買回來。他妻子就忍不住，勸他說：「剩下的錢積積下，待贖取那金花，不是更要緊嗎？」得參回答說：「是，我亦不是把這事忘卻，不過今天才廿五，那筆錢不怕賺不來，就賺不來，本錢亦還在。當舖裡遲早，總要一個月的利息。」", "29": "一晚市散，要回家的時候，他又想到孩子們。新年不能有件新衣裳給他們，做父親的義務，有點不克盡的缺憾，雖不能使孩子們享到幸福，亦須給他們一點喜歡。他就剪了幾尺花布回去。把幾日來的利益，一總花掉。", "31": "這一天近午，一下級巡警，巡視到他擔前，目光注視到他擔上的生菜，他就殷勤地問：", "33": "「大人，要什麼不要？」", "34": "「汝的貨色比較新鮮。」巡警說。", "35": "得參接著又說：", "36": "「是，城市的人，總比鄉下人享用，不是上等東西，是不合脾胃。」", "37": "「花菜賣多少錢？」巡警問。", "38": "「大人要的，不用問價，肯要我的東西，就算運氣好。」參說。他就擇幾莖好的，用稻草貫著，恭敬地獻給他。", "39": "「不，稱稱看！」巡警幾番推辭著說。誠實的參，亦就掛上稱仔稱一稱，說：", "40": "「大人，真客氣啦！才一斤十四兩。」本來，經過秤稱過，就算買賣，就是有錢的交關，不是白要，亦不能說是贈與。", "41": "「不錯罷？」巡警說。", "42": "「不錯，本有兩斤足，因是大人要的…… 」參說。這句話是平常買賣的口吻，不是贈送的表示。", "43": "「稱仔不好罷，兩斤就兩斤，何須打扣？」巡警變色地說。", "44": "「不，還新新呢！」參泰然地回答。", "45": "「拿過來！」巡警赫怒了。", "46": "「稱花還很明瞭。」參從容地捧過去說。巡警接在手裡，約略考察一下說：", "47": "「不堪用了，拿到警署去！」", "48": "「什麼緣故？修理不可嗎？」參說。", "49": "「不去嗎？」巡警怒叱著。「不去？畜生！」撲的一聲，巡警把稱仔打斷擲棄，隨抽出胸前的小帳子，把參的名姓、住處，記下。氣憤憤地，回警署去。", "51": "參突遭這意外的羞辱，空抱著滿腹的憤恨，在擔邊失神地站著。等巡警去遠了，纔有幾個閑人，近他身邊來。一個較有年紀的說：「該死的東西，到市上來，只這規紀亦就不懂？要做什麼生意？汝說幾斤幾兩，難道他的錢汝敢拿嗎？」", "52": "「難道我們的東西，該白送給他的嗎？」參不平地回答。", "53": "「唉！汝不曉得他的厲害，汝還未嘗到他，青草膏的滋味。」那有年紀的嘲笑地說。", "54": "「什麼？做官的就可任意凌辱人民嗎？」參說。", "55": "「硬漢！」有人說。眾人議論一回、批評一回，亦就散去。", "57": "得參回到家裡，夜飯前吃不下，只悶悶地一句話不說。經他妻子殷勤的探問，才把白天所遭的事告訴給她。", "59": "「寬心罷！」妻子說，「這幾天的所得，買一桿新的還給人家，剩下的猶足贖取那金花回來。休息罷，明天亦不用出去，新春要的物件，大概準備下，但是，今年運氣太壞，怕運裡帶有官符，經這一回事，明年快就出運，亦不一定。」", "61": "參休息過一天，看看沒有什麼動靜，況明天就是除夕日，只剩得一天的生意，他就安坐不來，絕早挑上菜擔，到鎮上去。此時，天色還未大亮，在曉景朦朧中，市上人聲，早就沸騰，使人愈感到「年華垂盡，人生頃刻」的悵惘。", "63": "到天亮後，各擔各色貨，多要完了，有的人，已收起擔頭，要回去圍爐，過那團圓的除夕，償一償終年的勞苦，享受著家庭的快樂。當這時參又遇到那巡警。", "65": "「畜生，昨天跑那兒去？」巡警說。", "66": "「什麼？怎得隨便罵人？」參回說。", "67": "「畜生，到衙門去！」巡警說。", "68": "「去就去呢，什麼畜生？」參說。", "69": "巡警瞪他一眼便帶他上衙門去。", "70": "「汝秦得參嗎？」法官在座上問。", "71": "「是，小人，是。」參跪在地上回答說。", "72": "「汝曾犯過罪嗎？」法官。", "73": "「小人生來將三十歲了，曾未犯過一次法。」參。", "74": "「以前不管他，這回違犯著度量衡規則。」法官。", "75": "「唉！冤枉啊！」參。", "76": "「什麼？沒有這樣事嗎？」法官。", "77": "「這事是冤枉的啊！」參。", "78": "「但是，巡警的報告，總沒有錯啊！」法官。", "79": "「實在冤枉啊！」參。", "80": "「既然違犯了，總不能輕恕，只科罰汝三塊錢，就算是格外恩典。」官。", "81": "「可是，沒有錢，」參。", "82": "「沒有錢，就坐監三天，有沒有？」官。", "83": "「沒有錢！」參說，在他心裡的打算：新春的閒時節，監禁三天，是不關係什麼，還是三塊錢的用處大，所以他就甘心去受監禁。", "85": "參的妻子，本想洗完了衣裳，纔到當舖裡去，贖取那根金花。還未曾出門，已聽到這凶消息，她想：在這時候，有誰可央托，有誰能為她奔走？愈想愈沒有法子，愈覺傷心，只有哭的一法，可以少舒心裡的痛苦，所以，只守在家裡哭。後經鄰右的勸慰、教導，才帶著金花的價錢，到衙門去，想探探消息。", "87": "鄉下人，一見巡警的面，就怕到五分，況是進衙門裡去，又是不見世面的婦人，心裡的驚恐，就可想而知了。她剛跨進郡衙的門跟，被一巡警的「要做什麼」的一聲呼喝，已嚇得倒退到門外去，幸有一十四來歲的小使，出來查問，她就哀求他，替伊探查，難得那孩子，童心還在，不會倚勢欺人，誠懇地，替伊設法，教她拿出三塊錢，代繳進去。", "89": "「才監禁下，什麼就釋出來？」參心裡，正在懷疑地自問。出來到衙前，看著她妻子。", "90": "「為什麼到這兒來？」參對著妻子問。", "91": "「聽……說被拉進去！」她微咽著聲回答。", "92": "「不犯到什麼事，不至殺頭怕什麼。」參怏怏地說。", "93": "他們來到街上，市已經散了，處處聽到『辭年』的爆竹聲。", "94": "「金花取回未？」參問她妻子。", "95": "「還未曾出門，就聽到這消息，我趕緊到衙門去，在那兒繳去三塊，現在還不夠。」妻子回答他說。", "96": "「唔！」參恍然地發出這一聲就拿出早上賺到的三塊錢，給他妻子說：", "97": "「我挑擔子回去，當舖怕要關閉了，快一點去，取出就回來罷。」", "99": "圍過爐，孩子們因明早要絕早起來開正各已睡下，在作他們幸福的夢。參尚在室內踱來蹀去。經他妻子幾次的催促，他總沒有聽見似的，心裡只在想，總覺有一種，不明瞭的悲哀，只不住漏出幾聲的嘆息，「人不像個人，畜生，誰願意做。這是什麼世間？活著倒不若死了快樂。」他喃喃地獨語著，忽又回憶到他母親死時，快樂的容貌。他已懷抱著最後的覺悟。", "101": "元旦，參的家裡，忽譁然發生一陣叫喊、哀嗚、啼哭。隨後，又聽著說：「什麼都沒有嗎？」「只銀紙備辦在，別的什麼都沒有。」", "103": "同時，市上亦盛傳著，一個夜巡的警吏，被殺在道上。", "106": "【後記】", "107": "這一幕悲劇，看過好久，每欲描寫出來，但一經回憶，總被悲哀填滿了腦袋，不能著筆。近日看到法朗士的克拉格比，才覺這樣事，不一定在未開的國裡，凡強權行使的地上，總會發生，遂不顧文字的陋劣，就寫出和文家批判。", "109": "作於一九二五年十二月四日夜 原載於《台灣民報》九十二、九十三號", "110": "一九二六年二月十四日、二十一日"};
+const $=s=>document.querySelector(s);
+let seed=11;const rnd=()=>{seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),lerp=(a,b,t)=>a+(b-a)*t;
+const fmt=t=>(t||'').replace(/〔(.+?)〕/g,'<mark>$1</mark>');
+const V3=(x,y,z)=>new THREE.Vector3(x,y,z);
+
+// ===== 繪圖器 =====
+const cv=$('#cv');
+const R=new THREE.WebGLRenderer({canvas:cv,antialias:true});
+R.setPixelRatio(Math.min(devicePixelRatio,2));
+R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
+R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=1.08;
+R.outputColorSpace=THREE.SRGBColorSpace;
+const S=new THREE.Scene();
+S.fog=new THREE.Fog(0xd9d3c3,16,62);
+const skyC=document.createElement('canvas');skyC.width=4;skyC.height=256;const skyT=new THREE.CanvasTexture(skyC);skyT.colorSpace=THREE.SRGBColorSpace;S.background=skyT;
+function sky(top,mid,bot){const g=skyC.getContext('2d');const gr=g.createLinearGradient(0,0,0,256);gr.addColorStop(0,top);gr.addColorStop(.55,mid);gr.addColorStop(1,bot);g.fillStyle=gr;g.fillRect(0,0,4,256);skyT.needsUpdate=true}
+const cam=new THREE.PerspectiveCamera(62,1,.05,300);cam.rotation.order='YXZ';
+const hemi=new THREE.HemisphereLight(0xe9eef0,0x8a7656,1.15);S.add(hemi);
+const sun=new THREE.DirectionalLight(0xfff0d8,1.7);sun.castShadow=true;
+sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-26,right:26,top:26,bottom:-26,near:1,far:90});
+sun.shadow.bias=-.0004;sun.shadow.normalBias=.03;S.add(sun);S.add(sun.target);
+const SUNOFF=V3(9,20,7);
+function setLight(L){hemi.color.set(L.hemi[0]);hemi.groundColor.set(L.hemi[1]);hemi.intensity=L.hemi[2];sun.color.set(L.sun[0]);sun.intensity=L.sun[1];SUNOFF.set(...L.sun[2]);S.fog.color.set(L.fog[0]);S.fog.near=L.fog[1];S.fog.far=L.fog[2];sky(...L.sky);R.toneMappingExposure=L.exp||1.08}
+
+// ===== 材質 =====
+function tex(px,m,draw){const c=document.createElement('canvas');c.width=c.height=px;draw(c.getContext('2d'),px);const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(1/m,1/m);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;return t}
+function noise(g,w,n,a){for(let i=0;i<n;i++){g.fillStyle=rnd()<.5?`rgba(0,0,0,${a*rnd()})`:`rgba(255,255,255,${a*rnd()})`;const s=1+rnd()*3;g.fillRect(rnd()*w,rnd()*w,s,s)}}
+function blot(g,w,n,col){for(let i=0;i<n;i++){const x=rnd()*w,y=rnd()*w,r=10+rnd()*60;const gr=g.createRadialGradient(x,y,0,x,y,r);gr.addColorStop(0,col);gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(x-r,y-r,r*2,r*2)}}
+const T={
+ brick:tex(256,1.2,(g,w)=>{g.fillStyle='#c7b79c';g.fillRect(0,0,w,w);const bh=16,bw=52;for(let y=0;y<w;y+=bh){const off=(y/bh)%2?bw/2:0;for(let x=-bw;x<w+bw;x+=bw){const v=rnd();g.fillStyle=`hsl(${10+v*9},${42+v*16}%,${33+v*11}%)`;g.fillRect(x+off+1.5,y+1.5,bw-3,bh-3)}}noise(g,w,2500,.12)}),
+ dirt:tex(512,5,(g,w)=>{g.fillStyle='#9d8869';g.fillRect(0,0,w,w);blot(g,w,60,'rgba(80,62,40,.25)');blot(g,w,40,'rgba(200,185,150,.25)');noise(g,w,14000,.18);g.strokeStyle='rgba(70,55,35,.15)';g.lineWidth=3;for(let i=0;i<6;i++){g.beginPath();g.moveTo(rnd()*w,0);g.lineTo(rnd()*w,w);g.stroke()}}),
+ grass:tex(512,6,(g,w)=>{g.fillStyle='#7d8a52';g.fillRect(0,0,w,w);blot(g,w,70,'rgba(60,80,30,.3)');blot(g,w,50,'rgba(170,160,100,.3)');for(let i=0;i<9000;i++){g.strokeStyle=`rgba(${60+rnd()*60|0},${90+rnd()*50|0},${30+rnd()*30|0},.5)`;const x=rnd()*w,y=rnd()*w;g.beginPath();g.moveTo(x,y);g.lineTo(x+rnd()*3-1.5,y-3-rnd()*5);g.stroke()}}),
+ mud:tex(256,1.4,(g,w)=>{g.fillStyle='#b49a6e';g.fillRect(0,0,w,w);const bh=32,bw=64;for(let y=0;y<w;y+=bh){const off=(y/bh)%2?bw/2:0;for(let x=-bw;x<w+bw;x+=bw){g.fillStyle=`hsl(${33+rnd()*6},${28+rnd()*10}%,${50+rnd()*10}%)`;g.fillRect(x+off+2,y+2,bw-4,bh-4)}}g.strokeStyle='rgba(230,210,160,.5)';for(let i=0;i<300;i++){const x=rnd()*w,y=rnd()*w;g.beginPath();g.moveTo(x,y);g.lineTo(x+rnd()*10-5,y+rnd()*4-2);g.stroke()}noise(g,w,3000,.12)}),
+ thatch:tex(256,1.2,(g,w)=>{g.fillStyle='#a88f5a';g.fillRect(0,0,w,w);for(let i=0;i<1600;i++){g.strokeStyle=`rgba(${150+rnd()*70|0},${120+rnd()*60|0},${60+rnd()*30|0},.7)`;g.lineWidth=1+rnd();const x=rnd()*w,y=rnd()*w;g.beginPath();g.moveTo(x,y);g.lineTo(x+rnd()*4-2,y+10+rnd()*20);g.stroke()}for(let y=0;y<w;y+=32){g.fillStyle='rgba(60,40,20,.25)';g.fillRect(0,y,w,3)}}),
+ water:tex(256,4,(g,w)=>{g.fillStyle='#6f7a64';g.fillRect(0,0,w,w);blot(g,w,40,'rgba(170,180,160,.25)');blot(g,w,30,'rgba(60,60,40,.25)')}),
+ plaster:[0,1,2].map(k=>tex(256,2.4,(g,w)=>{g.fillStyle=['#e5d9bf','#ddd0b2','#e9e0cc'][k];g.fillRect(0,0,w,w);blot(g,w,30,'rgba(120,100,70,.12)');const gr=g.createLinearGradient(0,0,0,w);gr.addColorStop(0,'rgba(0,0,0,0)');gr.addColorStop(1,'rgba(90,70,40,.12)');g.fillStyle=gr;g.fillRect(0,0,w,w);noise(g,w,3000,.08)})),
+ tile:tex(256,1,(g,w)=>{g.fillStyle='#7a3b2c';g.fillRect(0,0,w,w);for(let y=0;y<w;y+=21)for(let x=0;x<w;x+=32){g.fillStyle=`hsl(${8+rnd()*8},45%,${30+rnd()*10}%)`;g.beginPath();g.ellipse(x+16,y+10,15,11,0,0,Math.PI*2);g.fill()}noise(g,w,2000,.15)}),
+ wood:tex(256,1.2,(g,w)=>{g.fillStyle='#6b4b30';g.fillRect(0,0,w,w);for(let i=0;i<70;i++){g.strokeStyle=`rgba(${rnd()<.5?30:140},${rnd()<.5?20:100},10,.25)`;g.lineWidth=1+rnd()*2;g.beginPath();const y=rnd()*w;g.moveTo(0,y);g.bezierCurveTo(w*.3,y+rnd()*8-4,w*.6,y+rnd()*8-4,w,y);g.stroke()}noise(g,w,2000,.1)}),
+ stone:tex(256,1.6,(g,w)=>{g.fillStyle='#8f8676';g.fillRect(0,0,w,w);for(let y=0;y<w;y+=64)for(let x=0;x<w;x+=(y/64)%2?96:80){g.fillStyle=`hsl(38,${8+rnd()*8}%,${55+rnd()*12}%)`;g.fillRect(x+2,y+2,(y/64)%2?92:76,60)}noise(g,w,3000,.12)}),
+ weave:tex(128,.35,(g,w)=>{g.fillStyle='#b8955a';g.fillRect(0,0,w,w);for(let y=0;y<w;y+=8)for(let x=0;x<w;x+=16){g.fillStyle=((x+y)/8)%2?'#d2b276':'#9c7a45';g.fillRect(x+((y/8)%2?8:0),y,14,7)}noise(g,w,800,.15)}),
+};
+const MAT={};
+function mat(k,o){return MAT[k]||(MAT[k]=new THREE.MeshStandardMaterial(Object.assign({roughness:.92,metalness:0},o)))}
+const M={brick:mat('brick',{map:T.brick}),dirt:mat('dirt',{map:T.dirt}),grass:mat('grass',{map:T.grass}),mud:mat('mud',{map:T.mud}),thatch:mat('thatch',{map:T.thatch}),water:mat('water',{map:T.water,roughness:.25}),pl:T.plaster.map((t,i)=>mat('pl'+i,{map:t})),tile:mat('tile',{map:T.tile}),wood:mat('wood',{map:T.wood}),stone:mat('stone',{map:T.stone}),weave:mat('weave',{map:T.weave,side:THREE.DoubleSide}),dark:mat('dark',{color:0x231c16}),glass:mat('glass',{color:0x2e3236,roughness:.35}),red:mat('redp',{color:0xb8382a,roughness:.8}),gold:mat('goldm',{color:0xd8b04a,metalness:.7,roughness:.35})};
+
+// ===== 幾何 =====
+function mUV(geo){const p=geo.attributes.position,n=geo.attributes.normal,uv=geo.attributes.uv;for(let i=0;i<p.count;i++){const ax=Math.abs(n.getX(i)),ay=Math.abs(n.getY(i)),az=Math.abs(n.getZ(i));if(ax>=ay&&ax>=az)uv.setXY(i,p.getZ(i),p.getY(i));else if(ay>=az)uv.setXY(i,p.getX(i),p.getZ(i));else uv.setXY(i,p.getX(i),p.getY(i))}uv.needsUpdate=true;return geo}
+// 建造中的世界：stat 會被合併，COL 是碰撞框
+const ctx={stat:null,COL:null,root:null,people:null};
+function B(w,h,d,m,x,y,z,o={}){const me=new THREE.Mesh(mUV(new THREE.BoxGeometry(w,h,d)),m);me.position.set(x,y,z);if(o.ry)me.rotation.y=o.ry;if(o.rz)me.rotation.z=o.rz;if(o.rx)me.rotation.x=o.rx;(o.p||ctx.stat).add(me);me.castShadow=o.cs!==false;me.receiveShadow=true;if(o.col)ctx.COL.push({x0:x-w/2,x1:x+w/2,z0:z-d/2,z1:z+d/2});return me}
+function mesh(geo,m,x,y,z,p=ctx.stat){const me=new THREE.Mesh(geo,m);me.position.set(x,y,z);me.castShadow=true;me.receiveShadow=true;p.add(me);return me}
+const col=(x0,x1,z0,z1)=>ctx.COL.push({x0,x1,z0,z1});
+function prep(o,mx){let g=o.geometry.index?o.geometry.toNonIndexed():o.geometry.clone();g.applyMatrix4(mx);for(const k of Object.keys(g.attributes))if(!['position','normal','uv'].includes(k))g.deleteAttribute(k);if(!g.attributes.uv)g.setAttribute('uv',new THREE.BufferAttribute(new Float32Array(g.attributes.position.count*2),2));g.morphAttributes={};return g}
+function compact(root){const gs=[];root.traverse(o=>{if(!o.isMesh)gs.push(o)});for(const par of gs){const by=new Map();for(const c of par.children.slice()){if(!c.isMesh||Array.isArray(c.material)||c.userData.keep)continue;c.updateMatrix();const k=c.material.uuid;if(!by.has(k))by.set(k,{m:c.material,l:[]});by.get(k).l.push(prep(c,c.matrix));par.remove(c)}for(const {m,l} of by.values()){const me=new THREE.Mesh(mergeGeometries(l),m);me.castShadow=true;par.add(me)}}}
+function bake(stat,into){stat.updateMatrixWorld(true);const G=new Map();stat.traverse(o=>{if(!o.isMesh||Array.isArray(o.material))return;const g=prep(o,o.matrixWorld);const key=o.material.uuid+(o.castShadow?1:0);if(!G.has(key))G.set(key,{m:o.material,cs:o.castShadow,l:[]});G.get(key).l.push(g)});for(const {m,cs,l} of G.values()){const me=new THREE.Mesh(mergeGeometries(l),m);me.castShadow=cs;me.receiveShadow=true;into.add(me)}}
+// 大量重複的東西（稻、蔗、竹）用 InstancedMesh
+function inst(geo,m,list,cs=false){const im=new THREE.InstancedMesh(geo,m,list.length);im.frustumCulled=false;const o=new THREE.Object3D();list.forEach(([x,y,z,ry=0,s=1,tilt=0],i)=>{o.position.set(x,y,z);o.rotation.set(tilt,ry,0);o.scale.setScalar(s);o.updateMatrix();im.setMatrixAt(i,o.matrix)});im.castShadow=cs;im.receiveShadow=true;ctx.root.add(im);return im}
+
+await document.fonts.load('900 96px "Noto Serif TC"','米布莊當舖漢藥雜貨金銀紙茶鹹魚碗盤香燭餅打鐵油菸製糖會社蔗作地土地公福德正神觀音春');
+const ATL=document.createElement('canvas');ATL.width=ATL.height=2048;const AG=ATL.getContext('2d');let ax=0,ay=0,arow=0;
+function atlas(txt,vert,bg,fg){const n=txt.length,w=vert?128:128*n+64,h=vert?128*n+64:160;if(ax+w>2048){ax=0;ay+=arow;arow=0}const x0=ax,y0=ay;ax+=w;arow=Math.max(arow,h);
+ const g=AG;g.save();g.translate(x0,y0);g.fillStyle=bg;g.fillRect(0,0,w,h);g.strokeStyle=fg;g.lineWidth=6;g.strokeRect(10,10,w-20,h-20);g.fillStyle=fg;g.font='900 96px "Noto Serif TC",serif';g.textAlign='center';g.textBaseline='middle';[...txt].forEach((ch,i)=>vert?g.fillText(ch,64,96+i*128):g.fillText(ch,96+i*128,84));g.restore();ATT.needsUpdate=true;
+ return [x0/2048,1-(y0+h)/2048,(x0+w)/2048,1-y0/2048]}
+const ATT=new THREE.CanvasTexture(ATL);ATT.colorSpace=THREE.SRGBColorSpace;ATT.anisotropy=8;const M_SIGN=mat('sign',{map:ATT,roughness:.8});
+function signPlane(w,h,reg,x,y,z,ry,p){const geo=new THREE.PlaneGeometry(w,h);const uv=geo.attributes.uv;for(let i=0;i<uv.count;i++)uv.setXY(i,reg[0]+uv.getX(i)*(reg[2]-reg[0]),reg[1]+uv.getY(i)*(reg[3]-reg[1]));const m=mesh(geo,M_SIGN,x,y,z,p);m.rotation.y=ry;m.castShadow=false;return m}
+
+// ===== 共用小物 =====
+const vegM={g1:mat('g1',{color:0x557f34}),g2:mat('g2',{color:0x7b9d42}),cream:mat('cream',{color:0xeee3c4}),rad:mat('rad',{color:0xf1ece0}),org:mat('org',{color:0xd88a2a}),fish:mat('fish',{color:0xa8b0b2,roughness:.4,metalness:.3}),cloth:[0x3e5a7a,0x8e4a3a,0x7a6a3a].map((c,i)=>mat('cl'+i,{color:c})),straw:mat('straw',{color:0xc9ad6a})};
+function basket(x,z,p,r=.28){p=p||ctx.stat;const bg=new THREE.CylinderGeometry(r,r*.8,.26,18,1,true);mesh(bg,M.weave,x,.13,z,p);mesh(new THREE.CircleGeometry(r*.8,16).rotateX(-Math.PI/2),M.weave,x,.01,z,p);mesh(new THREE.TorusGeometry(r,.015,6,20).rotateX(Math.PI/2),M.wood,x,.26,z,p)}
+function greens(x,z,n,p,r=.22){p=p||ctx.stat;for(let i=0;i<n;i++){const a=rnd()*6.28,d=rnd()*r;const m=mesh(new THREE.SphereGeometry(.075+rnd()*.03,10,8),rnd()<.5?vegM.g1:vegM.g2,x+Math.cos(a)*d,.26+rnd()*.06,z+Math.sin(a)*d,p);m.scale.y=.75}}
+function cauli(x,y,z,p){p=p||ctx.stat;const g=new THREE.Group();g.position.set(x,y,z);p.add(g);const h=mesh(new THREE.IcosahedronGeometry(.075,1),vegM.cream,0,.02,0,g);h.scale.y=.8;for(let i=0;i<5;i++){const l=mesh(new THREE.ConeGeometry(.04,.14,4),vegM.g1,Math.cos(i*1.26)*.07,0,Math.sin(i*1.26)*.07,g);l.rotation.z=Math.cos(i*1.26)*.9;l.rotation.x=-Math.sin(i*1.26)*.9}return g}
+
+// ===== 人物（繪本風） =====
+function person(o){
+ const g=new THREE.Group();const sm=c=>mat('c'+c,{color:c,roughness:.88});
+ const skin=sm(o.skin||0xc8946a),top=sm(o.top),bot=sm(o.bot??o.top),hairM=sm(o.hair||0x1b1714);
+ const P=(geo,m,x,y,z,par=g)=>{const me=new THREE.Mesh(geo,m);me.position.set(x,y,z);me.castShadow=true;par.add(me);return me};
+ const body=new THREE.Group();g.add(body);
+ const legs=[],arms=[];const HY=.8;
+ const robe=o.robe;
+ for(const s of [-1,1]){
+  const hip=new THREE.Group();hip.position.set(s*.085,HY,0);body.add(hip);
+  const L=o.short?.5:.72;
+  if(!robe)P(new THREE.CylinderGeometry(o.wide?.085:.068,o.wide?.08:.06,L,10),bot,0,-L/2,0,hip);
+  if(o.cuff&&!robe)P(new THREE.TorusGeometry(.078,.022,6,14).rotateX(Math.PI/2),sm(o.cuff),0,-L+.01,0,hip);
+  if(o.short)P(new THREE.CylinderGeometry(.045,.04,.24,8),skin,0,-.63,0,hip);
+  if(o.puttee)P(new THREE.CylinderGeometry(.06,.05,.34,10),sm(0x4a4636),0,-.58,0,hip);
+  const ft=P(new THREE.CapsuleGeometry(.042,.1,3,8),o.shoes?sm(o.shoes):skin,0,-.77,.035,hip);ft.rotation.x=Math.PI/2;
+  legs.push(hip);
+ }
+ const tor=P(new THREE.CapsuleGeometry(.15,.3,4,14),top,0,1.1,0,body);tor.scale.z=.72;
+ if(o.belly)P(new THREE.SphereGeometry(.15,14,10),top,0,1.0,.04,body).scale.set(1,.9,.8);
+ if(robe)P(new THREE.CylinderGeometry(.17,.25,.78,16),top,0,.48,0,body).scale.z=.8;
+ else if(o.hem)P(new THREE.CylinderGeometry(.17,.195,.15,14),top,0,.86,0,body).scale.z=.74;
+ P(new THREE.CylinderGeometry(.06,.065,.07,12),o.collar?sm(o.collar):top,0,1.43,0,body);
+ const bm=o.btn==='gold'?M.gold:sm(o.btn||0x22222a);
+ if(o.dajin){const sd=P(new THREE.BoxGeometry(.013,.34,.01),sm(o.seam||0x2a2a30),.06,1.27,.11,body);sd.rotation.z=.75;P(new THREE.BoxGeometry(.012,.36,.01),sm(o.seam||0x2a2a30),.15,1.02,.1,body);for(let i=0;i<3;i++)P(new THREE.SphereGeometry(.012,6,5),bm,.16-i*.0,1.18-i*.12,.105,body)}
+ else{P(new THREE.BoxGeometry(.012,.56,.01),sm(o.seam||0x1f2b3a),0,1.1,.111,body);for(let i=0;i<(o.nbtn||5);i++){const b=P(o.knot?new THREE.BoxGeometry(.05,.012,.012):new THREE.SphereGeometry(.014,6,5),bm,0,1.37-i*.105,.114,body)}}
+ if(o.patch)for(const [x,y,c] of [[-.07,1.18,o.patch],[.08,.95,o.patch]])P(new THREE.BoxGeometry(.07,.07,.012),sm(c),x,y,.107,body);
+ if(o.pocket)for(const s of [-1,1]){P(new THREE.BoxGeometry(.08,.07,.012),top,s*.075,1.24,.108,body);P(new THREE.SphereGeometry(.01,6,5),bm,s*.075,1.27,.116,body)}
+ if(o.belt){P(new THREE.CylinderGeometry(.163,.163,.045,14),sm(0x3a2a1c),0,.92,0,body).scale.z=.75;P(new THREE.BoxGeometry(.05,.04,.02),M.gold,0,.92,.123,body)}
+ if(o.epaul)for(const s of [-1,1])P(new THREE.BoxGeometry(.07,.015,.05),top,s*.15,1.4,0,body);
+ for(const s of [-1,1]){
+  const sh=new THREE.Group();sh.position.set(s*.19,1.33,0);body.add(sh);
+  P(new THREE.SphereGeometry(.062,10,8),top,0,0,0,sh);
+  P(new THREE.CylinderGeometry(.058,.055,.27,10),top,0,-.135,0,sh);
+  const el=new THREE.Group();el.position.y=-.27;sh.add(el);
+  if(o.longSleeve)P(new THREE.CylinderGeometry(.053,.048,.22,10),top,0,-.11,0,el);
+  else{P(new THREE.CylinderGeometry(.06,.058,.07,10),o.cuff?sm(o.cuff):top,0,-.03,0,el);P(new THREE.CylinderGeometry(.038,.034,.18,8),skin,0,-.13,0,el)}
+  const hand=new THREE.Group();hand.position.y=-.25;el.add(hand);P(new THREE.SphereGeometry(.043,10,8),skin,0,0,0,hand);
+  arms.push({sh,el,hand});
+ }
+ // 頭：比例放大一點，臉用小黑眼、腮紅
+ const head=new THREE.Group();head.position.y=1.6;body.add(head);
+ const HR=.135;
+ const hd=P(new THREE.SphereGeometry(HR,20,16),skin,0,0,0,head);hd.scale.set(1,1.04,.98);
+ for(const s of [-1,1])P(new THREE.SphereGeometry(.03,8,6),skin,s*HR*.98,-.005,0,head).scale.set(.5,1,.8);
+ if(o.hairStyle!=='bald'){const hair=P(new THREE.SphereGeometry(HR+.007,20,12,0,Math.PI*2,0,Math.PI*.43),hairM,0,.006,-.01,head);hair.rotation.x=-.32;
+  if(o.bun){P(new THREE.SphereGeometry(.06,12,10),hairM,0,.02,-.13,head);P(new THREE.CylinderGeometry(.006,.006,.16,5),sm(o.pin||0x8a6a3a),0,.03,-.15,head).rotation.z=1.3}}
+ const eyeM=sm(0x15110f),whiteM=mat('eyeW',{color:0xffffff,roughness:.3});
+ for(const s of [-1,1]){
+  const e=P(new THREE.SphereGeometry(.016,10,8),eyeM,s*.047,.005,HR*.93,head);e.scale.set(.85,1.15,.6);
+  P(new THREE.SphereGeometry(.005,6,5),whiteM,s*.047+.005,.012,HR*.98,head);
+  const bl=P(new THREE.SphereGeometry(.026,10,8),mat('blush',{color:0xe58474,transparent:true,opacity:.5}),s*.075,-.04,HR*.85,head);bl.scale.z=.3;
+  const br=P(new THREE.BoxGeometry(.036,.008,.01),hairM,s*.047,.04+(o.sad?-.004:0),HR*.95,head);br.rotation.z=o.angry?s*-.42:o.sad?s*.3:0;
+  if(o.old)P(new THREE.BoxGeometry(.03,.004,.005),sm(0x8a5a40),s*.05,-.02,HR*.97,head);
+ }
+ P(new THREE.SphereGeometry(.017,8,6),skin,0,-.018,HR*1.0,head);
+ const mouth=P(new THREE.TorusGeometry(.016,.004,5,10,Math.PI),sm(0x7a3328),0,-.055,HR*.93,head);mouth.rotation.z=o.angry||o.sad?0:Math.PI;
+ if(o.mous)P(new THREE.BoxGeometry(.06,.013,.012),hairM,0,-.038,HR*.98,head);
+ if(o.glasses){for(const s of [-1,1])P(new THREE.TorusGeometry(.024,.004,5,14),sm(0x222222),s*.047,.005,HR*1.0,head);P(new THREE.BoxGeometry(.03,.004,.004),sm(0x222222),0,.008,HR*1.01,head)}
+ if(o.beard)P(new THREE.ConeGeometry(.03,.07,8),sm(o.hair||0xdddddd),0,-.12,.09,head).rotation.x=Math.PI;
+ if(o.hat==='douli'){P(new THREE.ConeGeometry(.34,.16,26,1,true),mat('douli',{color:0xd0ae6a,roughness:.95,side:THREE.DoubleSide,map:T.weave}),0,.17,0,head);P(new THREE.CylinderGeometry(.11,.11,.03,12),sm(0xa88850),0,.1,0,head)}
+ if(o.hat==='cap'){P(new THREE.CylinderGeometry(.14,.135,.1,20),sm(0x1c1f2a),0,.13,0,head);P(new THREE.CylinderGeometry(.142,.142,.03,20),sm(0x2c2f3a),0,.1,0,head);const v=P(new THREE.CylinderGeometry(.13,.13,.012,18,1,false,-Math.PI/2,Math.PI),mat('visor',{color:0x0e0e10,roughness:.3}),0,.075,.035,head);v.rotation.x=.25;
+  const bd=new THREE.Group();bd.position.set(0,.14,.137);head.add(bd);P(new THREE.CircleGeometry(.012,12),M.gold,0,0,.002,bd);for(let i=0;i<8;i++){const r=P(new THREE.ConeGeometry(.006,.02,4),M.gold,Math.sin(i*.785)*.017,Math.cos(i*.785)*.017,0,bd);r.rotation.z=-i*.785}}
+ if(o.hat==='skull'){P(new THREE.SphereGeometry(HR+.01,16,10,0,Math.PI*2,0,Math.PI*.38),sm(0x1a1a1e),0,.012,0,head);P(new THREE.SphereGeometry(.014,6,5),sm(0x8a1a1a),0,HR+.012,0,head)}
+ if(o.sword){const sw=new THREE.Group();sw.position.set(.19,.9,-.02);body.add(sw);P(new THREE.CylinderGeometry(.017,.013,.78,8),mat('scab',{color:0x9aa0a4,metalness:.8,roughness:.35}),0,-.36,0,sw);P(new THREE.TorusGeometry(.03,.006,5,10,Math.PI),M.gold,0,.06,0,sw);P(new THREE.CylinderGeometry(.013,.013,.12,6),sm(0x1a1410),0,.09,0,sw);sw.rotation.x=.42;sw.rotation.z=.08}
+ if(o.hunch)body.rotation.x=.14;
+ const sc=(o.sc||.92);g.scale.setScalar(sc);if(o.kid){head.scale.setScalar(1.25)}
+ g.traverse(m=>{if(m.isMesh)m.castShadow=true});
+ const p={g,body,legs,arms,head,t:rnd()*9,walk:null,hold:null,o,pose:o.pose,talkT:0,act:null};
+ setPose(p,o.pose);
+ if(o.static){ctx.stat.add(g);return p}
+ compact(g);ctx.root.add(g);ctx.people.push(p);return p;
+}
+
+// 坐、蹲、彎腰；null 是站著
+function setPose(p,k){p.pose=k||null;const {legs,body,arms}=p;p.head.rotation.x=0;legs.forEach(h=>h.rotation.x=0);body.position.set(0,0,0);body.rotation.x=p.o.hunch?.14:0;arms.forEach(a=>{a.sh.rotation.x=0;a.el.rotation.x=0});
+ if(k==='sit'){legs.forEach(h=>h.rotation.x=-1.45);body.position.y=-.62;arms.forEach(a=>{a.sh.rotation.x=-.5;a.el.rotation.x=-.6})}
+ if(k==='squat'){legs.forEach(h=>h.rotation.x=-1.2);body.position.y=-.5;body.rotation.x=.25;arms.forEach(a=>{a.sh.rotation.x=-.9;a.el.rotation.x=-.5})}
+ if(k==='kneel'){legs.forEach(h=>h.rotation.x=1.35);body.position.y=-.5;arms.forEach(a=>{a.sh.rotation.x=-.25;a.el.rotation.x=-.3})}
+ if(k==='cry'){legs.forEach(h=>h.rotation.x=-1.45);body.position.y=-.42;body.rotation.x=.18;arms.forEach(a=>{a.sh.rotation.x=-1.95;a.el.rotation.x=-1.7});p.head.rotation.x=.35}
+ if(k==='stool'){legs.forEach(h=>h.rotation.x=-1.45);body.position.y=-.42;arms.forEach(a=>{a.sh.rotation.x=-.8;a.el.rotation.x=-.6})}
+ // 彎腰：以髖部為支點轉上半身，腿轉回來保持直立
+ if(k==='bend'){const a=.75;body.rotation.x=a;body.position.set(0,.8-.8*Math.cos(a),-.8*Math.sin(a));legs.forEach(h=>h.rotation.x=-a);arms.forEach(x=>{x.sh.rotation.x=-.5})}}
+
+// ===== 世界一：市場（第三關） =====
+function buildMarket(){
+ const W={key:'market',root:new THREE.Group(),COL:[],people:[],walkers:[],bounds:[-6.7,6.7,-28.7,31.8],start:{x:1.4,z:20,yaw:0},amb:'market',
+  light:{hemi:[0xe9eef0,0x8a7656,1.15],sun:[0xfff0d8,1.7,[9,20,7]],fog:[0xd9d3c3,16,62],sky:['#aeb8ba','#d4d1c4','#d9d3c3']},
+  floor:(x,z)=>Math.abs(x)>4.4?.15:0};
+ Object.assign(ctx,{stat:new THREE.Group(),COL:W.COL,root:W.root,people:W.people});
+ const Z0=-30,Z1=30;
+ {const geo=new THREE.PlaneGeometry(9,Z1-Z0+12);geo.rotateX(-Math.PI/2);mUV(geo);mesh(geo,M.dirt,0,0,0).castShadow=false}
+ const SHOPS=['米','布莊','當舖','漢藥','雜貨','金銀紙','茶','鹹魚','碗盤','香燭','餅','打鐵','油','菸'];
+ function unit(s,zc,k){
+  const X=s*4.3,h0=.15;
+  B(.5,3.4,.5,M.brick,X,1.7,zc-2,{col:true});
+  const sh=new THREE.Shape();sh.moveTo(-2,0);sh.lineTo(-1.75,0);sh.absellipse(0,0,1.75,.62,Math.PI,0,true);sh.lineTo(2,0);sh.lineTo(2,.95);sh.lineTo(-2,.95);sh.closePath();
+  const ag=new THREE.ExtrudeGeometry(sh,{depth:.46,bevelEnabled:false});ag.translate(0,0,-.23);mesh(ag,M.brick,X,2.45,zc).rotation.y=Math.PI/2;
+  B(2.7,.15,4,M.stone,s*5.65,h0/2,zc,{cs:false});B(2.7,.16,4,M.pl[k%3],s*5.65,3.48,zc);B(.2,3.4,4,M.pl[(k+1)%3],s*7.1,1.7,zc);
+  const open=k%3!==1;B(.06,2.5,2.4,open?M.dark:M.wood,s*6.98,1.4,zc);if(!open)for(let i=-1;i<=1;i++)B(.03,2.4,.04,M.dark,s*6.94,1.4,zc+i*.6);
+  B(.3,2.9,4,M.pl[k%3],X,4.9,zc);B(.45,.2,4.1,M.brick,X,3.45,zc);B(.45,.22,4.1,M.brick,X,6.3,zc);
+  for(const dz of [-1,1]){B(.12,1.5,1.05,M.wood,X-s*.16,4.85,zc+dz);B(.14,1.3,.85,M.glass,X-s*.18,4.85,zc+dz);B(.16,.06,1.2,M.brick,X-s*.2,4.05,zc+dz)}
+  const hh=.9+((k*37)%5)*.12;const gs=new THREE.Shape();gs.moveTo(-2,0);gs.lineTo(-2,.45);gs.quadraticCurveTo(-1.2,.5,-.7,hh*.8);gs.quadraticCurveTo(0,hh*1.25,.7,hh*.8);gs.quadraticCurveTo(1.2,.5,2,.45);gs.lineTo(2,0);gs.closePath();
+  const gg=new THREE.ExtrudeGeometry(gs,{depth:.3,bevelEnabled:false});gg.translate(0,0,-.15);mesh(gg,M.pl[(k+2)%3],X,6.4,zc).rotation.y=Math.PI/2;
+  B(7.5,.14,4,M.tile,s*8.2,7.05,zc).rotation.z=s*.16;
+  const txt=SHOPS[k%SHOPS.length],n=txt.length;
+  const rv=atlas(txt,true,'#2a1d14','#e8cf8a'),vh=.32+.42*n,zs=zc-1.55;B(.07,vh,.44,M.wood,s*4.75,2.2,zs);
+  signPlane(.42,vh-.02,rv,s*4.75,2.2,zs+.226,0);signPlane(.42,vh-.02,rv,s*4.75,2.2,zs-.226,Math.PI);
+  const rh=atlas(txt,false,'#efe3c4','#3a2416'),hw=.22+.5*Math.min(n,3);B(.06,.62,hw,M.wood,X-s*.18,3.75,zc,{cs:false});signPlane(hw-.04,.58,rh,X-s*.215,3.75,zc,-s*Math.PI/2);
+ }
+ let k=0;for(let z=Z0+2;z<Z1;z+=4){unit(1,z,k);unit(-1,z,k+5);k++}
+ for(const s of [-1,1])B(.5,3.4,.5,M.brick,s*4.3,1.7,Z1,{col:true});
+ for(const [z,s] of [[Z0-1,1],[Z1+3,-1]]){B(16,7,.6,M.pl[1],0,3.5,z);for(let x=-5;x<=5;x+=2.5){B(1,1.4,.12,M.wood,x,4.8,z+s*.33);B(.85,1.2,.12,M.glass,x,4.8,z+s*.36)}B(16,.2,1,M.brick,0,7,z);B(3,2.6,.1,M.dark,0,1.3,z+s*.32)}
+ const wireM=new THREE.LineBasicMaterial({color:0x2a2420});const poles=[-24,-12,0,12,24];
+ poles.forEach(z=>{mesh(new THREE.CylinderGeometry(.09,.13,7.4,8),M.wood,3.75,3.7,z);B(1.4,.1,.1,M.wood,3.75,6.9,z);col(3.6,3.9,z-.15,z+.15)});
+ for(let i=0;i<poles.length-1;i++)for(const dx of [-.6,0,.6]){const a=V3(3.75+dx,6.95,poles[i]),b=V3(3.75+dx,6.95,poles[i+1]);const m=a.clone().lerp(b,.5);m.y-=.55;W.root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(new THREE.QuadraticBezierCurve3(a,m,b).getPoints(16)),wireM))}
+ function stall(x,z,kind){const s=Math.sign(x);
+  if(kind==='mat'){B(1.6,.03,1,vegM.straw,x,.015,z,{cs:false});basket(x,z-.45);basket(x,z+.45);greens(x,z-.45,10);if(rnd()<.5)for(let i=0;i<8;i++){mesh(new THREE.CylinderGeometry(.03,.012,.26,8),vegM.rad,x+(rnd()-.5)*.3,.3,z+.45+(rnd()-.5)*.3).rotation.z=1.5}else for(let i=0;i<9;i++)mesh(new THREE.SphereGeometry(.05,8,6),vegM.org,x+(rnd()-.5)*.3,.3,z+.45+(rnd()-.5)*.3);col(x-.5,x+.5,z-.85,z+.85)}
+  else{B(1,.06,1.8,M.wood,x,.72,z,{col:true});for(const dx of [-.4,.4])for(const dz of [-.8,.8])B(.06,.7,.06,M.wood,x+dx,.35,z+dz);if(kind==='fish')for(let i=0;i<10;i++){const f=mesh(new THREE.SphereGeometry(.06,8,6),vegM.fish,x+(rnd()-.5)*.6,.78,z+(rnd()-.5)*1.4);f.scale.set(1,.4,2.6);f.rotation.y=rnd()*3}else for(let i=0;i<4;i++)B(.5,.18,.3,vegM.cloth[i%3],x,.84,z-.6+i*.4);
+   B(1.8,.03,2.4,vegM.cloth[(Math.abs(z|0))%3],x+s*.2,2.15,z).rotation.z=-s*.25;for(const dz of [-1.1,1.1])B(.05,2.1,.05,M.wood,x-s*.55,1.05,z+dz)}}
+ [[-3.1,-18,'mat'],[3.1,-15,'fish'],[-3.1,-13,'cloth'],[3.1,-10,'mat'],[3.1,-5,'mat'],[-3.1,-1.5,'mat'],[3.1,0,'cloth'],[-3.1,3,'fish'],[3.1,5,'mat'],[-3.1,8,'mat'],[3.1,-20,'mat']].forEach(a=>stall(...a));
+ W.STALL=V3(-2.75,0,-6.6);
+ {const x=-2.75,z=-6.6;basket(x,z-.5,null,.3);basket(x,z+.5,null,.3);greens(x,z-.5,9,null,.24);for(let i=0;i<6;i++)cauli(x+(rnd()-.5)*.32,.32,z+.5+(rnd()-.5)*.32);B(.06,.06,1.9,M.wood,x-.45,.06,z);B(1.6,.03,1.2,vegM.straw,x,.015,z,{cs:false});col(x-.35,x+.35,z-.85,z+.85)}
+ W.CAN=person(CAN_LOOK);W.CAN.g.position.set(-3.55,0,-6.6);W.CAN.g.rotation.y=Math.PI/2;
+ W.COP=person(COP_LOOK);W.COP.g.position.set(1.2,0,-24);
+ [[-3.7,-18],[4.05,-15],[-4.05,-13],[3.7,-10],[3.7,-5],[-3.7,-1.5],[4.05,0],[-4.05,3],[3.7,5],[-3.7,8],[3.7,-20]].forEach(([x,z],i)=>{const p=person({top:[0x3c4f63,0x5b4a3a,0x4a5560,0x6a5a48][i%4],bot:0x2a2a2a,short:true,wide:true,hem:true,hat:i%3?null:'douli',pose:'sit',static:true,skin:0xc29068,...(i%4==3?{dajin:true,bun:true,top:0x7a6a8a,short:false}:{})});p.g.position.set(x,0,z);p.g.rotation.y=x<0?Math.PI/2:-Math.PI/2;col(x-.3,x+.3,z-.3,z+.3)});
+ W.walkers=[[2.1,20],[2.6,-12],[1.8,6],[2.9,-22],[2.3,14]].map(([x,z],i)=>{const p=person({top:[0x46607a,0x6b5845,0x3e4a40,0x52606e,0x7a6650][i],bot:0x262626,short:i%2==0,wide:true,hem:true,hat:i==1?'douli':null,skin:0xc29068,...(i==2?{dajin:true,bun:true,top:0x8a6a5a,short:false}:{})});p.g.position.set(x,0,z);p.lane={x,dir:i%2?1:-1,z0:-24,z1:24,axis:'z'};return p});
+ W.BYS=[person({top:0x6a6050,bot:0x3a3630,short:true,wide:true,hem:true,hairStyle:'bald',beard:true,hair:0xe8e4dc,old:true,skin:0xb98a62}),person({top:0x5b4a3a,bot:0x2a2a2a,short:true,wide:true,hem:true,hat:'douli',skin:0xc29068}),person({top:0x46607a,bot:0x262626,wide:true,hem:true,skin:0xc29068})];
+ bake(ctx.stat,W.root);
+ W.SCALE=makeScale();W.root.add(W.SCALE);W.SCALE.position.set(-2.75,.42,-6.1);W.SCALE.rotation.y=Math.PI/2;
+ W.BUNDLE=new THREE.Group();[[0,0],[.06,.04],[-.05,.05]].forEach(([x,z])=>cauli(x,0,z,W.BUNDLE));W.root.add(W.BUNDLE);W.BUNDLE.visible=false;
+ W.BOOK=new THREE.Mesh(new THREE.BoxGeometry(.09,.13,.015),mat('book',{color:0x1d2a3a}));W.BOOK.visible=false;W.root.add(W.BOOK);
+ W.reset=()=>{const C=W.COP,N=W.CAN;W.BYS.forEach((p,i)=>{p.walk=null;p.g.visible=false;p.g.position.set(1.4+i*.5,0,-15-i)});N.walk=null;N.g.visible=C.g.visible=true;N.g.position.set(-3.55,0,-6.6);N.g.rotation.y=Math.PI/2;C.walk=null;C.act=N.act=null;C.hold=N.hold=null;C.g.position.set(1.2,0,-24);C.g.rotation.y=0;W.SCALE.visible=true;W.SCALE.position.set(-2.75,.42,-6.1);W.SCALE.rotation.set(0,Math.PI/2,0);W.BUNDLE.visible=false;W.BOOK.visible=false;FLY.splice(0).forEach(f=>f.m.parent.remove(f.m));N.arms.forEach(a=>{a.sh.rotation.x=0;a.el.rotation.x=0})};
+ W.tick=(dt)=>{if(mode==='free'&&LVL.id===3&&step===0&&!W.COP.walk){const z=W.COP.g.position.z<-20?-14:-24;walkTo(W.COP,1.2,z,1)}};
+ W.who={can:W.CAN,cop:W.COP,elder:W.BYS[0]};
+ return W;
+}
+function makeScale(){const g=new THREE.Group();const rodM=mat('rod',{color:0x8a5a2e,roughness:.6});
+ const rod=new THREE.Mesh(new THREE.CylinderGeometry(.008,.012,.62,8),rodM);rod.rotation.z=Math.PI/2;rod.position.x=.2;g.add(rod);
+ for(let i=0;i<14;i++){const d=new THREE.Mesh(new THREE.SphereGeometry(.003,4,3),M.gold);d.position.set(i*.035,.009,0);g.add(d)}
+ const str=new THREE.Mesh(new THREE.CylinderGeometry(.002,.002,.12,4),M.dark);str.position.set(-.04,.06,0);g.add(str);
+ const hk=new THREE.Mesh(new THREE.TorusGeometry(.02,.004,6,12,Math.PI*1.4),mat('iron',{color:0x777777,metalness:.8,roughness:.4}));hk.position.set(-.09,-.06,0);g.add(hk);
+ const ws=new THREE.Mesh(new THREE.CylinderGeometry(.002,.002,.1,4),M.dark);ws.position.set(.3,-.05,0);g.add(ws);
+ const wt=new THREE.Mesh(new THREE.CylinderGeometry(.018,.026,.05,10),mat('iron2',{color:0x2a2a2c,metalness:.6,roughness:.5}));wt.position.set(.3,-.12,0);g.add(wt);
+ g.traverse(m=>{if(m.isMesh)m.castShadow=true});g.userData.rod=rod;return g}
+
+// ===== 世界二：威麗村（第一、二關） =====
+function buildVillage(){
+ const W={key:'village',root:new THREE.Group(),COL:[],people:[],walkers:[],bounds:[-21,21,-31,29],start:{x:0,z:27,yaw:0},amb:'village',floor:()=>0};
+ Object.assign(ctx,{stat:new THREE.Group(),COL:W.COL,root:W.root,people:W.people});
+ // 地面與路
+ {const g=new THREE.PlaneGeometry(140,140);g.rotateX(-Math.PI/2);mUV(g);mesh(g,M.grass,0,-.01,0).castShadow=false}
+ const road=(x0,x1,z0,z1)=>{const g=new THREE.PlaneGeometry(x1-x0,z1-z0);g.rotateX(-Math.PI/2);mUV(g);mesh(g,M.dirt,(x0+x1)/2,0,(z0+z1)/2).castShadow=false};
+ road(-1.4,1.4,-34,32);road(-6,0,-4.5,-1.5);road(0,6,4.6,7.4);road(-6,0,8.6,11.4);road(-5.5,-1.4,-27,-24.5);
+ // 稻田（左邊兩區）
+ const rice=[];const paddy=(x0,x1,z0,z1)=>{const g=new THREE.PlaneGeometry(x1-x0,z1-z0);g.rotateX(-Math.PI/2);mUV(g);mesh(g,M.water,(x0+x1)/2,.01,(z0+z1)/2).castShadow=false;
+  for(const [a,b,c,d] of [[x0,x1,z0,z0],[x0,x1,z1,z1],[x0,x0,z0,z1],[x1,x1,z0,z1]])B(Math.max(.3,b-a+.3),.14,Math.max(.3,d-c+.3),M.dirt,(a+b)/2,.07,(c+d)/2,{cs:false});
+  for(let x=x0+.4;x<x1-.2;x+=.45)for(let z=z0+.4;z<z1-.2;z+=.45)rice.push([x+(rnd()-.5)*.08,.02,z+(rnd()-.5)*.08,rnd()*3,.8+rnd()*.4])};
+ for(const [z0,z1] of [[13,21],[-21,-14],[-13,-7]])for(const [x0,x1] of [[-20,-14],[-13.5,-8]])paddy(x0,x1,z0,z1);
+ paddy(-7.5,-2.4,-21,-14);paddy(-7.5,-2.4,13,21);
+ {const tg=mergeGeometries([0,1,2,3,4].map(i=>{const c=new THREE.ConeGeometry(.012,.32,3);c.translate(0,.16,0);c.rotateZ((i-2)*.18);c.rotateY(i*1.3);return c.toNonIndexed()}));inst(tg,mat('rice',{color:0x7fa144}),rice)}
+ // 甘蔗園（右邊）：會社的
+ const cane=[],leaf=[];for(let x=4.5;x<22;x+=.6)for(let z=-31;z<-6;z+=.6){if(rnd()<.1)continue;const h=2.3+rnd()*.8,xx=x+(rnd()-.5)*.3,zz=z+(rnd()-.5)*.3;cane.push([xx,0,zz,0,1,(rnd()-.5)*.12]);leaf.push([xx,h*.92,zz,rnd()*6,.8+rnd()*.3]);leaf.push([xx,h*.62,zz,rnd()*6,.7+rnd()*.3])}
+ inst(new THREE.CylinderGeometry(.025,.03,2.6,5).translate(0,1.3,0),mat('cane',{color:0x6a6a3a}),cane);
+ {const lg=mergeGeometries(Array.from({length:7},(_,i)=>{const p=new THREE.PlaneGeometry(.05,.8,1,2);const a=p.attributes.position;for(let k=0;k<a.count;k++){const y=a.getY(k)+.4;a.setZ(k,-y*y*.35)}p.translate(0,.4,0);p.rotateZ(.5+rnd()*.7);p.rotateY(i*.9+rnd()*.3);return p}));inst(lg,mat('caneL',{color:0x7c9a46,side:THREE.DoubleSide}),leaf)}
+ col(4.3,22,-31,-6.2);
+ // 會社的告示牌
+ {const r=atlas('製糖會社 蔗作地',false,'#efe3c4','#3a2416');B(.08,.9,2.6,M.wood,3.7,1.7,-8,{});B(.1,1.4,.1,M.wood,3.7,.7,-9.1);B(.1,1.4,.1,M.wood,3.7,.7,-6.9);signPlane(2.5,.8,r,3.65,1.7,-8,-Math.PI/2);col(3.5,3.9,-9.3,-6.7)}
+ W.SIGN=V3(3.2,0,-8);
+ // 遠方會社的煙囪
+ {mesh(new THREE.CylinderGeometry(.9,1.4,26,14),M.brick,26,13,-62);B(14,6,8,M.pl[1],26,3,-56);B(14.5,.4,8.5,M.tile,26,6.2,-56)}
+ // 竹圍
+ const bam=[],bl=[];const grove=(cx,cz,n,r)=>{for(let i=0;i<n;i++){const a=rnd()*6.28,d=r*(.4+rnd()*.6),x=cx+Math.cos(a)*d,z=cz+Math.sin(a)*d,h=6+rnd()*3;bam.push([x,0,z,0,h/8,(rnd()-.5)*.25]);bl.push([x,h*.9,z,rnd()*6,1+rnd()*.6])}};
+ grove(-11.5,-3,26,2.6);grove(-11.5,10,18,2.2);grove(-9,-28,14,2.2);grove(15,14,16,2.5);
+ inst(new THREE.CylinderGeometry(.045,.055,8,6).translate(0,4,0),mat('bam',{color:0x8a9a4a}),bam,true);
+ {const lg=mergeGeometries(Array.from({length:14},()=>{const p=new THREE.PlaneGeometry(.06,.34);p.translate(0,.17,0);p.rotateZ(1+rnd()*.9);p.rotateY(rnd()*6.28);p.translate((rnd()-.5)*.5,(rnd()-.5)*.4,(rnd()-.5)*.5);return p}));inst(lg,mat('baml',{color:0x7a9a3e,side:THREE.DoubleSide}),bl.flatMap(([x,y,z,r,s])=>Array.from({length:7},(_,i)=>[x+(rnd()-.5)*1.4,y-i*.55,z+(rnd()-.5)*1.4,rnd()*6,1.4+rnd()*.8])),true)}
+ // 土角厝
+ function hut(cx,cz,ry,w=5,d=3.4){const g=new THREE.Group();g.position.set(cx,0,cz);g.rotation.y=ry;ctx.stat.add(g);
+  B(w,2.3,d,M.mud,0,1.15,0,{p:g});
+  const roof=new THREE.Shape();roof.moveTo(-d/2-.5,0);roof.lineTo(0,1.5);roof.lineTo(d/2+.5,0);roof.lineTo(d/2+.3,-.12);roof.lineTo(0,1.32);roof.lineTo(-d/2-.3,-.12);roof.closePath();
+  const rg=new THREE.ExtrudeGeometry(roof,{depth:w+.6,bevelEnabled:false});rg.translate(0,0,-(w+.6)/2);const rm=mesh(rg,M.thatch,0,2.3,0,g);rm.rotation.y=Math.PI/2;
+  const gab=new THREE.Shape();gab.moveTo(-d/2,0);gab.lineTo(0,1.3);gab.lineTo(d/2,0);gab.closePath();for(const s of [-1,1]){const gm=mesh(new THREE.ShapeGeometry(gab),M.mud,s*w/2,2.3,0,g);gm.rotation.y=s*Math.PI/2}
+  B(.9,1.8,.06,M.wood,0,.9,d/2+.02,{p:g});B(.7,.5,.06,M.dark,-1.5,1.4,d/2+.02,{p:g});for(let i=0;i<4;i++)B(.04,.5,.04,M.wood,-1.75+i*.17,1.4,d/2+.05,{p:g});
+  const c=Math.cos(ry),s=Math.sin(ry),hw=(Math.abs(c)*w+Math.abs(s)*d)/2+.1,hd=(Math.abs(s)*w+Math.abs(c)*d)/2+.1;col(cx-hw,cx+hw,cz-hd,cz+hd);return g}
+ hut(-8.5,-3,Math.PI/2);hut(-8.5,10,Math.PI/2,4.4,3);hut(-17,2,Math.PI/2,4,3);
+ // 竹籬、雞、豬舍
+ for(let z=-6.5;z<=.5;z+=.35)if(z<-4.4||z>-1.6)mesh(new THREE.CylinderGeometry(.025,.025,.9,5),M.wood,-2.6,.45,z);B(.04,.04,7,M.wood,-2.6,.75,-3,{cs:false});col(-2.7,-2.5,-6.6,-4.4);col(-2.7,-2.5,-1.6,.6);
+ for(const [w,d,x,z] of [[1.8,.06,-5,-7.1],[1.8,.06,-5,-5.7],[.06,1.4,-5.9,-6.4],[.06,1.4,-4.1,-6.4]])B(w,.55,d,M.wood,x,.28,z);col(-5.95,-4.05,-7.15,-5.65);
+ W.PIG=mesh(new THREE.CapsuleGeometry(.17,.3,4,10).rotateZ(Math.PI/2),mat('pig',{color:0xd9a59a}),-5,.22,-6.4);mesh(new THREE.SphereGeometry(.12,10,8),mat('pig',{}),-4.62,.26,-6.4);
+ W.CHICK=[];for(let i=0;i<5;i++){const c=new THREE.Group();c.position.set(-4.5+rnd()*1.6,0,-.5-rnd()*1.2);const b=new THREE.Mesh(new THREE.SphereGeometry(.09,10,8),mat(i%2?'chW':'chB',{color:i%2?0xf2ece0:0x9a6a3a}));b.position.y=.13;b.scale.set(1,.9,1.3);const h=new THREE.Mesh(new THREE.SphereGeometry(.05,8,6),b.material);h.position.set(0,.22,.08);const cm=new THREE.Mesh(new THREE.BoxGeometry(.02,.04,.04),mat('comb',{color:0xc0302a}));cm.position.set(0,.27,.08);c.add(b,h,cm);c.traverse(m=>{if(m.isMesh)m.castShadow=true});c.userData.ph=rnd()*6;W.root.add(c);W.CHICK.push(c)}
+ // 草鞋架
+ B(.9,.05,.4,M.wood,-6.4,.6,-1.2);for(let i=0;i<4;i++)B(.12,.02,.26,vegM.straw,-6.7+i*.2,.64,-1.2);
+ // 業主的紅磚大厝
+ {const g=new THREE.Group();g.position.set(11,0,6);ctx.stat.add(g);B(7,3.2,9,M.brick,0,1.6,0,{p:g});
+  const rf=new THREE.Shape();rf.moveTo(-5.1,-.1);rf.lineTo(0,2);rf.lineTo(5.1,-.1);rf.lineTo(4.9,-.3);rf.lineTo(0,1.78);rf.lineTo(-4.9,-.3);rf.closePath();const rg=new THREE.ExtrudeGeometry(rf,{depth:7.4,bevelEnabled:false});rg.translate(0,0,-3.7);const rm=mesh(rg,M.tile,0,3.35,0,g);rm.rotation.y=Math.PI/2;
+  const gab=new THREE.Shape();gab.moveTo(-4.5,0);gab.lineTo(0,1.85);gab.lineTo(4.5,0);gab.closePath();for(const s of [-1,1])mesh(new THREE.ShapeGeometry(gab),M.brick,s*3.5,3.3,0,g).rotation.y=s*Math.PI/2;
+  B(7.8,.16,.22,M.tile,0,5.38,0,{p:g});for(const s of [-1,1]){const t=B(.9,.12,.2,M.tile,s*4.15,5.55,0,{p:g});t.rotation.z=s*.45}
+  B(.2,1.6,3,M.brick,-3.6,.8,-2.6,{p:g});B(.2,1.6,3,M.brick,-3.6,.8,2.6,{p:g});B(.12,2.2,1.8,mat('door',{color:0x7a2a1e}),-3.52,1.1,0,{p:g});for(const s of [-1,1])B(.1,.1,.1,M.gold,-3.45,1.2,s*.25,{p:g});
+  const r=atlas('福',false,'#b8382a','#f0d080');signPlane(.6,.5,r,-3.44,1.9,0,-Math.PI/2,g);col(7.4,14.6,1.4,10.6)}
+ W.LORDGATE=V3(6.6,0,6);
+ // 村口大榕樹、土地公廟
+ {mesh(new THREE.CylinderGeometry(.5,.75,3.6,10),mat('bark',{color:0x6a5a48}),4.2,1.8,21);for(let i=0;i<9;i++){const a=i*.7,d=1.2+rnd()*2.4;mesh(new THREE.IcosahedronGeometry(1.8+rnd()*1.2,1),mat('banyan',{color:0x4f6a30,flatShading:true}),4.2+Math.cos(a)*d,4.6+rnd()*1.6,21+Math.sin(a)*d).scale.y=.65}
+  for(let i=0;i<7;i++)mesh(new THREE.CylinderGeometry(.03,.03,2.8,4),mat('bark',{}),4.2+(rnd()-.5)*3,1.9,21+(rnd()-.5)*3);col(3.6,4.8,20.4,21.6);
+  B(1,1,.8,M.red,6.6,.5,23,{col:true});B(1.3,.12,1.1,M.tile,6.6,1.1,23);const r=atlas('福德正神',true,'#b8382a','#f0d080');signPlane(.18,.6,r,6.08,.55,23,-Math.PI/2);B(.3,.08,.3,mat('censer',{color:0x8a7a4a,metalness:.4}),5.9,.04,23)}
+ W.TREE=V3(2.6,0,20.5);
+ // 母親的墓
+ {const g=new THREE.Group();g.position.set(-6.8,0,-26);ctx.stat.add(g);mesh(new THREE.SphereGeometry(1,16,10,0,Math.PI*2,0,Math.PI/2).scale(1,.45,1.1),M.dirt,0,0,0,g);
+  mesh(new THREE.TorusGeometry(1.45,.17,6,24,Math.PI).rotateX(-Math.PI/2).rotateY(Math.PI/2),M.stone,0,.17,0,g);
+  B(.12,.75,.55,M.stone,1.2,.38,0,{p:g});B(.4,.06,.7,M.stone,1.35,.03,0,{p:g,cs:false});mesh(new THREE.CylinderGeometry(.06,.07,.1,8),mat('censer',{}),1.45,.11,0,g);for(let i=0;i<3;i++)mesh(new THREE.CylinderGeometry(.004,.004,.22,4),M.red,1.45,.24,-.03+i*.03,g);col(-8,-5.6,-27.3,-24.7)}
+ W.GRAVE=V3(-4.8,0,-25.8);
+ // 第二關的年貨
+ W.goods=new THREE.Group();W.root.add(W.goods);
+ {const p=W.goods;const tb=B(1.4,.06,.7,M.wood,-4,.7,-5.2,{p});for(const dx of [-.6,.6])for(const dz of [-.3,.3])B(.05,.7,.05,M.wood,-4+dx,.35,-5.2+dz,{p});
+  mesh(new THREE.CylinderGeometry(.18,.2,.42,12),vegM.straw,-4.5,.94,-5.2,p);
+  mesh(new THREE.CylinderGeometry(.2,.2,.14,16),mat('steam',{color:0xb08a52}),-3.95,.8,-5.2,p);mesh(new THREE.CylinderGeometry(.18,.18,.03,16),mat('nian',{color:0xc89a5a}),-3.95,.88,-5.2,p);
+  B(.32,.12,.22,mat('kim',{color:0xd8b04a}),-3.5,.79,-5.05,{p});B(.3,.05,.2,mat('gin',{color:0xc8c8c0}),-3.5,.87,-5.05,{p});
+  for(let i=0;i<3;i++)mesh(new THREE.CylinderGeometry(.005,.005,.3,4),M.red,-3.42+i*.03,.88,-5.38,p);
+  const cb=mesh(new THREE.CylinderGeometry(.06,.06,.5,10),mat('hua',{color:0xd87a8a}),-3.7,.79,-5.4,p);cb.rotation.z=Math.PI/2;
+  for(const s of [-1,1])B(.02,1.2,.18,M.red,-6.77,1.1,-3+s*.62,{p});
+  B(.02,.22,.9,M.red,-6.77,1.95,-3,{p});
+  const gy=atlas('觀音',true,'#efe3c4','#3a2416');B(.04,.9,.6,mat('frame',{color:0x5a3a20}),-6.78,1.45,-4.35,{p});signPlane(.5,.8,gy,-6.75,1.45,-4.35,Math.PI/2,p)}
+ // 人物
+ W.MOM=person({top:0x3d4458,bot:0x2a2a30,dajin:true,bun:true,hair:0x8a8680,old:true,hunch:true,pose:'stool',skin:0xc29068});W.MOM.g.position.set(-4.6,0,-2.2);W.MOM.g.rotation.y=Math.PI/2;
+ {const st=new THREE.Group();st.position.set(-4.6,0,-2.2);W.root.add(st);W.STOOL=st;const sm=mesh(new THREE.BoxGeometry(.36,.06,.3),M.wood,-.02,.3,0,st);for(const [x,z] of [[-.15,-.12],[-.15,.12],[.12,-.12],[.12,.12]])mesh(new THREE.BoxGeometry(.04,.3,.04),M.wood,x,.15,z,st);
+  W.SANDAL=new THREE.Group();for(let i=0;i<3;i++){const sd=mesh(new THREE.BoxGeometry(.1,.015,.24),vegM.straw,.5,.02,-.25+i*.14,st);sd.rotation.y=.3*i}const bundle=mesh(new THREE.CylinderGeometry(.06,.06,.3,8),vegM.straw,.45,.28,.0,st);bundle.rotation.x=1.2}
+ W.CAN=person(CAN_LOOK);W.CAN.g.position.set(-5.2,0,-3);W.CAN.g.rotation.y=Math.PI/2;
+ W.WIFE=person(WIFE_LOOK);W.WIFE.g.position.set(-5.5,0,-17);W.WIFE.g.rotation.y=Math.PI/2;
+ W.LORD=person({top:0x5a4a6a,robe:true,belly:true,hat:'skull',mous:true,skin:0xd6a882,btn:0xc9a24a,knot:true,sc:.95});W.LORD.g.position.set(6.4,0,6);W.LORD.g.rotation.y=-Math.PI/2;
+ W.OLD=person({top:0x6a6050,bot:0x3a3630,short:true,wide:true,hem:true,hairStyle:'bald',beard:true,hair:0xe8e4dc,old:true,pose:'stool',skin:0xb98a62});W.OLD.g.position.set(2.5,0,20.6);W.OLD.g.rotation.y=-Math.PI/2;{const st=new THREE.Group();st.position.set(2.48,0,20.6);W.root.add(st);mesh(new THREE.BoxGeometry(.3,.06,.36),M.wood,0,.3,0,st);for(const [x,z] of [[-.12,-.15],[-.12,.15],[.12,-.15],[.12,.15]])mesh(new THREE.BoxGeometry(.04,.3,.04),M.wood,x,.15,z,st)}
+ W.NB=person({top:0x8a6a4a,bot:0x2a2a2a,dajin:true,bun:true,hair:0x3a3632,skin:0xc8946a});W.NB.g.position.set(-5.3,0,10);W.NB.g.rotation.y=Math.PI/2;
+ W.KIDS=[person({top:0x9a5a4a,bot:0x3a3a40,short:true,wide:true,kid:true,sc:.58,skin:0xc8946a}),person({top:0xc08a5a,bot:0x5a4a3a,kid:true,bun:true,sc:.52,skin:0xc8946a})];W.KIDS[0].g.position.set(-4.3,0,-.9);W.KIDS[1].g.position.set(-3.7,0,-.7);W.KIDS.forEach(k=>k.g.rotation.y=Math.PI/2);
+ // 水牛
+ {const b=new THREE.Group();b.position.set(-11,0,-17);b.rotation.y=.6;const bm=mat('buf',{color:0x4a4a50});const bd=new THREE.Mesh(new THREE.CapsuleGeometry(.42,.9,4,12).rotateZ(Math.PI/2),bm);bd.position.y=.95;b.add(bd);
+  for(const [x,z] of [[-.45,-.25],[-.45,.25],[.45,-.25],[.45,.25]]){const l=new THREE.Mesh(new THREE.CylinderGeometry(.08,.07,.7,8),bm);l.position.set(x,.35,z);b.add(l)}
+  const hd=new THREE.Mesh(new THREE.SphereGeometry(.28,12,10),bm);hd.position.set(.95,1.05,0);hd.scale.set(1.2,.9,.9);b.add(hd);
+  for(const s of [-1,1]){const h=new THREE.Mesh(new THREE.TorusGeometry(.25,.035,6,12,Math.PI*.8),mat('horn',{color:0xd8ccb0}));h.position.set(.95,1.25,s*.18);h.rotation.set(0,s*.3,s>0?.4:2.7);b.add(h)}
+  b.traverse(m=>{if(m.isMesh)m.castShadow=true});W.root.add(b);W.BUF=b;col(-12,-10,-18,-16)}
+ W.walkers=[[0.6,-10,'z'],[-.6,12,'z']].map(([x,z,a],i)=>{const p=person({top:[0x5a6a5a,0x6b5845][i],bot:0x2a2a2a,short:true,wide:true,hem:true,cuff:0xd8ccb0,hat:'douli',skin:0xb98a62});p.g.position.set(x,0,z);p.lane={x,dir:i?1:-1,z0:-24,z1:25,axis:'z'};return p});
+ bake(ctx.stat,W.root);
+ W.LAMP=new THREE.PointLight(0xffb060,0,10,1.4);W.LAMP.position.set(-6.2,1.9,-2.2);W.root.add(W.LAMP);
+ W.LAMPM=new THREE.Mesh(new THREE.CylinderGeometry(.07,.09,.2,10),new THREE.MeshStandardMaterial({color:0xffd9a0,emissive:0xffa040,emissiveIntensity:0}));W.LAMPM.position.set(-6.65,1.75,-2.2);W.root.add(W.LAMPM);
+ W.lamp=on=>{W.LAMP.intensity=on?7:0;W.LAMPM.material.emissiveIntensity=on?2:0};
+ W.who={can:W.CAN,mom:W.MOM,wife:W.WIFE,lord:W.LORD,old:W.OLD,nb:W.NB};
+ // 每關開頭把村子恢復原狀，再由各關 setup 調整
+ W.base=()=>{W.pace=false;W.lamp(false);W.walkers.forEach(p=>p.g.visible=true);[W.CAN,W.WIFE,W.MOM,W.NB,W.LORD,W.OLD,...W.KIDS].forEach(p=>{p.walk=null;p.act=null});setPose(W.CAN,null);setPose(W.WIFE,null);W.NB.g.position.set(-5.3,0,10);W.NB.g.rotation.y=Math.PI/2};
+ W.tick=(dt,t)=>{W.CHICK.forEach(c=>{c.userData.ph+=dt;const k=Math.sin(c.userData.ph*3);c.children[1].position.y=.22-(k>0.7?.06:0);c.rotation.y+=Math.sin(c.userData.ph*.7)*dt*.6});
+  if(W.MOM.g.visible&&!W.MOM.act){const a=W.MOM.arms;a[0].el.rotation.x=-.5+Math.sin(t*4)*.25;a[1].el.rotation.x=-.5-Math.sin(t*4)*.25}
+  W.BUF.children[5]&&(W.BUF.children[5].rotation.z=Math.sin(t*.8)*.1);
+  if(W.pace&&!W.CAN.walk){W.paceDir=!W.paceDir;walkTo(W.CAN,-3.7,W.paceDir?-1.3:-4.6,.6)}};
+ return W;
+}
+// ===== 世界三：郡役所（第四、五關） =====
+function buildCourt(){
+ const W={key:'court',root:new THREE.Group(),COL:[],people:[],walkers:[],bounds:[-5.6,5.6,-8.4,13.5],start:{x:0,z:12,yaw:0},amb:null,floor:()=>0};
+ Object.assign(ctx,{stat:new THREE.Group(),COL:W.COL,root:W.root,people:W.people});
+ const plank=mat('plank',{map:T.wood}),desk=mat('desk',{color:0x4a2e1c,roughness:.6}),win=mat('win',{color:0xdfe6e8,emissive:0x9aa4a8,emissiveIntensity:.7});
+ {const g=new THREE.PlaneGeometry(40,40);g.rotateX(-Math.PI/2);mUV(g);mesh(g,M.dirt,0,-.01,8).castShadow=false}
+ // 室內
+ B(12,.05,11,plank,0,.025,-6.5,{cs:false});
+ B(12.4,4.6,.3,M.pl[0],0,2.3,-12.1,{col:true});
+ for(const s of [-1,1]){B(.3,4.6,11.4,M.pl[2],s*6.1,2.3,-6.5,{col:true});for(const z of [-9.5,-5.5,-2.5]){B(.14,1.9,1.5,M.wood,s*5.96,2.6,z);B(.12,1.7,1.3,win,s*5.93,2.6,z)}B(.06,.9,11,M.wood,s*5.93,.45,-6.5)}
+ for(const s of [-1,1])B(5.3,4.6,.3,M.pl[0],s*3.55,2.3,-1,{col:true});
+ B(1.8,2.0,.3,M.pl[0],0,3.6,-1);
+ B(12.4,.15,11.4,M.pl[1],0,4.62,-6.5,{cs:false});
+ // 高台與桌子
+ B(6,.5,3,plank,0,.25,-10.5,{col:true});B(3.4,1.1,.7,desk,0,1.05,-9.4,{col:true});B(3.6,.08,.9,desk,0,1.64,-9.5);
+ B(.42,.02,.3,mat('paper',{color:0xf0ead8}),.7,1.69,-9.5);B(.12,.06,.12,mat('ink',{color:0x111111}),-.6,1.71,-9.5);
+ B(4,2.8,.06,mat('panel',{color:0x3a2a1e}),0,2.6,-11.92);B(.7,1.5,.1,desk,0,1.25,-11.2);
+ for(const s of [-1,1])B(.45,.45,3,M.wood,s*4.6,.23,-5,{col:true});
+ // 外觀：屋簷、柱子、招牌
+ B(13.6,.22,1.8,M.tile,0,4.85,-.35);for(const s of [-1,1])B(5.3,.6,.06,M.brick,s*3.55,.3,-.83,{cs:false});
+ for(const x of [-5.4,-2,2,5.4]){B(.42,4.6,.42,M.brick,x,2.3,.3,{col:true})}
+ {const r=atlas('郡役所',true,'#efe3c4','#2a1d14');B(.5,1.55,.06,M.wood,-1.4,2.2,-.8);signPlane(.42,1.45,r,-1.4,2.2,-.76,0)}
+ // 大門與圍牆
+ for(const s of [-1,1]){B(.6,2.3,.6,M.brick,s*1.8,1.15,8,{col:true});B(4.8,1.4,.3,M.pl[1],s*4.5,.7,8,{col:true});B(.3,1.4,9,M.pl[1],s*6.75,.7,3.5,{col:true})}
+ // 爆竹的火花
+ W.SPARK=[];const spm=[new THREE.MeshBasicMaterial({color:0xff5030}),new THREE.MeshBasicMaterial({color:0xffd050})];for(let i=0;i<70;i++){const m=new THREE.Mesh(new THREE.SphereGeometry(.035,5,4),spm[i%2]);m.visible=false;W.root.add(m);W.SPARK.push({m,v:V3(),life:0})}
+ W.fire=0;W.fireT=0;
+ W.JUDGE=person(JUDGE_LOOK);W.JUDGE.g.position.set(0,.5,-10.3);
+ W.COP=person(COP_LOOK);W.CAN=person({...CAN_LOOK,hat:null});W.GCOP=person(COP_LOOK);W.WIFE=person(WIFE_LOOK);
+ W.BOY=person({top:0xe8e4d8,bot:0x3a3a44,short:true,wide:true,cuff:0xe8e4d8,kid:true,sc:.74,skin:0xc8946a,btn:0x8a8a8a});
+ bake(ctx.stat,W.root);
+ W.who={can:W.CAN,cop:W.COP,judge:W.JUDGE,boy:W.BOY,wife:W.WIFE,gcop:W.GCOP};
+ W.base=()=>{W.fire=0;W.people.forEach(p=>{p.walk=null;p.act=null;p.g.visible=true});setPose(W.CAN,null);setPose(W.WIFE,null)};
+ W.tick=(dt)=>{if(W.fire>0){W.fire-=dt;W.fireT-=dt;if(W.fireT<=0){W.fireT=.1+Math.random()*.15;const x=(Math.random()-.5)*12,z=9.5+Math.random()*4;let n=0;for(const sp of W.SPARK){if(sp.life>0)continue;sp.life=.4+Math.random()*.4;sp.m.position.set(x,.3,z);sp.v.set((Math.random()-.5)*3,1+Math.random()*2.5,(Math.random()-.5)*3);if(++n>6)break}}}
+  for(const sp of W.SPARK){if(sp.life>0){sp.life-=dt;sp.v.y-=7*dt;sp.m.position.addScaledVector(sp.v,dt);sp.m.visible=sp.life>0&&sp.m.position.y>0}else sp.m.visible=false}};
+ return W;
+}
+const JUDGE_LOOK={top:0x3a3c44,bot:0x3a3c44,longSleeve:true,shoes:0x111111,collar:0xeeeeee,btn:0x22222a,nbtn:3,mous:true,glasses:true,belly:true,skin:0xd6a882,sc:.97};
+const CAN_LOOK={top:0x34507a,bot:0x2c2a2a,seam:0x1d2d42,short:true,wide:true,hem:true,cuff:0xd8ccb0,patch:0xb8a888,knot:true,btn:0x8a96a8,hat:'douli',skin:0xb98258};
+const COP_LOOK={top:0x1e2230,bot:0x1e2230,btn:'gold',seam:0x14161e,longSleeve:true,shoes:0x111111,puttee:true,belt:true,pocket:true,epaul:true,collar:0x1e2230,hat:'cap',sword:true,angry:true,mous:true,skin:0xd2a47c,sc:.98};
+const WIFE_LOOK={top:0x7a9ab8,bot:0x2a2a30,dajin:true,bun:true,pin:0x9a7a4a,skin:0xc8946a,sc:.86};
+
+// ===== 動畫 =====
+function animPerson(p,dt){
+ p.t+=dt;
+ if(p.walk){const w=p.walk,dx=w.x-p.g.position.x,dz=w.z-p.g.position.z,d=Math.hypot(dx,dz);
+  if(d<.05){p.g.position.x=w.x;p.g.position.z=w.z;p.walk=null;if(w.face!=null)p.g.rotation.y=w.face;w.cb&&w.cb()}
+  else if(p.lane&&Math.hypot(PL.x-p.g.position.x,PL.z-p.g.position.z)<1.3&&((PL.x-p.g.position.x)*dx+(PL.z-p.g.position.z)*dz)>0){p.ph=0}
+  else{const st=Math.min(d,w.sp*dt);p.g.position.x+=dx/d*st;p.g.position.z+=dz/d*st;const ty=Math.atan2(dx,dz);let df=ty-p.g.rotation.y;df=Math.atan2(Math.sin(df),Math.cos(df));p.g.rotation.y+=df*Math.min(1,dt*8);p.ph=(p.ph||0)+dt*w.sp*4.2}}
+ if(p.pose){p.head.rotation.y=Math.sin(p.t*.4)*.3;if(p.talkT>0){p.talkT-=dt;p.head.rotation.x=Math.sin(p.talkT*14)*.06}return}
+ const mv=!!p.walk,sw=mv?Math.sin(p.ph)*.55:0;
+ p.legs[0].rotation.x=lerp(p.legs[0].rotation.x,sw,.3);p.legs[1].rotation.x=lerp(p.legs[1].rotation.x,-sw,.3);
+ if(!p.act){p.arms[0].sh.rotation.x=lerp(p.arms[0].sh.rotation.x,-sw*.7,.3);p.arms[1].sh.rotation.x=lerp(p.arms[1].sh.rotation.x,sw*.7,.3);p.arms.forEach(a=>{a.el.rotation.x=lerp(a.el.rotation.x,mv?-.25:-.08,.2)})}
+ else p.act(p,dt);
+ p.body.position.y=mv?Math.abs(Math.cos(p.ph))*.025:Math.sin(p.t*1.6)*.004;
+ if(p.talkT>0){p.talkT-=dt;p.head.rotation.x=Math.sin(p.talkT*14)*.06}else p.head.rotation.x=lerp(p.head.rotation.x,0,.1);
+ if(p.hold){const h=p.arms[1].hand;h.updateWorldMatrix(true,false);const v=V3();h.getWorldPosition(v);p.hold.parent.worldToLocal(v);p.hold.position.copy(v);p.hold.position.y+=p.holdDy||0;p.hold.rotation.set(0,p.g.rotation.y-Math.PI/2,0)}
+}
+const pose=(ang,el)=>(p)=>{p.arms[1].sh.rotation.x=lerp(p.arms[1].sh.rotation.x,ang,.15);p.arms[1].el.rotation.x=lerp(p.arms[1].el.rotation.x,el,.15)};
+const FLY=[];
+function walkTo(p,x,z,sp,face){return new Promise(r=>{p.walk={x,z,sp,face,cb:r}})}
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+
+// 金色秤錘標記
+const MARK=new THREE.Group();{const pts=[[0,0],[.06,0],[.09,.05],[.07,.14],[.03,.17],[.012,.2],[.012,.24],[0,.24]].map(([x,y])=>new THREE.Vector2(x,y));const m=new THREE.Mesh(new THREE.LatheGeometry(pts,18),new THREE.MeshStandardMaterial({color:0xd8b04a,emissive:0x8a6a1a,emissiveIntensity:.8,metalness:.7,roughness:.3}));MARK.add(m);
+ const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d');const gr=g.createRadialGradient(64,64,0,64,64,64);gr.addColorStop(0,'rgba(255,220,120,.85)');gr.addColorStop(1,'rgba(255,200,80,0)');g.fillStyle=gr;g.fillRect(0,0,128,128);const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthWrite:false,blending:THREE.AdditiveBlending,fog:false}));sp.scale.setScalar(.9);sp.position.y=.12;MARK.add(sp)}
+S.add(MARK);MARK.visible=false;MARK.scale.setScalar(1.4);
+
+// ===== 操作 =====
+const PL={x:0,z:0,yaw:0,pitch:-.03,bob:0};
+const KEY={};
+addEventListener('keydown',e=>{KEY[e.key.toLowerCase()]=true;if(e.key===' '||e.key==='Enter'){if(mode==='say'){e.preventDefault();advance()}else if(mode==='free'&&near){e.preventDefault();trigger()}}if(e.key.toLowerCase()==='e'&&mode==='free'&&near)trigger()});
+addEventListener('keyup',e=>{KEY[e.key.toLowerCase()]=false});
+let drag=null;
+cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,m:0,id:e.pointerId};cv.setPointerCapture(e.pointerId);if(e.pointerType==='touch')$('#joy').classList.remove('hide')});
+cv.addEventListener('pointermove',e=>{if(!drag||drag.id!==e.pointerId)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.m+=Math.abs(dx)+Math.abs(dy);drag.x=e.clientX;drag.y=e.clientY;if(mode==='free'){PL.yaw-=dx*.0045;PL.pitch=clamp(PL.pitch-dy*.0035,-1.1,1)}});
+cv.addEventListener('pointerup',e=>{if(drag&&drag.m<8)click(e);drag=null});
+const JOY={x:0,y:0};{const j=$('#joy'),kn=$('#knob');let id=null;const set=e=>{const r=j.getBoundingClientRect();let x=(e.clientX-r.left-65)/50,y=(e.clientY-r.top-65)/50;const l=Math.hypot(x,y);if(l>1){x/=l;y/=l}JOY.x=x;JOY.y=-y;kn.style.left=40+x*40+'px';kn.style.top=40+y*40+'px'};
+ j.addEventListener('pointerdown',e=>{id=e.pointerId;j.setPointerCapture(id);set(e)});j.addEventListener('pointermove',e=>{if(e.pointerId===id)set(e)});const end=()=>{id=null;JOY.x=JOY.y=0;kn.style.left=kn.style.top='40px'};j.addEventListener('pointerup',end);j.addEventListener('pointercancel',end)}
+if(matchMedia('(pointer:coarse)').matches)$('#joy').classList.remove('hide');
+const ray=new THREE.Raycaster();
+function click(e){if(mode!=='free'||!target)return;const r=cv.getBoundingClientRect();ray.setFromCamera({x:(e.clientX-r.left)/r.width*2-1,y:-(e.clientY-r.top)/r.height*2+1},cam);const hit=ray.intersectObjects(target.objs,true)[0];if(hit&&hit.distance<8)trigger()}
+function collide(){const R0=.32,b=W.bounds;PL.x=clamp(PL.x,b[0],b[1]);PL.z=clamp(PL.z,b[2],b[3]);
+ for(const c of W.COL){const nx=clamp(PL.x,c.x0,c.x1),nz=clamp(PL.z,c.z0,c.z1),dx=PL.x-nx,dz=PL.z-nz,d2=dx*dx+dz*dz;if(d2<R0*R0){if(d2>1e-8){const d=Math.sqrt(d2);PL.x=nx+dx/d*R0;PL.z=nz+dz/d*R0}else{const o=[[c.x0-R0-PL.x,0],[c.x1+R0-PL.x,0],[0,c.z0-R0-PL.z],[0,c.z1+R0-PL.z]].sort((a,b)=>Math.abs(a[0]+a[1])-Math.abs(b[0]+b[1]))[0];PL.x+=o[0];PL.z+=o[1]}}}
+ for(const p of W.people){if(!p.g.visible)continue;const dx=PL.x-p.g.position.x,dz=PL.z-p.g.position.z,d=Math.hypot(dx,dz);if(d<.6&&d>1e-4){PL.x=p.g.position.x+dx/d*.6;PL.z=p.g.position.z+dz/d*.6}}}
+
+// ===== 課文 =====
+// 把一段課文切成好讀的幾頁；marks 裡的句子會畫底色
+function para(n,o={}){let t=TXT[n];for(const m of o.mark||[]){if(!t.includes(m))console.warn('mark not found',n,m);t=t.replace(m,'〔'+m+'〕')}
+ if(o.from)t=t.slice(t.indexOf(o.from));if(o.to)t=t.slice(0,t.indexOf(o.to)+o.to.length);
+ const sen=t.match(/[^。？！]+[。？！]+」?|[^。？！]+$/g)||[t];const pages=[];let cur='';
+ for(const s of sen){if(cur&&(cur+s).replace(/[〔〕]/g,'').length>(o.len||92)){pages.push(cur);cur=''}cur+=s}if(cur)pages.push(cur);
+ return pages.map((p,i)=>({type:'say',narr:p,who:o.who,act:i===0?o.act:null,cam:o.cam}))}
+
+const PORT={can:['秦得參','can'],cop:['巡警','cop'],mom:['得參的母親','mom'],wife:['得參的妻子','wife'],old:['村裡的老人','old'],elder:['較有年紀的閒人','old'],judge:['法官','judge'],boy:['小使','boy'],gcop:['衙門口的巡警','cop'],nb:['鄰居','nb'],lord:['業主',null]};
+
+// ===== 關卡 =====
+const LEVELS=[
+{id:1,no:'第一關',name:'威麗村',seal:'村',world:'village',range:'得參的身世',music:'calm',
+ light:{hemi:[0xeef0e8,0x8a7a56,1.2],sun:[0xfff2dc,1.75,[10,22,8]],fog:[0xd6dccb,22,90],sky:['#a9bfc8','#d6dccb','#d6dccb']},
+ setup(W){W.goods.visible=false;W.MOM.g.visible=true;W.KIDS.forEach(k=>k.g.visible=false);W.NB.g.visible=true;W.LORD.g.visible=true;W.OLD.g.visible=true;W.WIFE.g.visible=true;W.CAN.g.visible=false;W.WIFE.g.position.set(-5.5,0,-17);W.WIFE.g.rotation.y=Math.PI/2;setPose(W.WIFE,'bend');},
+ steps:W=>[
+ {type:'goto',task:'到村口的大榕樹下',prompt:'聽老人說說這個村子',at:W.TREE,objs:[W.OLD.g],cam:{pos:[.2,1.55,18.4],look:[3.4,1.25,21.6]}},
+ ...para(1,{mark:['勤儉、耐苦、平和、從順','窮苦的占多數']}),
+ {type:'multi',tag:'擷取訊息',q:'作者怎樣形容威麗村的農民？選出全部正確的。',src:'鎮南威麗村裡，住的人家，大都是勤儉、耐苦、平和、從順的農民。',
+  o:[['勤儉',1],['耐苦',1],['平和',1],['從順',1],['精明',0],['好鬥',0],['富足',0]],h:'第一句就有，一共四個詞。',ex:'四個詞都是好品德。這樣的人卻「窮苦的占多數」，問題顯然不在他們身上。'},
+ {type:'quiz',tag:'擷取訊息',q:'村裡哪兩種人不在「窮苦」之列？',
+  o:['包辦官業的勢豪、從事公職的下級官吏','種田的農民、做工的勞工','讀書人和做生意的人','業主和佃農'],h:'看第二句：「村中除了……，其餘都是窮苦的占多數。」',ex:'不窮的兩種人都和「官」有關。作者一開頭就把貧富和官府連在一起。'},
+ {type:'goto',task:'到業主的紅磚大厝',prompt:'看看這戶有錢人家',at:W.LORDGATE,objs:[W.LORD.g],cam:{pos:[1.4,1.75,3.2],look:[6.6,1.5,6.3]}},
+ ...para(3,{mark:['業主多得幾斗租穀，就轉租給別人','他母子倆的生路，怕要絕望了']}),
+ {type:'order',tag:'因果排序',q:'得參一家怎麼失去田地的？依先後排好：點卡片放進下面的順序。',
+  o:['得參出生前，父親就死了','只剩下可憐的妻兒，沒有人替業主種田','業主想多得幾斗租穀','田地轉租給別人','母子倆的生路，怕要絕望了'],h:'從「他父親早就死了」開始，一步一步往下找。',ex:'父親一死，業主只算租穀，田地馬上換人。窮人的生路就這樣斷了。'},
+ {type:'quiz',tag:'語氣',q:'「但是富家人，誰肯讓他們的利益，給人家享。若然就不能成其富戶了。」這兩句帶著什麼語氣？',
+  o:['諷刺富人只顧自己的利益','同情業主也有難處','稱讚業主很會理財','說明富戶的來歷'],h:'「誰肯……」是反問：意思是「沒有人肯」。',ex:'作者故意用富人的口氣替他們說話，讀起來就是諷刺。'},
+ {type:'goto',task:'到得參家的竹圍',prompt:'看得參的母親在做什麼',at:V3(-3.6,0,-2.2),objs:[W.MOM.g],cam:{pos:[-1.6,1.5,-.6],look:[-4.6,.7,-2.4]}},
+ ...para(5,{mark:['把他母親亦只視作一種機器','又多挨些打罵']}),
+ ...para(7,{mark:['耐勞苦、會打算','織草鞋、蓄雞鴨、養豚','近於似人的生活']}),
+ {type:'sort',tag:'人物對照',q:'這兩段寫了母親和後父。把描寫放到對的人身上：先點詞卡，再點人物。',
+  bins:[['mom','母親'],['step','後父']],chips:[['耐勞苦、會打算','mom'],['織草鞋、蓄雞鴨、養豚','mom'],['遣得參去看牛、做長工','mom'],['把妻子只視作一種機器','step'],['很少能體恤前夫的兒子','step'],['已不大顧到家內','step']],
+  ex:'一個拚命撐起家，一個只把人當機器。得參的童年就靠母親一個人扛。'},
+ {type:'quiz',tag:'詞語',q:'「始能度那近於似人的生活」，意思最接近哪一個？',
+  o:['辛苦到這個地步，也只是勉強接近「人」該過的日子','終於過上了有錢人的生活','生活和別人家一模一樣','日子過得像神仙一樣自在'],h:'「近於」是接近，「似人」是像人。',ex:'連「像人」都還差一點。作者用這幾個字寫出這家人有多苦。'},
+ {type:'goto',task:'到甘蔗園邊的告示牌',prompt:'看看甘蔗園是誰的',at:W.SIGN,objs:[],cam:{pos:[0,1.6,-4.5],look:[3.6,1.5,-8]}},
+ ...para(9,{to:'等著做些散工。',mark:['會社就加上租聲向業主爭贌','得參就租不到田地','有同牛馬一樣']}),
+ {type:'order',tag:'因果排序',q:'為什麼得參租不到田？把這條「連鎖反應」排好。',
+  o:['製糖會社，糖的利益大','會社加上租聲，向業主爭贌','業主只顧自己有利益，田地多被會社贌去','有良心的業主，也要同會社一樣的租聲','得參租不到田地，只好等著做散工'],h:'從會社開始：它為什麼要搶田？搶了以後業主怎麼做？',ex:'會社出得起高租，業主就跟著漲。最底層的農民被一路擠出去。'},
+ {type:'quiz',tag:'擷取訊息',q:'母親為什麼不肯讓得參去做會社的勞工？',o:['做會社的勞工，「有同牛馬一樣」','會社的工錢太高，怕被人嫉妒','會社離家太遠','得參的氣力不夠'],h:'找「若做會社的勞工呢」後面那幾個字。',ex:'寧可等散工，也不讓兒子去當牛馬。這是母親守住的尊嚴。'},
+ {type:'goto',task:'到田裡找得參的妻子',prompt:'看她在田裡做活',at:V3(-3.4,0,-17),objs:[W.WIFE.g],cam:{pos:[-1.2,1.6,-15.2],look:[-5.4,.8,-17.2]}},
+ ...para(9,{from:'因他的氣力大',mark:['娶了一個種田的女兒','不讓一個男人']}),
+ ...para(11,{mark:['臉上已見時現著笑容','歸到天國去了']}),
+ {type:'order',tag:'時間軸',q:'把得參的成長排成時間軸。',
+  o:['九歲：去替人家看牛，做長工','十六歲：辭去長工，回家裡來','十八歲：娶了一個種田的女兒','二十一歲：母親得了一個男孫子','母親病臥幾天，歸到天國去了'],h:'課文裡的年紀：九歲、十六歲、十八歲、二十一歲。',ex:'母親撐了二十年，看到孫子出生、責任放下，才倒了下去。'},
+ {type:'goto',task:'到竹圍後面的墳前',prompt:'在母親的墳前站一會兒',at:W.GRAVE,objs:[],cam:{pos:[-2.6,1.55,-23.6],look:[-6.8,.5,-26]}},
+ ...para(13,{mark:['一併失去']}),
+ {type:'quiz',tag:'寫作手法',q:'「可憐的得參，他的幸福，已和他慈愛的母親，一併失去。」這一句單獨成為一段，作用是什麼？',
+  o:['凸顯母親過世對得參的打擊，也預告他往後的不幸','補充說明母親生病的原因','交代後父離開的時間','描寫得參家田地的大小'],h:'一句話自成一段，讀者的目光會停在哪裡？後面還會寫得參的什麼？',ex:'一句話單獨成段，像停頓的一拍。從這裡開始，得參的日子只會往下走。'},
+ {type:'end',next:'接下來，得參病倒了。第二關從這裡接下去。'},
+]},
+{id:2,no:'第二關',name:'金花與稱仔',seal:'花',world:'village',range:'病、年關、借稱仔',music:'sad',
+ light:{hemi:[0xe8d8c8,0x5a4a3a,.85],sun:[0xffb878,1.5,[-14,9,-6]],fog:[0xcbb79f,18,75],sky:['#7e8aa0','#d8b896','#cbb79f'],exp:1.0},
+ setup(W){W.goods.visible=false;W.MOM.g.visible=false;W.OLD.g.visible=false;W.LORD.g.visible=false;W.KIDS.forEach(k=>k.g.visible=true);W.NB.g.visible=true;
+  W.CAN.g.visible=true;W.CAN.g.position.set(-5.2,0,-3.4);W.CAN.g.rotation.y=Math.PI/2;setPose(W.CAN,'sit');
+  W.WIFE.g.visible=true;setPose(W.WIFE,null);W.WIFE.g.position.set(-4.4,0,-1.6);W.WIFE.g.rotation.y=Math.PI;},
+ steps:W=>[
+ {type:'goto',task:'回到得參家',prompt:'看看病中的得參',at:V3(-3.8,0,-3.4),objs:[W.CAN.g],cam:{pos:[-1.8,1.5,-4.8],look:[-5.2,.8,-3.2]}},
+ ...para(15,{mark:['伏下病根','三天的工作，還不夠吃一服藥','只礙不能工作']}),
+ ...para(17,{mark:['營養不良']}),
+ {type:'quiz',tag:'推論',q:'看一次西醫「花去兩塊多錢」，得參卻想「三天的工作，還不夠吃一服藥」。可以推知他一天的工錢大約是多少？',
+  o:['不到一圓','大約兩圓','大約三圓','超過五圓'],h:'三天的工錢加起來，還比兩塊多錢少。',ex:'三天賺不到兩圓多，一天不到一圓。一次看病，就吃掉好幾天的飯錢。'},
+ {type:'quiz',tag:'擷取訊息',q:'生病以後，得參最煩惱的是什麼？',o:['不能工作','肚子脹滿','西藥太貴','別人說閒話'],h:'找「在得參總不介意」那一句。',ex:'身體壞了他不在意，只怕不能做工。一家人的飯碗全在他身上。'},
+ {type:'goto',task:'走到竹籬門口',prompt:'年末了，得參在想什麼',at:V3(-2,0,-3),objs:[W.CAN.g],cam:{pos:[-2.2,1.5,-5.6],look:[-5.2,.9,-3.2]},act:()=>{setPose(W.CAN,null);W.CAN.g.position.set(-3.4,0,-3.2)}},
+ ...para(19,{mark:['尾衙','新春半個月的食糧','分外煩惱而恐惶']}),
+ {type:'quiz',tag:'推論',q:'尾衙到了，得參為什麼「分外煩惱而恐惶」？',
+  o:['一到新春萬事停辦，沒工可做，得先存好半個月的糧','他怕過年要還一大筆債','他擔心寒熱又發作','他不想跟後父一起過年'],h:'看「若一至新春……」那一句。',ex:'新春停工半個月。年關一到，窮人怕的是斷炊。'},
+ ...para(21,{mark:['不敢向人家告借','到外家走一遭']}),
+ ...para(23,{mark:['一根金花','押幾塊錢','帶了幾分危險']}),
+ {type:'order',tag:'事件排序',q:'得參的本錢從哪裡來？依先後排好。',
+  o:['聽說鎮上生菜的販路很好，想做這項生意','缺少本錢，又不敢向人家告借','妻子到外家走一遭','嫂子把唯一的裝飾品──一根金花──借給她','把金花拿到當舖，押幾塊錢，暫作資本'],h:'先有「想做生意」，再有「缺錢」，最後才是金花。',ex:'一根借來的金花，撐起整門生意。這根金花後面還會出現。'},
+ {type:'quiz',tag:'推論',q:'為什麼說這法子，在妻子「當得帶了幾分危險」？',o:['金花是嫂子的東西，萬一贖不回來，沒法交代','當舖晚上會關門','金花可能是假的','路上可能遇到壞人'],h:'金花是誰的？押在當舖裡，要怎樣才拿得回來？',ex:'借來的東西押出去，賺不回錢就贖不回，欠的是娘家的人情。'},
+ {type:'goto',task:'到隔壁鄰居家借稱仔',prompt:'跟鄰居借一桿稱仔',at:V3(-3.9,0,10),objs:[W.NB.g],cam:{pos:[-1.8,1.5,8.4],look:[-5.3,1.2,10]}},
+ ...para(25,{mark:['官廳的專利品','把一桿尚覺新新的借來','為慮萬一，就把新的稱仔借來'],len:96}),
+ {type:'multi',tag:'擷取訊息',q:'作者列出哪些管著日常生活的規則？選出全部課文裡有的。',src:'什麼通行取締、道路規則、飲食物規則、行旅法規、度量衡規紀，舉凡日常生活中的一舉一動，通在法的干涉、取締範圍中。',
+  o:[['通行取締',1],['道路規則',1],['飲食物規則',1],['行旅法規',1],['度量衡規紀',1],['戶籍規則',0],['學校規則',0]],h:'就在「什麼……」那一串裡，一共五項。',ex:'走路、吃東西、出門、秤東西，全都有人管。這就是巡警「搜索小民的細故」的本錢。'},
+ {type:'quiz',tag:'推論',q:'妻子為什麼特地借一桿「新新」的稱仔？',o:['為慮萬一，怕巡警挑舊秤的毛病','新的稱仔比較便宜','鄰居家只有新的','新的比較好看'],h:'看最後一句：「她妻子為慮萬一……」',ex:'連借秤都得先想到巡警。記住這桿新秤，後面用得到。'},
+ {type:'goto',task:'回家看看買了什麼',prompt:'看桌上的年貨',at:V3(-2.9,0,-5.2),objs:[W.CAN.g],cam:{pos:[-1.6,1.6,-6.8],look:[-4.2,.9,-4.6]},act:()=>{W.goods.visible=true;W.CAN.g.position.set(-4.4,0,-4.2);W.CAN.g.rotation.y=Math.PI/2+.5}},
+ ...para(27,{mark:['預備新春的糧食','換一換氣像','觀音畫像','門聯','金銀紙，香燭','炊一灶年糕','待贖取那金花','今天才廿五'],len:96}),
+ ...para(29,{mark:['做父親的義務','剪了幾尺花布','一總花掉']}),
+ {type:'order',tag:'事件排序',q:'生意好起來以後，得參依序把錢花在哪裡？',
+  o:['糴些米，預備新春的糧食','觀音畫像、門聯、金銀紙、香燭','糖米，炊一灶年糕','幾尺花布，給孩子們'],h:'米、拜拜的東西、年糕、花布：課文的順序就是這樣。',ex:'先顧吃，再顧神明和來年的運氣，最後顧孩子。就是沒有先顧那根金花。'},
+ {type:'quiz',tag:'擷取訊息',q:'妻子勸他先贖金花，得參怎麼回答？',o:['今天才廿五，那筆錢不怕賺不來，本錢也還在','金花不值錢，不必急著贖','當舖不收利息','嫂子說不用還'],h:'找得參回答的那一段話。',ex:'他算得很清楚，只是沒算到「萬一」。'},
+ {type:'end',next:'第三關接著讀：這一天近午，一下級巡警，巡視到他擔前……'},
+]},
+{id:3,no:'第三關',name:'一桿稱仔',seal:'稱',world:'market',range:'巡警來買菜',music:null,
+ light:{hemi:[0xe9eef0,0x8a7656,1.15],sun:[0xfff0d8,1.7,[9,20,7]],fog:[0xd9d3c3,16,62],sky:['#aeb8ba','#d4d1c4','#d9d3c3']},
+ setup(W){W.reset()},
+ steps:W=>{const CAN=W.CAN,COP=W.COP;return[
+ {type:'goto',task:'到市場找得參的菜擔',prompt:'端詳得參的菜擔',at:W.STALL,objs:[CAN.g],frame:true,tense:true},
+ {type:'say',narr:'這一天近午，一下級巡警，巡視到他擔前，〔目光注視到他擔上的生菜〕，他就殷勤地問：',act:async f=>{COP.walk=null;if(f){COP.g.position.set(-1.6,0,-6.4);COP.g.rotation.y=-Math.PI/2}else{busy=true;await walkTo(COP,.2,-9,1.6);await walkTo(COP,-1.6,-6.4,1.4,-Math.PI/2);busy=false}}},
+ {type:'say',who:'can',t:'「大人，要什麼不要？」'},
+ {type:'say',who:'cop',t:'「汝的貨色比較新鮮。」'},
+ {type:'say',who:'can',t:'「是，城市的人，總比鄉下人享用，不是上等東西，是不合脾胃。」'},
+ {type:'say',who:'cop',t:'「花菜賣多少錢？」'},
+ {type:'say',who:'can',t:'「大人要的，〔不用問價〕，肯要我的東西，就算運氣好。」',after:'他就擇幾莖好的，用稻草貫著，恭敬地獻給他。',act:()=>{CAN.act=pose(-1.1,-.4);CAN.hold=W.BUNDLE;CAN.holdDy=-.05;W.BUNDLE.visible=true}},
+ {type:'quiz',tag:'擷取訊息',q:'得參說「大人要的，不用問價」，意思是什麼？',src:'「大人要的，不用問價，肯要我的東西，就算運氣好。」',
+  o:['願意把花菜送給巡警，不收錢','花菜很便宜，不值得問價錢','他忘了今天花菜的價錢','他想讓巡警自己開一個價'],h:'看後半句：「肯要我的東西，就算運氣好」──巡警肯「要」，得參就覺得幸運了。',ex:'得參照當時小販的「規紀」，準備把花菜白送給巡警。'},
+ {type:'say',who:'cop',t:'「不，〔稱稱看〕！」',post:'巡警幾番推辭著說。'},
+ {type:'say',narr:'誠實的參，亦就掛上稱仔稱一稱，說：',act:()=>{CAN.act=pose(-1.5,-.5);W.BUNDLE.visible=false;CAN.hold=W.SCALE;CAN.holdDy=.02}},
+ {type:'scale'},
+ {type:'say',who:'can',t:'「大人，真客氣啦！才〔一斤十四兩〕。」'},
+ {type:'quiz',tag:'推論',q:'秤桿明明平在「兩斤」，得參卻說「才一斤十四兩」。他少說了多少？',o:['兩兩','四兩','六兩','十四兩'],h:'舊秤一斤是十六兩，兩斤就是三十二兩。',ex:'少算兩兩，等於給「大人」打了折扣。讀下去，看得參自己怎麼說。'},
+ {type:'say',narr:'本來，〔經過秤稱過，就算買賣〕，就是有錢的交關，不是白要，亦不能說是贈與。'},
+ {type:'say',who:'cop',t:'「不錯罷？」'},
+ {type:'say',who:'can',t:'「不錯，本有兩斤足，〔因是大人要的〕……」',post:'參說。'},
+ {type:'say',narr:'這句話是〔平常買賣的口吻〕，不是贈送的表示。'},
+ {type:'say',who:'cop',t:'「稱仔不好罷，兩斤就兩斤，何須打扣？」',post:'巡警〔變色〕地說。'},
+ {type:'quiz',tag:'推論',q:'巡警聽了得參的話，為什麼「變色」？',src:'本來，經過秤稱過，就算買賣，就是有錢的交關，不是白要，亦不能說是贈與。',
+  o:['秤過、報了斤兩就成了買賣，他得付錢，白拿不成了','他發現得參的稱仔真的不準','他嫌得參給的花菜太少','他不喜歡被得參稱作「大人」'],h:'回頭看旁白：一經過秤稱過，這件事就變成了什麼？',ex:'巡警要的是白送。得參用買賣的口吻報了斤兩，巡警就轉過頭來挑稱仔的毛病。'},
+ {type:'say',who:'can',t:'「不，還新新呢！」',post:'參〔泰然〕地回答。'},
+ {type:'say',who:'cop',t:'「拿過來！」',post:'巡警〔赫怒〕了。'},
+ {type:'say',who:'can',t:'「稱花還很明瞭。」',post:'參〔從容〕地捧過去說。',act:async f=>{CAN.act=pose(-1.2,-.3);if(!f)await wait(500);CAN.hold=null;COP.hold=W.SCALE;COP.holdDy=0;COP.act=pose(-1.3,-.6);CAN.act=null}},
+ {type:'say',narr:'巡警接在手裡，約略考察一下說：'},
+ {type:'say',who:'cop',t:'「不堪用了，拿到警署去！」'},
+ {type:'say',who:'can',t:'「什麼緣故？修理不可嗎？」',post:'參說。'},
+ {type:'say',who:'cop',t:'「不去嗎？」',post:'巡警〔怒叱〕著。'},
+ {type:'say',who:'cop',t:'「不去？〔畜生〕！」'},
+ {type:'say',narr:'撲的一聲，巡警把〔稱仔打斷擲棄〕，隨抽出胸前的小帳子，把參的名姓、住處，記下。',act:async f=>{COP.hold=null;W.SCALE.visible=false;const rodM=W.SCALE.userData.rod.material;for(const s of [-1,1]){const h=new THREE.Mesh(new THREE.CylinderGeometry(.01,.01,.3,8),rodM);h.castShadow=true;const v=V3();COP.arms[1].hand.getWorldPosition(v);h.position.copy(v);h.rotation.z=Math.PI/2;W.root.add(h);FLY.push({m:h,v:V3(s*1.2-.6,f?0:1.6,s*.9),w:s*9})}
+  if(f){FLY.forEach(x=>{x.m.position.y=.02;x.m.position.x-=.8})}else{snd('break',.7);shake=.35;COP.act=pose(.4,0)}
+  COP.hold=W.BOOK;W.BOOK.visible=true;COP.holdDy=.1;if(!f){busy=true;await wait(500);COP.act=pose(-1.1,-1.2);await wait(900);busy=false}}},
+ {type:'say',narr:'〔氣憤憤〕地，回警署去。',act:f=>{W.BOOK.visible=false;COP.hold=null;COP.act=null;if(f)COP.g.position.set(1,0,-25);else walkTo(COP,1,-25,1.5)}},
+ {type:'sort',tag:'人物對照',q:'這一段寫兩個人的神情。把詞卡放到對的人身上：先點詞卡，再點人物。',
+  bins:[['can','得參'],['cop','巡警']],chips:[['殷勤','can'],['泰然','can'],['從容','can'],['變色','cop'],['赫怒','cop'],['怒叱','cop'],['氣憤憤','cop']],
+  ex:'得參一路殷勤、泰然、從容，巡警卻越來越怒。兩人擺在一起，讀者自然看得出是誰不講理。'},
+ {type:'say',narr:'參突遭這意外的羞辱，空抱著滿腹的憤恨，在擔邊〔失神地站著〕。等巡警去遠了，纔有幾個閑人，近他身邊來。',act:async f=>{CAN.act=null;const B=W.BYS,pos=[[-1.75,-5.7,-Math.PI/2-.5],[-1.5,-7.5,-Math.PI/2+.5],[-1.1,-6.5,-Math.PI/2]];B.forEach((p,i)=>{p.g.visible=true;if(f){p.g.position.set(pos[i][0],0,pos[i][1]);p.g.rotation.y=pos[i][2]}else{p.g.position.set(1.2+i*.4,0,-12-i);walkTo(p,pos[i][0],pos[i][1],1.3,pos[i][2])}});if(!f){busy=true;await wait(2200);busy=false}}},
+ {type:'say',who:'elder',narr:'一個較有年紀的說：',t:'「該死的東西，到市上來，只這〔規紀〕亦就不懂？要做什麼生意？汝說幾斤幾兩，難道他的錢汝敢拿嗎？」'},
+ {type:'say',who:'can',t:'「難道我們的東西，該白送給他的嗎？」',post:'參〔不平〕地回答。'},
+ {type:'say',who:'elder',t:'「唉！汝不曉得他的厲害，汝還未嘗到他，〔青草膏的滋味〕。」',post:'那有年紀的〔嘲笑〕地說。'},
+ {type:'say',who:'can',t:'「什麼？〔做官的就可任意凌辱人民嗎〕？」',post:'參說。'},
+ {type:'say',narr:'「〔硬漢〕！」有人說。眾人議論一回、批評一回，亦就散去。',act:f=>{W.BYS.forEach((p,i)=>{if(f){p.g.visible=false}else walkTo(p,1.6+i*.4,-18-i*2,1.1).then(()=>p.g.visible=false)})}},
+ {type:'quiz',tag:'推論',q:'老人說的「規紀」，指的是什麼？',src:'「汝說幾斤幾兩，難道他的錢汝敢拿嗎？」',o:['巡警要的東西不能跟他算錢，只能白送','市場要繳的攤位費','秤要每年送去檢查','做生意要先拜碼頭'],h:'看老人的下一句：「難道他的錢汝敢拿嗎？」',ex:'市場上人人都懂的潛規則：巡警要，就得送。得參偏偏用了買賣的口吻。'},
+ {type:'quiz',tag:'推論',q:'「汝還未嘗到他，青草膏的滋味」，老人在警告得參什麼？',o:['再頂撞下去，會被巡警打得要敷青草藥','巡警會請他吃青草膏','青草膏很苦，不要買','巡警家裡在賣青草膏'],h:'青草膏是拿來敷傷口的草藥。誰會讓他「嘗到」？',ex:'用一個生活裡的東西，說出挨打的下場。老人是在嘲笑，也是在勸他認命。'},
+ {type:'quiz',tag:'寫作手法',q:'作者安排這段閒人的對話，用意是什麼？',o:['寫出一般百姓對巡警的畏懼與認命，襯托得參的不平','說明市場上的生意很好','交代巡警叫什麼名字','讓得參學會做生意的規矩'],h:'閒人和得參，對同一件事的態度一樣嗎？',ex:'眾人只會議論、批評，然後散去。只有得參問出「做官的就可任意凌辱人民嗎？」，所以被叫「硬漢」。'},
+ {type:'end',next:'第四關接著讀：得參回到家裡，夜飯前吃不下……'},
+ ]}},
+{id:4,no:'第四關',name:'除夕的衙門',seal:'衙',world:'village',range:'官符、即決',music:'sad',
+ light:{hemi:[0x4a5a80,0x1a1a20,.55],sun:[0x9ab0e0,.55,[-8,20,6]],fog:[0x1c2230,8,48],sky:['#0b1020','#1c2438','#1c2230'],exp:1.15},
+ setup(W){W.lamp(true);W.walkers.forEach(p=>p.g.visible=false);W.goods.visible=true;W.MOM.g.visible=false;W.OLD.g.visible=false;W.LORD.g.visible=false;W.KIDS.forEach(k=>k.g.visible=false);W.NB.g.visible=false;
+  W.CAN.g.visible=true;W.CAN.g.position.set(-4.3,0,-3.1);W.CAN.g.rotation.y=Math.PI/2+.3;W.WIFE.g.visible=true;W.WIFE.g.position.set(-3.6,0,-2.3);W.WIFE.g.rotation.y=-Math.PI/2-.6},
+ steps:(W,wd)=>{const Mk=wd('market'),C=wd('court');return[
+ {type:'goto',task:'回到得參家',prompt:'看看回家的得參',at:V3(-2.4,0,-3),objs:[W.CAN.g],cam:{pos:[-1.6,1.55,-4.9],look:[-4,1.1,-2.7]}},
+ ...para(57,{mark:['夜飯前吃不下','一句話不說']}),
+ ...para(59,{who:'wife',mark:['買一桿新的還給人家','贖取那金花','官符','出運']}),
+ {type:'quiz',tag:'擷取訊息',q:'妻子打算怎麼用這幾天賺的錢？',o:['買一桿新的稱仔還給鄰居，剩下的贖回金花','全部拿去繳罰款','再去多批一些菜來賣','買更多年貨'],h:'看妻子說的第一句話。',ex:'先還人家的秤，再贖嫂子的金花。妻子心裡記掛的都是欠別人的東西。'},
+ {type:'quiz',tag:'推論',q:'妻子說「怕運裡帶有官符」，她怎麼看待白天發生的事？',o:['當成今年運氣不好，盼明年就能出運','認為巡警做錯了，要去告他','怪得參不懂市場的規紀','覺得是鄰居的稱仔有問題'],h:'「官符」「出運」都是說命運的詞。',ex:'流年犯「官符」，就是會惹上官司。百姓遇到不公，只能說成是命，等它過去。'},
+ {type:'scene',world:'market',light:{hemi:[0xb8c4d8,0x5a5048,.9],sun:[0xffc9a0,1.1,[14,8,10]],fog:[0xb8bcc4,12,50],sky:['#6a7a98','#c8b8b0','#b8bcc4']},start:{x:1.4,z:6,yaw:0},
+  setup(M){M.reset();M.SCALE.visible=false;M.COP.g.position.set(1.4,0,-26)}},
+ {type:'goto',task:'除夕前一天的清晨，到市場找得參',prompt:'看得參做最後一天的生意',at:Mk.STALL,objs:[Mk.CAN.g],frame:true},
+ ...para(61,{mark:['只剩得一天的生意','安坐不來','「年華垂盡，人生頃刻」的悵惘']}),
+ ...para(63,{mark:['要回去圍爐','參又遇到那巡警'],act:async f=>{const P=Mk.COP;P.walk=null;if(f){P.g.position.set(-1.6,0,-6.4);P.g.rotation.y=-Math.PI/2}else{busy=true;await walkTo(P,.2,-9,1.8);await walkTo(P,-1.6,-6.4,1.4,-Math.PI/2);busy=false;music('tense',.3)}}}),
+ {type:'say',who:'cop',t:'「〔畜生〕，昨天跑那兒去？」',post:'巡警說。'},
+ {type:'say',who:'can',t:'「什麼？〔怎得隨便罵人〕？」',post:'參回說。'},
+ {type:'say',who:'cop',t:'「〔畜生〕，到衙門去！」',post:'巡警說。'},
+ {type:'say',who:'can',t:'「去就去呢，什麼畜生？」',post:'參說。'},
+ {type:'say',narr:'巡警瞪他一眼便帶他上衙門去。',act:f=>{const P=Mk.COP,N=Mk.CAN;if(f){P.g.visible=N.g.visible=false}else{walkTo(P,.6,-26,1.4);wait(500).then(()=>walkTo(N,.1,-25.5,1.4))}}},
+ {type:'quiz',tag:'人物變化',q:'這次巡警一開口就罵「畜生」，得參怎麼回應？和上一次比，有什麼不同？',o:['直接頂回去，不再像上次那樣泰然、從容地忍耐','跪下來求巡警原諒','轉身就逃','一句話也不敢說'],h:'看得參的兩句回話：「怎得隨便罵人？」「什麼畜生？」',ex:'被打斷稱仔之後，得參不再忍。這份硬氣，讓他直接被帶上衙門。'},
+ {type:'scene',world:'court',light:{hemi:[0xe8e4d8,0x6a5a48,1.05],sun:[0xfff0d8,1.1,[6,20,8]],fog:[0xcfc8b8,20,70],sky:['#a9b4bc','#d4d1c4','#cfc8b8']},start:{x:0,z:-1.6,yaw:0},
+  setup(C){C.WIFE.g.visible=false;C.BOY.g.visible=false;C.GCOP.g.position.set(-1.7,0,.9);C.GCOP.g.rotation.y=0;C.CAN.g.position.set(0,0,-6.6);C.CAN.g.rotation.y=Math.PI;setPose(C.CAN,'kneel');C.COP.g.position.set(1.7,0,-6.3);C.COP.g.rotation.y=Math.PI+.5}},
+ {type:'goto',task:'走進郡役所',prompt:'看法官怎麼審',at:V3(0,0,-4.6),objs:[C.JUDGE.g,C.CAN.g],cam:{pos:[-2.4,1.8,-4.6],look:[.2,1.45,-9.4]}},
+ {type:'say',who:'judge',t:'「汝秦得參嗎？」',post:'法官在座上問。'},
+ {type:'say',who:'can',t:'「是，小人，是。」',post:'參〔跪在地上〕回答說。'},
+ {type:'say',who:'judge',t:'「汝曾犯過罪嗎？」'},
+ {type:'say',who:'can',t:'「小人生來將三十歲了，〔曾未犯過一次法〕。」'},
+ {type:'say',who:'judge',t:'「以前不管他，這回違犯著〔度量衡規則〕。」'},
+ {type:'say',who:'can',t:'「唉！〔冤枉〕啊！」'},
+ {type:'say',who:'judge',t:'「什麼？沒有這樣事嗎？」'},
+ {type:'say',who:'can',t:'「這事是冤枉的啊！」'},
+ {type:'say',who:'judge',t:'「但是，〔巡警的報告，總沒有錯〕啊！」'},
+ {type:'quiz',tag:'推論',q:'法官憑什麼認定得參有罪？',o:['「巡警的報告，總沒有錯」','被打斷的稱仔被拿來當證物','有好幾個證人作證','得參自己承認了'],h:'得參喊冤之後，法官回了哪一句？',ex:'沒有證據，也不聽辯解。巡警說有罪，就是有罪。'},
+ {type:'say',who:'can',t:'「實在冤枉啊！」'},
+ {type:'say',who:'judge',t:'「既然違犯了，總不能輕恕，只科罰汝三塊錢，就算是〔格外恩典〕。」'},
+ {type:'say',who:'can',t:'「可是，沒有錢，」'},
+ {type:'say',who:'judge',t:'「沒有錢，就〔坐監三天〕，有沒有？」'},
+ {type:'say',who:'can',t:'「沒有錢！」',post:'參說，在他心裡的打算：〔新春的閒時節，監禁三天，是不關係什麼，還是三塊錢的用處大〕，所以他就甘心去受監禁。'},
+ {type:'quiz',tag:'語氣',q:'「只科罰汝三塊錢，就算是格外恩典。」這句話透露出什麼？',o:['明明是冤案，還要人感恩，顯出官員的傲慢','法官真心同情得參','三塊錢對得參來說很便宜','法官想私下幫得參'],h:'「恩典」是上對下的施捨。得參有沒有做錯事？',ex:'冤枉人的罰款，被說成「恩典」。反話裡藏著作者的諷刺。'},
+ {type:'quiz',tag:'擷取訊息',q:'得參為什麼甘心去坐監三天？',o:['新春的閒時節坐三天不要緊，三塊錢的用處比較大','他想用坐監來抗議','他怕妻子知道被罰錢','監獄裡過年有飯吃'],h:'看最後一句「在他心裡的打算」。',ex:'三塊錢是一家人過年的錢，也是贖金花的錢。他寧可拿自己去換。'},
+ {type:'order',tag:'事件排序',q:'把這場審判的經過排好。',o:['法官問：「汝秦得參嗎？」','法官問他有沒有犯過罪','法官說他違犯度量衡規則','得參一再喊冤','法官說巡警的報告總沒有錯','科罰三塊錢，沒錢就坐監三天'],h:'從問名字開始，到判罰結束。',ex:'問名字、問前科、定罪、判罰，前後幾句話就結束了。喊冤沒有改變任何事。'},
+ {type:'end',next:'第五關接著讀：參的妻子，本想洗完了衣裳，纔到當舖裡去，贖取那根金花……'},
+ ]}},
+{id:5,no:'第五關',name:'辭年',seal:'年',world:'village',range:'贖金、圍爐、元旦',music:'sad',
+ light:{hemi:[0xdde2e0,0x7a6a50,1.0],sun:[0xf2ead8,1.2,[10,20,8]],fog:[0xc9ccc4,16,70],sky:['#9aa6ae','#ccd0c8','#c9ccc4']},
+ setup(W){W.goods.visible=true;W.MOM.g.visible=false;W.OLD.g.visible=false;W.LORD.g.visible=false;W.CAN.g.visible=false;W.KIDS.forEach(k=>k.g.visible=true);
+  W.WIFE.g.visible=true;W.WIFE.g.position.set(-4.6,0,-2.2);W.WIFE.g.rotation.y=Math.PI/2;setPose(W.WIFE,'cry');W.NB.g.visible=true;W.NB.g.position.set(-4.3,0,-3.2);W.NB.g.rotation.y=-.3},
+ steps:(W,wd)=>{const C=wd('court');return[
+ {type:'goto',task:'除夕早上，回到得參家',prompt:'看看得參的妻子',at:V3(-2.4,0,-2.4),objs:[W.WIFE.g],cam:{pos:[-1.5,1.5,-.6],look:[-4.4,.8,-2.2]}},
+ ...para(85,{mark:['有誰可央托，有誰能為她奔走','只有哭的一法','鄰右的勸慰、教導','帶著金花的價錢']}),
+ {type:'quiz',tag:'擷取訊息',q:'聽到凶消息，妻子為什麼一開始只能守在家裡哭？',o:['想不出有誰可以央托、替她奔走','她生病了走不動','她還不知道得參被抓','她要先把衣裳洗完'],h:'看「她想：在這時候……」那一句。',ex:'窮人家出了事，連個能求的人都沒有。最後還是鄰居教她該怎麼做。'},
+ {type:'scene',world:'court',light:{hemi:[0xdde2e0,0x7a6a50,1.0],sun:[0xf2ead8,1.25,[10,20,8]],fog:[0xc9ccc4,18,70],sky:['#9aa6ae','#ccd0c8','#c9ccc4']},start:{x:0,z:12.5,yaw:0},
+  setup(C){C.WIFE.g.position.set(0,0,4);C.WIFE.g.rotation.y=Math.PI;C.GCOP.g.position.set(-1.6,0,.9);C.GCOP.g.rotation.y=0;C.BOY.g.position.set(.6,0,-2.6);C.BOY.g.rotation.y=0;C.CAN.g.position.set(0,0,-4.5);C.CAN.g.rotation.y=0;C.COP.g.visible=false;C.CAN.g.visible=false}},
+ {type:'goto',task:'跟著妻子到郡役所',prompt:'看妻子走進衙門',at:V3(0,0,4),objs:[C.WIFE.g],cam:{pos:[3.4,1.6,6.6],look:[0,1.2,1]}},
+ ...para(87,{mark:['就怕到五分','「要做什麼」的一聲呼喝','嚇得倒退到門外去','童心還在，不會倚勢欺人','代繳進去'],act:async f=>{const Wf=C.WIFE,G=C.GCOP,Bo=C.BOY;if(f){Wf.g.position.set(0,0,2.2);Bo.g.position.set(.5,0,1.2);Bo.g.rotation.y=Math.PI;return}
+  busy=true;await walkTo(Wf,0,.9,.9);G.talkT=.8;G.g.rotation.y=-.6;snd('whistle',.25);await wait(500);await walkTo(Wf,0,2.4,1.6);Wf.g.rotation.y=Math.PI;await wait(400);await walkTo(Bo,.5,1.2,1.1,Math.PI);busy=false}}),
+ {type:'sort',tag:'人物對照',q:'衙門口的兩個人，對妻子的態度完全不同。把描寫放到對的人身上。',bins:[['gcop','巡警'],['boy','小使']],
+  chips:[['「要做什麼」的一聲呼喝','gcop'],['把她嚇得倒退到門外','gcop'],['十四來歲','boy'],['童心還在','boy'],['不會倚勢欺人','boy'],['誠懇地替她設法','boy']],
+  ex:'大人倚勢欺人，只有還沒長大的孩子保有善心。作者用一個小使，照出整個衙門的冷漠。'},
+ ...para(89,{act:async f=>{const N=C.CAN,Bo=C.BOY;N.g.visible=true;if(f){N.g.position.set(0,0,1.5);N.g.rotation.y=0;Bo.g.visible=false;return}busy=true;Bo.g.visible=false;await walkTo(N,0,1.5,1.0,0);busy=false}}),
+ {type:'say',who:'can',t:'「為什麼到這兒來？」',post:'參對著妻子問。'},
+ {type:'say',who:'wife',t:'「聽……說被拉進去！」',post:'她〔微咽著聲〕回答。'},
+ {type:'say',who:'can',t:'「〔不犯到什麼事，不至殺頭怕什麼〕。」',post:'參〔怏怏地〕說。'},
+ {type:'say',narr:'他們來到街上，市已經散了，處處聽到〔『辭年』的爆竹聲〕。',cam:{pos:[2.2,1.6,13.6],look:[0,1.1,9.4]},act:f=>{const N=C.CAN,Wf=C.WIFE;if(f){N.g.position.set(.4,0,10.4);Wf.g.position.set(-.4,0,10.5);N.g.rotation.y=Wf.g.rotation.y=0;return}C.fire=9;snd('firecracker',.45);setTimeout(()=>snd('firecracker',.35),1600);walkTo(N,.4,10.4,1.1,0);walkTo(Wf,-.4,10.5,1.1,0)}},
+ {type:'say',who:'can',t:'「金花取回未？」',post:'參問她妻子。'},
+ {type:'say',who:'wife',t:'「還未曾出門，就聽到這消息，我趕緊到衙門去，在那兒繳去三塊，現在還不夠。」',post:'妻子回答他說。'},
+ {type:'say',who:'can',t:'「唔！」',post:'參恍然地發出這一聲就拿出〔早上賺到的三塊錢〕，給他妻子說：'},
+ {type:'say',who:'can',t:'「我挑擔子回去，當舖怕要關閉了，快一點去，〔取出就回來罷〕。」'},
+ {type:'quiz',tag:'推論',q:'妻子繳掉三塊錢把得參保出來，得參又把早上賺的三塊錢交給她。這筆錢要拿去做什麼？',o:['趕在當舖關門前贖回金花','再去繳一次罰款','買過年的年貨','還鄰居的稱仔'],h:'得參先問了什麼？「金花取回未？」',ex:'妻子把贖金花的錢拿去繳了罰款；得參又把最後的錢交出來贖金花。他們守住的，是對嫂子的信用。'},
+ {type:'quiz',tag:'語氣',q:'「不犯到什麼事，不至殺頭怕什麼。」得參說這句話時，心裡是什麼感覺？',o:['悶悶不樂，嘴上逞強安慰妻子','很高興被放出來','覺得妻子不該來','害怕得說不出話'],h:'課文怎麼形容他說話的樣子？「怏怏地」。',ex:'嘴上說不怕，心裡卻悶著。這股悶氣，一路帶回了家。'},
+ {type:'scene',world:'village',light:{hemi:[0x4a5a80,0x1a1a20,.5],sun:[0x9ab0e0,.5,[-8,20,6]],fog:[0x1c2230,8,46],sky:['#0b1020','#1c2438','#1c2230'],exp:1.15},start:{x:0,z:4,yaw:.6},
+  setup(W){W.lamp(true);W.walkers.forEach(p=>p.g.visible=false);W.goods.visible=true;W.KIDS.forEach(k=>k.g.visible=false);W.NB.g.visible=false;W.MOM.g.visible=false;W.OLD.g.visible=false;W.LORD.g.visible=false;W.WIFE.g.visible=true;setPose(W.WIFE,null);W.WIFE.g.position.set(-5.8,0,-1.5);W.WIFE.g.rotation.y=Math.PI/2;W.CAN.g.visible=true;W.CAN.g.position.set(-3.7,0,-3);W.pace=true}},
+ {type:'goto',task:'除夕夜，圍過爐之後',prompt:'看看還沒睡的得參',at:V3(-1.9,0,-3),objs:[W.CAN.g],cam:{pos:[-1.3,1.6,-5.4],look:[-4,1.1,-2.6]}},
+ ...para(99,{mark:['不明瞭的悲哀','人不像個人，畜生，誰願意做','這是什麼世間','他母親死時，快樂的容貌','最後的覺悟']}),
+ {type:'quiz',tag:'前後呼應',q:'得參說「人不像個人，畜生，誰願意做」，這裡的「畜生」呼應了前面哪裡？',o:['巡警兩次罵他「畜生」','母親生前罵過他','法官判決時罵他','妻子跟他吵架'],h:'在市場上，是誰對得參說「畜生」？',ex:'被當成畜生對待，得參不願這樣活下去。一個詞，把前面的屈辱全都收了回來。'},
+ {type:'quiz',tag:'前後呼應',q:'得參「忽又回憶到他母親死時，快樂的容貌」。這和第一關讀到的哪一句相呼應？',o:['母親病臥幾天，「面上現著十分滿足、快樂的樣子歸到天國去了」','母親自己織草鞋、蓄雞鴨、養豚','母親為得參娶妻','母親遣他去替人家看牛'],h:'第一關裡，母親是怎樣離開的？',ex:'母親勞苦了一輩子，只有在離開時才露出快樂的樣子。得參想起的，正是這張臉。'},
+ {type:'scene',world:'dark',light:DARK,after:()=>snd('gong',.45)},
+ ...para(101,{mark:['什麼都沒有嗎？','只銀紙備辦在']}),
+ ...para(103,{mark:['一個夜巡的警吏，被殺在道上']}),
+ {type:'quiz',tag:'推論',q:'「只銀紙備辦在，別的什麼都沒有。」這句話暗示了什麼？',o:['得參已經過世，家裡只剩祭拜亡者的銀紙','家裡準備要拜神明','家裡的年貨被偷了','家裡賺了很多錢'],h:'銀紙是拜什麼用的？第二關得參買的是「金銀紙」。',ex:'作者不直接寫得參的死，只讓讀者聽見哭聲和這一句話。'},
+ {type:'quiz',tag:'寫作手法',q:'作者把兩件事「同時」寫出來：元旦得參家的哭聲，和夜巡的警吏被殺。這樣安排的用意是什麼？',o:['不直接說明，讓讀者自己把兩件事連起來','說明兩件事毫無關係','報導一則治安新聞','交代過年的熱鬧'],h:'「同時」兩個字，把哪兩件事放在一起？',ex:'結局留白。沒有寫誰做了什麼，讀者卻已經明白。'},
+ ...para(107,{mark:['凡強權行使的地上，總會發生']}),
+ {type:'quiz',tag:'主旨',q:'作者在後記說，這樣的事「不一定在未開的國裡，凡強權行使的地上，總會發生」。他想告訴讀者什麼？',o:['這不只是得參一個人的悲劇，強權壓迫的地方都可能發生','這件事只會發生在臺灣','這是一個編出來的故事','法國也有一樣的巡警'],h:'「凡……總會……」是在說個別的事，還是普遍的事？',ex:'得參的故事是一個例子。作者要讀者看見的，是強權底下所有被當作「畜生」的人。'},
+ {type:'end',last:true,next:'全文讀完了。'},
+ ]}},
+];
+
+// ===== 聲音 =====
+function snd(n,v=1,loop=false){try{const a=new Audio('../scales/audio/'+n+'.mp3');a.volume=v;a.loop=loop;a.play().catch(()=>{});return a}catch(e){}}
+let amb=null,ambName=null,mus=null;
+function fadeOut(a){if(!a)return;let t=a.volume;const iv=setInterval(()=>{t-=.03;if(t<=0){a.pause();clearInterval(iv)}else a.volume=t},60)}
+function music(n,v=.3){fadeOut(mus);mus=n?snd(n,v,true):null}
+function ambience(n){if(ambName===n)return;fadeOut(amb);ambName=n;amb=n?snd(n,.35,true):null}
+
+// ===== 流程 =====
+let mode='title',step=0,hp=100,target=null,near=false,busy=false,W=null,LVL=null,STEPS=[],shake=0,curGoto=null;
+const cine={pos:V3(),look:V3(),cur:V3()};
+const SAVE='scr-v2';
+const load=()=>{try{return JSON.parse(localStorage.getItem(SAVE))||{}}catch(e){return{}}};
+const store=d=>{try{localStorage.setItem(SAVE,JSON.stringify(d))}catch(e){}};
+function save(){const d=load();d.cur=d.cur||{};d.cur[LVL.id]={step,hp};store(d)}
+function setHP(v){hp=clamp(v,0,100);$('#hp i').style.width=hp+'%';$('#hpN').textContent='體力 '+hp}
+function toast(t){const e=$('#toast');e.textContent=t;e.style.opacity=1;clearTimeout(e._t);e._t=setTimeout(()=>e.style.opacity=0,1800)}
+function hurt(){setHP(hp-10);snd('slap',.4);if(hp<=0)setTimeout(()=>{openPanel(`<span class=tag>體力耗盡</span><h3>這一關要重來一次。</h3><p class=note>回到課文再讀一遍，答案都在裡面。</p><div class=go><button class=btn id=rr>重來</button></div>`);$('#rr').onclick=()=>begin(LVL,0,100)},600)}
+
+const WORLDS={};
+const BUILD={market:buildMarket,village:buildVillage,court:buildCourt,dark:()=>({key:'dark',root:new THREE.Group(),COL:[],people:[],walkers:[],bounds:[-1,1,-1,1],start:{x:0,z:0,yaw:0},amb:null,floor:()=>0,who:{}})};
+function getWorld(k){if(!WORLDS[k]){const w=BUILD[k]();WORLDS[k]=w;w.root.visible=false;S.add(w.root)}return WORLDS[k]}
+function useWorld(k){for(const w of Object.values(WORLDS))w.root.visible=false;W=getWorld(k);W.root.visible=true}
+const DARK={hemi:[0,0,0],sun:[0,0,[0,10,0]],fog:[0x000000,1,2],sky:['#000','#000','#000']};
+// 換場景：淡出、換世界、換光線、擺好人物、淡入
+async function applyScene(s,fast){const f=$('#fade');if(!fast){f.style.opacity=1;await wait(450)}
+ useWorld(s.world);setLight(s.light);W.base&&W.base();s.setup&&s.setup(W);const st=s.start||W.start;PL.x=st.x;PL.z=st.z;PL.yaw=st.yaw||0;PL.pitch=-.03;
+ if(s.world==='dark'){ambience(null);music(null)}else ambience(W.amb);
+ if(!fast){await wait(150);f.style.opacity=0}}
+
+function runStep(){
+ const s=STEPS[step];if(!s)return;
+ if(['goto','quiz','scale','sort','order','multi','scene'].includes(s.type))save();
+ if(s.type==='goto'){
+  if(mode!=='free'&&mode!=='title'){PL.x=cam.position.x;PL.z=cam.position.z;const d=cam.getWorldDirection(V3());PL.yaw=Math.atan2(-d.x,-d.z);PL.pitch=clamp(Math.asin(d.y),-.5,.3)}
+  mode='free';curGoto=s;target={pos:s.at,objs:s.objs};$('#taskS').textContent=s.task;$('#prompt').textContent='▶ '+s.prompt;MARK.visible=true;if(LVL.music)music(LVL.music,.25);else music(null);if(amb)amb.volume=.35;return}
+ MARK.visible=false;target=null;$('#prompt').classList.add('hide');
+ if(s.type==='say')return showSay(s);
+ if(s.type==='quiz')return showQuiz(s);
+ if(s.type==='scale')return showScale(s);
+ if(s.type==='sort')return showSort(s);
+ if(s.type==='order')return showOrder(s);
+ if(s.type==='multi')return showMulti(s);
+ if(s.type==='end')return finish(s);
+ if(s.type==='scene'){mode='scene';applyScene(s,false).then(()=>{s.after&&s.after(W);next()});return}
+}
+function next(){closePanel();step++;runStep()}
+function trigger(){if(mode!=='free')return;near=false;$('#prompt').classList.add('hide');const s=curGoto;mode='scene';
+ cine.pos.copy(cam.position);cine.cur.copy(cam.position).add(cam.getWorldDirection(V3()).multiplyScalar(3));
+ if(s.act)s.act();if(s.cam){cine.pos.set(...s.cam.pos);cine.look.set(...s.cam.look)}if(s.frame)frame(null);
+ if(s.tense){music('tense',.3);if(amb)amb.volume=.18}
+ $('#taskS').textContent='跟著讀';next()}
+function frame(who){if(W.key!=='market')return;const c=W.CAN.g.position,o=W.COP.g.position;const look=V3((c.x+o.x)/2,1.25,(c.z+o.z)/2);if(who&&W.who[who]){const p=W.who[who].g.position;look.lerp(V3(p.x,1.35,p.z),.35)}cine.look.copy(look);cine.pos.set(.6,1.6,-3.4)}
+function showSay(s){mode='say';const w=s.who&&PORT[s.who];
+ $('#dlg').classList.remove('hide');$('#dlgPic').style.display=w&&w[1]?'':'none';if(w&&w[1])$('#dlgPic').src='../scales/art/face/'+w[1]+'.webp';$('#dlgWho').textContent=w?w[0]:'';
+ $('#dlgNarr').innerHTML=fmt(s.narr||'');$('#dlgTxt').innerHTML=fmt(s.t||'');$('#dlgPost').innerHTML=fmt(s.post||'');$('#dlgTxt').style.display=s.t?'':'none';$('#dlgNarr').className=s.t?'':'big';
+ if(w&&W.who[s.who])W.who[s.who].talkT=.5;frame(s.who);if(s.cam){cine.pos.set(...s.cam.pos);cine.look.set(...s.cam.look)}
+ if(s.act)s.act(false);
+ if(s.after)s._a=1}
+function advance(){if(mode!=='say'||busy)return;const s=STEPS[step];if(s.after&&s._a===1){s._a=2;$('#dlgWho').textContent='';$('#dlgPost').innerHTML='';$('#dlgPic').style.display='none';$('#dlgTxt').style.display='none';$('#dlgNarr').innerHTML=fmt(s.after);$('#dlgNarr').className='big';return}$('#dlg').classList.add('hide');next()}
+$('#dlg').onclick=advance;$('#prompt').onclick=trigger;
+
+function openPanel(h){$('#pBox').innerHTML=h;$('#panel').classList.remove('hide');$('#pBox').scrollTop=0}
+function closePanel(){$('#panel').classList.add('hide')}
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function goBtn(fn){const g=$('#pBox .go');g.innerHTML='<button class=btn>繼續讀 ▶</button>';g.firstChild.onclick=fn||next}
+const head=s=>`<span class=tag>${s.tag}</span><h3>${fmt(s.q)}</h3>${s.src?`<div class=src>${fmt(s.src)}</div>`:''}`;
+function showQuiz(s){mode='task';const op=shuffle(s.o.map((t,i)=>({t,ok:i===0})));
+ openPanel(`${head(s)}<div class=opts>${op.map((o,i)=>`<button class=opt data-i=${i}>${o.t}</button>`).join('')}</div><p class=hint></p><div class=go></div>`);
+ const hint=$('#pBox .hint');
+ document.querySelectorAll('#pBox .opt').forEach(b=>b.onclick=()=>{const o=op[b.dataset.i];if(o.ok){b.classList.add('ok');document.querySelectorAll('#pBox .opt').forEach(x=>x.disabled=true);hint.className='hint ex';hint.innerHTML=fmt(s.ex);snd('chime',.5);goBtn()}else{b.classList.add('bad');b.disabled=true;hint.className='hint';hint.innerHTML='提示：'+fmt(s.h);hurt()}})}
+function showMulti(s){mode='task';const op=shuffle(s.o.map(([t,ok])=>({t,ok:!!ok})));
+ openPanel(`${head(s)}<div class=opts>${op.map((o,i)=>`<button class=opt data-i=${i}>${o.t}</button>`).join('')}</div><p class="hint info">可以選好幾個，選好再按「檢查」。</p><div class=go><button class="btn alt" id=chk>檢查</button></div>`);
+ const bs=[...document.querySelectorAll('#pBox .opt')],hint=$('#pBox .hint');bs.forEach(b=>b.onclick=()=>{b.classList.toggle('on');b.classList.remove('bad')});
+ $('#chk').onclick=()=>{const wrong=bs.filter(b=>b.classList.contains('on')!==op[b.dataset.i].ok);if(!wrong.length){bs.forEach(b=>{b.disabled=true;if(op[b.dataset.i].ok)b.classList.add('ok')});hint.className='hint ex';hint.innerHTML=fmt(s.ex);snd('chime',.5);goBtn()}
+  else{bs.filter(b=>b.classList.contains('on')&&!op[b.dataset.i].ok).forEach(b=>{b.classList.remove('on');b.classList.add('bad')});const miss=bs.filter(b=>!b.classList.contains('on')&&op[b.dataset.i].ok).length;hint.className='hint';hint.innerHTML='提示：'+fmt(s.h)+(miss?`（還少 ${miss} 個）`:'');hurt()}}}
+function showOrder(s){mode='task';const cards=shuffle(s.o.map((t,i)=>({t,i})));
+ openPanel(`${head(s)}<div class=pool>${cards.map(c=>`<button class=chip data-i=${c.i}>${c.t}</button>`).join('')}</div><div class=seq><span class=seqEmpty>點上面的卡片，依先後放到這裡；放錯了再點一下就會退回去。</span></div><p class=hint></p><div class=go><button class="btn alt" id=chk>檢查</button></div>`);
+ const pool=$('#pBox .pool'),seq=$('#pBox .seq'),hint=$('#pBox .hint');
+ const upd=()=>{seq.querySelector('.seqEmpty').style.display=seq.querySelector('.chip')?'none':''};
+ document.querySelectorAll('#pBox .chip').forEach(c=>c.onclick=()=>{c.classList.remove('bad');(c.parentElement===pool?seq:pool).appendChild(c);upd()});
+ $('#chk').onclick=()=>{const got=[...seq.querySelectorAll('.chip')];if(got.length<s.o.length){hint.className='hint';hint.textContent='還有卡片沒排進去。';return}
+  const bad=got.findIndex((c,k)=>+c.dataset.i!==k);if(bad<0){got.forEach(c=>c.classList.add('ok'));document.querySelectorAll('#pBox .chip').forEach(c=>c.onclick=null);hint.className='hint ex';hint.innerHTML=fmt(s.ex);snd('chime',.5);goBtn()}
+  else{got.slice(bad).forEach(c=>{c.classList.add('bad');setTimeout(()=>{c.classList.remove('bad');pool.appendChild(c);upd()},900)});hint.className='hint';hint.innerHTML=`前 ${bad} 張排對了。提示：`+fmt(s.h);hurt()}}}
+function showSort(s){mode='task';let sel=null;
+ openPanel(`${head(s)}<div class=pool>${shuffle(s.chips.slice()).map(([t,k])=>`<button class=chip data-k=${k}>${t}</button>`).join('')}</div><div class=bins>${s.bins.map(([k,n])=>`<div class=bin data-k=${k}><div class=who>${PORT[k]&&PORT[k][1]?`<img src="../scales/art/face/${PORT[k][1]}.webp">`:''}${n}</div></div>`).join('')}</div><p class=hint></p><div class=go><button class="btn alt" id=chk>檢查</button></div>`);
+ const pool=$('#pBox .pool');
+ document.querySelectorAll('#pBox .chip').forEach(c=>c.onclick=e=>{e.stopPropagation();document.querySelectorAll('#pBox .chip').forEach(x=>x.classList.remove('sel','bad'));if(c.parentElement!==pool){pool.appendChild(c);sel=null;return}sel=c;c.classList.add('sel')});
+ document.querySelectorAll('#pBox .bin').forEach(b=>b.onclick=()=>{if(sel){b.appendChild(sel);sel.classList.remove('sel');sel=null}});
+ $('#chk').onclick=()=>{const hint=$('#pBox .hint');if(pool.querySelector('.chip')){hint.className='hint';hint.textContent='還有詞卡沒放好。';return}
+  const bad=[...document.querySelectorAll('#pBox .bin .chip')].filter(c=>c.dataset.k!==c.parentElement.dataset.k);
+  if(bad.length){bad.forEach(c=>{c.classList.add('bad');setTimeout(()=>{c.classList.remove('bad');pool.appendChild(c)},900)});hint.className='hint';hint.textContent='提示：回到課文找，每個描寫寫的是誰？';hurt()}
+  else{hint.className='hint ex';hint.innerHTML=fmt(s.ex);snd('chime',.5);goBtn()}}}
+function showScale(){mode='task';
+ openPanel(`<span class=tag>動手稱</span><h3>巡警說「稱稱看」。拖動秤錘，讓秤桿打平，看這束花菜到底多重。</h3><canvas id=scv width=760 height=300></canvas><div class=opts id=sq style="margin-top:12px"></div><p class="hint info">舊時的秤：一斤＝十六兩。秤桿上每一顆星是一兩。</p><div class=go></div>`);
+ const c=$('#scv'),x=c.getContext('2d');const PX=220,PY=118,HK=58,D0=34,K=9.2,TRUE=32,MAXR=48;
+ let r=6,ang=.13,va=0,dg=false,done=false,raf;
+ const toR=e=>{const b=c.getBoundingClientRect();const mx=(e.clientX-b.left)*c.width/b.width;return clamp((mx-PX-D0)/K,0,MAXR)};
+ c.onpointerdown=e=>{const b=c.getBoundingClientRect();const mx=(e.clientX-b.left)*c.width/b.width;if(done)return;if(Math.abs(mx-(PX+D0+r*K))<40){dg=true;c.setPointerCapture(e.pointerId)}};
+ c.onpointermove=e=>{if(dg)r=toR(e)};
+ c.onpointerup=()=>{if(!dg)return;dg=false;if(Math.abs(r-TRUE)<.7){r=TRUE;done=true;snd('coin',.5);ask()}};
+ const NUM=['','一','兩','三'];
+ function draw(){const tgt=clamp((r-TRUE)*.012,-.13,.13);va+=(tgt-ang)*.06;va*=.86;ang+=va;
+  x.clearRect(0,0,c.width,c.height);
+  x.strokeStyle='#5a4630';x.lineWidth=2;x.beginPath();x.moveTo(PX,10);x.lineTo(PX,PY-6);x.stroke();x.fillStyle='#8a6d4a';x.beginPath();x.arc(PX,14,7,0,7);x.fill();
+  x.save();x.translate(PX,PY);x.rotate(ang);
+  const L0=-HK-30,L1=D0+MAXR*K+26;const gr=x.createLinearGradient(0,-6,0,6);gr.addColorStop(0,'#a87644');gr.addColorStop(1,'#6b4526');x.fillStyle=gr;x.beginPath();x.moveTo(L0,-6);x.lineTo(L1,-3.5);x.lineTo(L1,3.5);x.lineTo(L0,6);x.closePath();x.fill();
+  x.fillStyle='#f0d890';for(let i=0;i<=MAXR;i++){const px=D0+i*K;if(i%16===0){for(const dx of [-3,0,3]){x.beginPath();x.arc(px+dx,0,1.9,0,7);x.fill()}}else{x.beginPath();x.arc(px,0,i%8===0?1.7:1.1,0,7);x.fill()}}
+  x.fillStyle='#4a3826';x.font='600 15px "Noto Serif TC"';x.textAlign='center';x.fillText('定盤星',D0,24);for(let j=1;j<=3;j++)x.fillText(NUM[j]+'斤',D0+j*16*K,24);
+  x.restore();
+  const rp=d=>({x:PX+Math.cos(ang)*d,y:PY+Math.sin(ang)*d});
+  const hk=rp(-HK);x.strokeStyle='#3a3a3a';x.lineWidth=2;x.beginPath();x.moveTo(hk.x,hk.y);x.lineTo(hk.x,hk.y+48);x.stroke();x.beginPath();x.arc(hk.x+6,hk.y+52,7,Math.PI,Math.PI*2.4);x.stroke();
+  const by=hk.y+92;x.fillStyle='#c8ad6a';x.fillRect(hk.x-2,hk.y+56,4,14);for(const [dx,dy,rr] of [[-22,4,22],[18,6,20],[0,-6,24]]){x.fillStyle='#5f8a3a';x.beginPath();x.ellipse(hk.x+dx,by+dy+10,rr+6,rr*.7,0,0,7);x.fill();x.fillStyle='#efe5c8';x.beginPath();x.arc(hk.x+dx,by+dy,rr,0,7);x.fill();x.fillStyle='rgba(180,160,110,.4)';for(let k=0;k<5;k++){x.beginPath();x.arc(hk.x+dx+Math.cos(k*1.3)*rr*.5,by+dy+Math.sin(k*1.3)*rr*.5,rr*.28,0,7);x.fill()}}
+  const wp=rp(D0+r*K);x.strokeStyle='#3a3a3a';x.lineWidth=2;x.beginPath();x.moveTo(wp.x,wp.y);x.lineTo(wp.x,wp.y+46);x.stroke();
+  x.fillStyle=dg?'#4a4a50':'#2c2c30';x.beginPath();x.moveTo(wp.x-11,wp.y+46);x.lineTo(wp.x+11,wp.y+46);x.lineTo(wp.x+18,wp.y+84);x.lineTo(wp.x-18,wp.y+84);x.closePath();x.fill();x.beginPath();x.ellipse(wp.x,wp.y+84,18,5,0,0,7);x.fill();
+  if(!done){x.fillStyle='rgba(201,162,74,.9)';x.font='600 15px "Noto Serif TC"';x.fillText('◀ 拖我 ▶',wp.x,wp.y+108)}
+  x.fillStyle=done||Math.abs(ang)<.02?'#3f6b3a':'#8e2b1f';x.font='900 18px "Noto Serif TC"';x.textAlign='left';x.fillText(done?'平了！':ang>.02?'錘那頭太重，往左移':ang<-.02?'菜那頭太重，往右移':'快平了，放手看看',520,282);
+  raf=requestAnimationFrame(draw)}
+ draw();
+ function ask(){const op=shuffle([['兩斤',1],['一斤十四兩',0],['一斤八兩',0],['兩斤四兩',0]]);$('#sq').innerHTML=op.map(([t],i)=>`<button class=opt data-i=${i}>${t}</button>`).join('');const hint=$('#pBox .hint');hint.textContent='秤錘停在哪一組星上？這束花菜多重？';hint.className='hint info';
+  document.querySelectorAll('#sq .opt').forEach(b=>b.onclick=()=>{if(op[b.dataset.i][1]){b.classList.add('ok');document.querySelectorAll('#sq .opt').forEach(x=>x.disabled=true);hint.className='hint ex';hint.innerHTML='秤錘停在「兩斤」那三顆星上：<mark>實足兩斤</mark>。';snd('chime',.5);goBtn(()=>{cancelAnimationFrame(raf);next()})}else{b.classList.add('bad');b.disabled=true;hint.className='hint';hint.innerHTML='提示：數一數，從定盤星到秤錘，經過了幾組三顆星？';hurt()}})}
+}
+
+function finish(s){mode='done';MARK.visible=false;target=null;music(null);if(amb)amb.volume=.35;const st=hp>=80?3:hp>=50?2:1;const d=load();d.best=d.best||{};d.best[LVL.id]=Math.max(d.best[LVL.id]||0,st);d.cur=d.cur||{};delete d.cur[LVL.id];store(d);
+ const nx=LEVELS.find(l=>l.id===LVL.id+1);
+ openPanel(`<span class=tag>${LVL.no}・${LVL.name}　完成</span><h3>秤錘 ${'●'.repeat(st)}${'○'.repeat(3-st)}　體力 ${hp}</h3><p class=note>${s.next||''}</p>${s.last?'<div id=crisis>如果你或身邊的人感到痛苦、想不開，可以撥打<b>安心專線 1925</b>（24 小時、免付費），也可以找導師或輔導室聊聊。</div>':''}<div class=go><button class="btn alt" id=rr>重玩這一關</button><button class="btn alt" id=fw>四處走走</button>${nx?`<button class=btn id=nx>${nx.no}・${nx.name} ▶</button>`:''}</div>`);
+ $('#rr').onclick=()=>begin(LVL,0,100);if(nx)$('#nx').onclick=()=>begin(nx,0,100);
+ if(W.key==='dark')$('#fw').remove();else $('#fw').onclick=()=>{closePanel();mode='free';$('#taskS').textContent='自由走走';PL.x=cam.position.x;PL.z=cam.position.z;const d=cam.getWorldDirection(V3());PL.yaw=Math.atan2(-d.x,-d.z);PL.pitch=clamp(Math.asin(d.y),-.5,.3)}}
+
+async function begin(L,at=0,h=100){
+ const f=$('#fade');f.style.opacity=1;await wait(350);
+ busy=false;shake=0;LVL=L;useWorld(L.world);setLight(L.light);W.base&&W.base();L.setup(W);STEPS=L.steps(W,getWorld);step=at;setHP(h);closePanel();$('#dlg').classList.add('hide');
+ $('#seal').textContent=L.seal;$('#lvNo').textContent=L.no+'・'+L.range;$('#lvName').textContent=L.name;
+ ['#hudL','#hudR','#side'].forEach(s=>$(s).classList.remove('hide'));$('#title').classList.add('hide');
+ PL.x=W.start.x;PL.z=W.start.z;PL.yaw=W.start.yaw;PL.pitch=-.03;mode='title';
+ ambience(W.amb);music(null);
+ // 從存檔接續：把前面步驟的動作快轉做完，鏡頭放到最近的地點
+ let lastGoto=null,lastCam=null;for(let i=0;i<at;i++){const s=STEPS[i];if(s.type==='scene'){await applyScene(s,true);s.after&&s.after(W);lastGoto=lastCam=null}else if(s.type==='goto'){lastGoto=s;lastCam=s.cam||null;if(s.act)s.act()}else{if(s.cam)lastCam=s.cam;if(s.act)await s.act(true)}}
+ if(at>0&&lastGoto&&STEPS[at].type!=='goto'){curGoto=lastGoto;mode='scene';if(lastCam){cam.position.set(...lastCam.pos);cine.pos.set(...lastCam.pos);cine.look.set(...lastCam.look);cine.cur.copy(cine.look)}if(lastGoto.frame){cam.position.set(.6,1.6,-3.4);frame(null);cine.cur.copy(cine.look)}if(lastGoto.tense)music('tense',.3)}
+ $('#taskS').textContent=mode==='scene'?'跟著讀':'';runStep();f.style.opacity=0;
+ const d=load();if(!d.seenHelp){d.seenHelp=1;store(d);help()}}
+
+function help(){const was=mode;openPanel(`<span class=tag>說明</span><h3>操作</h3><p class=note>移動：WASD 或方向鍵（平板用左下搖桿）<br>轉頭：按住畫面拖曳<br>互動：走近金色秤錘下的目標，點提示框或直接點那個人<br>下一句：空白鍵或點對話框</p><h3>規則</h3><p class=note>答錯扣 10 點體力並給提示；體力歸零，這一關重來。每關依表現得到一到三顆秤錘。每個任務都會自動存檔，關掉再開可以接著玩。</p><div class=go><button class=btn id=ok>知道了</button></div>`);$('#ok').onclick=()=>{closePanel();if(['task'].includes(was))runStep()}}
+$('#bHelp').onclick=()=>help();
+$('#bRe').onclick=()=>begin(LVL,0,100);
+$('#bHome').onclick=()=>{showTitle()};
+function showTitle(){mode='title';closePanel();$('#dlg').classList.add('hide');MARK.visible=false;['#hudL','#hudR','#side'].forEach(s=>$(s).classList.add('hide'));$('#prompt').classList.add('hide');
+ const d=load();$('#lvls').innerHTML=LEVELS.map(L=>{const st=(d.best||{})[L.id]||0,c=(d.cur||{})[L.id];return `<button class=lv data-id=${L.id}><small>${L.no}</small><b>${L.name}</b><small>${L.range}</small><div class=st>${st?'●'.repeat(st)+'○'.repeat(3-st):'○○○'}</div>${c&&c.step>0?`<div class=cont>接著玩</div>`:''}</button>`}).join('');
+ document.querySelectorAll('.lv').forEach(b=>b.onclick=()=>{const L=LEVELS.find(l=>l.id==b.dataset.id);const c=(load().cur||{})[L.id];if(!amb)ambience(L.world==='market'?'market':'village');begin(L,c?c.step:0,c?c.hp:100)});
+ $('#title').classList.remove('hide');if(!W){useWorld('village');setLight(LEVELS[0].light);LEVELS[0].setup(W)}}
+showTitle();
+
+// ===== 主迴圈 =====
+const clock=new THREE.Clock();let fc=0,ft=0;
+function resize(){const w=innerWidth,h=innerHeight;R.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
+addEventListener('resize',resize);resize();
+function loop(){requestAnimationFrame(loop);const dt=Math.min(clock.getDelta(),.05);const t=clock.elapsedTime;
+ if(mode==='free'){let f=JOY.y,r=JOY.x;if(KEY.w||KEY.arrowup)f++;if(KEY.s||KEY.arrowdown)f--;if(KEY.d||KEY.arrowright)r++;if(KEY.a||KEY.arrowleft)r--;
+  const sn=Math.sin(PL.yaw),cs=Math.cos(PL.yaw);let dx=-sn*f+cs*r,dz=-cs*f-sn*r;const L=Math.hypot(dx,dz);if(L>1){dx/=L;dz/=L}const sp=(KEY.shift?5.2:3.3)*dt;PL.x+=dx*sp;PL.z+=dz*sp;collide();if(L>.05)PL.bob+=dt*9;
+  cam.position.set(PL.x,1.58+W.floor(PL.x,PL.z)+Math.sin(PL.bob)*.025,PL.z);cam.rotation.set(PL.pitch,PL.yaw,0);
+  if(target){const dxt=target.pos.x-PL.x,dzt=target.pos.z-PL.z,d=Math.hypot(dxt,dzt);const nn=d<3;if(nn!==near){near=nn;$('#prompt').classList.toggle('hide',!near)}const rel=Math.atan2(-dxt,-dzt)-PL.yaw;$('#arrow').style.transform=`rotate(${-rel}rad)`}}
+ else if(mode==='title'&&W){const a=t*.05;cam.position.set(W.start.x+Math.sin(a)*.8,1.7,W.start.z-6-Math.sin(a*.7)*3);cam.lookAt(W.start.x,1.6,W.start.z-30)}
+ else{const k=1-Math.exp(-dt*2.2);cam.position.lerp(cine.pos,k);cine.cur.lerp(cine.look,k);cam.lookAt(cine.cur)}
+ if(shake>0){shake-=dt;cam.position.x+=(Math.random()-.5)*shake*.25;cam.position.y+=(Math.random()-.5)*shake*.25}
+ // 劇情進行時，路人不走進正在演的地點（前後 7 公尺）
+ if(W){const zc=mode!=='free'&&curGoto?curGoto.at.z:null;for(const p of W.walkers){const L=p.lane,z=p.g.position.z,inZ=zc!=null&&Math.abs(z-zc)<7;if(inZ&&p.walk&&((p.walk.z>z)===(z<zc)))p.walk=null;if(!p.walk){L.dir=inZ?(z<zc?-1:1):-L.dir;walkTo(p,L.x,L.dir>0?L.z1:L.z0,1.05+rnd()*.3)}}
+  W.people.forEach(p=>{if(p.g.visible)animPerson(p,dt)});W.tick&&W.tick(dt,t)}
+ for(const f of FLY){if(f.m.position.y>.02){f.v.y-=9.8*dt;f.m.position.addScaledVector(f.v,dt);f.m.rotation.x+=f.w*dt;if(f.m.position.y<=.02){f.m.position.y=.02;f.m.rotation.x=Math.PI/2;f.m.rotation.z=Math.random()*3}}}
+ if(MARK.visible&&target){const o=target.objs[0];const y=o?(W.people.find(p=>p.g===o)?.pose?1.55:2.1):1.9;MARK.position.set(target.pos.x+(o?(o.position.x-target.pos.x)*.0:0),y+Math.sin(t*2)*.08,target.pos.z);if(o){MARK.position.x=o.position.x;MARK.position.z=o.position.z}else{MARK.position.x=target.pos.x;MARK.position.z=target.pos.z}MARK.rotation.y=t*1.2}
+ sun.position.copy(cam.position).add(SUNOFF);sun.target.position.set(cam.position.x,0,cam.position.z-4);
+ R.render(S,cam);
+ fc++;ft+=dt;if(ft>.5){$('#fps').textContent=Math.round(fc/ft)+' fps · '+R.info.render.calls+' draw · '+R.info.render.triangles+' tri';fc=0;ft=0}
+}
+loop();
+window.DBG={go:(i)=>begin(LVL,i,hp),lv:(id,i=0)=>begin(LEVELS.find(l=>l.id===id),i,100),get step(){return step},get STEPS(){return STEPS},get W(){return W},PL,R,cam,LEVELS};
+</script>
+</body>
+</html>
