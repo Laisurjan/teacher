@@ -78,11 +78,11 @@ mark{background:linear-gradient(transparent 55%,rgba(201,162,74,.6) 55%);color:i
 .seq .chip:before{content:counter(n);flex:none;width:26px;height:26px;border-radius:50%;background:var(--red);color:#f3e7cf;display:grid;place-items:center;font-size:14px;margin-top:2px}
 .seqEmpty{color:#a08e70;font-size:16px}
 #title{position:fixed;inset:0;display:grid;place-items:center;z-index:8;background:radial-gradient(ellipse at center,rgba(243,234,214,.25),rgba(40,28,16,.35));overflow:auto;padding:16px}
-#tBox{background:rgba(243,234,214,.95);padding:30px 44px 24px;text-align:center;border:1px solid #b9a37a;outline:3px double rgba(142,43,31,.4);outline-offset:-10px;box-shadow:0 20px 60px rgba(0,0,0,.35);max-width:720px;width:100%}
+#tBox{background:rgba(243,234,214,.95);padding:30px 44px 24px;text-align:center;border:1px solid #b9a37a;outline:3px double rgba(142,43,31,.4);outline-offset:-10px;box-shadow:0 20px 60px rgba(0,0,0,.35);max-width:820px;width:100%}
 #tBox h1{font-size:60px;font-weight:900;margin:0;letter-spacing:6px;line-height:1.2}
 #tBox .au{display:inline-block;background:var(--red);color:#f3e7cf;padding:3px 14px;font-size:16px;margin:10px 0 6px;letter-spacing:3px}
 #tBox p{margin:6px 0;color:var(--ink2)}
-#lvls{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0 6px}
+#lvls{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0 6px}
 .lv{background:#fbf6ea;border:1px solid #b9a37a;border-radius:4px;padding:14px 10px;text-align:center;color:var(--ink)}
 .lv:hover{border-color:var(--red);background:#fff}
 .lv b{display:block;font-size:20px;margin:4px 0}
@@ -332,7 +332,7 @@ function buildMarket(){
  W.BUNDLE=new THREE.Group();[[0,0],[.06,.04],[-.05,.05]].forEach(([x,z])=>cauli(x,0,z,W.BUNDLE));W.root.add(W.BUNDLE);W.BUNDLE.visible=false;
  W.BOOK=new THREE.Mesh(new THREE.BoxGeometry(.09,.13,.015),mat('book',{color:0x1d2a3a}));W.BOOK.visible=false;W.root.add(W.BOOK);
  W.reset=()=>{const C=W.COP,N=W.CAN;W.BYS.forEach((p,i)=>{p.walk=null;p.g.visible=false;p.g.position.set(1.4+i*.5,0,-15-i)});N.walk=null;N.g.visible=C.g.visible=true;N.g.position.set(-3.55,0,-6.6);N.g.rotation.y=Math.PI/2;C.walk=null;C.act=N.act=null;C.hold=N.hold=null;C.g.position.set(1.2,0,-24);C.g.rotation.y=0;W.SCALE.visible=true;W.SCALE.position.set(-2.75,.42,-6.1);W.SCALE.rotation.set(0,Math.PI/2,0);W.BUNDLE.visible=false;W.BOOK.visible=false;FLY.splice(0).forEach(f=>f.m.parent.remove(f.m));N.arms.forEach(a=>{a.sh.rotation.x=0;a.el.rotation.x=0})};
- W.tick=(dt)=>{if(mode==='free'&&LVL.id===3&&step===0&&!W.COP.walk){const z=W.COP.g.position.z<-20?-14:-24;walkTo(W.COP,1.2,z,1)}};
+ W.tick=(dt)=>{if(mode==='free'&&LVL.id===4&&step===0&&!W.COP.walk){const z=W.COP.g.position.z<-20?-14:-24;walkTo(W.COP,1.2,z,1)}};
  W.who={can:W.CAN,cop:W.COP,elder:W.BYS[0]};
  return W;
 }
@@ -450,7 +450,7 @@ function buildVillage(){
   if(W.pace&&!W.CAN.walk){W.paceDir=!W.paceDir;walkTo(W.CAN,-3.7,W.paceDir?-1.3:-4.6,.6)}};
  return W;
 }
-// ===== 世界三：郡役所（第四、五關） =====
+// ===== 世界三：郡役所（第六、七關） =====
 function buildCourt(){
  const W={key:'court',root:new THREE.Group(),COL:[],people:[],walkers:[],bounds:[-5.6,5.6,-8.4,13.5],start:{x:0,z:12,yaw:0},amb:null,floor:()=>0};
  Object.assign(ctx,{stat:new THREE.Group(),COL:W.COL,root:W.root,people:W.people});
@@ -548,7 +548,7 @@ const PORT={can:['秦得參','can'],cop:['巡警','cop'],mom:['得參的母親',
 
 // ===== 關卡 =====
 const LEVELS=[
-{id:1,no:'第一關',name:'威麗村',seal:'村',world:'village',range:'得參的身世',music:'calm',
+{id:1,no:'第一關',name:'威麗村',seal:'村',world:'village',range:'課本前：得參的身世',music:'calm',
  light:{hemi:[0xeef0e8,0x8a7a56,1.2],sun:[0xfff2dc,1.75,[10,22,8]],fog:[0xd6dccb,22,90],sky:['#a9bfc8','#d6dccb','#d6dccb']},
  setup(W){W.goods.visible=false;W.MOM.g.visible=true;W.KIDS.forEach(k=>k.g.visible=false);W.NB.g.visible=true;W.LORD.g.visible=true;W.OLD.g.visible=true;W.WIFE.g.visible=true;W.CAN.g.visible=false;W.WIFE.g.position.set(-5.5,0,-17);W.WIFE.g.rotation.y=Math.PI/2;setPose(W.WIFE,'bend');},
  steps:W=>[
@@ -586,20 +586,24 @@ const LEVELS=[
  ...para(13,{mark:['一併失去']}),
  {type:'quiz',tag:'寫作手法',q:'「可憐的得參，他的幸福，已和他慈愛的母親，一併失去。」這一句單獨成為一段，作用是什麼？',
   o:['凸顯母親過世對得參的打擊，也預告他往後的不幸','補充說明母親生病的原因','交代後父離開的時間','描寫得參家田地的大小'],h:'一句話自成一段，讀者的目光會停在哪裡？後面還會寫得參的什麼？',ex:'一句話單獨成段，像停頓的一拍。從這裡開始，得參的日子只會往下走。'},
- {type:'end',next:'接下來，得參病倒了。第二關從這裡接下去。'},
-]},
-{id:2,no:'第二關',name:'金花與稱仔',seal:'花',world:'village',range:'病、年關、借稱仔',music:'sad',
- light:{hemi:[0xe8d8c8,0x5a4a3a,.85],sun:[0xffb878,1.5,[-14,9,-6]],fog:[0xcbb79f,18,75],sky:['#7e8aa0','#d8b896','#cbb79f'],exp:1.0},
- setup(W){W.goods.visible=false;W.MOM.g.visible=false;W.OLD.g.visible=false;W.LORD.g.visible=false;W.KIDS.forEach(k=>k.g.visible=true);W.NB.g.visible=true;
+ {type:'scene',world:'village',light:{hemi:[0xe8d8c8,0x5a4a3a,.85],sun:[0xffb878,1.5,[-14,9,-6]],fog:[0xcbb79f,18,75],sky:['#7e8aa0','#d8b896','#cbb79f'],exp:1.0},
+  setup(W){W.goods.visible=false;W.MOM.g.visible=false;W.OLD.g.visible=false;W.LORD.g.visible=false;W.KIDS.forEach(k=>k.g.visible=true);W.NB.g.visible=true;
   W.CAN.g.visible=true;W.CAN.g.position.set(-5.2,0,-3.4);W.CAN.g.rotation.y=Math.PI/2;setPose(W.CAN,'sit');
-  W.WIFE.g.visible=true;setPose(W.WIFE,null);W.WIFE.g.position.set(-4.4,0,-1.6);W.WIFE.g.rotation.y=Math.PI;},
- steps:W=>[
+  W.WIFE.g.visible=true;setPose(W.WIFE,null);W.WIFE.g.position.set(-4.4,0,-1.6);W.WIFE.g.rotation.y=Math.PI;}},
  {type:'goto',task:'回到得參家',prompt:'看看病中的得參',at:V3(-3.8,0,-3.4),objs:[W.CAN.g],cam:{pos:[-1.8,1.5,-4.8],look:[-5.2,.8,-3.2]}},
  ...para(15,{mark:['伏下病根','三天的工作，還不夠吃一服藥','只礙不能工作']}),
  ...para(17,{mark:['營養不良']}),
  {type:'quiz',tag:'推論',q:'看一次西醫「花去兩塊多錢」，得參卻想「三天的工作，還不夠吃一服藥」。可以推知他一天的工錢大約是多少？',
   o:['不到一圓','大約兩圓','大約三圓','超過五圓'],h:'三天的工錢加起來，還比兩塊多錢少。',ex:'三天賺不到兩圓多，一天不到一圓。一次看病，就吃掉好幾天的飯錢。'},
  {type:'quiz',tag:'擷取訊息',q:'生病以後，得參最煩惱的是什麼？',o:['不能工作','肚子脹滿','西藥太貴','別人說閒話'],h:'找「在得參總不介意」那一句。',ex:'身體壞了他不在意，只怕不能做工。一家人的飯碗全在他身上。'},
+  {type:'end',next:'第二關從課本第一段讀起：看看尾衙到了，尚找不到相應的工作……'},
+ ]},
+{id:2,no:'第二關',name:'金花與稱仔',seal:'花',world:'village',range:'課本第一段',music:'sad',
+light:{hemi:[0xe8d8c8,0x5a4a3a,.85],sun:[0xffb878,1.5,[-14,9,-6]],fog:[0xcbb79f,18,75],sky:['#7e8aa0','#d8b896','#cbb79f'],exp:1.0},
+ setup(W){W.goods.visible=false;W.MOM.g.visible=false;W.OLD.g.visible=false;W.LORD.g.visible=false;W.KIDS.forEach(k=>k.g.visible=true);W.NB.g.visible=true;
+  W.CAN.g.visible=true;W.CAN.g.position.set(-5.2,0,-3.4);W.CAN.g.rotation.y=Math.PI/2;setPose(W.CAN,'sit');
+  W.WIFE.g.visible=true;setPose(W.WIFE,null);W.WIFE.g.position.set(-4.4,0,-1.6);W.WIFE.g.rotation.y=Math.PI;},
+ steps:W=>[
  {type:'goto',task:'走到竹籬門口',prompt:'年末了，得參在想什麼',at:V3(-2,0,-3),objs:[W.CAN.g],cam:{pos:[-2.2,1.5,-5.6],look:[-5.2,.9,-3.2]},act:()=>{setPose(W.CAN,null);W.CAN.g.position.set(-3.4,0,-3.2)}},
  ...para(19,{mark:['尾衙','新春半個月的食糧','分外煩惱而恐惶']}),
  {type:'quiz',tag:'推論',q:'尾衙到了，得參為什麼「分外煩惱而恐惶」？',
@@ -614,15 +618,23 @@ const LEVELS=[
  {type:'multi',tag:'擷取訊息',q:'作者列出哪些管著日常生活的規則？選出全部課文裡有的。',src:'什麼通行取締、道路規則、飲食物規則、行旅法規、度量衡規紀，舉凡日常生活中的一舉一動，通在法的干涉、取締範圍中。',
   o:[['通行取締',1],['道路規則',1],['飲食物規則',1],['行旅法規',1],['度量衡規紀',1],['戶籍規則',0],['學校規則',0]],h:'就在「什麼……」那一串裡，一共五項。',ex:'走路、吃東西、出門、秤東西，全都有人管。這就是巡警「搜索小民的細故」的本錢。'},
  {type:'quiz',tag:'推論',q:'妻子為什麼特地借一桿「新新」的稱仔？',o:['為慮萬一，怕巡警挑舊秤的毛病','新的稱仔比較便宜','鄰居家只有新的','新的比較好看'],h:'看最後一句：「她妻子為慮萬一……」',ex:'連借秤都得先想到巡警。記住這桿新秤，後面用得到。'},
+  {type:'end',next:'第三關接著讀：這一天的生意，總算不壞……'},
+ ]},
+ {id:3,no:'第三關',name:'辦年貨',seal:'貨',world:'village',range:'課本第二段',music:'sad',
+ light:{hemi:[0xe8d8c8,0x5a4a3a,.85],sun:[0xffb878,1.5,[-14,9,-6]],fog:[0xcbb79f,18,75],sky:['#7e8aa0','#d8b896','#cbb79f'],exp:1.0},
+ setup(W){W.goods.visible=false;W.MOM.g.visible=false;W.OLD.g.visible=false;W.LORD.g.visible=false;W.KIDS.forEach(k=>k.g.visible=true);W.NB.g.visible=true;
+  W.CAN.g.visible=true;W.CAN.g.position.set(-3.4,0,-3.2);W.CAN.g.rotation.y=Math.PI/2;setPose(W.CAN,null);
+  W.WIFE.g.visible=true;setPose(W.WIFE,null);W.WIFE.g.position.set(-4.4,0,-1.6);W.WIFE.g.rotation.y=Math.PI;},
+ steps:W=>[
  {type:'goto',task:'回家看看買了什麼',prompt:'看桌上的年貨',at:V3(-2.9,0,-5.2),objs:[W.CAN.g],cam:{pos:[-1.6,1.6,-6.8],look:[-4.2,.9,-4.6]},act:()=>{W.goods.visible=true;W.CAN.g.position.set(-4.4,0,-4.2);W.CAN.g.rotation.y=Math.PI/2+.5}},
  ...para(27,{mark:['預備新春的糧食','換一換氣像','觀音畫像','門聯','金銀紙，香燭','炊一灶年糕','待贖取那金花','今天才廿五'],len:96}),
  ...para(29,{mark:['做父親的義務','剪了幾尺花布','一總花掉']}),
  {type:'order',tag:'事件排序',q:'生意好起來以後，得參依序把錢花在哪裡？',
   o:['糴些米，預備新春的糧食','觀音畫像、門聯、金銀紙、香燭','糖米，炊一灶年糕','幾尺花布，給孩子們'],h:'米、拜拜的東西、年糕、花布：課文的順序就是這樣。',ex:'先顧吃，再顧神明和來年的運氣，最後顧孩子。就是沒有先顧那根金花。'},
  {type:'quiz',tag:'擷取訊息',q:'妻子勸他先贖金花，得參怎麼回答？',o:['今天才廿五，那筆錢不怕賺不來，本錢也還在','金花不值錢，不必急著贖','當舖不收利息','嫂子說不用還'],h:'找得參回答的那一段話。',ex:'他算得很清楚，只是沒算到「萬一」。'},
- {type:'end',next:'第三關接著讀：這一天近午，一下級巡警，巡視到他擔前……'},
-]},
-{id:3,no:'第三關',name:'一桿稱仔',seal:'稱',world:'market',range:'巡警來買菜',music:null,
+  {type:'end',next:'第四關接著讀：這一天近午，一下級巡警，巡視到他擔前……'},
+ ]},
+{id:4,no:'第四關',name:'一桿稱仔',seal:'稱',world:'market',range:'課本第三段',music:null,
  light:{hemi:[0xe9eef0,0x8a7656,1.15],sun:[0xfff0d8,1.7,[9,20,7]],fog:[0xd9d3c3,16,62],sky:['#aeb8ba','#d4d1c4','#d9d3c3']},
  setup(W){W.reset()},
  steps:W=>{const CAN=W.CAN,COP=W.COP;return[
@@ -662,6 +674,13 @@ const LEVELS=[
  {type:'sort',tag:'人物對照',q:'這一段寫兩個人的神情。把詞卡放到對的人身上：先點詞卡，再點人物。',
   bins:[['can','得參'],['cop','巡警']],chips:[['殷勤','can'],['泰然','can'],['從容','can'],['變色','cop'],['赫怒','cop'],['怒叱','cop'],['氣憤憤','cop']],
   ex:'得參一路殷勤、泰然、從容，巡警卻越來越怒。兩人擺在一起，讀者自然看得出是誰不講理。'},
+  {type:'end',next:'第五關接著讀：參突遭這意外的羞辱，空抱著滿腹的憤恨……'},
+ ]}},
+ {id:5,no:'第五關',name:'硬漢',seal:'漢',world:'market',range:'課本第四段',music:'sad',
+ light:{hemi:[0xe9eef0,0x8a7656,1.15],sun:[0xfff0d8,1.7,[9,20,7]],fog:[0xd9d3c3,16,62],sky:['#aeb8ba','#d4d1c4','#d9d3c3']},
+ setup(W){W.reset();W.SCALE.visible=false;W.COP.g.position.set(1,0,-25);const rodM=W.SCALE.userData.rod.material;for(const s of [-1,1]){const h=new THREE.Mesh(new THREE.CylinderGeometry(.01,.01,.3,8),rodM);h.castShadow=true;h.position.set(-2.3+s*.25,.02,-6.3+s*.45);h.rotation.set(Math.PI/2,0,s*.7);W.root.add(h);FLY.push({m:h,v:V3(),w:0})}},
+ steps:(W,wd)=>{const CAN=W.CAN,V=wd('village');return[
+  {type:'goto',task:'回到得參的菜擔',prompt:'巡警走了，看看得參',at:W.STALL,objs:[CAN.g],frame:true},
  {type:'say',narr:'參突遭這意外的羞辱，空抱著滿腹的憤恨，在擔邊〔失神地站著〕。等巡警去遠了，纔有幾個閑人，近他身邊來。',act:async f=>{CAN.act=null;const B=W.BYS,pos=[[-1.75,-5.7,-Math.PI/2-.5],[-1.5,-7.5,-Math.PI/2+.5],[-1.1,-6.5,-Math.PI/2]];B.forEach((p,i)=>{p.g.visible=true;if(f){p.g.position.set(pos[i][0],0,pos[i][1]);p.g.rotation.y=pos[i][2]}else{p.g.position.set(1.2+i*.4,0,-12-i);walkTo(p,pos[i][0],pos[i][1],1.3,pos[i][2])}});if(!f){busy=true;await wait(2200);busy=false}}},
  {type:'say',who:'elder',narr:'一個較有年紀的說：',t:'「該死的東西，到市上來，只這〔規紀〕亦就不懂？要做什麼生意？汝說幾斤幾兩，難道他的錢汝敢拿嗎？」'},
  {type:'say',who:'can',t:'「難道我們的東西，該白送給他的嗎？」',post:'參〔不平〕地回答。'},
@@ -671,28 +690,28 @@ const LEVELS=[
  {type:'quiz',tag:'推論',q:'老人說的「規紀」，指的是什麼？',src:'「汝說幾斤幾兩，難道他的錢汝敢拿嗎？」',o:['巡警要的東西不能跟他算錢，只能白送','市場要繳的攤位費','秤要每年送去檢查','做生意要先拜碼頭'],h:'看老人的下一句：「難道他的錢汝敢拿嗎？」',ex:'市場上人人都懂的潛規則：巡警要，就得送。得參偏偏用了買賣的口吻。'},
  {type:'quiz',tag:'推論',q:'「汝還未嘗到他，青草膏的滋味」，老人在警告得參什麼？',o:['再頂撞下去，會被巡警打得要敷青草藥','巡警會請他吃青草膏','青草膏很苦，不要買','巡警家裡在賣青草膏'],h:'青草膏是拿來敷傷口的草藥。誰會讓他「嘗到」？',ex:'用一個生活裡的東西，說出挨打的下場。老人是在嘲笑，也是在勸他認命。'},
  {type:'quiz',tag:'寫作手法',q:'作者安排這段閒人的對話，用意是什麼？',o:['寫出一般百姓對巡警的畏懼與認命，襯托得參的不平','說明市場上的生意很好','交代巡警叫什麼名字','讓得參學會做生意的規矩'],h:'閒人和得參，對同一件事的態度一樣嗎？',ex:'眾人只會議論、批評，然後散去。只有得參問出「做官的就可任意凌辱人民嗎？」，所以被叫「硬漢」。'},
- {type:'end',next:'第四關接著讀：得參回到家裡，夜飯前吃不下……'},
- ]}},
-{id:4,no:'第四關',name:'除夕的衙門',seal:'衙',world:'village',range:'官符、即決',music:'sad',
- light:{hemi:[0x4a5a80,0x1a1a20,.55],sun:[0x9ab0e0,.55,[-8,20,6]],fog:[0x1c2230,8,48],sky:['#0b1020','#1c2438','#1c2230'],exp:1.15},
- setup(W){W.lamp(true);W.walkers.forEach(p=>p.g.visible=false);W.goods.visible=true;W.MOM.g.visible=false;W.OLD.g.visible=false;W.LORD.g.visible=false;W.KIDS.forEach(k=>k.g.visible=false);W.NB.g.visible=false;
-  W.CAN.g.visible=true;W.CAN.g.position.set(-4.3,0,-3.1);W.CAN.g.rotation.y=Math.PI/2+.3;W.WIFE.g.visible=true;W.WIFE.g.position.set(-3.6,0,-2.3);W.WIFE.g.rotation.y=-Math.PI/2-.6},
- steps:(W,wd)=>{const Mk=wd('market'),C=wd('court');return[
- {type:'goto',task:'回到得參家',prompt:'看看回家的得參',at:V3(-2.4,0,-3),objs:[W.CAN.g],cam:{pos:[-1.6,1.55,-4.9],look:[-4,1.1,-2.7]}},
+  {type:'scene',world:'village',light:{hemi:[0x4a5a80,0x1a1a20,.55],sun:[0x9ab0e0,.55,[-8,20,6]],fog:[0x1c2230,8,48],sky:['#0b1020','#1c2438','#1c2230'],exp:1.15},
+  setup(W){W.lamp(true);W.walkers.forEach(p=>p.g.visible=false);W.goods.visible=true;W.MOM.g.visible=false;W.OLD.g.visible=false;W.LORD.g.visible=false;W.KIDS.forEach(k=>k.g.visible=false);W.NB.g.visible=false;
+  W.CAN.g.visible=true;W.CAN.g.position.set(-4.3,0,-3.1);W.CAN.g.rotation.y=Math.PI/2+.3;W.WIFE.g.visible=true;W.WIFE.g.position.set(-3.6,0,-2.3);W.WIFE.g.rotation.y=-Math.PI/2-.6},},
+ {type:'goto',task:'回到得參家',prompt:'看看回家的得參',at:V3(-2.4,0,-3),objs:[V.CAN.g],cam:{pos:[-1.6,1.55,-4.9],look:[-4,1.1,-2.7]}},
  ...para(57,{mark:['夜飯前吃不下','一句話不說']}),
  ...para(59,{who:'wife',mark:['買一桿新的還給人家','贖取那金花','官符','出運']}),
  {type:'quiz',tag:'擷取訊息',q:'妻子打算怎麼用這幾天賺的錢？',o:['買一桿新的稱仔還給鄰居，剩下的贖回金花','全部拿去繳罰款','再去多批一些菜來賣','買更多年貨'],h:'看妻子說的第一句話。',ex:'先還人家的秤，再贖嫂子的金花。妻子心裡記掛的都是欠別人的東西。'},
  {type:'quiz',tag:'推論',q:'妻子說「怕運裡帶有官符」，她怎麼看待白天發生的事？',o:['當成今年運氣不好，盼明年就能出運','認為巡警做錯了，要去告他','怪得參不懂市場的規紀','覺得是鄰居的稱仔有問題'],h:'「官符」「出運」都是說命運的詞。',ex:'流年犯「官符」，就是會惹上官司。百姓遇到不公，只能說成是命，等它過去。'},
- {type:'scene',world:'market',light:{hemi:[0xb8c4d8,0x5a5048,.9],sun:[0xffc9a0,1.1,[14,8,10]],fog:[0xb8bcc4,12,50],sky:['#6a7a98','#c8b8b0','#b8bcc4']},start:{x:1.4,z:6,yaw:0},
-  setup(M){M.reset();M.SCALE.visible=false;M.COP.g.position.set(1.4,0,-26)}},
- {type:'goto',task:'除夕前一天的清晨，到市場找得參',prompt:'看得參做最後一天的生意',at:Mk.STALL,objs:[Mk.CAN.g],frame:true},
+  {type:'end',next:'第六關接著讀：參休息過一天，看看沒有什麼動靜，況明天就是除夕日……'},
+ ]}},
+ {id:6,no:'第六關',name:'除夕的衙門',seal:'衙',world:'market',range:'課本第五段',music:'sad',start:{x:1.4,z:6,yaw:0},
+ light:{hemi:[0xb8c4d8,0x5a5048,.9],sun:[0xffc9a0,1.1,[14,8,10]],fog:[0xb8bcc4,12,50],sky:['#6a7a98','#c8b8b0','#b8bcc4']},
+ setup(W){W.reset();W.SCALE.visible=false;W.COP.g.position.set(1.4,0,-26)},
+ steps:(W,wd)=>{const C=wd('court');return[
+ {type:'goto',task:'除夕前一天的清晨，到市場找得參',prompt:'看得參做最後一天的生意',at:W.STALL,objs:[W.CAN.g],frame:true},
  ...para(61,{mark:['只剩得一天的生意','安坐不來','「年華垂盡，人生頃刻」的悵惘']}),
- ...para(63,{mark:['要回去圍爐','參又遇到那巡警'],act:async f=>{const P=Mk.COP;P.walk=null;if(f){P.g.position.set(-1.6,0,-6.4);P.g.rotation.y=-Math.PI/2}else{busy=true;await walkTo(P,.2,-9,1.8);await walkTo(P,-1.6,-6.4,1.4,-Math.PI/2);busy=false;music('tense',.3)}}}),
+ ...para(63,{mark:['要回去圍爐','參又遇到那巡警'],act:async f=>{const P=W.COP;P.walk=null;if(f){P.g.position.set(-1.6,0,-6.4);P.g.rotation.y=-Math.PI/2}else{busy=true;await walkTo(P,.2,-9,1.8);await walkTo(P,-1.6,-6.4,1.4,-Math.PI/2);busy=false;music('tense',.3)}}}),
  {type:'say',who:'cop',t:'「〔畜生〕，昨天跑那兒去？」',post:'巡警說。'},
  {type:'say',who:'can',t:'「什麼？〔怎得隨便罵人〕？」',post:'參回說。'},
  {type:'say',who:'cop',t:'「〔畜生〕，到衙門去！」',post:'巡警說。'},
  {type:'say',who:'can',t:'「去就去呢，什麼畜生？」',post:'參說。'},
- {type:'say',narr:'巡警瞪他一眼便帶他上衙門去。',act:f=>{const P=Mk.COP,N=Mk.CAN;if(f){P.g.visible=N.g.visible=false}else{walkTo(P,.6,-26,1.4);wait(500).then(()=>walkTo(N,.1,-25.5,1.4))}}},
+ {type:'say',narr:'巡警瞪他一眼便帶他上衙門去。',act:f=>{const P=W.COP,N=W.CAN;if(f){P.g.visible=N.g.visible=false}else{walkTo(P,.6,-26,1.4);wait(500).then(()=>walkTo(N,.1,-25.5,1.4))}}},
  {type:'quiz',tag:'人物變化',q:'這次巡警一開口就罵「畜生」，得參怎麼回應？和上一次比，有什麼不同？',o:['直接頂回去，不再像上次那樣泰然、從容地忍耐','跪下來求巡警原諒','轉身就逃','一句話也不敢說'],h:'看得參的兩句回話：「怎得隨便罵人？」「什麼畜生？」',ex:'被打斷稱仔之後，得參不再忍。這份硬氣，讓他直接被帶上衙門。'},
  {type:'scene',world:'court',light:{hemi:[0xe8e4d8,0x6a5a48,1.05],sun:[0xfff0d8,1.1,[6,20,8]],fog:[0xcfc8b8,20,70],sky:['#a9b4bc','#d4d1c4','#cfc8b8']},start:{x:0,z:-1.6,yaw:0},
   setup(C){C.WIFE.g.visible=false;C.BOY.g.visible=false;C.GCOP.g.position.set(-1.7,0,.9);C.GCOP.g.rotation.y=0;C.CAN.g.position.set(0,0,-6.6);C.CAN.g.rotation.y=Math.PI;setPose(C.CAN,'kneel');C.COP.g.position.set(1.7,0,-6.3);C.COP.g.rotation.y=Math.PI+.5}},
@@ -715,9 +734,9 @@ const LEVELS=[
  {type:'quiz',tag:'語氣',q:'「只科罰汝三塊錢，就算是格外恩典。」這句話透露出什麼？',o:['明明是冤案，還要人感恩，顯出官員的傲慢','法官真心同情得參','三塊錢對得參來說很便宜','法官想私下幫得參'],h:'「恩典」是上對下的施捨。得參有沒有做錯事？',ex:'冤枉人的罰款，被說成「恩典」。反話裡藏著作者的諷刺。'},
  {type:'quiz',tag:'擷取訊息',q:'得參為什麼甘心去坐監三天？',o:['新春的閒時節坐三天不要緊，三塊錢的用處比較大','他想用坐監來抗議','他怕妻子知道被罰錢','監獄裡過年有飯吃'],h:'看最後一句「在他心裡的打算」。',ex:'三塊錢是一家人過年的錢，也是贖金花的錢。他寧可拿自己去換。'},
  {type:'order',tag:'事件排序',q:'把這場審判的經過排好。',o:['法官問：「汝秦得參嗎？」','法官問他有沒有犯過罪','法官說他違犯度量衡規則','得參一再喊冤','法官說巡警的報告總沒有錯','科罰三塊錢，沒錢就坐監三天'],h:'從問名字開始，到判罰結束。',ex:'問名字、問前科、定罪、判罰，前後幾句話就結束了。喊冤沒有改變任何事。'},
- {type:'end',next:'第五關接著讀：參的妻子，本想洗完了衣裳，纔到當舖裡去，贖取那根金花……'},
+ {type:'end',next:'第七關接著讀：參的妻子，本想洗完了衣裳，纔到當舖裡去，贖取那根金花……'},
  ]}},
-{id:5,no:'第五關',name:'辭年',seal:'年',world:'village',range:'贖金、圍爐、元旦',music:'sad',
+{id:7,no:'第七關',name:'贖金花',seal:'贖',world:'village',range:'課本第六段',music:'sad',
  light:{hemi:[0xdde2e0,0x7a6a50,1.0],sun:[0xf2ead8,1.2,[10,20,8]],fog:[0xc9ccc4,16,70],sky:['#9aa6ae','#ccd0c8','#c9ccc4']},
  setup(W){W.goods.visible=true;W.MOM.g.visible=false;W.OLD.g.visible=false;W.LORD.g.visible=false;W.CAN.g.visible=false;W.KIDS.forEach(k=>k.g.visible=true);
   W.WIFE.g.visible=true;W.WIFE.g.position.set(-4.6,0,-2.2);W.WIFE.g.rotation.y=Math.PI/2;setPose(W.WIFE,'cry');W.NB.g.visible=true;W.NB.g.position.set(-4.3,0,-3.2);W.NB.g.rotation.y=-.3},
@@ -744,8 +763,12 @@ const LEVELS=[
  {type:'say',who:'can',t:'「我挑擔子回去，當舖怕要關閉了，快一點去，〔取出就回來罷〕。」'},
  {type:'quiz',tag:'推論',q:'妻子繳掉三塊錢把得參保出來，得參又把早上賺的三塊錢交給她。這筆錢要拿去做什麼？',o:['趕在當舖關門前贖回金花','再去繳一次罰款','買過年的年貨','還鄰居的稱仔'],h:'得參先問了什麼？「金花取回未？」',ex:'妻子把贖金花的錢拿去繳了罰款；得參又把最後的錢交出來贖金花。他們守住的，是對嫂子的信用。'},
  {type:'quiz',tag:'語氣',q:'「不犯到什麼事，不至殺頭怕什麼。」得參說這句話時，心裡是什麼感覺？',o:['悶悶不樂，嘴上逞強安慰妻子','很高興被放出來','覺得妻子不該來','害怕得說不出話'],h:'課文怎麼形容他說話的樣子？「怏怏地」。',ex:'嘴上說不怕，心裡卻悶著。這股悶氣，一路帶回了家。'},
- {type:'scene',world:'village',light:{hemi:[0x4a5a80,0x1a1a20,.5],sun:[0x9ab0e0,.5,[-8,20,6]],fog:[0x1c2230,8,46],sky:['#0b1020','#1c2438','#1c2230'],exp:1.15},start:{x:0,z:4,yaw:.6},
-  setup(W){W.lamp(true);W.walkers.forEach(p=>p.g.visible=false);W.goods.visible=true;W.KIDS.forEach(k=>k.g.visible=false);W.NB.g.visible=false;W.MOM.g.visible=false;W.OLD.g.visible=false;W.LORD.g.visible=false;W.WIFE.g.visible=true;setPose(W.WIFE,null);W.WIFE.g.position.set(-5.8,0,-1.5);W.WIFE.g.rotation.y=Math.PI/2;W.CAN.g.visible=true;W.CAN.g.position.set(-3.7,0,-3);W.pace=true}},
+  {type:'end',next:'第八關接著讀：圍過爐，孩子們因明早要絕早起來開正……'},
+ ]}},
+ {id:8,no:'第八關',name:'辭年',seal:'辭',world:'village',range:'課本第七段',music:'sad',start:{x:0,z:4,yaw:.6},
+ light:{hemi:[0x4a5a80,0x1a1a20,.5],sun:[0x9ab0e0,.5,[-8,20,6]],fog:[0x1c2230,8,46],sky:['#0b1020','#1c2438','#1c2230'],exp:1.15},
+ setup(W){W.lamp(true);W.walkers.forEach(p=>p.g.visible=false);W.goods.visible=true;W.KIDS.forEach(k=>k.g.visible=false);W.NB.g.visible=false;W.MOM.g.visible=false;W.OLD.g.visible=false;W.LORD.g.visible=false;W.WIFE.g.visible=true;setPose(W.WIFE,null);W.WIFE.g.position.set(-5.8,0,-1.5);W.WIFE.g.rotation.y=Math.PI/2;W.CAN.g.visible=true;W.CAN.g.position.set(-3.7,0,-3);W.pace=true},
+ steps:W=>[
  {type:'goto',task:'除夕夜，圍過爐之後',prompt:'看看還沒睡的得參',at:V3(-1.9,0,-3),objs:[W.CAN.g],cam:{pos:[-1.3,1.6,-5.4],look:[-4,1.1,-2.6]}},
  ...para(99,{mark:['不明瞭的悲哀','人不像個人，畜生，誰願意做','這是什麼世間','他母親死時，快樂的容貌','最後的覺悟']}),
  {type:'quiz',tag:'前後呼應',q:'得參說「人不像個人，畜生，誰願意做」，這裡的「畜生」呼應了前面哪裡？',o:['巡警兩次罵他「畜生」','母親生前罵過他','法官判決時罵他','妻子跟他吵架'],h:'在市場上，是誰對得參說「畜生」？',ex:'被當成畜生對待，得參不願這樣活下去。一個詞，把前面的屈辱全都收了回來。'},
@@ -753,12 +776,12 @@ const LEVELS=[
  {type:'scene',world:'dark',light:DARK,after:()=>snd('gong',.45)},
  ...para(101,{mark:['什麼都沒有嗎？','只銀紙備辦在']}),
  ...para(103,{mark:['一個夜巡的警吏，被殺在道上']}),
- {type:'quiz',tag:'推論',q:'「只銀紙備辦在，別的什麼都沒有。」這句話暗示了什麼？',o:['得參已經過世，家裡只剩祭拜亡者的銀紙','家裡準備要拜神明','家裡的年貨被偷了','家裡賺了很多錢'],h:'銀紙是拜什麼用的？第二關得參買的是「金銀紙」。',ex:'作者不直接寫得參的死，只讓讀者聽見哭聲和這一句話。'},
+ {type:'quiz',tag:'推論',q:'「只銀紙備辦在，別的什麼都沒有。」這句話暗示了什麼？',o:['得參已經過世，家裡只剩祭拜亡者的銀紙','家裡準備要拜神明','家裡的年貨被偷了','家裡賺了很多錢'],h:'銀紙是拜什麼用的？第三關得參買的是「金銀紙」。',ex:'作者不直接寫得參的死，只讓讀者聽見哭聲和這一句話。'},
  {type:'quiz',tag:'寫作手法',q:'作者把兩件事「同時」寫出來：元旦得參家的哭聲，和夜巡的警吏被殺。這樣安排的用意是什麼？',o:['不直接說明，讓讀者自己把兩件事連起來','說明兩件事毫無關係','報導一則治安新聞','交代過年的熱鬧'],h:'「同時」兩個字，把哪兩件事放在一起？',ex:'結局留白。沒有寫誰做了什麼，讀者卻已經明白。'},
  ...para(107,{mark:['凡強權行使的地上，總會發生']}),
  {type:'quiz',tag:'主旨',q:'作者在後記說，這樣的事「不一定在未開的國裡，凡強權行使的地上，總會發生」。他想告訴讀者什麼？',o:['這不只是得參一個人的悲劇，強權壓迫的地方都可能發生','這件事只會發生在臺灣','這是一個編出來的故事','法國也有一樣的巡警'],h:'「凡……總會……」是在說個別的事，還是普遍的事？',ex:'得參的故事是一個例子。作者要讀者看見的，是強權底下所有被當作「畜生」的人。'},
  {type:'end',last:true,next:'全文讀完了。'},
- ]}},
+ ]},
 ];
 
 // ===== 聲音 =====
@@ -771,7 +794,7 @@ function ambience(n){if(ambName===n)return;fadeOut(amb);ambName=n;amb=n?snd(n,.3
 // ===== 流程 =====
 let mode='title',step=0,hp=100,target=null,near=false,busy=false,W=null,LVL=null,STEPS=[],shake=0,curGoto=null;
 const cine={pos:V3(),look:V3(),cur:V3()};
-const SAVE='scr-v2';
+const SAVE='scr-v3';
 const load=()=>{try{return JSON.parse(localStorage.getItem(SAVE))||{}}catch(e){return{}}};
 const store=d=>{try{localStorage.setItem(SAVE,JSON.stringify(d))}catch(e){}};
 function save(){const d=load();d.cur=d.cur||{};d.cur[LVL.id]={step,hp};store(d)}
@@ -894,7 +917,7 @@ async function begin(L,at=0,h=100){
  busy=false;shake=0;LVL=L;useWorld(L.world);setLight(L.light);W.base&&W.base();L.setup(W);STEPS=L.steps(W,getWorld);step=at;setHP(h);closePanel();$('#dlg').classList.add('hide');
  $('#seal').textContent=L.seal;$('#lvNo').textContent=L.no+'・'+L.range;$('#lvName').textContent=L.name;
  ['#hudL','#hudR','#side'].forEach(s=>$(s).classList.remove('hide'));$('#title').classList.add('hide');
- PL.x=W.start.x;PL.z=W.start.z;PL.yaw=W.start.yaw;PL.pitch=-.03;mode='title';
+ const st0=L.start||W.start;PL.x=st0.x;PL.z=st0.z;PL.yaw=st0.yaw||0;PL.pitch=-.03;mode='title';
  ambience(W.amb);music(null);
  // 從存檔接續：把前面步驟的動作快轉做完，鏡頭放到最近的地點
  let lastGoto=null,lastCam=null;for(let i=0;i<at;i++){const s=STEPS[i];if(s.type==='scene'){await applyScene(s,true);s.after&&s.after(W);lastGoto=lastCam=null}else if(s.type==='goto'){lastGoto=s;lastCam=s.cam||null;if(s.act)s.act()}else{if(s.cam)lastCam=s.cam;if(s.act)await s.act(true)}}
