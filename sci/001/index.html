@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>地科天文期刊導讀 第 1 期</title>
+<meta name="description" content="本期四篇：2026 超強聖嬰與 1997 的衛星對照、巴拿馬 Mw 7.7 地震山崩與太魯閣的對照、白矮星吞食自己生出的第二代行星、三個沒有暗物質的幽靈星系。英文原文為主，中文導讀為輔。">
+<meta property="og:title" content="地科天文期刊導讀 第 1 期">
+<meta property="og:description" content="超強聖嬰 vs 1997｜巴拿馬地震山崩與太魯閣｜白矮星吃掉自己生的行星｜沒有暗物質的三個幽靈星系">
+<meta property="og:type" content="article">
+<style>
+:root{
+  --bg:#f7f5ef;--card:#ffffff;--ink:#1d1d1b;--muted:#5c5a54;--line:#e3dfd3;
+  --geo:#1f6f5f;--geo-bg:#e3f1ec;--astro:#3b3f8f;--astro-bg:#e7e8f6;
+  --adv:#9a4a12;--adv-bg:#f8e8d8;--quote:#f3efe3;--link:#1a5bb5;--tw:#b03a3a;--tw-bg:#fbeaea;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#15161a;--card:#1f2127;--ink:#ececea;--muted:#b4b3ad;--line:#33363e;
+    --geo:#7fd1b9;--geo-bg:#1d332d;--astro:#a9adf0;--astro-bg:#272a4a;
+    --adv:#f0b07a;--adv-bg:#3d2a1a;--quote:#262830;--link:#8ab8ff;--tw:#ff9c9c;--tw-bg:#3a2222;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15161a;--card:#1f2127;--ink:#ececea;--muted:#b4b3ad;--line:#33363e;
+  --geo:#7fd1b9;--geo-bg:#1d332d;--astro:#a9adf0;--astro-bg:#272a4a;
+  --adv:#f0b07a;--adv-bg:#3d2a1a;--quote:#262830;--link:#8ab8ff;--tw:#ff9c9c;--tw-bg:#3a2222;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei","Helvetica Neue",Arial,sans-serif;font-weight:600;line-height:1.75;font-size:17px}
+a{color:var(--link);text-decoration-thickness:1px;text-underline-offset:3px}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px 64px}
+header.top{padding:40px 0 16px}
+header.top .brand{font-size:14px;letter-spacing:.12em;color:var(--muted)}
+header.top h1{font-size:30px;line-height:1.3;margin:6px 0 8px}
+header.top p{margin:0;color:var(--muted)}
+nav.toc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin:18px 0 28px}
+nav.toc ol{margin:0;padding-left:22px}
+nav.toc li{margin:4px 0}
+nav.toc a{text-decoration:none}
+nav.toc .tag{font-size:12px;margin-right:6px}
+.how{border-left:4px solid var(--line);padding:4px 16px;color:var(--muted);font-size:15px;margin:0 0 32px}
+.how p{margin:6px 0}
+article{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 20px 10px;margin:0 0 36px}
+@media(min-width:640px){article{padding:30px 32px 16px}}
+.kicker{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--muted);margin-bottom:12px}
+.tag{display:inline-block;padding:2px 10px;border-radius:999px;font-size:13px;font-weight:700;line-height:1.6}
+.tag.geo{background:var(--geo-bg);color:var(--geo)}
+.tag.astro{background:var(--astro-bg);color:var(--astro)}
+.tag.adv{background:var(--adv-bg);color:var(--adv)}
+.tag.base{background:var(--quote);color:var(--muted)}
+article h2{font-size:25px;line-height:1.35;margin:0 0 4px}
+article h3.en{font-size:17px;font-weight:600;font-style:italic;color:var(--muted);margin:0 0 14px;font-family:Georgia,"Times New Roman",serif}
+.src{font-size:14px;color:var(--muted);border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);padding:10px 0;margin:0 0 18px}
+.src .go{display:inline-block;margin-top:4px;font-weight:700}
+figure{margin:0 0 20px}
+figure img{width:100%;height:auto;border-radius:10px;display:block;background:#000}
+figure .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:520px){figure .two{grid-template-columns:1fr}}
+figcaption{font-size:13px;color:var(--muted);line-height:1.6;margin-top:8px}
+h4{font-size:15px;letter-spacing:.08em;color:var(--muted);margin:26px 0 8px;text-transform:uppercase}
+h4::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--muted);margin-right:8px;vertical-align:1px}
+article.geo h4::before{background:var(--geo)}
+article.astro h4::before{background:var(--astro)}
+ol.sum{padding-left:22px;margin:0}
+ol.sum li{margin:8px 0}
+blockquote.en{background:var(--quote);border-radius:12px;padding:16px 18px;margin:0 0 10px;font-family:Georgia,"Times New Roman",serif;font-size:17px;line-height:1.7}
+blockquote.en p{margin:0 0 10px}
+blockquote.en p:last-child{margin:0}
+.zh{padding:0 6px;color:var(--ink)}
+.zh p{margin:0 0 10px}
+dl.terms{margin:0;display:grid;grid-template-columns:1fr;gap:6px 0}
+dl.terms div{display:grid;grid-template-columns:minmax(120px,36%) 1fr;gap:10px;border-bottom:1px solid var(--line);padding:7px 0}
+dl.terms dt{margin:0;font-weight:700}
+dl.terms dt small{display:block;font-weight:600;color:var(--muted);font-size:13px}
+dl.terms dd{margin:0;color:var(--ink);font-size:15.5px}
+ul.open{padding-left:22px;margin:0}
+ul.open li{margin:6px 0}
+.tw{background:var(--tw-bg);border-radius:12px;padding:14px 16px}
+.tw h4{margin-top:0;color:var(--tw)}
+.tw h4::before{background:var(--tw)}
+.tw p{margin:0 0 10px}
+.tw p:last-child{margin:0}
+.ask{border:2px solid var(--line);border-radius:12px;padding:12px 16px;margin:18px 0 0}
+.ask b{display:block;margin-bottom:4px}
+details.check{margin:22px -4px 10px;border-top:1px solid var(--line);padding-top:8px}
+details.check summary{cursor:pointer;color:var(--muted);font-size:14px;padding:6px 4px}
+details.check table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px}
+details.check th,details.check td{text-align:left;vertical-align:top;padding:6px 6px;border-bottom:1px solid var(--line)}
+details.check th{color:var(--muted);font-weight:700;white-space:nowrap}
+details.check td:first-child{width:38%}
+details.check .warn{color:var(--tw);font-weight:700}
+section.next{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 20px;margin:0 0 28px}
+section.next h2{font-size:22px;margin:0 0 6px}
+section.next p.lead{color:var(--muted);margin:0 0 12px}
+section.next ol{padding-left:24px;margin:0}
+section.next li{margin:10px 0}
+section.next li b{display:block}
+section.next li span{color:var(--muted);font-size:15px}
+footer{font-size:13.5px;color:var(--muted);line-height:1.7;border-top:1px solid var(--line);padding-top:16px}
+footer p{margin:6px 0}
+.back{font-size:14px;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="brand">地科天文期刊導讀 · EARTH &amp; SPACE READER</div>
+  <h1>第 1 期</h1>
+  <p>115 學年 10 月 25 日出刊 · 地科 2 篇、天文 2 篇 · 原文全部可免費閱讀</p>
+</header>
+
+<nav class="toc">
+  <ol>
+    <li><a href="#a1"><span class="tag geo">地科</span>超強聖嬰：2026 對照 1997，衛星看到幾乎一樣的太平洋</a></li>
+    <li><a href="#a2"><span class="tag geo">地科</span>巴拿馬 Mw 7.7 地震的山崩，和太魯閣的對照</a></li>
+    <li><a href="#a3"><span class="tag astro">天文</span>白矮星正在吃掉它自己生出來的行星</a></li>
+    <li><a href="#a4"><span class="tag astro">天文</span><span class="tag adv">進階</span>三個沒有暗物質的幽靈星系，反而證明暗物質是「東西」</a></li>
+  </ol>
+</nav>
+
+<div class="how">
+  <p><b>怎麼讀</b>：每篇先看「三句話」，再讀英文「關鍵段」，然後點「讀原文」去讀完整英文。中文只是導讀，不是全譯。</p>
+  <p>讀完看「還沒解決的問題」，那才是真正有趣的地方。最後的「校對紀錄」列出導讀裡每個數字出自原文哪一段，歡迎抓錯。</p>
+</div>
+
+<!-- ======================= A1 ======================= -->
+<article id="a1" class="geo">
+  <div class="kicker"><span class="tag geo">地科 · 海洋與大氣</span><span class="tag base">基礎</span><span>原文約 1,200 字 · 8 分鐘</span></div>
+  <h2>超強聖嬰：2026 對照 1997，衛星看到幾乎一樣的太平洋</h2>
+  <h3 class="en">El Niño Then and Now</h3>
+  <div class="src">
+    NASA Earth Observatory（Image of the Day）· 2026-10-23 · 文 Kathryn Hansen，圖 Lauren Dauphin<br>
+    <a class="go" href="https://science.nasa.gov/earth/earth-observatory/el-nino-then-and-now/" target="_blank" rel="noopener">讀原文 →</a>
+  </div>
+
+  <figure>
+    <div class="two">
+      <img src="img/enso1997.jpg" alt="1997 年 10 月 13 日太平洋海面高度距平圖，赤道中東太平洋呈大片紅色" width="1000" height="756">
+      <img src="img/enso2026.jpg" alt="2026 年 10 月 12 日太平洋海面高度距平圖，赤道中東太平洋同樣呈大片紅色延伸到南美洲" width="1000" height="756">
+    </div>
+    <figcaption>左：1997 年 10 月 13 日（TOPEX/Poseidon 衛星）。右：2026 年 10 月 12 日（Sentinel-6 Michael Freilich 衛星）。紅色是海面比平均高、藍色比平均低，季節與長期趨勢訊號已扣除。圖：NASA Earth Observatory / Lauren Dauphin，資料 NASA/JPL-Caltech。NASA 圖像為公有領域。</figcaption>
+  </figure>
+
+  <h4>三句話</h4>
+  <ol class="sum">
+    <li>NASA 用 35 年不間斷的衛星測高紀錄，把 2026 年 10 月的太平洋海面高度和 1997 年 10 月並排比較：紅色的高海面區從太平洋中部一路貼到南美洲沿岸，兩張圖形狀極為相似。</li>
+    <li>海水變暖會膨脹，所以赤道中東太平洋海面偏高，就是熱量在那裡堆積的證據。NASA 噴射推進實驗室的海平面計畫科學家 Josh Willis 說，這一次「正朝著比 1997 年更大的方向走」。</li>
+    <li>美國 NOAA 10 月 8 日的展望給出 83% 的機率，認為強到極強的聖嬰會持續到 2027 年的前三個月；但 Willis 強調大氣是混沌的，「長得像 1997 不代表結果會一樣」。</li>
+  </ol>
+
+  <h4>原文關鍵段</h4>
+  <blockquote class="en" lang="en">
+    <p>Every El Niño grows from a feedback loop between the atmosphere and the ocean. Trade winds normally keep warm water piled up in the western Pacific, where it stands higher than in the east. When those winds weaken, that warm water begins to pulse eastward, which further weakens and sometimes reverses the winds, allowing even more warm water to move east. The cycle intensifies as waters continue to warm and pile up in the central and eastern Pacific.</p>
+  </blockquote>
+  <div class="zh">
+    <p>每一次聖嬰都是從大氣與海洋之間的回饋循環長出來的。信風平常把暖水堆在西太平洋，那裡的海面比東邊高。信風一旦減弱，暖水就開始一波波往東推，這又進一步削弱、有時甚至反轉信風，讓更多暖水東移。海水持續變暖、在中東太平洋越堆越多，循環就越演越烈。</p>
+  </div>
+
+  <h4>術語表</h4>
+  <dl class="terms">
+    <div><dt>El Niño<small>聖嬰現象</small></dt><dd>赤道中東太平洋海溫異常偏暖，大約每 2 到 7 年一次；西班牙文「小男孩」，原指聖誕節前後出現在秘魯外海的暖流。</dd></div>
+    <div><dt>ENSO<small>聖嬰—南方震盪</small></dt><dd>El Niño–Southern Oscillation。海洋的聖嬰／反聖嬰，加上大氣東西太平洋氣壓翹翹板，合起來的整套循環。</dd></div>
+    <div><dt>trade winds<small>信風</small></dt><dd>赤道兩側常年由東往西吹的風，平常把暖水推向西太平洋。</dd></div>
+    <div><dt>feedback loop<small>回饋循環</small></dt><dd>結果反過來加強原因：風弱→暖水東移→風更弱。</dd></div>
+    <div><dt>satellite altimetry<small>衛星測高</small></dt><dd>衛星用雷達量自己到海面的距離，反推海面高度，精度到公分。</dd></div>
+    <div><dt>sea surface height anomaly<small>海面高度距平</small></dt><dd>實際海面高度減去平均值。圖上紅色偏高、藍色偏低。</dd></div>
+    <div><dt>TOPEX/Poseidon → Jason → Sentinel-6<small>測高衛星接力</small></dt><dd>1992 年起接力飛行、軌道幾乎相同的衛星系列，所以 35 年的資料可以直接拿來比。</dd></div>
+    <div><dt>NOAA<small>美國國家海洋暨大氣總署</small></dt><dd>發布 ENSO 官方展望的機構，相當於台灣的中央氣象署。</dd></div>
+    <div><dt>chaotic<small>混沌的</small></dt><dd>系統對初始條件極敏感，小差異會放大，所以聖嬰的遠端影響無法精準預報。</dd></div>
+  </dl>
+
+  <h4>為什麼重要</h4>
+  <p>課本裡的聖嬰圖，今年正在真實上演，而且強度是有紀錄以來最前段。這篇特別的地方是用「海面高度」而不是常見的「海溫」來看聖嬰，兩者背後是同一件事：水熱了就膨脹、就變高。另外它提醒你：同樣叫超強聖嬰，1997 和 2015 的暖水分布不同，帶來的雨落在不同地方。</p>
+
+  <h4>還沒解決的問題</h4>
+  <ul class="open">
+    <li>為什麼 2026 這次「來得比 1997 突然得多」？原文只陳述現象，沒有解釋。</li>
+    <li>Willis 說「這裡總有一點擲骰子的成分」：暖水分布像 1997，冬天的天氣就會像 1997 嗎？2015 的例子說不一定。</li>
+    <li>聖嬰的訊號離開熱帶後會「糊掉」，所以台灣這種中緯度地區受到的影響，比赤道附近更難預測。</li>
+  </ul>
+
+  <div class="tw">
+    <h4>台灣連結</h4>
+    <p>中央氣象署 10 月 16 日公布：2026 聖嬰已達「超強」等級，海洋聖嬰指標 ONI 來到 2.2，是 1950 年以來同期最高；9 月赤道太平洋換日線以東到南美沿岸的海溫普遍比平均高 2.5°C 以上，預估冬季達到高峰、延續到明年春季。氣象署的分級是：弱 0.5–0.9、中 1.0–1.4、強 1.5–1.9、超強 ≥2.0（ONI 是 Niño 3.4 海區海溫距平的三個月滑動平均）。</p>
+    <p>氣象署預報中心主任黃椿喜 10 月 24 日補充：強聖嬰年台灣與菲律賓附近容易出現反氣旋式異常，秋冬侵台颱風偏少、颱風容易提早北轉，但颱風生成位置偏東、海上時間長，反而容易長成強颱；冬季東北風偏弱、可能是暖冬，但暖冬不代表沒有強寒流；春天西南風異常則可能讓春雨偏多。</p>
+    <p>原始資料：氣象署臉書「報氣候」聖嬰展望；新聞整理見 <a href="https://www.ettoday.net/news/20261016/3255545.htm" target="_blank" rel="noopener">ETtoday 10/16</a>、<a href="https://www.ettoday.net/news/20261024/3258491.htm" target="_blank" rel="noopener">ETtoday 10/24</a>。</p>
+  </div>
+
+  <div class="ask"><b>一個問題</b>NASA 用「海面高度」、氣象署用「海溫」判定聖嬰，兩個指標為什麼會一致？什麼情況下可能不一致？</div>
+
+  <details class="check">
+    <summary>校對紀錄：導讀裡的每個數字出自原文哪裡</summary>
+    <table>
+      <tr><th>導讀說法</th><th>原文依據</th></tr>
+      <tr><td>35 年衛星測高紀錄</td><td>副標 "A 35-year satellite altimetry record" 與 Willis 引言 "we have a 35-year record from nearly identical satellites"。</td></tr>
+      <tr><td>每 2 到 7 年一次；1997-98、2015-16 是最近的極強事件</td><td>正文第 1 段 "occurs roughly every two to seven years… The most recent very strong El Niño events, in 1997-98 and 2015-16"。</td></tr>
+      <tr><td>1997-10-13 TOPEX/Poseidon；2026-10-12 Sentinel-6；2015-10-12 Jason-2</td><td>第 4 段 "The maps above depict… October 13, 1997… October 12, 2026… TOPEX/Poseidon… Sentinel-6 Michael Freilich" 與 2015 圖說 "October 12, 2015… Jason-2"。</td></tr>
+      <tr><td>「比 1997 更大」</td><td>Willis 引言 "right now, this one is on track to be even bigger."</td></tr>
+      <tr><td>來得比 1997 突然</td><td>"Compared with the 1997-98 event, El Niño in 2026 came on much more suddenly."</td></tr>
+      <tr><td>NOAA 10/8：83%、強到極強、到 2027 前三個月</td><td>倒數第 2 段 "NOAA's El Niño outlook on October 8, 2026, called for an 83 percent chance of a strong-to-very strong El Niño through the first three months of 2027." NASA 10/15 另一篇寫法是「83% 機率正在發生 1950 年以來最強的聖嬰」，措辭不同，本文採 Earth Observatory 版本。</td></tr>
+      <tr><td>擲骰子、糊掉</td><td>"There's always a bit of a dice roll here"；"the signal can get muddled as it extends beyond the tropics"。</td></tr>
+      <tr><td>台灣：ONI 2.2、1950 以來同期最高、+2.5°C、分級</td><td>ETtoday 2026-10-16 引氣象署臉書「報氣候」。</td></tr>
+      <tr><td>台灣：颱風北轉、強颱、暖冬、春雨</td><td>ETtoday 2026-10-24 引預報中心主任黃椿喜。</td></tr>
+    </table>
+  </details>
+</article>
+
+<!-- ======================= A2 ======================= -->
+<article id="a2" class="geo">
+  <div class="kicker"><span class="tag geo">地科 · 地震與山崩</span><span class="tag base">基礎</span><span>原文約 340 字 · 3 分鐘（加太魯閣篇約 8 分鐘）</span></div>
+  <h2>巴拿馬 Mw 7.7 地震的山崩，和太魯閣的對照</h2>
+  <h3 class="en">Landslides triggered by the 9 October 2026 Mw 7.7 earthquake in Panama</h3>
+  <div class="src">
+    Eos《The Landslide Blog》· 2026-10-21 · 作者 Dave Petley（英國赫爾大學校長，山崩研究者）<br>
+    <a class="go" href="https://eos.org/thelandslideblog/9-october-2026-panama-earthquake" target="_blank" rel="noopener">讀原文 →</a>
+    <a class="go" href="https://eos.org/thelandslideblog/taiwan-earthquake-2" target="_blank" rel="noopener">同作者 2024-04-04 寫太魯閣 →</a>
+  </div>
+
+  <figure>
+    <img src="img/panama.jpg" alt="哨兵二號衛星影像，綠色森林山區布滿淺褐色的細小山崩疤痕" width="1024" height="647">
+    <figcaption>2026 年 10 月 18 日 Sentinel-2 L2A 影像，巴拿馬阿蘇埃羅半島震央附近，淺褐色斑點都是地震觸發的山崩。影像：Copernicus Sentinel data 2026，依 CC BY-SA 3.0 IGO 使用；取自 Eos 原文。</figcaption>
+  </figure>
+
+  <h4>三句話</h4>
+  <ol class="sum">
+    <li>10 月 9 日巴拿馬阿蘇埃羅半島發生 Mw 7.7 的淺層地震（深度 12.6 公里），因為人口稀少，傷亡很少；但歐洲 Sentinel-2 衛星 10 月 18 日的影像顯示，震央附近出現密密麻麻的山崩。</li>
+    <li>這些主要是茂密森林區的淺層山崩，而且沒有變成沿著河道流動的土石流。作者說，這正是「地震觸發」而不是「降雨觸發」的特徵。</li>
+    <li>山崩最密集的區域，和美國地質調查所 USGS 的 PAGER 地面破壞模型事前算出的位置吻合。巴拿馬大學初步已標出 2,351 處山崩；今年巴拿馬反常乾旱（可能與聖嬰有關），下一波大雨來時，這些山崩可能擴大或再被沖下來。</li>
+  </ol>
+
+  <h4>原文關鍵段</h4>
+  <blockquote class="en" lang="en">
+    <p>Imagery from 9 September 2026 shows that this is an area that had limited numbers of landslides before the earthquake. These appear to be primarily shallow landslides in area of dense forestry. Note that they have not translated into channelised debris flows – this reflects the seismic rather than rainfall triggering.</p>
+    <p>Interestingly, this cluster of landslides, which is close to the epicentre, corresponds to the area of densest landslides forecast by the USGS PAGER ground failure model for this earthquake, which shows how good this model has become.</p>
+  </blockquote>
+  <div class="zh">
+    <p>9 月 9 日的影像顯示，這個地區在地震前只有少量山崩。這些看起來主要是茂密林區裡的淺層山崩。注意它們並沒有轉變成沿河道流動的土石流，這反映出觸發原因是地震而不是降雨。</p>
+    <p>有意思的是，這一群靠近震央的山崩，位置正好對應 USGS 的 PAGER 地面破壞模型對這次地震預測山崩最密集的區域，可見這個模型已經變得多準。</p>
+  </div>
+
+  <h4>術語表</h4>
+  <dl class="terms">
+    <div><dt>Mw<small>地震矩規模</small></dt><dd>moment magnitude，依斷層錯動釋放的能量定義，國際論文慣用。台灣氣象署報的是芮氏規模 ML：0403 花蓮地震氣象署報 ML 7.2，USGS 報 Mw 7.4，是同一場地震的兩種量法。</dd></div>
+    <div><dt>shallow earthquake<small>淺層地震</small></dt><dd>震源深度淺，地表搖得更劇烈，更容易引發山崩。</dd></div>
+    <div><dt>epicentre<small>震央</small></dt><dd>震源正上方的地表位置。英式拼法 epicentre，美式 epicenter。</dd></div>
+    <div><dt>coseismic landslide<small>同震山崩</small></dt><dd>地震搖晃當下觸發的山崩；之後下雨再崩的叫 post-seismic。</dd></div>
+    <div><dt>channelised debris flow<small>渠道化土石流</small></dt><dd>土石進入河道、混水後像流體一樣流動，通常需要大量的水。</dd></div>
+    <div><dt>Sentinel-2<small>哨兵二號</small></dt><dd>歐洲哥白尼計畫的光學衛星，解析度 10 公尺，影像免費開放，高中生也能下載。</dd></div>
+    <div><dt>USGS PAGER ground failure model<small>地面破壞模型</small></dt><dd>地震後幾小時內自動估計山崩與土壤液化可能分布的系統。</dd></div>
+    <div><dt>relief<small>地形起伏</small></dt><dd>一個區域內高低差的大小；起伏大代表坡陡，山崩潛勢高。</dd></div>
+  </dl>
+
+  <h4>為什麼重要</h4>
+  <p>衛星影像現在是地震後幾天內盤點山崩的標準工具，而且資料免費。更重要的是這篇示範了一種「讀影像的眼睛」：看山崩有沒有連成土石流，就能判斷它是地震還是降雨造成；拿事後影像去對事前的模型預測，就能檢驗模型準不準。這兩件事，有電腦就能做。</p>
+
+  <h4>還沒解決的問題</h4>
+  <ul class="open">
+    <li>雨季真的來的時候，這些山崩會不會「第二波」？作者只說「可能會」。</li>
+    <li>2,351 處是新聞報導轉述的初步數字，正式論文還沒發表，作者自己也在等。</li>
+    <li>PAGER 模型這次很準，但在台灣這種峽谷岩壁地形也一樣準嗎？</li>
+  </ul>
+
+  <figure>
+    <img src="img/taiwan4.jpg" alt="USGS 山崩潛勢圖，花蓮以西到太魯閣一帶的山區呈深紫色，代表最高潛勢" width="642" height="707">
+    <figcaption>2024 年 4 月 3 日花蓮地震後，USGS 同一套模型的山崩潛勢圖，深紫色代表潛勢最高，太魯閣峽谷正在其中。圖：USGS（美國政府作品，公有領域），取自 Dave Petley 的太魯閣篇。</figcaption>
+  </figure>
+
+  <div class="tw">
+    <h4>台灣連結：太魯閣</h4>
+    <p>同一位作者在 0403 地震隔天（2024 年 4 月 4 日）就寫了太魯閣。他的判斷是：這場地震的主要傷亡來自山崩而不是房屋倒塌，「這證明了台灣的防震準備程度」；而 USGS 同一套模型把太魯閣標在山崩潛勢最高的區域。Planet Labs 衛星在震後不到兩小時拍到峽谷上空滿是揚起的粉塵，證實大量岩崩。</p>
+    <p>後來發表在《Landslides》期刊的論文（Chen 等人，2025，<a href="https://doi.org/10.1007/s10346-025-02465-3" target="_blank" rel="noopener">doi:10.1007/s10346-025-02465-3</a>）用衛星影像數出 0403 地震引發 1,243 處山崩、總面積約 21.5 平方公里；山崩集中在海拔 800–2,000 公尺、朝東與東南、坡度 40–45°、植被稀疏的坡面，岩性以片岩和片麻岩為主，最大地動加速度 0.42–0.44 g 的地方崩得最多。整份山崩清冊公開在 GitHub（ImagingGeodesy/Hualien-coseismic-landslides）。</p>
+  </div>
+
+  <div class="ask"><b>一個問題</b>巴拿馬是森林區的淺層山崩，太魯閣是峽谷岩崩，同樣是地震觸發，為什麼長得不一樣？想想岩性、坡度、植被各扮演什麼角色。</div>
+
+  <details class="check">
+    <summary>校對紀錄：導讀裡的每個數字出自原文哪裡</summary>
+    <table>
+      <tr><th>導讀說法</th><th>原文依據</th></tr>
+      <tr><td>10/9、Mw 7.7、阿蘇埃羅半島、深度 12.6 km、傷亡少</td><td>第 1 段 "On 9 October 2026, a Mw 7.7 earthquake struck the Azuero Peninsula… depth = 12.6 km… the low population density meant that the loss of life was minimal."</td></tr>
+      <tr><td>10/18 Sentinel-2 影像、山崩密集</td><td>第 2 段 "captured a good image… on 18 October 2026… a very dense area of landslides"。</td></tr>
+      <tr><td>9/9 影像、淺層、森林、沒有土石流、地震觸發</td><td>第 3 段（即關鍵段）。</td></tr>
+      <tr><td>PAGER 模型吻合</td><td>第 4 段（即關鍵段）。</td></tr>
+      <tr><td>雨季 5–12 月、乾旱、可能與聖嬰有關、下次大雨可能再崩</td><td>第 5 段 "The rainy season in Panama runs from May to December… severe drought… possibly associated with El Nino… The next period of heavy rainfall is likely to see significant additional landslide occurrence."</td></tr>
+      <tr><td>2,351 處</td><td>第 6 段 "News reports suggest that they have mapped 2,351 landslides to date."　<span class="warn">注意：作者標明是新聞轉述，不是論文數字。</span></td></tr>
+      <tr><td>太魯閣：傷亡來自山崩、防震準備、USGS 潛勢圖、Planet Labs 兩小時內影像、粉塵</td><td>Eos 太魯閣篇（2024-04-04）第 1、4、5、7 段。</td></tr>
+      <tr><td>0403：ML 7.2 / Mw 7.4</td><td>Mw 7.4 見 Landslides 論文摘要與 Eos 太魯閣篇；ML 7.2 為氣象署公布規模，Chang 等人 2024 的論文標題也用 M7.2。</td></tr>
+      <tr><td>1,243 處、21.5 km²、800–2,000 m、40–45°、PGA 0.42–0.44 g、片岩片麻岩、GitHub 清冊</td><td>Springer 論文頁摘要與資料可用性聲明。<span class="warn">全文需付費，本導讀只讀了摘要。</span></td></tr>
+    </table>
+  </details>
+</article>
+
+<!-- ======================= A3 ======================= -->
+<article id="a3" class="astro">
+  <div class="kicker"><span class="tag astro">天文 · 恆星演化與系外行星</span><span class="tag base">基礎</span><span>原文約 900 字 · 6 分鐘</span></div>
+  <h2>白矮星正在吃掉它自己生出來的行星</h2>
+  <h3 class="en">White Dwarf Spotted Devouring the Planet It Birthed</h3>
+  <div class="src">
+    Eos（新聞）· 2026-10-20 · 作者 Matthew R. Francis · 論文：Williams 等人，<i>Nature Astronomy</i>，<a href="https://doi.org/10.1038/s41550-026-02983-7" target="_blank" rel="noopener">doi:10.1038/s41550-026-02983-7</a>（<a href="https://arxiv.org/abs/2610.07161" target="_blank" rel="noopener">arXiv 免費版</a>）<br>
+    <a class="go" href="https://eos.org/articles/white-dwarf-spotted-devouring-the-planet-it-birthed" target="_blank" rel="noopener">讀原文 →</a>
+  </div>
+
+  <figure>
+    <img src="img/pia19346.jpg" alt="示意圖：一顆發紅光的巨行星繞著遠方的白色小亮點公轉" width="1200" height="675">
+    <figcaption>示意圖，不是本研究的天體：NASA 2015 年繪製的「回春行星」想像圖，一顆巨行星吸收白矮星吐出的物質後重新發熱。本文主角 HS 0209+0832 的情境相反，是白矮星在蒸發行星的大氣。圖：NASA/JPL-Caltech（公有領域）。</figcaption>
+  </figure>
+
+  <h4>三句話</h4>
+  <ol class="sum">
+    <li>英國華威大學 Jamie Williams 團隊在白矮星 HS 0209+0832 的大氣裡找到大量鋅、銅、鈮，鈮更是第一次在白矮星中被發現；這種成分不像太陽系任何已知天體，也不像以前看過的任何「被污染」的白矮星。</li>
+    <li>團隊認為最可能的解釋是：恆星臨死時吐出的氣體在白矮星周圍形成盤面，凝聚成一顆「第二代行星」；而現在白矮星的高溫正在蒸發這顆行星的大氣，把它吃進自己的大氣裡。</li>
+    <li>TESS 衛星看到整個系統的亮度以 4.4 天的週期微微變化，團隊認為是行星日夜面輪流朝向地球造成的，暗示它是一顆貼著白矮星公轉的「熱木星」。下一步想用韋伯望遠鏡直接看到它。</li>
+  </ol>
+
+  <h4>原文關鍵段</h4>
+  <blockquote class="en" lang="en">
+    <p>When astronomers see chemical elements heavier than hydrogen and helium in a white dwarf's atmosphere, it's likely "pollution" from a planet. The planet might have been destroyed when the star died—Earth's possible fate when our own Sun goes kerplooie in 5 billion years or so—or might be a survivor from the original star system.</p>
+    <p>These data together indicate a planet whose chemistry corresponds to the very end stages of life for the progenitor star before it died and formed the white dwarf. In the scenario the researchers think is most probable, the gas the original star shed—containing zinc, copper, and niobium—provided the raw material for a second-generation planet.</p>
+  </blockquote>
+  <div class="zh">
+    <p>天文學家在白矮星大氣裡看到比氫、氦更重的元素時，那多半是來自行星的「污染」。這顆行星可能在恆星死亡時被摧毀（大約 50 億年後太陽「掛掉」時，地球可能也是這個下場），也可能是原本行星系統的倖存者。</p>
+    <p>這些資料合起來指向一顆行星，它的化學組成對應的是母恆星臨死前、還沒變成白矮星的最後階段。在研究團隊認為最可能的情境裡，原恆星吐出的氣體（含有鋅、銅、鈮）提供了第二代行星的原料。</p>
+  </div>
+
+  <h4>術語表</h4>
+  <dl class="terms">
+    <div><dt>white dwarf<small>白矮星</small></dt><dd>像太陽這類恆星燃料用盡後留下的核心，約半個太陽質量、地球大小。HS 0209 剛形成不久，表面約 35,000 K，比太陽的 5,800 K 熱得多。</dd></div>
+    <div><dt>pollution<small>（白矮星大氣的）金屬污染</small></dt><dd>白矮星重力極強，重元素很快下沉，大氣本該只剩氫氦；看到重元素就表示最近有東西掉進去。</dd></div>
+    <div><dt>second-generation planet<small>第二代行星</small></dt><dd>恆星死後由它吐出的物質重新形成的行星。1992 年發現的第一批系外行星就是繞脈衝星的第二代行星。</dd></div>
+    <div><dt>s-process elements<small>s-過程元素</small></dt><dd>恆星晚期紅巨星階段「慢中子捕獲」造出的重元素，鈮是其中之一。論文把它當成區分第一代、第二代行星的關鍵訊號。</dd></div>
+    <div><dt>niobium<small>鈮，Nb，原子序 41</small></dt><dd>地球上用來做超導磁鐵與合金的金屬；首次在白矮星大氣中偵測到。</dd></div>
+    <div><dt>hot Jupiter<small>熱木星</small></dt><dd>貼近恆星公轉、週期只有幾天的氣態巨行星。</dd></div>
+    <div><dt>phase curve<small>相位曲線</small></dt><dd>行星繞行時，日面與夜面輪流朝向我們造成的亮度週期變化。</dd></div>
+    <div><dt>photo-evaporation<small>光致蒸發</small></dt><dd>恆星強烈紫外線把行星大氣加熱吹散。</dd></div>
+    <div><dt>Hubble / FUSE / TESS<small>三台望遠鏡</small></dt><dd>哈伯太空望遠鏡（1999 年舊資料）、遠紫外光譜探測衛星、凌日系外行星巡天衛星（提供亮度變化）。</dd></div>
+  </dl>
+
+  <h4>為什麼重要</h4>
+  <p>這是「恆星死後還能生出行星」在白矮星周圍的第一個強烈證據，而白矮星是宇宙中最常見的恆星殘骸，所以這類行星可能比想像的多。另一個很酷的點：關鍵線索藏在 1999 年哈伯拍的舊資料裡，是用新的原子資料庫重新解讀才看懂的。舊資料不等於沒用的資料。</p>
+
+  <h4>還沒解決的問題</h4>
+  <ul class="open">
+    <li>它還只是「候選」（candidate）行星，沒有人直接看到它。4.4 天的亮度訊號，論文自己也給了兩種解釋：行星的日夜相位曲線，或是正在蒸發的巨行星拖出的彗星狀尾巴。</li>
+    <li>單一恆星死亡時物質大致對稱地散開，很難形成盤面；華威團隊猜 HS 0209 可能曾有一顆伴星把物質拉回軌道，但這還沒證實。</li>
+    <li>這顆白矮星其他方面都很普通，為什麼只有它這麼怪？是真的罕見，還是我們一直沒去找？</li>
+    <li class="warn"><b>找碴點</b>：Eos 報導說鈮的豐度是太陽的「3 倍」，華威大學新聞稿卻說「超過 1,000 倍」，差了三個數量級。導讀無法讀到付費全文判定誰對，所以本文刻意不寫這個數字。你可以去 arXiv 免費版找答案。</li>
+  </ul>
+
+  <div class="ask"><b>一個問題</b>50 億年後太陽變成白矮星，地球如果沒被吞掉，會變成「第一代倖存者」；如果地球的物質被重新組裝成新行星，那還算地球嗎？</div>
+
+  <details class="check">
+    <summary>校對紀錄：導讀裡的每個數字出自原文哪裡</summary>
+    <table>
+      <tr><th>導讀說法</th><th>原文依據</th></tr>
+      <tr><td>華威大學、Jamie Williams、Nature Astronomy、鋅銅鈮、鈮首次</td><td>Eos 第 3 段 Williams 引言 "copper, zinc, and niobium… Niobium… that's the first time it's ever been discovered in a white dwarf."</td></tr>
+      <tr><td>不像太陽系天體、不像其他污染白矮星</td><td>Eos "they found no matches: HS 0209 is unique"；arXiv 摘要 "unlike any Solar System object"。</td></tr>
+      <tr><td>半個太陽質量、地球大小、35,000 K vs 5,800 K</td><td>Eos "Cookie Monster" 一節第 1 段。</td></tr>
+      <tr><td>1999 哈伯看到氦過量；後續 Hubble、FUSE、TESS</td><td>Eos 同節第 2 段。</td></tr>
+      <tr><td>4.4 天、熱木星、日夜相位曲線</td><td>Eos Williams 引言 "4.4-day orbital period… hot Jupiter"；arXiv 摘要 "4.399±0.026 days… amplitude of 0.120±0.018%"。</td></tr>
+      <tr><td>彗星狀尾巴的替代解釋</td><td>arXiv 摘要 "or a transiting cometary tail of an evaporating gas giant"。</td></tr>
+      <tr><td>s-process、伴星、1999 舊資料重新解讀</td><td>華威大學新聞稿（EurekAlert 2026-10）Nicholas Stone 與 Williams 引言。</td></tr>
+      <tr><td>想用韋伯直接偵測</td><td>Eos "Williams expressed a hope of using the James Webb Space Telescope to attempt to directly detect the planet"。</td></tr>
+      <tr><td>鈮豐度</td><td><span class="warn">Eos 寫 "3 times the niobium abundance seen in the Sun's spectrum"，新聞稿寫 "over 1,000 times higher than the Sun's"，兩者矛盾，未採用。</span></td></tr>
+    </table>
+  </details>
+</article>
+
+<!-- ======================= A4 ======================= -->
+<article id="a4" class="astro">
+  <div class="kicker"><span class="tag astro">天文 · 宇宙學</span><span class="tag adv">進階</span><span>原文約 2,000 字 · 15 分鐘</span></div>
+  <h2>三個沒有暗物質的幽靈星系，反而證明暗物質是「東西」</h2>
+  <h3 class="en">Triplet of 'Ghostly' Galaxies Hints at What Dark Matter Is — and Isn't</h3>
+  <div class="src">
+    Quanta Magazine · 2026-10-14 · 作者 Robin George Andrews · 論文：Keim 等人，<i>The Astrophysical Journal</i> 1004, 210（2026-06-16），<a href="https://doi.org/10.3847/1538-4357/ae6b8d" target="_blank" rel="noopener">doi:10.3847/1538-4357/ae6b8d</a>（開放取用，CC BY 4.0）<br>
+    <a class="go" href="https://www.quantamagazine.org/triplet-of-ghostly-galaxies-hints-at-what-dark-matter-is-and-isnt-20261014/" target="_blank" rel="noopener">讀原文 →</a>
+  </div>
+
+  <figure>
+    <img src="img/df2.jpg" alt="哈伯影像：一個極為稀薄、幾乎透明的星系，背景遠方的星系透過它清楚可見" width="1200" height="800">
+    <figcaption>NGC 1052-DF2，哈伯太空望遠鏡 2018 年影像。它稀薄到背景的遙遠星系可以直接透過它看見。圖：NASA, ESA, and P. van Dokkum (Yale University)，ESA/Hubble 以 CC BY 4.0 授權。</figcaption>
+  </figure>
+
+  <h4>三句話</h4>
+  <ol class="sum">
+    <li>距離約 6,500 萬光年、排成一線的三個暗淡星系 DF2、DF4、DF9，從恆星運動算出的總質量顯示幾乎沒有暗物質，和「幾乎所有星系都被暗物質主宰」的常識相反。</li>
+    <li>耶魯大學 Michael Keim 等人 2026 年 6 月的論文補上第三個成員 DF9，並支持這樣的起源：很久以前兩個星系對撞，氣體撞在一起糾結成團，暗物質卻像幽靈穿牆般直接穿過去；留下的一般物質各自形成了這三個沒有暗物質的星系。</li>
+    <li>多數受訪專家認為這對「修正重力」理論 MOND 是壞消息，因為「用碰撞把物質拿走，比把一條自然定律關掉容易得多」；但 MOND 支持者 Stacy McGaugh 反駁：在確定它們怎麼形成之前，不能對暗物質的本質下結論。</li>
+  </ol>
+
+  <h4>原文關鍵段</h4>
+  <blockquote class="en" lang="en">
+    <p>Dark matter is only known to act with the gravitational force; there's no compelling evidence yet that it interacts with other fundamental forces, like electromagnetism. If two typical galaxies met in a head-on collision, the dark matter would experience very little friction, or drag, and would keep on rocketing by. But ordinary matter, which interacts using all four fundamental forces, would get all tangled up.</p>
+    <p>"An analogy would be two knights jousting, where the knights and their lances collide and may be thrown to the ground in a heap, while their horses keep on running at full speed," said Aaron Romanowsky, an astronomer at San José State University.</p>
+  </blockquote>
+  <div class="zh">
+    <p>目前只知道暗物質會透過重力作用，還沒有令人信服的證據顯示它會跟電磁力之類的其他基本力互動。如果兩個典型星系迎頭對撞，暗物質幾乎不受摩擦或阻力，會繼續飛馳而過；但一般物質會透過全部四種基本力互動，所以會整團糾結在一起。</p>
+    <p>「打個比方，就像兩名騎士持槊對衝：騎士和長槊撞在一起、可能摔成一堆，馬卻繼續全速往前跑。」聖荷西州立大學的天文學家 Aaron Romanowsky 說。</p>
+  </div>
+
+  <h4>術語表</h4>
+  <dl class="terms">
+    <div><dt>dark matter<small>暗物質</small></dt><dd>不發光、只透過重力顯現的物質；占宇宙能量的 27%、所有物質的 85%。</dd></div>
+    <div><dt>ultra-diffuse galaxy<small>超瀰散星系</small></dt><dd>DF2 的大小和銀河系差不多，恆星卻少 200 倍，所以暗到像幽靈。</dd></div>
+    <div><dt>velocity dispersion<small>速度彌散</small></dt><dd>星系裡恆星運動速度的分散程度；越重的星系恆星跑得越快。論文用它推算 DF9 總質量。</dd></div>
+    <div><dt>dark matter halo<small>暗物質暈</small></dt><dd>包住整個星系、比可見部分大得多的暗物質球。標準理論裡星系都在暈裡面形成。</dd></div>
+    <div><dt>MOND<small>修正牛頓動力學</small></dt><dd>Modified Newtonian Dynamics，1983 年 Milgrom 提出：重力極弱時衰減得比牛頓定律慢，就不需要暗物質。</dd></div>
+    <div><dt>Bullet Cluster<small>子彈星系團</small></dt><dd>38 億光年外兩個星系團對撞的遺跡，氣體（粉紅）和質量所在（藍）分了家，是暗物質最有名的證據。</dd></div>
+    <div><dt>four fundamental forces<small>四種基本力</small></dt><dd>重力、電磁力、強核力、弱核力。暗物質目前只確定參與重力。</dd></div>
+    <div><dt>bullet dwarf collision<small>「子彈矮星系」碰撞</small></dt><dd>論文用語：兩個矮星系高速對撞，氣體與暗物質分離，之後沿著一條線形成一串沒有暗物質的小星系。</dd></div>
+    <div><dt>Keck / KCWI<small>凱克天文台</small></dt><dd>夏威夷毛納基亞山上的 10 公尺望遠鏡；KCWI 是論文量 DF9 恆星速度用的光譜儀。</dd></div>
+  </dl>
+
+  <figure>
+    <img src="img/bullet.jpg" alt="子彈星系團合成影像，粉紅色的熱氣體與藍色的質量分布明顯錯開" width="720" height="520">
+    <figcaption>子彈星系團（1E 0657-56）。粉紅是 X 光看到的熱氣體，藍是重力透鏡推算的質量所在，兩者錯開。圖：X-ray: NASA/CXC/CfA/M. Markevitch et al.; Optical: NASA/STScI, Magellan/U.Arizona/D. Clowe et al.; Lensing Map: NASA/STScI, ESO WFI, Magellan/U.Arizona/D. Clowe et al.（NASA 影像，公有領域）。</figcaption>
+  </figure>
+
+  <h4>為什麼重要</h4>
+  <p>課本說暗物質「存在」，這篇讓你看到科學家怎麼用一個反例來論證：如果暗物質只是「重力算錯」，那每個星系都該算錯，不會有例外；現在有三個例外，而且它們形成恆星的能力確實很差，這正是「暗物質是東西、可以被拿走」才會發生的事。「沒有暗物質反而是暗物質的證據」，這種推論方式本身就值得學。</p>
+
+  <h4>還沒解決的問題</h4>
+  <ul class="open">
+    <li>三個星系到底怎麼形成的？碰撞說最流行，但倫敦大學學院的 Kinwah Wu 指出，碰撞後該有的絲狀、飄散的殘跡沒看到；他認為更像是它們穿過一群大星系時被「剝掉」暗物質。</li>
+    <li>McGaugh 的反駁：碰撞只是「一個合理但例外的起源故事」，沒確定起源之前，推不出暗物質的本質。這個邏輯對不對？</li>
+    <li>暗物質是什麼粒子，仍然沒有被直接偵測到。WIMP、惰性微中子、原初黑洞都還在候選名單上。</li>
+  </ul>
+
+  <div class="ask"><b>一個問題</b>「用碰撞拿走物質，比關掉一條自然定律容易」這句話是物理論證，還是美學偏好？如果你站在 McGaugh 那邊，你會要求對方拿出什麼證據？</div>
+  <p style="font-size:14.5px;color:var(--muted)">進階讀法：先讀 Quanta 的三張圖說，再讀「Trouble for Modified Gravity」那一節。論文本身很硬，讀摘要就好；它是開放取用，不用付費。</p>
+
+  <details class="check">
+    <summary>校對紀錄：導讀裡的每個數字出自原文哪裡</summary>
+    <table>
+      <tr><th>導讀說法</th><th>原文依據</th></tr>
+      <tr><td>6,500 萬光年、三個星系排成一線</td><td>Quanta 第 1 段 "About 65 million light-years from Earth, three galaxies"；"all three gossamer galaxies existed along a line"。</td></tr>
+      <tr><td>論文 2026 年 6 月、ApJ、碰撞起源</td><td>Quanta "A paper published in June 2026 in The Astrophysical Journal"；期刊頁："Published 2026 June 16"，ApJ 1004, 210。</td></tr>
+      <tr><td>DF2 暗物質比預期少 400 倍、恆星少 200 倍、2018 年 Keck</td><td>Quanta "200 times fewer stars… at most, 400 times less dark matter"。</td></tr>
+      <tr><td>DF9 約 1 億太陽質量；有暗物質的話會重 100 倍</td><td>Quanta "roughly 100 million suns… 100 times more massive"；論文摘要更精確：恆星質量 1.4×10⁸ M☉，若有 1.4×10¹⁰ M☉ 的暗物質暈，速度彌散應為 24±3 km/s，實測遠低於此。</td></tr>
+      <tr><td>27%、85%</td><td>Quanta "Dark matter, which makes up 27% of the universe — and 85% of all matter"。</td></tr>
+      <tr><td>子彈星系團 38 億光年、韋伯最近觀測</td><td>Quanta "Trouble for Modified Gravity" 第 2 段。</td></tr>
+      <tr><td>Kinwah Wu 的替代解釋、McGaugh 的反駁、Balaji「拿走物質比關掉定律容易」、LIGO 2015</td><td>Quanta 同節各段引言。</td></tr>
+      <tr><td>MOND 1983 年 Milgrom</td><td>Quanta "proposed in 1983 by the physicist Mordehai Milgrom"。</td></tr>
+      <tr><td>bullet dwarf、Keck/KCWI</td><td>論文摘要 "through a 'bullet dwarf' collision… Using Keck/KCWI"。</td></tr>
+    </table>
+  </details>
+</article>
+
+<!-- ======================= NEXT ======================= -->
+<section class="next">
+  <h2>下期候選：你想讀哪一篇？</h2>
+  <p class="lead">五個都是這兩週的新文章。挑一到兩個編號，或者說「都不要，我想看 ○○」。</p>
+  <ol>
+    <li><b>月球是「撞」出來還是「捏」出來的？</b><span>Eos，10/23。模擬顯示如果撞地球的 Theia 有一層硬殼，可能直接撞出一顆原月球，而不用先變成碎屑盤。地科／行星科學。</span></li>
+    <li><b>石筍記錄了 45 萬年的季風</b><span>Nature 新聞，10/21。全球洞穴石筍拼出南北半球季風互相拉扯的長期節奏；台灣就在東亞季風區裡。地科／古氣候。</span></li>
+    <li><b>白矮星可以是綠色的</b><span>Nature 新聞，10/21。和本期第 3 篇同一個華威大學團隊：白矮星的顏色範圍比任何恆星都廣，綠色是其他恆星做不到的。天文。</span></li>
+    <li><b>日本 MMX 探測器飛向火衛一</b><span>ESA，10/20 發射。要從火衛一帶樣本回來，解答火星的衛星是被捕獲的小行星，還是大撞擊的碎片。天文／行星任務。</span></li>
+    <li><b>火星上的地震學</b><span>Eos，10/21。InSight 任務的火星震資料怎麼讓地震學走出地球，順便看見火星的內部。地科 × 天文。</span></li>
+  </ol>
+</section>
+
+<footer>
+  <p><b>關於這份導讀</b>：文章由編者挑選，中文導讀、翻譯與術語表由 AI（Claude）協助撰寫，編者讀過但不是科學專業。科學內容一律以英文原文和論文為準；發現導讀講錯、講淺的地方，就是最好的閱讀成果。</p>
+  <p><b>授權</b>：原文只做短篇引用並附連結；圖片僅使用公有領域（NASA、USGS）或創用 CC 授權（ESA/Hubble CC BY 4.0、Copernicus Sentinel CC BY-SA 3.0 IGO）的影像，授權資訊見各圖說。Eos 文章依 CC BY-NC-ND 3.0 引用。</p>
+  <p class="back"><a href="../">← 所有期數</a></p>
+</footer>
+
+</div>
+</body>
+</html>
