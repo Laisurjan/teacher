@@ -1,0 +1,2250 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>說話的棋局</title>
+<style>
+:root{
+  /* 晴空配色：投影用，亮底深字，不用米白 */
+  /* 淺灰底＋多彩點綴：投影用，亮底深字，不用米白 */
+  --page:#f2f3f5;--card:#ffffff;--ink:#1d2433;--muted:#5a6475;--line:#dde1e7;
+  --brand:#2b6fd6;--accent:#ff6b3d;--accent2:#ffc928;--green:#22a36a;--mint:#e2f7ee;--mintline:#22a36a;--dark:#2a3245;
+  --gold:var(--accent);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;color:var(--ink);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;font-weight:600;overscroll-behavior:none}
+body{background:var(--page)}
+#app{max-width:860px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;position:relative;background:var(--page)}
+code{background:#e9ecf1;padding:1px 6px;border-radius:5px;color:var(--brand)}
+/* 上方狀態列 */
+#hud{display:flex;gap:12px;align-items:center;padding:10px 14px;background:#fff;color:var(--ink);position:sticky;top:0;z-index:5;border-bottom:1px solid var(--line);box-shadow:0 2px 8px rgba(29,36,51,.06)}
+#hud .ttl{font-size:15px;white-space:nowrap;font-weight:800}
+.meter{flex:1;display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800}
+.meter .bar{flex:1;height:14px;background:#e6e8ec;border-radius:7px;overflow:hidden;position:relative}
+.meter .bar i{display:block;height:100%;width:50%;border-radius:7px;transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.meter.r .bar i{background:linear-gradient(90deg,#ff6b3d,#ff9b6e)}
+.meter.g .bar i{background:linear-gradient(90deg,#f5b700,#ffd75a)}
+.meter .d{min-width:34px;text-align:right;font-variant-numeric:tabular-nums}
+.meter .d.up{color:var(--green)}.meter .d.dn{color:#e04848}
+.meter.r>span:first-child{color:#e8552a}.meter.g>span:first-child{color:#c48f00}
+#hud .mode{font-size:13px;color:var(--ink);background:var(--accent2);padding:2px 9px;border-radius:6px;white-space:nowrap;font-weight:800}
+body.hard #hud .mode{background:var(--accent);color:#fff}
+body.hard #hud .meter{display:none}
+body.hard #hud .ttl{flex:1}
+/* 舞台 */
+#stage{position:relative;flex:1;min-height:46vh;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;background:var(--grad)}
+#stage.bgA{--grad:linear-gradient(180deg,#ffb88c 0%,#ffd9a8 45%,#9ec9ff 100%)}
+#stage.bgB{--grad:linear-gradient(180deg,#9cc4ff 0%,#d9e8ff 60%,#f2f3f5 100%)}
+#stage.img{background-size:cover;background-position:center 40%;flex:0 0 auto;height:min(52vh,460px);min-height:0}
+#scene{position:absolute;top:10px;left:14px;right:14px;font-size:14px;color:var(--ink);background:rgba(255,255,255,.82);padding:6px 12px;border-radius:999px;line-height:1.5;z-index:2;width:fit-content;max-width:calc(100% - 28px)}
+#char{width:min(56vw,300px);height:auto;margin-bottom:-6px;filter:drop-shadow(0 8px 16px rgba(19,38,74,.3));transition:transform .25s}
+img#char{object-fit:contain;position:relative;z-index:1}
+img#char.art{width:auto;height:94%;max-width:92%;margin-bottom:0}
+#char.shake{animation:shake .4s}
+@keyframes shake{0%{transform:translateX(0)}25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-4px)}100%{transform:translateX(0)}}
+#char.pop{animation:pop .35s}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+/* 對話框 */
+#dlg{background:var(--card);border-top:4px solid var(--accent);padding:16px 18px 12px;min-height:120px;position:relative;box-shadow:0 -4px 16px rgba(19,38,74,.12)}
+#who{position:absolute;top:-18px;left:14px;background:var(--accent);color:#fff;padding:3px 16px;border-radius:8px;font-size:15px;font-weight:800;letter-spacing:.05em;box-shadow:0 2px 6px rgba(255,107,61,.35)}
+#who.me{background:var(--dark)}
+#say{font-size:clamp(18px,4.6vw,23px);line-height:1.55;white-space:pre-line;min-height:3.1em;margin-top:6px;color:var(--ink)}
+/* 選項 */
+#opts{padding:10px 14px 18px;display:flex;flex-direction:column;gap:9px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;background:var(--card);border:2px solid var(--line);color:var(--ink);padding:11px 13px;border-radius:12px;font:inherit;font-size:clamp(16px,4vw,19px);line-height:1.45;cursor:pointer;transition:background .15s,border-color .15s,transform .1s;box-shadow:0 2px 0 rgba(31,95,191,.08)}
+.opt:hover{background:#f7f8fa;border-color:var(--dark)}.opt:active{transform:scale(.99)}
+.opt b{flex:0 0 auto;width:28px;height:28px;border-radius:50%;background:var(--accent);display:inline-flex;align-items:center;justify-content:center;font-size:14px;color:#fff}
+.opt:nth-of-type(2) b{background:#f5b700}.opt:nth-of-type(3) b{background:var(--green)}.opt:nth-of-type(4) b{background:var(--brand)}
+.opt.q{border-color:var(--accent)}
+#opts .hint{font-size:15px;color:var(--accent);margin:0 2px;font-weight:800}
+/* 軍師卡 */
+#coach{position:fixed;inset:0;background:rgba(29,36,51,.45);display:none;align-items:flex-end;justify-content:center;z-index:20}
+#coach.on{display:flex}
+#coach .card{width:100%;max-width:860px;background:var(--card);color:var(--ink);border-radius:20px 20px 0 0;border-top:8px solid var(--accent);padding:18px 20px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(19,38,74,.3);animation:up .25s ease-out;max-height:82vh;overflow:auto}
+@keyframes up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+#coach .tag{display:inline-block;color:#fff;padding:3px 12px;border-radius:6px;font-size:14px;margin-bottom:8px}
+#coach h3{margin:4px 0 8px;font-size:22px;color:var(--ink)}
+#coach p{margin:6px 0;line-height:1.65;font-size:17px}
+#coach .src{background:var(--mint);border-left:5px solid var(--mintline);padding:8px 12px;border-radius:0 8px 8px 0;font-size:16px}
+#coach .th{color:var(--muted);font-size:15px}
+#coach .delta{display:flex;gap:14px;margin:8px 0;font-size:16px}
+#coach .delta span{padding:2px 12px;border-radius:999px;background:#e6edf7}
+#coach .delta .up{background:#d4f5e3;color:#13603a}#coach .delta .dn{background:#ffe0d6;color:#a3301a}
+#coach button{margin-top:12px;width:100%;background:var(--dark);color:#fff;border:0;padding:13px;border-radius:12px;font:inherit;font-weight:800;font-size:18px;cursor:pointer}
+/* 模式色 */
+.m攻,#coach .tag.m攻{background:#e04848;color:#fff}.m讓,#coach .tag.m讓{background:#2f8fd6;color:#fff}.m避,#coach .tag.m避{background:#7a8494;color:#fff}.m合,#coach .tag.m合{background:#22a36a;color:#fff}
+/* 封面與結局 */
+.page{padding:22px 18px calc(24px + env(safe-area-inset-bottom));line-height:1.75;font-size:17px}
+.page h1{font-size:32px;margin:8px 0 2px;color:var(--ink)}
+.page h2{font-size:21px;margin:20px 0 6px;color:var(--accent)}
+.page .sub{color:var(--muted);margin-bottom:14px}
+.page b{color:var(--accent)}
+.page .btn{display:block;width:100%;background:var(--accent);color:#fff;border:0;padding:14px;border-radius:12px;font:inherit;font-weight:800;font-size:18px;cursor:pointer;margin-top:12px;box-shadow:0 3px 0 #d94f24}
+.page .btn.alt{background:var(--dark);box-shadow:0 3px 0 #161b26}
+.page ul{padding-left:22px;margin:6px 0}
+.page .goal{background:var(--card);border:2px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0}
+.page .goal b{color:var(--accent)}
+.seg{display:flex;gap:8px;margin:8px 0 4px}
+.seg button{flex:1;background:var(--card);border:2px solid var(--line);color:var(--ink);padding:10px;border-radius:10px;font:inherit;font-weight:800;font-size:16px;cursor:pointer}
+.seg button.on{background:var(--dark);color:#fff;border-color:var(--dark)}
+.note{background:var(--card);border-left:5px solid var(--accent);padding:10px 14px;border-radius:0 10px 10px 0;margin:14px 0;font-size:16px;line-height:1.75}
+.scen{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px 14px;margin:10px 0}
+.scen .st{font-size:19px;color:var(--ink);font-weight:800;padding-left:12px;border-left:6px solid var(--accent)}
+.scen:nth-of-type(6n+2) .st{border-color:#f5b700}.scen:nth-of-type(6n+3) .st{border-color:var(--green)}.scen:nth-of-type(6n+4) .st{border-color:var(--brand)}.scen:nth-of-type(6n+5) .st{border-color:#9b6cf2}.scen:nth-of-type(6n) .st{border-color:#ef5da8}
+.scen .sd{font-size:15px;color:var(--muted);margin:2px 0 6px}
+.scen .sb .btn{margin-top:8px;padding:11px;font-size:17px}
+/* 結局象限圖 */
+.quad{width:min(92vw,380px);margin:14px auto 6px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px 8px 8px;box-shadow:0 4px 14px rgba(29,36,51,.07)}
+.quad svg{display:block;width:100%;height:auto;font-family:inherit}
+.quad .qc{opacity:.75;transition:opacity .4s}.quad .qc.on{opacity:1;stroke:#1d2433;stroke-width:1.5}
+.quad .ql{font-size:11.5px;font-weight:700;fill:#5a6475}.quad .ql.on{fill:#1d2433;font-size:12.5px;font-weight:800}
+.quad .mid{stroke:#b8bfcb;stroke-width:1;stroke-dasharray:4 4}
+.quad .axis{stroke:#1d2433;stroke-width:1.6}
+.quad .at{font-size:13px;font-weight:800;fill:#1d2433}
+.quad .tk{font-size:10.5px;font-weight:700;fill:#8a93a3}
+.quad .path{fill:none;stroke:#ff6b3d;stroke-width:2;stroke-dasharray:5 4;stroke-linejoin:round;stroke-linecap:round;opacity:.85}
+.quad .step{fill:#fff;stroke:#ff6b3d;stroke-width:2}.quad .start{fill:#fff;stroke:#5a6475;stroke-width:2}
+.quad .end{fill:#ff6b3d;stroke:#fff;stroke-width:3}
+.quad figcaption{text-align:center;font-size:13px;color:var(--muted);margin-top:4px}
+.rev{border-left:4px solid var(--line);padding-left:12px;margin:10px 0}
+.rev .t{font-size:15px;color:var(--muted)}
+.rev .m{display:inline-block;font-size:13px;padding:1px 8px;border-radius:6px;margin-right:8px;vertical-align:1px}
+.rev .p{font-size:15px;color:var(--ink);margin-top:2px}
+.rev .s{font-size:14px;color:var(--mintline);margin-top:2px}
+.who{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:14px 16px;margin:12px 0}
+.who h4{margin:12px 0 2px;font-size:14px;color:var(--muted);font-weight:800}
+.who .try b{color:#a87800}
+.who .k{font-size:14px;color:var(--muted)}
+.who h3{margin:2px 0 8px;font-size:24px;color:var(--ink)}
+.who p{margin:6px 0;font-size:16px;line-height:1.65}
+.who p b{color:var(--accent)}
+.who .try{background:#fff6d9;border-left:5px solid #f5b700;padding:8px 12px;border-radius:0 8px 8px 0;margin-top:10px;font-size:17px}
+.end-tag{display:inline-block;font-size:15px;padding:4px 12px;border-radius:999px;background:var(--dark);color:#fff;margin-bottom:6px}
+/* 擬真聊天畫面（群組、私訊、深夜訊息） */
+#stage.chat{height:min(64vh,560px);align-items:center;background-size:cover;background-position:center}
+#stage.chat:before{content:"";position:absolute;inset:0;backdrop-filter:blur(3px);background:rgba(10,20,40,.25)}
+.phone{position:relative;z-index:1;width:min(92%,390px);height:94%;background:#111;border-radius:34px;padding:9px;box-shadow:0 18px 40px rgba(0,0,0,.45)}
+.phone .scr{width:100%;height:100%;border-radius:26px;overflow:hidden;display:flex;flex-direction:column;background:#8eabd6;font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif;font-weight:500}
+.phone .sb{display:flex;justify-content:space-between;align-items:center;padding:6px 20px 2px;font-size:13px;color:#fff;background:#2f3e57;font-weight:700}
+.phone .sb .ic{display:flex;gap:5px;align-items:center}
+.phone .sb .sig{display:inline-flex;gap:1px;align-items:flex-end;height:10px}.phone .sb .sig i{width:3px;background:#fff;border-radius:1px}
+.phone .sb .bat{width:22px;height:11px;border:1.5px solid #fff;border-radius:3px;position:relative}.phone .sb .bat:after{content:"";position:absolute;left:1px;top:1px;bottom:1px;width:62%;background:#fff;border-radius:1px}
+.phone .hd{display:flex;align-items:center;gap:10px;padding:8px 14px;background:#2f3e57;color:#fff;font-size:16px;font-weight:700}
+.phone .hd .bk{font-size:22px;line-height:1;opacity:.9}
+.phone .hd .nm{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.phone .hd .mn{font-size:18px;letter-spacing:2px;opacity:.85}
+.phone .ms{flex:1;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;gap:7px;padding:10px 10px 12px}
+.phone .dt{align-self:center;background:rgba(0,0,0,.18);color:#fff;font-size:12px;padding:2px 10px;border-radius:999px}
+.phone .sys{align-self:center;background:rgba(0,0,0,.18);color:#fff;font-size:13px;padding:3px 12px;border-radius:12px;max-width:88%;text-align:center;line-height:1.45}
+.phone .row{display:flex;gap:7px;align-items:flex-start;max-width:100%}
+.phone .row.me{justify-content:flex-end}
+.phone .av{flex:0 0 34px;height:34px;border-radius:50%;background:#7a8aa8;color:#fff;font-size:15px;display:flex;align-items:center;justify-content:center;background-size:300%;background-position:50% 4%;font-weight:700}
+.phone .col{display:flex;flex-direction:column;max-width:76%}
+.phone .who2{font-size:12px;color:#1d2a44;margin:0 0 2px 2px}
+.phone .bw{display:flex;align-items:flex-end;gap:4px}
+.phone .row.me .bw{flex-direction:row-reverse}
+.phone .bb{background:#fff;color:#111;font-size:15.5px;line-height:1.45;padding:7px 11px;border-radius:16px;border-top-left-radius:4px;word-break:break-word}
+.phone .row.me .bb{background:#86e37a;border-radius:16px;border-top-right-radius:4px}
+.phone .tm{font-size:10.5px;color:#1d2a44;white-space:nowrap;line-height:1.25;text-align:right}
+.phone .row:not(.me) .tm{text-align:left}
+.phone .in{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#fff;border-top:1px solid #dde3ec}
+.phone .in span{flex:1;background:#eef1f5;border-radius:999px;padding:6px 12px;font-size:13px;color:#8892a3}
+.phone .in b{color:#2f3e57;font-size:18px}
+.phone .new{animation:pop2 .3s ease-out}
+@keyframes pop2{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
+#stage.chat~#dlg{display:none}
+@media (min-width:700px){#stage{min-height:300px;flex:0 0 auto}#char{width:220px}}
+@media (max-width:480px){#hud .ttl{display:none}#hud{gap:8px}#stage{min-height:38vh}#stage.img{height:46vh}#stage.chat{height:62vh}}
+#stage.chat #scene{display:none}
+/* ---------- 標題、說明、選關 ---------- */
+body.menu #hud{display:none}
+.big{display:block;background:var(--accent);color:#fff;border:0;padding:15px 34px;border-radius:999px;font:inherit;font-weight:800;font-size:20px;cursor:pointer;box-shadow:0 4px 0 #d94f24,0 8px 24px rgba(255,107,61,.35);letter-spacing:.08em;transition:transform .1s}
+.big:active{transform:translateY(2px);box-shadow:0 2px 0 #d94f24}
+.big.wide{width:100%;margin-top:18px}
+.ghost{display:block;background:rgba(255,255,255,.92);color:var(--ink);border:0;padding:12px 30px;border-radius:999px;font:inherit;font-weight:800;font-size:17px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.ttlpage{position:relative;min-height:100vh;min-height:100dvh;overflow:hidden;display:flex;flex-direction:column;align-items:center}
+.ttlbg{position:absolute;inset:0;background-size:cover;background-position:center 35%;transform:scale(1.04);animation:drift 24s ease-in-out infinite alternate}
+@keyframes drift{from{transform:scale(1.04) translateX(-1%)}to{transform:scale(1.08) translateX(1%)}}
+.ttlpage:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,0) 40%,rgba(255,255,255,.25) 70%,rgba(242,243,245,.9) 100%);pointer-events:none}
+.gear{position:absolute;top:14px;right:14px;z-index:3;background:rgba(255,255,255,.85);border:0;border-radius:999px;padding:7px 14px;font:inherit;font-weight:800;font-size:14px;color:var(--ink);cursor:pointer}
+.logo{position:relative;z-index:2;text-align:center;margin-top:clamp(40px,10vh,110px);padding:0 16px}
+.logo .kick{display:inline-block;background:rgba(29,36,51,.75);color:#fff;font-size:clamp(13px,3.4vw,16px);padding:5px 16px;border-radius:999px;letter-spacing:.15em}
+.logo h1{margin:12px 0 6px;font-size:clamp(52px,13vw,104px);line-height:1.05;color:#fff;letter-spacing:.1em;font-weight:900;
+ text-shadow:0 3px 0 #ff6b3d,0 6px 0 #d94f24,0 12px 26px rgba(80,30,10,.45)}
+.logo .tag{color:#fff;font-size:clamp(16px,4vw,21px);font-weight:800;text-shadow:0 2px 8px rgba(0,0,0,.45)}
+.cast{position:absolute;z-index:1;bottom:0;left:0;right:0;display:flex;align-items:flex-end;justify-content:center;pointer-events:none}
+.cast .side{display:flex;align-items:flex-end}
+.cast .gap{flex:0 0 clamp(150px,26vw,300px)}
+.cast img{height:min(52vh,470px);margin:0 -3.5vw;filter:drop-shadow(0 8px 16px rgba(0,0,0,.3));animation:rise .7s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i)*.09s)}
+.cast .l img:first-child,.cast .r img:last-child{height:min(46vh,420px)}
+@keyframes rise{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.menu-btns{position:absolute;z-index:3;bottom:clamp(24px,7vh,64px);left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:12px}
+.menu-btns .big{animation:breathe 2.4s ease-in-out infinite}
+@keyframes breathe{50%{transform:scale(1.04)}}
+.modebadge{position:absolute;z-index:3;left:14px;top:16px;background:var(--accent2);color:var(--ink);font-size:13px;font-weight:800;padding:3px 10px;border-radius:6px}
+.mhead{display:flex;align-items:center;gap:10px;margin:4px 0 14px}
+.mhead h2{margin:0;font-size:24px;color:var(--ink);flex:1}
+.back{background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 14px;font:inherit;font-weight:800;color:var(--ink);cursor:pointer}
+.howto,.sel{padding:18px 16px calc(28px + env(safe-area-inset-bottom))}
+.hcard{background:#fff;border-radius:16px;padding:14px 18px;margin:12px 0;border-top:6px solid var(--accent);box-shadow:0 4px 14px rgba(29,36,51,.06)}
+.hcard.c2{border-color:#f5b700}.hcard.c3{border-color:var(--green)}.hcard.c4{border-color:var(--brand)}
+.hcard h3{margin:2px 0 6px;font-size:20px}
+.hcard p{margin:6px 0;line-height:1.75;font-size:17px}
+.hcard p b{color:var(--accent)}
+.demo{display:flex;align-items:center;gap:8px;margin:6px 0 8px;font-weight:800;font-size:14px}
+.demo i{flex:1;height:12px;background:#e6e8ec;border-radius:6px;overflow:hidden}.demo i b{display:block;height:100%;border-radius:6px}
+.demo .br b{background:linear-gradient(90deg,#ff6b3d,#ff9b6e)}.demo .bg b{background:linear-gradient(90deg,#f5b700,#ffd75a)}
+.demo .r{color:#e8552a}.demo .g{color:#c48f00}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.lv{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 14px rgba(29,36,51,.08);border-bottom:5px solid var(--hue)}
+.thumb{position:relative;height:120px;background-size:cover;background-position:center}
+.thumb:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(0,0,0,.35))}
+.thumb .no{position:absolute;z-index:1;left:10px;top:10px;width:34px;height:34px;border-radius:50%;background:var(--hue);color:#fff;font-weight:900;font-size:18px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.faces{position:absolute;z-index:1;right:10px;bottom:-22px;display:flex}
+.faces span{width:54px;height:54px;border-radius:50%;border:3px solid #fff;background-color:#e6ebf3;background-size:230%;background-position:50% 1%;margin-left:-12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.lvbody{padding:12px 14px 14px}
+.lvt{font-size:20px;font-weight:900}
+.lvd{font-size:15px;color:var(--muted);margin:6px 0 10px;line-height:1.65}
+.lvt{padding-right:110px;min-height:30px}
+.lvbtn{display:flex;width:100%;justify-content:space-between;align-items:center;gap:8px;background:#f5f6f8;border:0;border-radius:10px;padding:10px 12px;margin-top:7px;font:inherit;font-weight:800;font-size:16px;color:var(--ink);cursor:pointer;text-align:left}
+.lvbtn:hover{background:#eceef2}
+.lvbtn em{font-style:normal;font-size:12px;color:#fff;background:var(--green);padding:2px 8px;border-radius:999px;white-space:nowrap;max-width:55%;overflow:hidden;text-overflow:ellipsis}
+.lvbtn em.new{background:#c3c9d3}
+.modal{position:fixed;inset:0;z-index:30;background:rgba(29,36,51,.45);display:flex;align-items:center;justify-content:center;padding:16px}
+.mcard{background:#fff;border-radius:18px;padding:18px 20px;max-width:440px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+.mcard h3{margin:0 0 10px;font-size:21px}.mcard p{line-height:1.65;font-size:15px;margin:8px 0}
+.mcard .sub{color:var(--muted);font-size:14px}.mcard a{color:var(--brand)}
+@media (max-width:600px){.cast img{height:40vh;margin:0 -12vw}.cast .l img:first-child,.cast .r img:last-child{display:none}.cast .gap{flex-basis:34vw}.logo{margin-top:8vh}}
+body.menu #app{max-width:none;box-shadow:none}
+.howto,.sel{max-width:900px;margin:0 auto}
+
+/* ---------- 90 年代風封面 ---------- */
+.cover .ttlbg{background-position:68% 30%;animation:none;transform:none}
+.cover:after{background:linear-gradient(60deg,rgba(255,255,255,.55) 0%,rgba(255,255,255,.15) 38%,rgba(255,255,255,0) 55%)}
+.petals{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.petals i{position:absolute;top:-6%;width:16px;height:11px;border-radius:70% 0 70% 0;background:linear-gradient(135deg,#ff7a3d,#e8322a);opacity:.85;transform:scale(var(--s));animation:fall linear infinite}
+@keyframes fall{0%{transform:translate(0,0) rotate(0) scale(var(--s))}50%{transform:translate(-8vw,55vh) rotate(260deg) scale(var(--s))}100%{transform:translate(-18vw,112vh) rotate(540deg) scale(var(--s))}}
+.logo2{position:absolute;z-index:3;left:clamp(16px,5vw,70px);bottom:clamp(20px,6vh,60px);transform:rotate(-4deg);transform-origin:left bottom}
+.logo2 .kick{display:inline-block;background:#1d2433;color:#fff;font-size:clamp(13px,1.8vw,16px);padding:4px 14px;border-radius:999px;letter-spacing:.14em;margin-left:6px}
+.logo2 h1{margin:4px 0 0;line-height:.95;font-weight:900;letter-spacing:.04em;
+ text-shadow:4px 0 0 #fff,-4px 0 0 #fff,0 4px 0 #fff,0 -4px 0 #fff,3px 3px 0 #fff,-3px 3px 0 #fff,3px -3px 0 #fff,-3px -3px 0 #fff,6px 8px 0 rgba(29,36,51,.25)}
+.logo2 .a{display:block;font-size:clamp(34px,6vw,64px);color:#ff6b3d;margin-left:6px}
+.logo2 .b{display:block;font-size:clamp(72px,13vw,150px);color:#2b6fd6}
+.logo2 .en{font-family:"Brush Script MT","Segoe Script","Lucida Handwriting",cursive;font-size:clamp(20px,2.6vw,30px);color:#1d2433;margin:2px 0 14px 10px;text-shadow:2px 0 0 #fff,-2px 0 0 #fff,0 2px 0 #fff,0 -2px 0 #fff,2px 2px 0 #fff,-2px -2px 0 #fff}
+.menu2{list-style:none;margin:0;padding:10px 6px;background:rgba(255,255,255,.88);border-radius:14px;border:3px solid #1d2433;box-shadow:5px 6px 0 rgba(29,36,51,.85);width:fit-content;min-width:210px;transform:rotate(4deg);transform-origin:left top}
+.menu2 li{margin:0}
+.menu2 button{display:block;width:100%;text-align:left;background:none;border:0;font:inherit;font-weight:900;font-size:clamp(18px,2.2vw,22px);color:#1d2433;padding:7px 14px 7px 34px;cursor:pointer;position:relative;border-radius:8px}
+.menu2 button:before{content:"▶";position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:.7em;color:#ff6b3d;opacity:0}
+.menu2 button:hover,.menu2 button:focus-visible{background:#fff1ea;outline:none}
+.menu2 button:hover:before,.menu2 button:focus-visible:before,.menu2 li:first-child button:before{opacity:1;animation:blink 1s steps(2) infinite}
+.menu2 li:first-child button{color:#e8552a}
+@keyframes blink{50%{opacity:0}}
+.copy{position:absolute;z-index:3;right:14px;bottom:10px;font-size:12px;color:#1d2433;background:rgba(255,255,255,.75);padding:2px 10px;border-radius:999px}
+@media (max-width:600px){.cover .ttlbg{background-position:72% 30%}.logo2{left:14px;bottom:44px}.copy{font-size:11px}}
+
+/* ---------- 任務、兩題、老師專區 ---------- */
+.rulebox{background:#fff8e1;border-left:5px solid #f5b700;border-radius:0 12px 12px 0;padding:10px 14px;margin:0 0 10px;line-height:1.75;font-size:16px}
+.rulebox b{color:#a87800}
+.mission span{white-space:nowrap}
+.mission{display:flex;flex-wrap:wrap;align-items:center;gap:10px;background:#fff;border-radius:14px;padding:10px 14px;margin:0 0 6px;box-shadow:0 4px 14px rgba(29,36,51,.06);font-weight:800}
+.pb{display:inline-flex;gap:3px;vertical-align:-2px}.pb i{width:22px;height:12px;border-radius:4px;background:#e6e8ec}.pb i.on{background:var(--green)}
+.zone{margin:20px 0 8px}.zt{font-size:20px;font-weight:900}.zs{font-size:14px;color:var(--muted)}
+.lv.locked{filter:grayscale(.85);opacity:.75}
+.lockv{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;background:rgba(29,36,51,.55);color:#fff;font-weight:900;font-size:17px}
+.lvbtn:disabled{cursor:not-allowed}
+.okb{font-size:12px;background:var(--green);color:#fff;padding:1px 8px;border-radius:999px;vertical-align:3px}
+.mhead .back.r+.back.r{margin-left:0}
+.after{background:#fff;border-radius:16px;padding:14px 18px;margin:18px 0;border-top:6px solid var(--green);box-shadow:0 4px 14px rgba(29,36,51,.06)}
+.after h2{margin-top:4px}
+.qz{margin:12px 0}.qq{font-weight:800;line-height:1.7;margin-bottom:6px}
+.qo{display:block;width:100%;text-align:left;background:#f5f6f8;border:2px solid transparent;border-radius:10px;padding:9px 12px;margin:6px 0;font:inherit;font-weight:700;font-size:16px;line-height:1.55;color:var(--ink);cursor:pointer}
+.qo:hover:not(:disabled){border-color:var(--line)}
+.qo.right{background:#d9f5e6;border-color:var(--green)}.qo.wrong{background:#ffe3d8;border-color:#e8552a}
+.qe{font-size:15px;line-height:1.7;color:var(--ink);margin-top:6px}
+textarea{width:100%;font:inherit;font-weight:600;font-size:16px;line-height:1.6;border:2px solid var(--line);border-radius:10px;padding:8px 10px;resize:vertical}
+.err{color:#d23b2a;font-size:15px;min-height:1em;margin:6px 0}
+.stuf{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:8px 0}
+.stuf label{display:flex;flex-direction:column;font-size:14px;font-weight:800;gap:4px}
+.stuf input,.stuf select{font:inherit;font-size:17px;padding:8px 10px;border:2px solid var(--line);border-radius:10px;width:9em}
+.tbl{overflow-x:auto}.tbl table{border-collapse:collapse;font-size:14px;min-width:620px}
+.tbl th,.tbl td{border:1px solid var(--line);padding:4px 7px;text-align:center}
+.tbl th{background:#f5f6f8}.tbl td.okc{background:#d9f5e6;color:#13603a;font-weight:900}.tbl td.noc{background:#ffe3d8;color:#a3301a;font-weight:900}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="hud">
+    <div class="ttl" id="hudTitle">第一章</div><span class="mode" id="hudMode"></span>
+    <div class="meter r"><span id="lR">關係</span><div class="bar"><i id="barR"></i></div><span class="d" id="dR"></span></div>
+    <div class="meter g"><span id="lG">目標</span><div class="bar"><i id="barG"></i></div><span class="d" id="dG"></span></div>
+  </div>
+  <div id="view"></div>
+</div>
+<div id="coach"><div class="card" id="coachCard"></div></div>
+
+<script>
+/* ===================== 資料 ===================== */
+/* 選項欄位：t 台詞、m 模式（攻／讓／避／合）、r 關係變化、g 目標變化、mood 對方情緒變化、
+   next 下一節點（"END"＝結束）、tip {k 技巧名, p 說明, s 課文對照, th 學理} */
+const C = {
+A:{
+ title:'第一章　你是阿武',
+ bg:'bgA',
+ npc:'小鄭',
+ me:'阿武',
+ scene:'高二上，吉他社社辦門口，週一放學。',
+ intro:`上學期你排了一份歌單，社長小鄭一句「再看看」就帶過，後來學長們的曲目用掉所有時段，你被分去搬音箱。
+
+成發剩五天，主唱阿凱因為補習退社了。全社只有你撐得起來，小鄭在社辦門口叫住你。`,
+ goal:`讓小鄭知道你上學期被冷落了，<b>但不要翻臉</b>。而且要談到你想要的：至少一首你編的歌、讓大家知道主唱是你。`,
+ start:'a1',
+ nodes:{
+ a1:{ex:'neutral',say:`欸阿武 等一下 你有空嗎
+阿凱退了 成發主唱開天窗
+你之前不是有在唱 可以幫一下嗎`,
+  opts:[
+   {t:'我知道你現在很急 可是上學期我排的歌單你們一首都沒用 現在才來找我 你覺得合理嗎',m:'攻',r:-2,g:0,mood:-2,next:'a2_atk',
+    tip:{k:'把抱怨直接說出來，還要他認',p:'你講得很有條理，可是每一句都在指著他，所以他第一個反應會是替自己辯護，而不是認錯。接下來你得先處理他的防衛，才有辦法談成發的事。',s:'燭之武的不滿一句都沒有指著鄭文公。',th:'Brown 與 Levinson 的禮貌理論：直接說出讓對方沒面子的話最省力，對關係的傷害卻最大，講得再有條理也不會減少這個傷害。'}},
+   {t:'我喔… 我上學期連歌單都排不進去 現在上台 大概也撐不起來吧',m:'合',r:0,g:1,mood:0,next:'a2_hint',
+    tip:{k:'話裡有話',p:'你表面上說自己不行，真正想提醒他的是上學期沒用你的歌單。他如果聽懂了，就等於承認那件事；沒聽懂，你們也不會吵起來。',s:'「臣之壯也，猶不如人；今老矣，無能為也已。」',th:'禮貌理論的「不明說」策略，加上 Grice 的會話含意：字面意思和真正的意思分開，讓聽的人自己去推想。'}},
+   {t:'好啊 沒問題 你說一下時間跟曲目 我這幾天都可以留下來練 有需要搬東西也跟我說',m:'讓',r:1,g:-1,mood:1,next:'a2_yes',
+    tip:{k:'全部答應，還多做',p:'你不只答應，還主動說要幫忙搬東西。心裡的不滿並不會因此消失，只會留到以後更難開口的時候。',s:'',th:'這是 Thomas 與 Kilmann 衝突模式裡的「退讓」：先照顧對方，把自己的需要放後面。短期內關係很好，但你想要的一直沒得到。'}},
+   {t:'我再看看欸 這幾天補習滿多的 你先問問看別人 不行再跟我說',m:'避',r:-1,g:-1,mood:-1,next:'a2_avoid',
+    tip:{k:'先推掉再說',p:'「不行再跟我說」聽起來很體貼，可是他聽到的是你在推託。問題一個也沒解決，他還得多等一天。',s:'',th:'這是 Thomas 與 Kilmann 衝突模式裡的「逃避」：把衝突先放著不處理，結果你和他想要的都沒有得到。'}}
+  ]},
+ a2_atk:{ex:'angry',say:`蛤 那時候是學長他們都想唱自己的啊
+不是針對你欸
+現在是真的沒人了`,
+  opts:[
+   {t:'所以我就是備胎嘛 學長要唱就給學長唱 沒人了才輪到我',m:'攻',r:-2,g:-1,mood:-2,next:'a3_cold',
+    tip:{k:'再加一條指控',p:'他才剛解釋完，你就當作沒聽到。這樣一來，你們談的不再是找主唱，而是在爭誰對誰錯。',s:'',th:'這是衝突升級：每一次回話都在對方已經防衛的地方再施壓，雙方的火氣會越來越大。'}},
+   {t:'我知道不是針對我 只是那陣子滿悶的 講出來比較好做事',m:'合',r:1,g:1,mood:1,next:'a3',
+    tip:{k:'用「我」來說感受',p:'你把「你怎樣」改成「我怎樣」，收回了指控，但感受還是說出來了。他不需要替自己辯護，也就聽得進去。',s:'',th:'Gordon 的「我訊息」：說自己的感受和需要，不去評價對方，對方比較不會覺得被攻擊。'}},
+   {t:'好啦算了 不講那個了 你說要唱哪幾首 我回去先聽',m:'讓',r:0,g:-1,mood:1,next:'a2_yes',
+    tip:{k:'把話吞回去',p:'爭執是停了，但那是你把話吞回去換來的。他會以為這件事已經過去，你卻會記很久。',s:'',th:'這是衝突處理裡的「退讓」（Thomas 與 Kilmann）：照顧了對方的感受，自己的不滿卻沒有地方說。'}},
+   {t:'算了 當我沒說 反正講了也沒用 你們決定就好 我配合',m:'避',r:-1,g:-1,mood:-1,next:'a3_cold',
+    tip:{k:'話說到一半就放棄',p:'「我配合」聽起來像是答應，你心裡想的卻是放棄。他還是不知道你到底要什麼，只記得你剛才對他很兇。',s:'',th:'這是衝突處理裡的「逃避」（Thomas 與 Kilmann）：話題被擱著，你的想法沒說清楚，他也沒機會回應。'}}
+  ]},
+ a2_hint:{ex:'surprised',say:`……欸 你是在講上學期歌單的事喔
+對啦 那時候我沒處理好 是我的問題
+但現在真的只有你了`,
+  opts:[
+   {t:'你知道就好 我那時候等了兩個禮拜 一句再看看就沒了',m:'攻',r:-1,g:0,mood:-1,next:'a3',
+    tip:{k:'他認錯了你還追究',p:'他已經承認是他的問題，你再把細節翻出來，他會覺得認錯也沒有用，下次就不會再認了。',s:'鄭文公認錯之後，燭之武只回了一個字：「許之」。',th:'道歉要被對方接受才算完成。道歉被好好接受過，下次他才願意再道歉。'}},
+   {t:'OK 這件事過了 那現在怎麼弄',m:'合',r:1,g:1,mood:1,next:'a3',
+    tip:{k:'收下道歉，回到正事',p:'一句話就夠了。你讓他知道你聽到了，接著馬上把話題轉到要解決的事，兩個人都不會尷尬。',s:'「許之。」',th:'Fisher 與 Ury《哈佛這樣教談判力》：把人和問題分開。人的心結處理完，接下來就只談問題。'}},
+   {t:'沒有啦 我沒有在意 那時候學長要唱也很正常 你不用放在心上 我們來講成發的事',m:'讓',r:0,g:-1,mood:0,next:'a3',
+    tip:{k:'他認錯了你卻說沒事',p:'他已經聽懂並且認錯了，你卻說沒這回事，還替他找理由。這樣你剛才的暗示就沒有作用，下學期很可能還是一樣。',s:'',th:'這是衝突處理裡的「退讓」（Thomas 與 Kilmann）：連對方已經願意給你的，你都不敢收下。'}},
+   {t:'其實我也不是在說那個啦 我只是覺得我狀態沒有很好 你再考慮看看別人',m:'避',r:-1,g:-1,mood:-1,next:'a3',
+    tip:{k:'否認自己的暗示',p:'他聽懂了你的意思，你卻說自己不是在講那件事。他會搞不清楚該相信哪一句，你也把自己推得更遠。',s:'',th:'這是衝突處理裡的「逃避」：暗示一旦被對方聽懂，就該承認那是你的意思，否則對方只會更困惑。'}}
+  ]},
+ a2_yes:{ex:'happy',say:`太好了 謝啦
+那明天中午開始練 曲目我丟群組
+學長之前排的那幾首直接用`,
+  opts:[
+   {t:'又是學長那幾首 那我上去幹嘛 當人肉播放器喔',m:'攻',r:-2,g:0,mood:-2,next:'a3_cold',
+    tip:{k:'先忍住，後來發作',p:'剛才你答應得太快，現在才一次發作出來。他只會覺得你反反覆覆，不會覺得你有道理。',s:'',th:'壓抑一段時間後才發作，對方通常只記得你發脾氣的樣子，不記得你原本想說什麼。'}},
+   {t:'等一下 曲目我想討論 有一首想換我編的',m:'合',r:0,g:1,mood:0,next:'a3',
+    tip:{k:'晚一點講也比不講好',p:'你終於說出想要的了。不過同樣一句話如果在上一回合說會容易很多，現在他已經當成定案，聽起來就像你臨時多要求。',s:'',th:'要求越晚提出，對方越容易覺得你在變卦，所以想要的東西最好在對方決定之前講。'}},
+   {t:'好 我看群組 學長那幾首我大概都會 不會的我回去練 應該趕得上',m:'讓',r:1,g:-2,mood:1,next:'a3',
+    tip:{k:'還是沒說出口',p:'你講了一大串，全部都在配合他。成發應該會順利過關，但下學期你很可能還是負責搬音箱。',s:'',th:'這是衝突處理裡的「退讓」（Thomas 與 Kilmann）：氣氛當下比較好，但你想要的事一直沒有往前。'}},
+   {t:'喔… 好 我看一下再說',m:'避',r:0,g:-1,mood:0,next:'a3',
+    tip:{k:'說「再說」',p:'「我看一下再說」聽起來是保留，通常後來就不會再說了，他也只能照原本的安排進行。',s:'',th:'這是衝突處理裡的「逃避」（Thomas 與 Kilmann）：先把問題擱著，結果你和他想要的都沒有被處理。'}}
+  ]},
+ a2_avoid:{ex:'tired',say:`喔… 那你明天跟我說好嗎 拜託 我真的找不到人
+
+（隔天中午，小鄭又在社辦門口等你）
+欸 想好了嗎`,
+  opts:[
+   {t:'我可以 不過上學期歌單我排不進去 這次我想自己排幾首',m:'合',r:0,g:1,mood:0,next:'a3',
+    tip:{k:'晚了一天才說出暗示',p:'你拖了一天才開口。他現在更著急，所以這句話反而比較容易被接受，但他也會記得你讓他多等了一天。',s:'「臣之壯也，猶不如人；今老矣，無能為也已。」',th:'說話的時機跟內容一樣重要，同一句話早說或晚說，對方的感受會不一樣。'}},
+   {t:'找不到人才想到我喔 說真的 上學期你們是怎麼排的 現在來問我 我是備胎嗎',m:'攻',r:-2,g:0,mood:-2,next:'a3_cold',
+    tip:{k:'直接把抱怨說出來',p:'他等了一天，等到的卻是這一段質問，他的耐心已經用完了。',s:'',th:'Brown 與 Levinson 的禮貌理論：直接說出讓對方沒面子的話，對關係的傷害最大。'}},
+   {t:'好啦 我上 你把曲目丟我 我今天回去就練',m:'讓',r:1,g:-1,mood:1,next:'a2_yes',
+    tip:{k:'拖了一天還是全答應',p:'你讓他多等了一天，最後還是全部答應，這一天什麼也沒有換到。',s:'',th:'先逃避、最後退讓，是很常見的組合，拖延讓對方不滿，退讓又讓自己吃虧。'}}
+  ]},
+ a3:{ex:'neutral',say:`好 那你需要什麼 時間 曲目 都可以講`,
+  opts:[
+   {t:'兩件事 一首換成我編的歌 還有海報寫我是主唱 不然大家會以為是阿凱',m:'合',r:0,g:2,mood:0,next:'a4',
+    tip:{k:'說清楚要什麼和為什麼',p:'他問你需要什麼，你就給他具體的答案，他才知道要怎麼幫你。',s:'燭之武給秦伯的也是具體方案：「舍鄭以為東道主，行李之往來，共其乏困。」',th:'Fisher 與 Ury《哈佛這樣教談判力》：談利益，不談立場。立場是「我要什麼」，利益是「我為什麼要」，說出理由對方才找得到辦法。'}},
+   {t:'不給我選歌我就不唱 海報也要改 這是底線',m:'攻',r:-2,g:1,mood:-2,next:'a4_hard',
+    tip:{k:'下最後通牒',p:'他也許會答應，但那是被逼的。被逼著答應的人，之後會想辦法討回來。',s:'',th:'這是立場式的談判：雙方各守立場、誰也不讓，你贏了這一回合，往往會在下一回合輸回去。'}},
+   {t:'我是覺得啦 如果可以的話 看有沒有機會讓我也參與一下曲目 不過也不用勉強 你安排就好',m:'讓',r:1,g:-1,mood:1,next:'a4_none',
+    tip:{k:'太婉轉，他聽不懂',p:'你講了一大串，他聽完還是不知道你要什麼，而且你自己還說了「不用勉強」。他主動問你需要什麼的時候，就是該直接說的時候。',s:'燭之武對鄭文公用暗示，對秦伯卻一條一條講清楚。同一個人，看場合換講法。',th:'禮貌理論：事情越急、對方越願意聽，就越應該直接說。不明說的方式，適合用在對方還沒準備好聽的時候。'}},
+   {t:'都可以 你決定就好',m:'讓',r:1,g:-2,mood:1,next:'a4_none',
+    tip:{k:'他問了你也不說',p:'是他主動給你機會，你卻自己放掉了。',s:'',th:'這是衝突處理裡的「退讓」（Thomas 與 Kilmann）：把決定全交給對方，自己的需要就沒有被說出來。'}}
+  ]},
+ a3_cold:{ex:'angry',say:`……好 我知道了
+我再去問別人`,
+  opts:[
+   {t:'等等 剛剛講太衝了 我不是不幫 我是想把上學期的事講開',m:'合',r:1,g:1,mood:1,next:'a3',
+    tip:{k:'收回剛才的話不是認輸',p:'一句「剛剛講太衝」就讓對話能繼續下去。你先承認自己有不對的地方，他才有理由留下來聽。',s:'',th:'修復關係的關鍵，是先承認自己的那一部分，不必等對方先開口。'}},
+   {t:'隨便你 反正你們本來就有自己的想法 我在不在都一樣 你去問吧',m:'避',r:-2,g:-2,mood:-2,next:'END',
+    tip:{k:'乾脆放棄',p:'對話就這樣結束了。上學期的事還是沒有人知道，成發也跟你沒關係了。',s:'',th:'這是「逃避」走到最後的結果（Thomas 與 Kilmann）：問題沒有談，機會也一起失去了。'}},
+   {t:'好啊 你去問啊 看誰要',m:'攻',r:-3,g:-2,mood:-3,next:'END',
+    tip:{k:'撕破臉',p:'這句話你是說贏了，可是整件事你輸掉了。',s:'',th:'這是「競爭」走到最後的結果（Thomas 與 Kilmann）：一心要占上風，結果關係和目標都沒有了。'}}
+  ]},
+ a4:{ex:'troubled',say:`換歌OK
+但海報… 海報禮拜五就送印了欸
+現在改要重付錢`,
+  opts:[
+   {t:'那海報就算了 開場你幫我介紹一下 IG貼文也寫一下就好',m:'合',r:1,g:1,mood:1,next:'a5',
+    tip:{k:'對方有困難，就提替代方案',p:'你真正想要的是大家知道主唱是你，海報只是其中一種做法。換一種方式，他做得到，你也得到了想要的。',s:'「若舍鄭以為東道主，行李之往來，共其乏困，君亦無所害。」',th:'Fisher 與 Ury《哈佛這樣教談判力》：為雙方共同的利益想出更多選項。先想清楚自己真正要的是什麼，再找別的方法達成。'}},
+   {t:'重付就重付啊 這本來就是你們沒安排好 不能每次都要我吞',m:'攻',r:-2,g:0,mood:-2,next:'a5_cold',
+    tip:{k:'要他付出代價',p:'就算他真的花錢重印，他記得的也會是被你逼的感覺。',s:'',th:'這是衝突處理裡的「競爭」（Thomas 與 Kilmann）：只顧自己要贏，對方就算讓步，心裡也不服。'}},
+   {t:'喔 那算了 沒關係 海報不重要 有唱到就好',m:'讓',r:0,g:-1,mood:0,next:'a5',
+    tip:{k:'一遇到困難就放棄',p:'海報不能改，你連替代的做法都沒提，就這樣放掉了。',s:'',th:'這是衝突處理裡的「退讓」（Thomas 與 Kilmann）：對方一說有困難，你就把自己的需要擺到一邊。'}}
+  ]},
+ a4_hard:{ex:'cold',say:`……好 給你選
+但海報我不改`,
+  opts:[
+   {t:'好 那開場你介紹一下我 IG也寫 這樣可以吧',m:'合',r:1,g:1,mood:0,next:'a5',
+    tip:{k:'換個方式得到你要的',p:'你剛才逼過他，現在給他一個做得到的方案，他會鬆一口氣，事情也能談下去。',s:'',th:'Fisher 與 Ury 的「創造選項」：同一個目標可以有很多種做法，找出對方做得到的那一種。'}},
+   {t:'海報不改我就不唱 你自己選',m:'攻',r:-2,g:0,mood:-2,next:'a5_cold',
+    tip:{k:'第二次下最後通牒',p:'最後通牒只能用一次。再用第二次，他會覺得不管怎麼讓步，你都不會滿意。',s:'',th:'這是衝突處理裡的「競爭」（Thomas 與 Kilmann）：一再逼對方讓步，對方只會越來越不想合作。'}},
+   {t:'好啦 選歌就好 海報我沒差 反正大家看表演也不會看海報 不用麻煩了',m:'讓',r:0,g:0,mood:1,next:'a5',
+    tip:{k:'主動放棄，還替他找理由',p:'你拿到了選歌，卻自己把海報說成不重要，另一半就這樣放掉了。',s:'',th:'這是衝突處理裡的「妥協」（Thomas 與 Kilmann）：雙方各讓一部分，只是這次讓出去的那一半，是你自己主動放掉的。'}}
+  ]},
+ a4_none:{ex:'neutral',say:`那就照學長那幾首 海報也不動了
+明天中午社辦`,
+  opts:[
+   {t:'等一下 我還是想講 有一首我想換我編的',m:'合',r:0,g:1,mood:0,next:'a5',
+    tip:{k:'最後一刻說出來',p:'雖然晚了，但你還是說出口了。只是他已經當成定案，所以你能拿到的會比剛才少。',s:'',th:'時機也有成本，越晚提出要求，對方要改的就越多，願意讓的也越少。'}},
+   {t:'好 那就照學長那幾首 我回去練 有問題明天跟你說',m:'讓',r:0,g:-1,mood:0,next:'a5',
+    tip:{k:'從頭到尾都沒說',p:'從頭到尾，你都沒有說出自己想要什麼。',s:'',th:'這是衝突處理裡的「退讓」（Thomas 與 Kilmann）：一直配合對方，自己的需要始終沒有被提出來。'}}
+  ]},
+ a5:{ex:'neutral',say:`OK 那就這樣？
+明天中午社辦`,
+  opts:[
+   {t:'好 你今天再想一下 有問題明天中午前跟我說',m:'合',r:1,g:1,mood:1,next:'END',
+    tip:{k:'讓他自己做決定',p:'自己決定的事，人比較不會事後反悔。你給他考慮的空間，他反而比較不會退出。',s:'「闕秦以利晉，唯君圖之。」',th:'「但你可以自己決定」技巧（Guéguen 與 Pascual，2000）。Carpenter 2013 年的統合分析發現，加上這句話，答應的比例約翻倍。'}},
+   {t:'先講好喔 到時候不要又改 我可不想練到一半被換掉 上次的事我記得',m:'攻',r:-1,g:0,mood:-1,next:'END',
+    tip:{k:'用威脅結尾',p:'前面談得再好，最後一句如果是威脅，他記得的就只有那個威脅。',s:'',th:'結尾效應：一段對話最後說的話，最會影響對方對整段對話的印象。'}},
+   {t:'好 都聽你的',m:'讓',r:0,g:-1,mood:0,next:'END',
+    tip:{k:'結尾又讓出去',p:'你們已經談好的事，被你一句「都聽你的」又全部交還給他了。',s:'',th:'這是衝突處理裡的「退讓」（Thomas 與 Kilmann）：到最後還是把決定權讓出去，前面爭取的就不算數了。'}}
+  ]},
+ a5_cold:{ex:'cold',say:`……好 就這樣`,
+  opts:[
+   {t:'剛剛口氣不好 抱歉 我是真的想把這場弄好',m:'合',r:1,g:0,mood:1,next:'END',
+    tip:{k:'最後補一句道歉',p:'雖然晚了一點，但你還是說出口了，他會記得你有道歉。',s:'',th:'修復關係：在對話結束前承認自己口氣不好，能讓對方留下比較好的最後印象。'}},
+   {t:'好 就這樣 反正你們也不會真的聽我的 到時候不要怪我沒提醒',m:'攻',r:-2,g:0,mood:-2,next:'END',
+    tip:{k:'先說它會失敗',p:'對話還沒結束，你就先宣布這件事會失敗，他會一直記得這句話。',s:'',th:'這是衝突處理裡的「競爭」（Thomas 與 Kilmann）：就算讓步了，也要在嘴上占最後一點上風。'}},
+   {t:'嗯',m:'避',r:-1,g:0,mood:-1,next:'END',
+    tip:{k:'不說話',p:'對話就這樣結束，剛才的不愉快一點也沒有修補。',s:'',th:'這是衝突處理裡的「逃避」（Thomas 與 Kilmann）：用沉默結束對話，問題和心結都還留著。'}}
+  ]}
+ },
+ endings:{
+  WW:'成發那天你唱了自己編的那首，開場小鄭特別介紹你。下學期的歌單，他第一個問你。',
+  RL:'成發順利，大家都說你很罩。下學期你還是搬音箱。小鄭不知道你在不爽，因為你沒講。',
+  GL:'你唱了，條件也拿到了。但之後小鄭不太找你，社辦裡看到你會先低頭滑手機。',
+  LL:'成發的主唱換成學弟，他唱到走音三次。之後你跟小鄭在走廊遇到，都不跟對方說話。'
+ }
+},
+B:{
+ title:'第二章　你是小鄭',
+ bg:'bgB',
+ npc:'阿武',
+ me:'小鄭',
+ scene:'同一天，同一個社辦。阿武在角落繞線材。',
+ intro:`你是吉他社社長。上學期阿武排了一份歌單，你說「再看看」，後來學長們的曲目用掉所有時段，阿武被分去搬音箱。
+
+成發剩五天，主唱阿凱退了。全社只有阿武撐得起來。你知道他在不爽，但他不會直接講。`,
+ goal:`請阿武救火，而且是<b>心甘情願</b>的那種。他不會把不滿說出口，你得自己聽出來。`,
+ start:'b1',
+ nodes:{
+ b1:{ex:'cold',say:`（低頭繞線，沒抬頭）
+幹嘛`,
+  opts:[
+   {t:'阿凱退了 成發主唱沒人 你來唱',m:'攻',r:-1,g:0,mood:-1,next:'b2_hint',
+    tip:{k:'直接叫他做事',p:'你跳過上學期的事，直接要他上台，他會覺得自己只是被你拿來用的人。',s:'',th:'Brown 與 Levinson 的禮貌理論：命令是最容易讓對方覺得沒面子的說法之一。'}},
+   {t:'上學期歌單的事 是我沒處理好 我知道你一直放在心上',m:'合',r:1,g:1,mood:1,next:'b2_ack',
+    tip:{k:'先認錯，不找藉口',p:'你先提起他最在意的事，而且說的是「我沒處理好」，沒有推給學長，他會感覺到你是認真的。',s:'「吾不能早用子，今急而求子，是寡人之過也。」',th:'Blum-Kulka 的道歉研究：道歉的核心是承擔責任，說明理由只能放在後面。'}},
+   {t:'我知道你可能還在介意上學期的事 但社團現在真的有難 你是老社員了 不會想看它開天窗吧',m:'攻',r:-2,g:0,mood:-2,next:'b2_cold',
+    tip:{k:'用身分壓他，外面包一層體貼',p:'「我知道你介意」只是開場，重點在「你是老社員，不會想看它開天窗吧」。他聽到的是你在說他欠社團的，馬上就會防衛起來。',s:'',th:'Brehm 的心理抗拒理論：人覺得自己的自由被限制時，會往反方向走。包裝得再體貼，壓力還是壓力。'}},
+   {t:'上學期的事 我也很為難 那時候學長那邊壓力很大 我也沒辦法 你應該能理解吧',m:'避',r:-1,g:0,mood:-1,next:'b2_cold',
+    tip:{k:'帶著藉口的道歉',p:'整段話裡沒有一句承認是你的問題，全都在說你也沒辦法。他聽起來，會像是你在要他體諒你。',s:'鄭文公沒有說「那時候我也很為難」，他說「是寡人之過也」。',th:'Blum-Kulka 的道歉研究：如果先說理由、後承擔責任，對方就會把道歉聽成藉口。'}}
+  ]},
+ b2_hint:{ex:'cold',say:`我喔… 我上學期連歌單都排不進去
+現在上台 大概也撐不起來吧`,
+  q:'他這句話真正的意思是？',
+  opts:[
+   {t:'他真的沒信心 →「不會啦 你超強 上學期沒排到是運氣 這次相信自己」',m:'避',r:0,g:-1,mood:-1,next:'b3_miss',
+    tip:{k:'沒聽懂他的意思',p:'他講的不是信心，而是上學期的事。你用鼓勵回他，還把那件事說成運氣不好，他只會覺得你還是沒聽懂。',s:'',th:'Grice 的會話含意：字面意思和真正的意思可能不同，聽的人要自己推想對方真正想說什麼。'}},
+   {t:'他在提上學期 →「……你是說歌單的事喔 對 那時候是我沒處理好」',m:'合',r:1,g:1,mood:1,next:'b3',
+    tip:{k:'聽懂了他的暗示',p:'他用暗示給你一個機會，你用認錯來回應，兩個人都不必撕破臉。',s:'鄭文公聽完就說：「是寡人之過也。」',th:'話裡的言外之意要靠聽的人來完成，聽懂之後，要用實際的回應讓對方知道你懂了。'}},
+   {t:'他在拒絕 →「喔 那沒關係 我問別人 謝謝你聽我講」',m:'避',r:-1,g:-2,mood:-1,next:'END',
+    tip:{k:'他並沒有拒絕',p:'他是在等你回應那件事，你卻直接走了，他會覺得自己又一次被放在後面。',s:'',th:'把對方的暗示當成拒絕，是很常見的誤會，對方原本想談的事就沒有機會說出來。'}},
+   {t:'他要我求他 →「拜託啦 我真的找不到人 全社只有你了 求你」',m:'讓',r:-1,g:0,mood:-1,next:'b3_miss',
+    tip:{k:'他要的不是你求他',p:'他想要的是你承認上學期的事，不是你低頭拜託。低頭和承認是兩回事。',s:'',th:'面子理論：對方想要的是自己的委屈被看見，而不是你把姿態放低。'}}
+  ]},
+ b2_ack:{ex:'neutral',say:`……知道就好
+所以現在是要我幹嘛`,
+  opts:[
+   {t:'現在主唱沒人 你編的那首歌 不上台就沒有人聽得到了',m:'合',r:0,g:2,mood:1,next:'b4',
+    tip:{k:'說他的損失，不說你的難處',p:'你讓他看到，如果不上台，他在意的東西就會失去，這比說你有多辛苦更能打動他。',s:'「然鄭亡，子亦有不利焉。」',th:'Kahneman 與 Tversky 的展望理論：人對失去的感受比得到更強烈，所以從損失的角度說更有說服力。'}},
+   {t:'我真的快被搞死了 老師在催 學長又不管 海報也還沒好 拜託你幫我一次',m:'讓',r:0,g:0,mood:0,next:'b4',
+    tip:{k:'只說自己的難處',p:'你說的都是你的麻煩，不是他的事。他也許會幫你，但那是出於同情，不是因為他認同。',s:'',th:'說服要從對方在意的事情出發，只講自己的壓力，對方很難真心投入。'}},
+   {t:'你不幫 社團就倒了 你忍心嗎',m:'攻',r:-2,g:0,mood:-2,next:'b3_miss',
+    tip:{k:'用情緒逼他',p:'「你忍心嗎」是把責任全推到他身上。他剛剛才稍微放軟，聽到這句又會回到防衛的狀態。',s:'',th:'Witte 的延伸平行歷程模型：用恐懼說服時，如果沒有給對方做得到的辦法，對方會乾脆不聽。'}},
+   {t:'真的很抱歉 我那時候很爛 你要罵我也可以 我都接受 真的對不起',m:'讓',r:0,g:-1,mood:0,next:'b3_miss',
+    tip:{k:'道歉道過頭',p:'道完歉就該往下談。你一直道歉，他就得一直說「沒關係」，最後變成他在安慰你。',s:'鄭文公認錯只用一句，接著馬上講「然鄭亡，子亦有不利焉」。',th:'過度道歉會讓焦點從問題移到道歉的人身上，對方反而要花力氣照顧你的情緒。'}}
+  ]},
+ b2_cold:{ex:'angry',say:`社團有難
+上學期排歌單的時候 怎麼沒想到我是社員`,
+  opts:[
+   {t:'對 那是我的問題 我現在才來講 是我不對',m:'合',r:1,g:1,mood:1,next:'b3',
+    tip:{k:'直接認錯',p:'他把舊帳翻出來，你不辯解，直接承認。這是唯一能讓對話繼續下去的回法。',s:'「吾不能早用子，今急而求子，是寡人之過也。」',th:'道歉的核心是承擔責任，對方要先聽到你認錯，才願意聽你後面的請求。'}},
+   {t:'那是學長決定的 我也只是照流程走 你不能什麼都怪到我頭上 我也有我的難處',m:'攻',r:-2,g:-1,mood:-2,next:'b_no',
+    tip:{k:'把責任推給別人',p:'就算你說的是事實，他聽到的仍然是「你還是不覺得自己有錯」。',s:'',th:'Blum-Kulka 的道歉研究：說明理由如果放在承擔責任前面，就會被當成藉口。'}},
+   {t:'好啦不講那個了 你到底要不要',m:'避',r:-1,g:-1,mood:-1,next:'b3_miss',
+    tip:{k:'跳過他在意的事',p:'你把他最在意的事跳過去，他當然也會跳過你的請求。',s:'',th:'這是衝突處理裡的「逃避」（Thomas 與 Kilmann）：心結沒有談開，後面的事也談不下去。'}}
+  ]},
+ b3:{ex:'neutral',say:`……嗯
+所以現在 是要我幹嘛`,
+  opts:[
+   {t:'現在主唱沒人 你編的那首歌 不上台就沒有人聽得到了',m:'合',r:0,g:2,mood:1,next:'b4',
+    tip:{k:'說他的損失，不說你的難處',p:'你讓他看到，如果不上台，他在意的東西就會失去，這比說你有多辛苦更能打動他。',s:'「然鄭亡，子亦有不利焉。」',th:'Kahneman 與 Tversky 的展望理論：人對失去的感受比得到更強烈，所以從損失的角度說更有力。'}},
+   {t:'我真的快被搞死了 老師在催 學長又不管 海報也還沒好 拜託你幫我一次',m:'讓',r:0,g:0,mood:0,next:'b4',
+    tip:{k:'只說自己的難處',p:'他也許會幫你，但那是出於同情，不是因為他認同。',s:'',th:'說服要從對方在意的事情出發，而不是只講自己的壓力。'}},
+   {t:'你不幫 社團就倒了 你忍心嗎',m:'攻',r:-2,g:0,mood:-2,next:'b3_miss',
+    tip:{k:'用情緒逼他',p:'他剛剛才稍微放軟，聽到「你忍心嗎」又會回到防衛的狀態。',s:'',th:'Witte 的研究：用恐懼說服卻沒有給對方出路，對方會乾脆不聽。'}},
+   {t:'真的很抱歉 我那時候很爛 你要罵我也可以 我都接受 真的對不起',m:'讓',r:0,g:-1,mood:0,next:'b3_miss',
+    tip:{k:'道歉道過頭',p:'道完歉就該往下談。一直道歉下去，最後會變成他在安慰你。',s:'',th:'過度道歉會讓焦點從問題移到道歉的人身上。'}}
+  ]},
+ b3_miss:{ex:'cold',say:`……我再看看`,
+  opts:[
+   {t:'好 明天中午前跟我說 不管怎樣 歌單的事都抱歉',m:'合',r:1,g:1,mood:1,next:'b4',
+    tip:{k:'給他時間，補上道歉',p:'前面沒有回應到的那件事，你在這裡補上了，而且你沒有逼他當場回答。',s:'「是寡人之過也。」＋「唯君圖之。」',th:'把道歉和「你可以自己決定」放在同一句，對方既沒有壓力，也沒有拒絕的藉口。'}},
+   {t:'不行 今天就要答案',m:'攻',r:-2,g:-1,mood:-2,next:'b_no',
+    tip:{k:'逼他現在回答',p:'「我再看看」是猶豫，不是拒絕，給他時間就好。你一逼，猶豫就會變成拒絕。',s:'',th:'Brehm 的心理抗拒理論：人覺得自己的自由被限制時，會往反方向走。'}},
+   {t:'好 那我先問問看別人 如果真的沒人我再來找你 你也不用有壓力',m:'避',r:-1,g:-1,mood:-1,next:'END',
+    tip:{k:'把他當成備胎',p:'「不用有壓力」聽起來很體貼，但「沒人我再來找你」他聽得很清楚，他又是最後一個被想到的人。',s:'',th:'這是衝突處理裡的「逃避」，而且把上學期讓他受傷的事又重演了一次。'}}
+  ]},
+ b4:{ex:'neutral',say:`我可以上
+不過兩件事 一首換成我編的那首
+還有海報上寫我是主唱`,
+  opts:[
+   {t:'換歌沒問題 海報已經送印改不了 不過開場我會介紹你 IG也會寫',m:'合',r:1,g:1,mood:1,next:'b5',
+    tip:{k:'先說限制，再給替代方案',p:'你不答應做不到的事，先講清楚限制，再給他做得到的版本，這比先答應、之後再跳票好得多。',s:'秦穆公「許君焦、瑕，朝濟而夕設版焉」，就是跳票的下場，被燭之武拿來講了一輩子。',th:'承諾的可信度：只要跳票一次，之後你說的每一句話，對方都會先打個問號。'}},
+   {t:'好好好 都可以 海報我去改 多少錢我想辦法 你就專心練 其他都交給我',m:'讓',r:1,g:1,mood:1,next:'b5_broken',
+    tip:{k:'先答應了再說',p:'現在談得很順，他也很高興，可是你要先想想，海報真的改得了嗎？',s:'',th:'答應了做不到的事，之後要處理的麻煩會比現在多一倍。'}},
+   {t:'海報不可能 歌單也是學長定的 你就唱就好',m:'攻',r:-2,g:-1,mood:-2,next:'b_no',
+    tip:{k:'全部拒絕',p:'他開的條件並不多，你卻一個都不答應，他就沒有理由上台了。',s:'',th:'這是衝突處理裡的「競爭」（Thomas 與 Kilmann）：只守住自己的立場，不給對方任何空間。'}}
+  ]},
+ b5:{ex:'neutral',say:`……好 我想一下
+明天跟你說`,
+  opts:[
+   {t:'好 你決定 我先把譜丟你 明天中午前都可以',m:'合',r:1,g:1,mood:1,next:'END',
+    tip:{k:'讓他自己做決定',p:'他自己決定要上台，練習的時候才會真的用心。',s:'「唯君圖之。」',th:'「但你可以自己決定」技巧（Guéguen 與 Pascual，2000；Carpenter，2013）：強調對方有選擇的自由，對方反而比較願意答應。'}},
+   {t:'現在就答應嘛 你想一下也是會答應 不如現在講 我晚上才睡得著',m:'攻',r:-1,g:0,mood:-1,next:'END',
+    tip:{k:'逼他當場答應',p:'他說要想一下，你卻不給他時間，還替他決定了答案，剛建立的信任就少了一些。',s:'',th:'Brehm 的心理抗拒理論：越是催對方馬上答應，對方越想往反方向走。'}},
+   {t:'（當晚傳了五則「想好了嗎」）',m:'攻',r:-2,g:-1,mood:-2,next:'b_no',
+    tip:{k:'嘴上說給時間，卻一直催',p:'既然說了讓他自己決定，就要真的讓他決定。一個晚上傳五則訊息，等於把剛才的話收回去。',s:'',th:'言行一致：說出來的話要和做的事對得上，對方才會相信你。'}}
+  ]},
+ b5_broken:{ex:'angry',say:`（兩天後，阿武拿著剛送來的海報）
+海報呢 你不是說會改`,
+  opts:[
+   {t:'對 是我答應得太快 海報已經送印了 是我的問題 開場我會介紹你 IG今天就發',m:'合',r:-2,g:1,mood:1,next:'END',
+    tip:{k:'認錯，再補救',p:'跳票之後，你能做的就是承認並提出補救，不要多解釋。關係還是會受影響，因為跳票本身就有代價，認錯只能讓傷害不再擴大。',s:'',th:'Blum-Kulka 的道歉研究：道歉的五個要素裡，在答應的事沒做到之後，提出補救是最重要的一項。'}},
+   {t:'印刷廠那邊來不及 我有問了 他們說改要重排版 真的不是我的問題',m:'攻',r:-3,g:-1,mood:-2,next:'END',
+    tip:{k:'推給印刷廠',p:'你講得越詳細，他越確定你在找藉口，他心裡想的是「你又來了」。',s:'',th:'道歉時先說理由、沒有先承擔責任，對方就會把它聽成藉口。'}},
+   {t:'海報有這麼重要嗎',m:'攻',r:-4,g:-1,mood:-3,next:'END',
+    tip:{k:'說他在意的事不重要',p:'這句話一說出口，你前面所有的努力都白費了。',s:'',th:'面子理論：直接否定對方在意的事，是最傷對方面子的說法。'}}
+  ]},
+ b_no:{ex:'cold',say:`不用了
+你找別人`,
+  q:'這次不是「再看看」，是「不用了」。',
+  opts:[
+   {t:'好 我知道了 歌單的事還是抱歉 之後想做什麼再跟我說',m:'合',r:2,g:0,mood:2,next:'END',end:'RESPECT',
+    tip:{k:'他拒絕了就停',p:'他說不要，你就停下來。該道的歉你道完了，也讓他知道之後還能找你，但不勉強他。這次的事沒成，可是你沒有變成會逼人的那種人。',s:'燭之武對秦伯講完一段話就停了：「唯君圖之。」他沒有再追著秦伯講第二次。',th:'說服有一個前提，就是對方隨時可以說不。拿掉這個前提，剩下的就不是說服，而是施壓。'}},
+   {t:'拜託啦 再想一下嘛 我真的只有你了',m:'攻',r:-1,g:0,mood:-1,next:'b_no2',
+    tip:{k:'再拜託一次',p:'他已經說不要了，你再拜託，意思就是「你的不要不算數」。',s:'',th:'對方明確拒絕之後，每多問一次，對方感受到的都不是誠意，而是壓力。'}},
+   {t:'那我請老師跟你講 老師說的你總會聽吧 這真的是為了社團',m:'攻',r:-3,g:-1,mood:-3,next:'END',end:'HARASS',
+    tip:{k:'找別人來施壓',p:'你不接受他的拒絕，反而去找一個他不能拒絕的人，還說這是為了社團，這已經越界了。',s:'',th:'透過第三者去施壓，是一種強迫，已經不是溝通了。'}}
+  ]},
+ b_no2:{ex:'angry',say:`我說不要
+不要再問了`,
+  opts:[
+   {t:'……好 對不起 我不問了',m:'合',r:1,g:0,mood:1,next:'END',end:'RESPECT',
+    tip:{k:'晚了一步，但停下來了',p:'你到第二次才停，他會記得你逼過他一次。不過你終究停下來了，你們之間還保有基本的尊重。',s:'',th:'停下來永遠不嫌晚，只是越晚停，付出的代價越高。'}},
+   {t:'你為什麼都不替社團想 我都求你了 大家都在等 你真的要這樣嗎',m:'攻',r:-3,g:-1,mood:-3,next:'END',end:'HARASS',
+    tip:{k:'這是糾纏，不是說服',p:'他已經說了兩次不要，你還在說「我都求你了」。「精誠所至，金石為開」說的是石頭，不是人，人說不要就是不要。',s:'',th:'堅持可以用在想別的方法解決問題，不能用在對同一個人一直施壓，這是兩件不同的事。'}}
+  ]}
+ },
+ endings:{
+  WW:'成發那天阿武唱了自己編的那首，你開場特別介紹他。下學期他主動來找你排歌單。',
+  RL:'阿武上了台，大家都很感謝你。但他下學期還是在搬音箱，因為你還是沒問他想做什麼。',
+  GL:'成發過了，阿武之後看到你會先低頭滑手機。明年招新，他沒來。',
+  LL:'主唱換成學弟，他唱到走音三次。不久之後，阿武退社了。'
+ }
+}};
+
+/* ===== 情境清單 ===== */
+const SCEN=[
+ {t:'社團救火',d:'成發剩五天，主唱突然退社。上學期被冷落、只能搬音箱的阿武，是全社唯一能救火的人。你可以當心裡有疙瘩的阿武，也可以當不得不開口求人的社長小鄭。',ch:['A','B']},
+ {t:'打工換班',d:'段考前一天剛好排到手搖飲店的晚班。你得先拜託同事小芸代班，可是她上次找你幫忙，你沒有答應；接著還要跟店長鄭姐報備。兩關連著玩，前一關怎麼談，會影響下一關。',ch:['C','D'],chain:true},
+ {t:'幽靈組員',d:'公民分組報告後天就要交，阿翔負責的那一章還是零進度，群組已讀三天都沒回。你可以當著急的組長小棠，也可以當遲遲沒交的阿翔。',ch:['E','F']},
+ {t:'手機與幾點睡',d:'晚上十一點半，媽媽站在房門口要收手機。上週你有三天滑到半夜一點，她都知道。這一晚你們要怎麼談？你可以當兒子小安，也可以當媽媽。',ch:['G','H']},
+ {t:'被拱去開嗆',d:'隔壁班有人在限動嘲笑小萱的穿著，截圖被傳進好友群組，大家都在等你去對方的貼文底下嗆回去。你會怎麼回應群組裡的起鬨？',ch:['I']},
+ {t:'告白之後',d:'放學後的操場旁邊，小傑鼓起勇氣，向每天聊到半夜的好朋友小晴告白。你可以站在告白的小傑這一邊，也可以站在被告白的小晴這一邊。話說出口之後，兩個人要怎麼面對彼此？',ch:['J','K']}
+];
+
+Object.assign(C,{
+/* ===================== 打工換班 ===================== */
+C:{
+ title:'打工換班①　你是阿哲',
+ bg:'bgA',npc:'小芸',me:'阿哲',
+ scene:'手搖飲店，晚上十點交班，後場。',
+ intro:`你高二，在手搖飲店做了三個月，固定週六晚班。下週六是段考前一天，你想找人代班。
+
+店裡的規矩：班表月初排好，要換班自己找人代，再跟店長鄭姐報備。
+
+小芸是大學生，上個月你去看演唱會，是她幫你代的。兩週前她問你能不能幫她代一天，你說有補習，沒幫。`,
+ goal:`請小芸代下週六晚班。她幫過你，你沒幫過她，這件事她記得。`,
+ start:'c1',
+ nodes:{
+ c1:{ex:'neutral',say:`欸 交接一下 冰箱那桶珍珠是我剛煮的
+你怎麼了 一臉有事`,
+  opts:[
+   {t:'下週六晚班撞到段考前一天 想問你能不能代 平日我可以還你一班',m:'合',r:0,g:1,mood:0,next:'c2',
+    tip:{k:'說清楚要什麼，先說能還什麼',p:'你一句話就講清楚哪一天、為什麼，還有你能怎麼還她，她不用自己去猜。',s:'燭之武對秦伯不繞圈子，第一句就把局勢講白：「秦、晉圍鄭，鄭既知亡矣。」',th:'Fisher 與 Ury《哈佛這樣教談判力》：提出要求時，把你能給對方的也一起說出來，對方比較容易答應。'}},
+   {t:'下週六幫我代一下啦 反正你平日都排很滿 週六應該也沒差吧',m:'攻',r:-2,g:0,mood:-2,next:'c2_atk',
+    tip:{k:'替她決定她的時間',p:'「應該也沒差」是你替她算的，她週六有沒有事，只有她自己知道。',s:'',th:'Brown 與 Levinson 的禮貌理論：替對方下結論，會讓對方覺得自己的決定權被拿走。'}},
+   {t:'沒有啦 就想說 下週六你有沒有空 沒有也沒關係 我再想辦法',m:'避',r:0,g:-1,mood:0,next:'c2_vague',
+    tip:{k:'問了等於沒問',p:'你沒說要她做什麼，又先說「沒有也沒關係」，她分不清你是在拜託她還是在聊天。',s:'',th:'這是衝突處理裡的「逃避」（Thomas 與 Kilmann）：把請求包裝成閒聊，對方也就當成閒聊。'}},
+   {t:'那個… 不好意思 我知道上次你問我我沒幫到 真的很抱歉 我不知道該不該問你 就是下週六…',m:'讓',r:0,g:-1,mood:0,next:'c2_vague',
+    tip:{k:'道歉和請求都只說一半',p:'你的道歉和請求都起了頭，卻都沒說完。她只聽出你很緊張，還是不知道你要什麼。',s:'鄭文公認錯只用一句，下一句就講正事。',th:'前面鋪陳太多，對方得從一堆話裡找重點，反而更難回答你。'}}
+  ]},
+ c2:{ex:'troubled',say:`下週六喔… 我那天本來想休欸
+而且上次我問你 你說有補習`,
+  opts:[
+   {t:'上次我沒幫到你 抱歉 這次算我欠你 你想休哪天我幫你頂 兩天也可以',m:'合',r:1,g:1,mood:1,next:'c3',
+    tip:{k:'先承認舊帳，再多給一點',p:'她翻出上次的事，你不辯解，直接承認，接著把要怎麼還她講得很具體。',s:'「是寡人之過也。」接著馬上談條件。',th:'Blum-Kulka 的道歉研究：先承擔責任，再提出補救，道歉才會讓人信服。'}},
+   {t:'那次我真的有補習啊 又不是故意的 不要這樣算',m:'攻',r:-2,g:-1,mood:-2,next:'c_cold',
+    tip:{k:'替自己辯解',p:'你說的是真的，但她要的不是真相，而是你記得她幫過你。',s:'',th:'道歉時先說理由、沒有先承擔責任，對方就會把它聽成藉口。'}},
+   {t:'拜託啦 我段考真的很重要 我媽說這次再退步就不讓我打工了 你是我唯一能問的人',m:'攻',r:-1,g:0,mood:-1,next:'c3',
+    tip:{k:'只講自己的難處，還給她壓力',p:'說她是「唯一能問的人」，等於把責任推到她身上。她也許會幫，但那是因為有壓力，不是因為願意。',s:'',th:'說服要從對方在意的事情出發，只講自己的壓力，對方就算答應也不情願。'}},
+   {t:'喔… 那算了 你休你的 我再問別人',m:'避',r:0,g:-2,mood:0,next:'END',
+    tip:{k:'一遇到困難就退',p:'她只說了「本來想休」，並沒有說不行，是你自己先放棄了。',s:'',th:'猶豫不等於拒絕，對方說有困難的時候，通常還有商量的空間。'}}
+  ]},
+ c2_atk:{ex:'angry',say:`週六沒差？ 我週六也有自己的事好嗎
+而且上次我問你 你說有補習`,
+  opts:[
+   {t:'我講錯了 你的時間你決定 那次我沒幫到你 抱歉 這次我欠你',m:'合',r:1,g:1,mood:1,next:'c3',
+    tip:{k:'先收回，再認錯',p:'你先收回剛才那句話，再承認她提的舊帳。兩件事都處理好，她才有理由繼續聽你說。',s:'',th:'修復關係的關鍵，是先承認自己做錯的部分，不必等對方先讓步。'}},
+   {t:'好啦 你不想幫就直說 不用在那邊翻舊帳 上次的事跟這次又沒關係',m:'攻',r:-2,g:-1,mood:-2,next:'c_cold',
+    tip:{k:'說得更衝',p:'她會提舊帳，是因為那件事還在她心裡。你說「不用翻舊帳」，等於說那件事不重要。',s:'',th:'這是衝突升級：每一次回話都比上一次更衝，雙方的火氣會越來越大。'}},
+   {t:'好 當我沒問 反正我也知道問你很麻煩 我自己想辦法就好',m:'避',r:-1,g:-2,mood:-1,next:'END',
+    tip:{k:'話說完就走',p:'你剛才說的話她會記得，而這一次也還是沒有人幫你代班。',s:'',th:'這是衝突處理裡的「逃避」（Thomas 與 Kilmann）：一走了之，問題沒有解決，心結也留下了。'}}
+  ]},
+ c2_vague:{ex:'neutral',say:`有空是有空 怎樣 你要幹嘛
+直接講啦`,
+  opts:[
+   {t:'下週六晚班我段考前一天 想請你代 平日我還你一班',m:'合',r:0,g:1,mood:0,next:'c2',
+    tip:{k:'她要你說清楚，你就說了',p:'這句話本來在第一回合就該說。是她主動給你機會，你才把話講清楚。',s:'',th:'當對方直接問「你要幹嘛」，就表示她準備好聽了，這時候最適合直接說。'}},
+   {t:'沒事啦 沒有也沒關係 我自己想辦法',m:'避',r:-1,g:-2,mood:-1,next:'END',
+    tip:{k:'她問了你還是不說',p:'她已經叫你直接講，你卻說「沒事」，下次她就不會再問了。',s:'',th:'這是「逃避」走到最後的結果（Thomas 與 Kilmann）：對方給的機會被你放掉，請求也始終沒說出口。'}},
+   {t:'就是下週六 你幫我代一下 你平日那麼多班 週六休一天也沒差吧',m:'攻',r:-2,g:0,mood:-2,next:'c2_atk',
+    tip:{k:'一急就逼她',p:'你從原本不敢開口，一下子變成替她決定她的時間。',s:'',th:'先逃避，被追問之後又轉成攻擊，這兩種反應常常接連出現，對方會覺得很難跟你溝通。'}}
+  ]},
+ c3:{ex:'neutral',say:`……好啦 你是要我代幾點到幾點
+我那天晚上八點有事 只能到八點`,
+  opts:[
+   {t:'六到八就很夠了 八點後我問阿凱能不能接 不行我自己回來顧',m:'合',r:1,g:1,mood:1,next:'c4',
+    tip:{k:'收下她能給的，剩下的自己想辦法',p:'她沒辦法幫你整個晚上，你就先接受她能給的時間，剩下的自己安排，她也不會覺得自己幫得不夠。',s:'「若舍鄭以為東道主……君亦無所害。」把對方要付的代價降到最低。',th:'Fisher 與 Ury 的「創造選項」：不必要求對方全部承擔，可以把問題拆開，各自找解決的辦法。'}},
+   {t:'只到八點喔 那等於沒幫到 算了',m:'攻',r:-2,g:-2,mood:-2,next:'c_cold',
+    tip:{k:'嫌她幫得不夠',p:'她願意給你兩個小時，你卻說等於沒幫到，下次她連一個小時都不會給你。',s:'',th:'否定對方的付出，是破壞關係最快的方式。'}},
+   {t:'好 那就六到八 後面的我再看',m:'讓',r:0,g:0,mood:0,next:'c4',
+    tip:{k:'剩下的時間說「再看」',p:'八點以後還是沒人顧店，店長一定會問你。說「再看」，等於沒有安排。',s:'',th:'這是衝突處理裡的「退讓」（Thomas 與 Kilmann）：接受了一半，另一半卻放著沒處理。'}},
+   {t:'沒關係啦 八點你有事就不要勉強 我真的不好意思麻煩你 我再找別人',m:'避',r:0,g:-2,mood:0,next:'END',
+    tip:{k:'她給一半，你全部退回',p:'你聽起來很客氣，可是你把她的好意整個退回去了，結果還是沒有人幫你代班。',s:'',th:'客氣過了頭也是一種逃避，表面上在替對方著想，問題卻沒有解決。'}}
+  ]},
+ c4:{ex:'neutral',say:`OK 那你去跟鄭姐講
+我不想又被她說我們私下換班`,
+  opts:[
+   {t:'我自己去講 講完截圖給你看 不會讓你背鍋',m:'合',r:1,g:1,mood:1,next:'END',flag:'cover',
+    tip:{k:'自己的事自己負責',p:'她擔心的是被店長罵。你主動承擔這個風險，還答應截圖給她看，她才真的放心。',s:'',th:'承諾的可信度：口頭保證之外，還要有對方看得到的行動，對方才會相信。'}},
+   {t:'你能不能幫我跟她講 她比較聽你的',m:'讓',r:-1,g:0,mood:-1,next:'END',flag:'cover',
+    tip:{k:'把自己的事推給她',p:'她已經答應幫你代班了，你還要她替你去跟店長講。',s:'',th:'這是「退讓」的另一面（Thomas 與 Kilmann）：連該自己負的責任，也讓給別人去承擔。'}},
+   {t:'鄭姐又不會管這麼多 不用講啦 到時候你來就好',m:'攻',r:0,g:1,mood:0,next:'END',flag:'sneak',
+    tip:{k:'先做了再說',p:'現在看起來很順利，但到了下一關，你就會知道鄭姐到底管不管。',s:'',th:'跳過該走的程序，現在省下的時間，之後往往要花加倍的力氣補回來。'}}
+  ]},
+ c_cold:{ex:'cold',say:`不行啦 我那天真的不行
+你問別人`,
+  q:'這是「不行」，不是「本來想休」。',
+  opts:[
+   {t:'好 我知道了 那天你就休息吧 我去問阿凱 上次的事還是謝謝你',m:'合',r:2,g:0,mood:2,next:'END',end:'RESPECT',
+    tip:{k:'她拒絕了就停',p:'她說不行，你就停下來，還補上了上次的謝謝。這次雖然沒找到人代班，但你們還是好同事。',s:'「唯君圖之。」講完就走。',th:'說服有一個前提，就是對方可以說不。尊重對方的拒絕，關係才能維持下去。'}},
+   {t:'拜託啦 就這一次 我請你喝一個月飲料 段考完我幫你代三天都可以',m:'攻',r:-1,g:0,mood:-1,next:'c_no2',
+    tip:{k:'拿好處交換',p:'她說的是「不行」，不是「不划算」。你再加條件也沒用，只會讓她覺得你沒在聽她說話。',s:'',th:'對方拒絕之後你再加條件，對方感受到的不是誠意，而是壓力。'}},
+   {t:'那我跟鄭姐說你可以 她排了你就要來',m:'攻',r:-3,g:-1,mood:-3,next:'END',end:'HARASS',
+    tip:{k:'繞過她去找店長',p:'你拿店長的權力去壓她。她會記得的不只是這次的事，而是你是什麼樣的人。',s:'',th:'透過第三者去施壓，是一種強迫，已經不是溝通了。'}}
+  ]},
+ c_no2:{ex:'angry',say:`我說不行 你怎麼都聽不懂`,
+  opts:[
+   {t:'……好 對不起 我不問了',m:'合',r:1,g:0,mood:1,next:'END',end:'RESPECT',
+    tip:{k:'晚了一步，但停下來了',p:'她會記得你剛才一直纏著她，不過你停下來了，你們還能繼續當同事。',s:'',th:'停下來永遠不嫌晚，只是越晚停，付出的代價越高。'}},
+   {t:'你上次不是也要我幫 我現在只是請你幫一次',m:'攻',r:-3,g:-1,mood:-3,next:'END',end:'HARASS',
+    tip:{k:'這是糾纏，不是說服',p:'她已經說了兩次不行，你還在跟她算之前誰幫過誰。',s:'',th:'堅持可以用在去找別人幫忙，不能用在對同一個人一直施壓。'}}
+  ]}
+ },
+ endings:{
+  WW:'小芸代到八點，阿凱接到十點。段考前一天你十點半就睡了。下個月她問你能不能換，你說好。',
+  RL:'你沒找到人代班，段考前一天還是站到十點。你跟小芸沒有鬧僵，只是下次要換班時，你還是不知道該怎麼開口。',
+  GL:'她幫你代了。但下個月她換到別家店，走之前沒跟你說一聲。',
+  LL:'沒有人幫你代班，你自己站到十點，隔天考試時睡著了。之後交班的時候，你們都不太說話。'
+ },
+ special:{RESPECT:{n:'停在該停的地方',s:'小芸那天真的有事。你問了阿凱，阿凱可以。考完之後小芸主動問你考得怎樣。'},HARASS:{n:'越線了',s:'鄭姐把小芸排上去了。她來了，整晚沒跟你講話。下個月她換店。'}},
+ next:'D'
+},
+D:{
+ title:'打工換班②　跟店長講',
+ bg:'bgB',npc:'鄭姐',me:'阿哲',
+ scene:'同一家店，隔天下午，鄭姐在吧檯算帳。',
+ intro:p=>p&&p.flag==='sneak'?`昨天你跟小芸說「不用跟鄭姐講」。
+
+今天鄭姐看了班表群組，發現下週六小芸說她會來。她把你叫到吧檯。`:p&&p.flag==='none'?`昨天小芸沒辦法代。你還沒找到人。
+
+下週六是段考前一天。你決定直接跟鄭姐談。`:`小芸答應代六點到八點，阿凱接八點到十點。現在要跟鄭姐報備。
+
+鄭姐的習慣：班表月初排好，臨時換班她會念，但找好人通常會給過。她最討厭的是私下換班不講。`,
+ goal:`讓鄭姐同意下週六的安排，而且下次還能再換。`,
+ start:p=>p&&p.flag==='sneak'?'d1_sneak':p&&p.flag==='none'?'d1_none':'d1',
+ nodes:{
+ d1:{ex:'neutral',say:`嗯？ 說 我在算帳`,
+  opts:[
+   {t:'鄭姐 下週六我段考前一天 小芸六到八 阿凱八到十 都講好了 跟你報備一下',m:'合',r:0,g:1,mood:0,next:'d2',
+    tip:{k:'一次講完你的安排',p:'時間、原因、誰來代班、都已經講好，你一次說完，她不用追問，也不用替你想辦法。',s:'',th:'Fisher 與 Ury《哈佛這樣教談判力》：帶著解決方案去找對方，而不是只帶著問題去。'}},
+   {t:'那個… 下週六我可能有點事 不知道可不可以…',m:'讓',r:0,g:-1,mood:0,next:'d2_vague',
+    tip:{k:'只說一半，等她來問',p:'什麼事、哪一班、找人了沒，她全都得一一問你，等於把整理的工作推給她。',s:'',th:'跟上司或長輩說話，說得模糊並不是禮貌，反而會增加對方的負擔。'}},
+   {t:'下週六我不能來 段考 我已經找人了 應該沒問題',m:'攻',r:-1,g:0,mood:-1,next:'d2',
+    tip:{k:'先通知，才問她',p:'「應該沒問題」是你替她下的判斷。她是店長，這件事要由她來決定。',s:'',th:'Brown 與 Levinson 的禮貌理論：用告知的口氣對上位者說話，會讓對方覺得自己的權力被忽略。'}},
+   {t:'不好意思打擾你算帳 其實也沒什麼 就是下週六的事 如果不方便就算了 我再想辦法',m:'避',r:0,g:-1,mood:0,next:'d2_vague',
+    tip:{k:'還沒說就先退',p:'你先說「不方便就算了」，她不用多想就可以拒絕你。',s:'',th:'這是衝突處理裡的「逃避」（Thomas 與 Kilmann）：還沒開口，就先替對方準備好拒絕的理由。'}}
+  ]},
+ d1_sneak:{ex:'angry',say:`我看群組 下週六小芸說她來 你們換了？
+誰准的`,
+  opts:[
+   {t:'是我 沒先講是我不對 現在補講：下週六我段考 小芸六到八 阿凱八到十',m:'合',r:1,g:1,mood:1,next:'d2',
+    tip:{k:'直接認錯，馬上補報備',p:'她生氣的是你沒有先報備。你承認了，接著當場把該報備的內容補上。',s:'「是寡人之過也。」接著談正事。',th:'先承擔責任，再立刻提出補救，對方的怒氣比較容易消下來。'}},
+   {t:'小芸說不用講啊 我以為她會跟你說 我們這種小換班平常不是都這樣嗎',m:'攻',r:-3,g:-1,mood:-3,next:'END',
+    tip:{k:'推給小芸',p:'說不用講的人是你。她會去問小芸，小芸也會說實話。',s:'',th:'推卸責任一旦被拆穿，之後你說的每一句話，對方都很難再相信。'}},
+   {t:'沒有啊 就先問問而已 還沒確定 她可能自己先寫上去了',m:'避',r:-2,g:-1,mood:-2,next:'d_no',
+    tip:{k:'假裝沒這回事',p:'群組裡的訊息清清楚楚，她不會相信你的說法。',s:'',th:'這是衝突處理裡的「逃避」（Thomas 與 Kilmann）：想躲開問題，但證據就在眼前，根本躲不掉。'}}
+  ]},
+ d1_none:{ex:'neutral',say:`嗯？ 說 我在算帳`,
+  opts:[
+   {t:'鄭姐 下週六我段考前一天 我問過小芸 她不行 想問有沒有可能我只上六到八',m:'合',r:0,g:1,mood:0,next:'d_no',
+    tip:{k:'老實說找過人，再提小一點的請求',p:'你沒找到人代班，也不假裝找到了，接著把請求縮小。',s:'',th:'縮小請求：要求變小，對方拒絕的理由就少了，答應的機會也比較大。'}},
+   {t:'下週六我不能來 段考 這個很重要 你應該可以理解吧 我真的沒辦法',m:'攻',r:-2,g:0,mood:-2,next:'d_no',
+    tip:{k:'只是通知她',p:'你沒找人代班，也沒有問她的意見，這是在通知她，不是在請求她。',s:'',th:'用告知的口氣對上位者說話，會讓對方覺得自己的決定權被忽略。'}},
+   {t:'那個… 不好意思 下週六我可能有點事 不知道方不方便 不方便也沒關係',m:'讓',r:0,g:-1,mood:0,next:'d2_vague',
+    tip:{k:'話只說一半',p:'她一定會追問，最後你還是得全部講清楚。',s:'',th:'這是衝突處理裡的「逃避」（Thomas 與 Kilmann）：話說得模糊，事情只是往後延。'}}
+  ]},
+ d2_vague:{ex:'tired',say:`什麼事 哪一班 找人了沒
+你一次講完`,
+  opts:[
+   {t:'下週六晚班 段考前一天 小芸六到八 阿凱八到十 都講好了',m:'合',r:0,g:1,mood:0,next:'d2',
+    tip:{k:'被要求才講完整',p:'她已經替你把要講的事列出來了，這些內容本來第一句就該說。',s:'',th:'時機也有成本，該先說的事拖到被追問才說，對方會覺得你沒有準備好。'}},
+   {t:'就是… 段考 我想說能不能不要來 不行的話我再想辦法 看你方便',m:'避',r:-1,g:-1,mood:-1,next:'d_no',
+    tip:{k:'還是沒說找人了沒',p:'她問了三件事，你只回答了一件。',s:'',th:'這是衝突處理裡的「逃避」（Thomas 與 Kilmann）：避開最難回答的問題，事情就沒辦法往下談。'}}
+  ]},
+ d2:{ex:'troubled',say:`段考每個工讀生都有 大家都要換我怎麼排
+而且阿凱才來兩個禮拜 晚上收店他不會`,
+  opts:[
+   {t:'收店我十點回來收 或這週我先教阿凱收店 兩個都可以 你選',m:'合',r:1,g:1,mood:1,next:'d3',
+    tip:{k:'她擔心什麼，就解決什麼',p:'她擔心的是收店，你提出兩個做得到的方法讓她選，問題就有解了。',s:'「若舍鄭以為東道主，行李之往來，共其乏困，君亦無所害。」',th:'Fisher 與 Ury《哈佛這樣教談判力》：對方提出反對，是在告訴你她在意什麼，不是在攻擊你。'}},
+   {t:'那是你人排太少吧 不是我的問題',m:'攻',r:-3,g:-1,mood:-3,next:'d_no',
+    tip:{k:'指責店長',p:'就算你說的是真的，這句話一出口，你想換的班也就沒了。',s:'',th:'對上位者說讓她沒面子的話，付出的代價最高。'}},
+   {t:'好 那我還是來好了',m:'讓',r:0,g:-2,mood:0,next:'END',
+    tip:{k:'她一抱怨你就退',p:'她只是在抱怨，還沒有說不行，是你自己先放棄了。',s:'',th:'這是衝突處理裡的「退讓」（Thomas 與 Kilmann）：把對方的抱怨聽成拒絕，自己的需要也跟著放掉。'}},
+   {t:'我知道你很難排 真的很抱歉造成困擾 那我再看看 如果真的不行我就來',m:'避',r:0,g:-1,mood:0,next:'d_no',
+    tip:{k:'道完歉就退',p:'你聽起來很體貼，但你沒有解決她說的收店問題，只是往後退了一步。',s:'',th:'這是包裝成禮貌的逃避，態度很客氣，問題卻原封不動。'}}
+  ]},
+ d3:{ex:'neutral',say:`……你十點回來收喔
+那你考試怎麼辦 不是要讀書`,
+  opts:[
+   {t:'我讀到九點半 十點回來收店 只要半小時 可以的',m:'合',r:1,g:1,mood:1,next:'d4',
+    tip:{k:'老實回答她的確認',p:'她在確認你是不是隨口說說。你說得出具體的安排，她就會相信。',s:'',th:'承諾的可信度來自細節，講得越具體，對方越相信你做得到。'}},
+   {t:'你管我怎麼讀 我的事我自己會安排 你只要說可不可以',m:'攻',r:-3,g:-1,mood:-3,next:'d_no',
+    tip:{k:'她在關心，你卻當成攻擊',p:'她是在關心你，你這句話卻把剛剛談好的事全部推翻了。',s:'',th:'把對方的善意誤會成攻擊，是最可惜的失分。'}},
+   {t:'對喔… 那算了 我整天來好了 讀書的事我自己想辦法 不要麻煩你',m:'讓',r:0,g:-2,mood:0,next:'END',
+    tip:{k:'被一句話問退',p:'她問的是「你這樣可以嗎」，不是「你不要換了」。',s:'',th:'這是衝突處理裡的「退讓」（Thomas 與 Kilmann）：對方只是多問一句，你就把自己的需要整個放掉。'}}
+  ]},
+ d4:{ex:'happy',say:`好 這次OK
+但下次班表出來一週內要講 不然我不給換`,
+  opts:[
+   {t:'好 謝謝鄭姐 下次班表出來我當天就看',m:'合',r:1,g:1,mood:1,next:'END',
+    tip:{k:'接受條件，說出下次的做法',p:'她給了規則，你說你會照做，下次要換班就容易多了。',s:'',th:'結尾效應：一段對話最後說的話，最會影響對方記住的印象。'}},
+   {t:'每次都這樣 早講也不一定給啊',m:'攻',r:-2,g:0,mood:-2,next:'END',
+    tip:{k:'得到了還要酸她',p:'她才剛答應你，這句話會讓她後悔答應。',s:'',th:'結尾效應：最後一句話如果帶刺，對方記得的就是那根刺。'}},
+   {t:'好好好 我知道了 下次一定 謝謝鄭姐 那我先去前面',m:'讓',r:0,g:0,mood:0,next:'END',
+    tip:{k:'隨口敷衍',p:'你一連說了好幾個「好」，她聽得出你只是在敷衍。',s:'',th:'這是衝突處理裡的「退讓」（Thomas 與 Kilmann）：嘴上全部答應，卻沒說出會怎麼做，對方只會覺得你在應付。'}}
+  ]},
+ d_no:{ex:'cold',say:`不行 下週六週年慶 人手就是不夠
+你一定要來`,
+  q:'她說的是「不行」。',
+  opts:[
+   {t:'好 那我能不能只上六到八 不行我就整場來',m:'合',r:1,g:1,mood:1,next:'d_no_alt',
+    tip:{k:'問一次小的，然後接受',p:'她拒絕了你就不再糾纏，只提一次縮小的要求，而且先說好「不行我就整場來」。',s:'「唯君圖之。」問一次，決定交給她。',th:'對方拒絕一次之後，可以提出一個更小的請求，如果還是被拒絕，就停下來。'}},
+   {t:'不行啦 我真的要讀書 這次段考我媽盯很緊 你一定要讓我換',m:'攻',r:-2,g:-1,mood:-2,next:'d_no2',
+    tip:{k:'她說不行，你說一定要',p:'你對店長說「你一定要讓我換」，她聽起來會覺得你在威脅她。',s:'',th:'Brehm 的心理抗拒理論：人覺得自己被逼的時候，會更堅持原本的決定。'}},
+   {t:'好 那我來 週年慶我知道人手不夠 讀書我自己想辦法',m:'讓',r:0,g:-1,mood:0,next:'END',
+    tip:{k:'接受了，但什麼都沒問',p:'接受是可以的，只是你連縮小版的要求都沒有提。',s:'',th:'這是衝突處理裡的「退讓」（Thomas 與 Kilmann）：連一次都不問，就直接放棄自己的需要。'}}
+  ]},
+ d_no_alt:{ex:'troubled',say:`……六到九 九點後我自己顧
+就這樣`,
+  opts:[
+   {t:'好 六到九 謝謝鄭姐',m:'合',r:1,g:1,mood:1,next:'END',
+    tip:{k:'得到一部分就接受',p:'她給的比你問的少一個小時，你接受就好，不要再跟她討價還價。',s:'',th:'妥協不是輸，而是在被拒絕之後，還能拿到一部分你想要的東西。'}},
+   {t:'九點喔 八點不行嗎 才差一個小時而已 拜託啦',m:'攻',r:-2,g:0,mood:-2,next:'d_no2',
+    tip:{k:'再討價還價一次',p:'她已經讓了一步，你再要求，她可能會把讓步收回去。',s:'',th:'對方讓步之後你還繼續要，等於告訴她讓步沒有用。'}}
+  ]},
+ d_no2:{ex:'angry',say:`我說不行就不行
+你不來 以後就不用來了`,
+  opts:[
+   {t:'……好 我來 剛剛講太急了 抱歉',m:'合',r:1,g:-1,mood:1,next:'END',end:'RESPECT',
+    tip:{k:'在底線前停下來',p:'這份工作你還想要。她已經說到底線了，你就該停下來。',s:'',th:'知道什麼時候該停，比說贏一句話更重要。'}},
+   {t:'（那天沒去，群組被 @ 三次沒回）',m:'攻',r:-4,g:-2,mood:-3,next:'END',end:'HARASS',
+    tip:{k:'直接翹班',p:'你沒說要辭職，也沒去上班。店裡那天少一個人，小芸和阿凱被念，你下個月也沒有班了。',s:'',th:'什麼都不說就消失，是最糟的結尾，對方不知道你怎麼想，只知道你不能信任。'}},
+   {t:'那我不做了',m:'攻',r:-2,g:-1,mood:-2,next:'END',
+    tip:{k:'拿辭職當籌碼',p:'你可以辭職，但在這時候說出口就只是氣話，而她會把它當真。',s:'',th:'威脅只能用在你真的願意做到的時候，因為對方很可能會當真。'}}
+  ]}
+ },
+ endings:{
+  WW:'下週六你十點回來收店。鄭姐說以後班表出來先講。下個月你要換，她直接說好。',
+  RL:'你整場來了。段考考得普通。鄭姐覺得你很配合，所以下次也不會想到要讓你換。',
+  GL:'你換到了，但鄭姐之後排班都先排你最不想要的時段。',
+  LL:'班沒換成，還被鄭姐念了一頓。之後你跟她只聊工作上的事。'
+ },
+ special:{RESPECT:{n:'停在該停的地方',s:'你整場來了。隔週鄭姐主動說：下次段考早點講，我幫你調。'},HARASS:{n:'越線了',s:'你沒來。小芸跟阿凱被念了一整晚。下個月班表沒有你的名字。'}}
+},
+
+/* ===================== 幽靈組員 ===================== */
+E:{
+ title:'幽靈組員①　你是組長',
+ bg:'bgA',npc:'阿翔',me:'小棠',
+ scene:'教室，下課十分鐘。報告後天交。',
+ intro:`公民課分組報告，你是組長。四個人，三個做完了，阿翔負責的第三章「資料整理」零進度，群組已讀三天不回。
+
+這份報告要上傳學習歷程，每個人的名字都在上面。
+
+你決定不在群組講，直接去找他。`,
+ goal:`讓阿翔在明天之前交出他那部分，而且報告上不用把他拿掉。`,
+ start:'e1',
+ nodes:{
+ e1:{ex:'cold',say:`（滑手機）
+幹嘛`,
+  opts:[
+   {t:'報告後天交 你那部分我想跟你對一下 現在方便嗎 五分鐘就好',m:'合',r:0,g:1,mood:0,next:'e2',
+    tip:{k:'只談報告，不談他這個人',p:'你沒有說「你都不回」，只說想跟他對一下內容，還先問他方不方便，所以他不需要先替自己辯護，比較願意坐下來談。',s:'燭之武開場沒有指責任何人：「秦、晉圍鄭，鄭既知亡矣。」',th:'Fisher 與 Ury《哈佛這樣教談判力》提到要把人和問題分開，你談的是報告進度，而不是他的人品。'}},
+   {t:'你群組是不是都不看 已讀三天了 你那部分到底要不要做',m:'攻',r:-2,g:0,mood:-2,next:'e2_atk',
+    tip:{k:'一開口就質問他',p:'你連續三句都在質問，他聽到的第一個感覺是被指責，所以會先忙著替自己辯護，而不是去做他那部分。',s:'',th:'Brown 與 Levinson 的禮貌理論認為，直接指責會威脅對方的面子，人在面子受威脅時會先保護自己。'}},
+   {t:'我不是要怪你啦 但大家都很努力 只有你那部分是空的 你這樣對其他人很不公平欸',m:'攻',r:-2,g:0,mood:-2,next:'e2_atk',
+    tip:{k:'說「我不是要怪你」，接著都在怪他',p:'「我不是要怪你」只是開場白，後面幾句才是你真正想說的話，他會聽出你還是在怪他，心裡反而更不舒服。',s:'',th:'用「我不是要……」開頭的否定句，會讓對方更留意後面的話，因為大家都知道重點在後面。'}},
+   {t:'那個 你那部分如果來不及 我幫你做也可以 你再跟我說一聲就好',m:'讓',r:1,g:-1,mood:1,next:'e2_yes',
+    tip:{k:'還沒問原因就說要幫他做',p:'你還沒問他為什麼沒做，就主動說要幫他做，他當然會答應，結果那份工作就落到你身上了。',s:'',th:'這是 Thomas 與 Kilmann 衝突模式裡的「退讓」，你先照顧對方的方便，把自己的需要放到後面。'}}
+  ]},
+ e2:{ex:'tired',say:`喔 我最近補習很多
+那part我看不懂要幹嘛`,
+  opts:[
+   {t:'OK 那不用整章 三篇資料各寫三句重點 今晚丟給我 我來排',m:'合',r:1,g:2,mood:1,next:'e3',
+    tip:{k:'把工作切小到他做得到',p:'他說看不懂，你就把「整章」縮成「三篇各寫三句」，份量小到他很難說不，他也比較容易開始動手。',s:'「若舍鄭以為東道主……君亦無所害。」把對方要付的降到最低。',th:'這是說服研究裡的「承諾與一致」，小的承諾比大的容易開始，開始之後人通常會繼續做下去。'}},
+   {t:'看不懂不會問喔 已讀三天都不講 我們又不會笑你 你這樣大家很難做',m:'攻',r:-2,g:-1,mood:-2,next:'e2_atk',
+    tip:{k:'他說了真話，你卻罵他',p:'他好不容易說出看不懂的原因，你卻回他「不會問喔」，他會覺得說真話只會挨罵，下次就不會再告訴你了。',s:'',th:'如果說真話會被責備，對方以後就只會說你想聽的話，你也就聽不到真正的問題。'}},
+   {t:'那沒關係 我做 你明天記得來報告就好',m:'讓',r:1,g:-2,mood:1,next:'e2_yes',
+    tip:{k:'直接替他做完',p:'他說看不懂，你就說你來做，他從這次學到的是只要說看不懂，就可以不用做。',s:'',th:'這是衝突處理裡的「退讓」，你先順著他的需要，把自己的需要放到後面，問題沒有解決，只是換成你來做。'}},
+   {t:'喔… 那你看你能做多少就做多少 沒關係 大家都很忙 盡力就好',m:'避',r:0,g:-1,mood:0,next:'e4_miss',
+    tip:{k:'「盡力就好」等於沒有要求',p:'這句話沒有說要做多少，也沒有說什麼時候給，他很可能就一句都不寫。',s:'',th:'要求如果說得很模糊，對方通常會把它當成沒有要求，所以份量和期限要講清楚。'}}
+  ]},
+ e2_atk:{ex:'angry',say:`我就忙啊
+你們自己不會先做喔`,
+  opts:[
+   {t:'剛剛講太衝 抱歉 那部分卡在哪 可以跟我說嗎',m:'合',r:1,g:1,mood:1,next:'e2',
+    tip:{k:'先道歉，再問他哪裡有困難',p:'你一句「剛剛講太衝」讓氣氛緩和下來，接著問他哪裡有困難，而不是追究誰的錯，他會比較願意說實話。',s:'',th:'吵起來之後主動修補關係，對方的防備會降下來，談話才能回到事情本身。'}},
+   {t:'我們就是先做了啊 只剩你 你到底做不做',m:'攻',r:-2,g:-1,mood:-2,next:'e_no',
+    tip:{k:'逼他馬上給答案',p:'「你到底做不做」聽起來像最後通牒，他在氣頭上很可能就回你一句「不做」。',s:'',th:'雙方都只堅持自己的立場時，誰先讓步就像輸了，所以兩邊只會越講越僵。'}},
+   {t:'好啦算了 我做 反正你也不會做 不要到時候又說我沒跟你講',m:'讓',r:0,g:-2,mood:0,next:'e2_yes',
+    tip:{k:'吵完還是自己做',p:'你們吵了一架，最後還是由你來做，事情沒有改變，你們的關係反而變差了。',s:'',th:'先攻擊、再退讓，等於兩種做法的缺點都拿到了，既傷了感情，工作也還是落在你身上。'}}
+  ]},
+ e2_yes:{ex:'happy',say:`真的喔 謝啦 那你弄
+我明天會來`,
+  opts:[
+   {t:'等一下 排版我可以幫 但內容要你寫 三篇各三句就好 今晚給我',m:'合',r:0,g:2,mood:0,next:'e3',
+    tip:{k:'說清楚你要幫的是哪一部分',p:'你剛剛說要幫忙，現在把「幫」講清楚，你負責排版，內容由他寫，這樣他就不會以為整份都交給你了。',s:'',th:'分工的範圍晚一點講清楚，總比一直不講好，誤會越早說開越容易處理。'}},
+   {t:'嗯 沒關係 反正我也快弄完了 你明天來就好 不用管了',m:'讓',r:1,g:-2,mood:1,next:'END',
+    tip:{k:'就讓他什麼都不做',p:'報告會照常交出去，他的名字也在上面，但他從頭到尾什麼都沒做。',s:'',th:'這是衝突處理裡的「退讓」，當下沒有衝突，但所有工作都由你承擔，他也學不到要負責。'}},
+   {t:'你最好明天真的會來 不然我就跟老師講 我可不想再幫你一次',m:'攻',r:-2,g:0,mood:-2,next:'e_no',
+    tip:{k:'剛答應幫他，馬上威脅',p:'他剛鬆一口氣，你接著就說要告訴老師，他只會記得你威脅他，不會記得你幫了他。',s:'',th:'前一句幫忙、後一句威脅，對方會覺得你說話前後不一致，也就不知道該相信哪一句。'}}
+  ]},
+ e3:{ex:'neutral',say:`三句喔… 好啦
+但我今晚要補習 明天早上給可以嗎`,
+  opts:[
+   {t:'可以 明早八點前 沒收到我就先用我的版本 OK嗎',m:'合',r:1,g:1,mood:1,next:'e4',
+    tip:{k:'答應時間，也先講好沒做到會怎樣',p:'你答應了他提的時間，也說清楚沒收到時你會怎麼做，還問他同不同意。之後真的沒收到，就照講好的做，不是你突然翻臉。',s:'「唯君圖之。」',th:'後果在事前講，是讓對方知道規則；等到事後才講，對方會覺得是在懲罰他。'}},
+   {t:'明早？來不及啦 今晚一定要 補習回來寫一下又不會死',m:'攻',r:-2,g:0,mood:-2,next:'e_no',
+    tip:{k:'不接受他提的時間',p:'他提了一個自己做得到的時間，你卻不接受，還說「又不會死」，他會覺得被逼，反而更不想做。',s:'',th:'這是心理學說的「心理抗拒」，人覺得自己的選擇被強行拿走時，會想反抗來把自由拿回來。'}},
+   {t:'好 都可以 你有空再給 我這邊先做別的 不急',m:'讓',r:0,g:-1,mood:0,next:'e4_miss',
+    tip:{k:'「有空再給」等於沒有期限',p:'你沒有給時間，就等於沒有交期，他很可能一直都「沒空」。',s:'',th:'這是衝突處理裡的「退讓」，你為了不給他壓力而放掉期限，結果你需要的東西一直拿不到。'}}
+  ]},
+ e4:{ex:'troubled',say:`（隔天早上八點半，什麼都沒收到。阿翔走進教室）
+啊 我忘了 等等補`,
+  opts:[
+   {t:'我先用我的版本交了 你下課前補三句 我再換上去 你的名字還在',m:'合',r:1,g:1,mood:1,next:'END',
+    tip:{k:'照講好的做，再給他一次機會',p:'你沒有生氣，因為昨天已經講好了，你只是照約定先用自己的版本，同時還讓他在下課前補上。',s:'',th:'說好會怎麼做就真的照做，對方下一次才會相信你說的話。'}},
+   {t:'我就知道你不會給 你名字我拿掉了 已經交了',m:'攻',r:-3,g:0,mood:-3,next:'END',
+    tip:{k:'沒先說就拿掉他的名字',p:'拿掉名字這件事可以討論，但要先跟他講。你直接做了，他會覺得你是在報復他。',s:'',th:'懲罰如果事前講好，就是大家都知道的規則；事後才直接執行，對方會覺得是報復。'}},
+   {t:'沒關係 我都弄好了',m:'讓',r:1,g:-1,mood:1,next:'END',
+    tip:{k:'昨天講的後果沒有照做',p:'你昨天說「沒收到就用我的」，今天卻說「沒關係」，他會發現你說的話不算數。',s:'',th:'說了卻不做，下次你再說什麼，對方都不會當真。'}},
+   {t:'嗯 沒關係啦 大家都會忘記 你有空再看看 我先交了',m:'避',r:0,g:-1,mood:0,next:'END',
+    tip:{k:'替他找理由',p:'「大家都會忘記」這句理由是你替他說的，他連解釋都不用，下次忘記也會覺得沒關係。',s:'',th:'這是衝突處理裡的「逃避」，你避開了尷尬的對話，但他忘記的問題也一起被放過了。'}}
+  ]},
+ e4_miss:{ex:'cold',say:`（隔天。什麼都沒有）
+喔 那個喔 我以為你們做好了`,
+  opts:[
+   {t:'上次沒講清楚是我的問題 這次講清楚 三篇各寫三句 第一節下課前給我 沒有的話就用我的版本',m:'合',r:0,g:1,mood:0,next:'END',
+    tip:{k:'先認自己沒講清楚，再講清楚',p:'昨天說得太模糊，你先承認是自己的問題，然後給他份量、期限和後果都清楚的版本，他就沒有誤會的空間了。',s:'',th:'先承認自己該負責的部分，再提出要求，對方比較不會覺得你只是在怪他。'}},
+   {t:'我以為？ 你那part是你的 誰會幫你做 你是不是從頭到尾都沒打算做',m:'攻',r:-2,g:-1,mood:-2,next:'e_no',
+    tip:{k:'氣到直接質問他',p:'你說的有道理，但昨天說「盡力就好」的是你，他會覺得你把自己沒講清楚的部分也算到他頭上。',s:'',th:'一方生氣質問，另一方就會辯解或反擊，衝突會越吵越大。'}},
+   {t:'嗯 我做好了 你來報告就好',m:'讓',r:1,g:-2,mood:1,next:'END',
+    tip:{k:'自己把全部做完',p:'你把他的部分做完了，他會知道以後只要不做，最後也會有人幫他做。',s:'',th:'這是衝突處理裡的「退讓」，你先照顧了他，把自己的需要放到後面，這種情況也會一直重複下去。'}}
+  ]},
+ e_no:{ex:'angry',say:`我就是不想做
+你去跟老師講啊`,
+  q:'這是明確的「不做」。',
+  opts:[
+   {t:'好 我會跟老師說分工是怎樣 誰做哪部分 不是告狀 是我不替你那段掛名',m:'合',r:0,g:1,mood:0,next:'END',end:'RESPECT',
+    tip:{k:'不再勸他，改找老師說明分工',p:'他已經說不做，你就不再勸他。你跟老師說的是誰做了哪部分的事實，不是找老師來壓他，只是不讓他用別人的成果掛名。',s:'',th:'尊重對方的拒絕和走正當程序並不衝突，前者是不再對他施壓，後者是把事情交給該處理的人。'}},
+   {t:'你再這樣我就在班群講 讓大家看看是誰在擺爛',m:'攻',r:-3,g:0,mood:-3,next:'END',end:'HARASS',
+    tip:{k:'在班群公開讓他難堪',p:'在班群講，全班都會看到。他不會因此去做，只會記恨你，而且大家也會看到你會公開批評同學。',s:'',th:'公開羞辱是最嚴重的傷害面子方式，之後大家都不太敢跟你說真話。'}},
+   {t:'算了 我做 反正也只剩一章 不要再吵了 你來報告就好',m:'讓',r:0,g:-2,mood:0,next:'END',
+    tip:{k:'他一拒絕你就讓步',p:'他說不做，你就自己做了，而且他的名字還留在報告上。',s:'',th:'這是衝突處理裡的「退讓」，你為了不再吵架而讓步，他沒做事也一樣拿到分數。'}},
+   {t:'你知道全組都在等你嗎 你這樣以後誰要跟你同組 你自己想想',m:'攻',r:-2,g:0,mood:-2,next:'e_no2',
+    tip:{k:'對不想聽的人講道理',p:'他已經說不做了，你還在講道理，他聽到的不是道理，而是你在教訓他。',s:'',th:'對方已經拒絕之後，再多的道理聽起來都像壓力，只會讓他更想拒絕。'}}
+  ]},
+ e_no2:{ex:'angry',say:`隨便你`,
+  opts:[
+   {t:'好 那我會跟老師說明分工 你那段就不掛你的名字',m:'合',r:0,g:1,mood:0,next:'END',end:'RESPECT',
+    tip:{k:'晚了一步，但方向是對的',p:'你不再跟他講道理，而是去跟老師說明分工，雖然晚了一點，但處理事情的方式是對的。',s:'',th:'走正當程序，是把問題交給有權處理的人，而不是自己私下對他施壓。'}},
+   {t:'（截圖對話，傳到班群：「大家評評理 這樣合理嗎」）',m:'攻',r:-4,g:0,mood:-3,next:'END',end:'HARASS',
+    tip:{k:'截圖貼到班群公開討論',p:'全班都看到了這段對話，也都看到是你把它截圖貼出來，大家對你的印象也會跟著改變。',s:'',th:'這是最嚴重的傷害面子方式，把兩個人私下的爭執變成全班都在看的事。'}}
+  ]}
+ },
+ endings:{
+  WW:'阿翔第一節下課前丟了九句重點給你。報告上有他的名字。下次分組他主動找你。',
+  RL:'你做完了，他的名字也在上面。他從這次學到的是，什麼都不做也能過關。',
+  GL:'報告交了，第三章是你寫的，他的名字你留著。他跟你不講話。',
+  LL:'報告交出去時少了一章。老師問是誰負責的，全組都沒有人說話。'
+ },
+ special:{RESPECT:{n:'走正當的路',s:'老師知道分工了。阿翔那章零分，其他人照常。你們沒撕破臉，也沒有人被公審。'},HARASS:{n:'越線了',s:'班群那則訊息大家都看到了。之後沒人想跟你同組，不是因為你不認真，是怕被公審。'}}
+},
+F:{
+ title:'幽靈組員②　你是阿翔',
+ bg:'bgB',npc:'小棠',me:'阿翔',
+ scene:'教室，下課。組長走過來。',
+ intro:`你是阿翔。公民報告你負責第三章，群組已讀三天沒回，因為你看不懂那章到底要做什麼，又不好意思問，後來補習一多就放著了。
+
+報告後天交。組長小棠走過來。`,
+ goal:`把你那部分補上，而且讓小棠知道你不是故意的。`,
+ start:'f1',
+ nodes:{
+ f1:{ex:'neutral',say:`報告後天交 你那部分我想跟你對一下
+現在方便嗎`,
+  opts:[
+   {t:'對 我拖了 其實我看不懂那章要幹嘛 你可以說一下嗎',m:'合',r:1,g:1,mood:1,next:'f2',
+    tip:{k:'先承認，再說出真正的困難',p:'你先說「我拖了」，再說看不懂的原因。順序不能反過來，先講原因再認錯，聽起來就像在找藉口。',s:'「鄭既知亡矣」：先認，再談。',th:'Blum-Kulka 研究道歉時指出，先承擔責任再說明原因，對方比較能接受你的解釋。'}},
+   {t:'你們不會先做喔 我最近補習很多欸 又不是只有我一個人忙',m:'攻',r:-2,g:-1,mood:-2,next:'f2_atk',
+    tip:{k:'自己沒做，反過來怪別人',p:'你的進度是零，卻先怪別人沒先做，她聽了只會更生氣。',s:'',th:'這是防衛性攻擊，人覺得被指責時會先攻擊對方來保護自己，但問題完全沒有解決。'}},
+   {t:'喔 我會做啦 明天 你們先弄你們的 不用等我',m:'避',r:0,g:0,mood:0,next:'f3_broken',
+    tip:{k:'隨口答應「明天做」',p:'你三天沒回，現在說明天會做，她很難相信，而且你自己也還不知道要做什麼。',s:'',th:'承諾裡沒有具體的內容和做法，就只是把事情往後拖。'}},
+   {t:'對不起對不起 我真的很爛 你們不要等我了 我這部分你們做吧',m:'讓',r:0,g:-2,mood:0,next:'f2_quit',
+    tip:{k:'道歉之後就放棄',p:'你道歉了很多次，但最後的結論是「你們做」，道歉反而變成你不用做的理由。',s:'',th:'過度道歉常常是在請對方放過你，而不是在想辦法補救。'}}
+  ]},
+ f2:{ex:'neutral',say:`喔 那不用整章 你先把那三篇資料各寫三句重點
+今晚丟我 我來排`,
+  opts:[
+   {t:'今晚我要補習 明早八點前一定給你 沒給的話你就先用你的版本',m:'合',r:1,g:1,mood:1,next:'f3',
+    tip:{k:'講做得到的時間，自己先說後果',p:'你沒有答應做不到的今晚，而是講了做得到的明早，還自己先說沒給會怎樣，她就不用再催你。',s:'',th:'承諾裡有明確的時間和後果，對方才會覺得你是認真的，而不是隨口說說。'}},
+   {t:'好 好 今晚給 我回來馬上寫 你不用一直提醒我',m:'讓',r:1,g:1,mood:1,next:'f3_broken',
+    tip:{k:'答應了做不到的時間',p:'你知道自己今晚要補習，她卻不知道，等到今晚沒交，她會比現在更失望。',s:'秦穆公「朝濟而夕設版」，答應了沒做到，被講了一輩子。',th:'答應了做不到的事，之後要處理的麻煩會比現在說清楚多出好幾倍。'}},
+   {t:'三句喔 這樣有用嗎 隨便寫寫就好吧 反正老師也不會仔細看',m:'攻',r:-1,g:0,mood:-1,next:'f3',
+    tip:{k:'她已經降低要求，你還嫌',p:'她把整章縮成三句，是在幫你減輕負擔，你卻嫌這樣沒用，她會覺得自己的好意被看輕。',s:'',th:'對方已經讓步，你還否定那個讓步，對方以後就不想再讓了。'}}
+  ]},
+ f2_atk:{ex:'angry',say:`我們就是先做了 只剩你
+你到底做不做`,
+  opts:[
+   {t:'我做 剛剛那句是我不對 我是看不懂 你可以說一下嗎',m:'合',r:1,g:1,mood:1,next:'f2',
+    tip:{k:'收回剛才的話，說出真正原因',p:'你收回剛才怪別人的話，說出自己看不懂，她會從生氣轉成願意教你。',s:'',th:'吵起來之後主動修補關係，對方的怒氣會降下來，談話才能回到事情本身。'}},
+   {t:'不做 你去跟老師講啊 反正你們本來就不需要我',m:'攻',r:-3,g:-2,mood:-3,next:'END',
+    tip:{k:'說氣話拒絕',p:'她真的會去跟老師講，你負責的那一章就會是零分。',s:'',th:'氣話說出口很快，但對方會當真，後果要由你自己承擔。'}},
+   {t:'好啦 做 你不要一直逼我 我會弄啦',m:'讓',r:0,g:0,mood:0,next:'f3_broken',
+    tip:{k:'敷衍地答應',p:'你雖然說會做，但到現在還是不知道要做什麼，這個答應很可能又做不到。',s:'',th:'承諾裡沒有具體要做什麼，對方聽了也不會放心。'}}
+  ]},
+ f2_quit:{ex:'troubled',say:`不是要你放棄 是要你做一點
+三篇各三句重點 可以嗎`,
+  opts:[
+   {t:'……可以 我明早八點前給你 沒給的話你就用你的版本',m:'合',r:1,g:1,mood:1,next:'f3',
+    tip:{k:'她再給一次機會，你就接受',p:'她不接受你放棄，還把工作縮成三句，你這次答應了，也說了時間和沒給的後果。',s:'',th:'對方主動提出一個你做得到的辦法時，就順著它往前走，不要再推開。'}},
+   {t:'我真的不行 你們做啦 我寫出來也只會拖累你們',m:'讓',r:-1,g:-2,mood:-1,next:'END',
+    tip:{k:'第二次放棄',p:'她已經降到只要三句，你還是不肯做，最後你的名字很可能會被拿掉。',s:'',th:'這是衝突處理裡的「退讓」走到最後，你什麼都不做，也就什麼都得不到。'}}
+  ]},
+ f3:{ex:'happy',say:`（隔天早上七點五十，你把九句重點丟到群組）
+收到 謝啦 排進去了`,
+  opts:[
+   {t:'抱歉拖這麼久 下次看不懂我直接問',m:'合',r:1,g:1,mood:1,next:'END',
+    tip:{k:'做到之後再道歉，說好下次怎麼做',p:'事情做完之後，你再道歉一次，也說了下次看不懂會直接問，她下次會比較願意先相信你。',s:'',th:'信任是在說到做到之後慢慢累積的，做完再表態，對方才會當真。'}},
+   {t:'嗯 好 那報告那天我幾點到',m:'讓',r:0,g:0,mood:0,next:'END',
+    tip:{k:'做到了，卻什麼都沒說',p:'你把事情做到了，但對拖了三天的事一句都沒提，她心裡的不滿還是在。',s:'',th:'事情做完只是一半，把拖延這件事講開，兩個人的關係才會跟著好起來。'}},
+   {t:'看吧 我說會給就會給 你們那麼緊張幹嘛',m:'攻',r:-1,g:0,mood:-1,next:'END',
+    tip:{k:'拖了三天還要邀功',p:'你覺得自己有交就好，但她記得的是你拖了三天，這句話只會讓她更不舒服。',s:'',th:'這是「結尾效應」，人對一件事的印象很受最後那一刻影響，你最後這句會讓她只記得不愉快。'}}
+  ]},
+ f3_broken:{ex:'angry',say:`（隔天早上八點半）
+沒收到欸 你說的呢`,
+  opts:[
+   {t:'我忘了 對不起 我現在就寫 第一節下課前給你',m:'合',r:0,g:1,mood:1,next:'END',
+    tip:{k:'認錯、給新時間、馬上動手',p:'你不解釋，直接認錯，然後給一個很近的時間，而且當場開始寫，她看得到你在補救。',s:'',th:'答應的事沒做到之後，再多解釋都沒用，只有馬上補救能讓對方重新相信你。'}},
+   {t:'補習太晚了啦 我又不是故意的 你不要用那種眼神看我',m:'攻',r:-2,g:-1,mood:-2,next:'END',
+    tip:{k:'先找理由解釋',p:'你還沒認錯就先說補習太晚，她只會覺得「又來了」。',s:'',th:'說明原因如果放在承擔責任之前，對方聽起來就是藉口。'}},
+   {t:'……那你先交 我沒關係',m:'讓',r:-1,g:-2,mood:-1,next:'END',
+    tip:{k:'你說沒關係，但她有關係',p:'報告上有你的名字，內容卻是她替你寫的，對她來說這並不是沒關係。',s:'',th:'這是衝突處理裡的「退讓」走到底，你看起來很客氣，卻是把自己的工作推給了她。'}}
+  ]}
+ },
+ endings:{
+  WW:'你的九句在報告裡。小棠下次分組先找你。',
+  RL:'你沒交出來，但有道歉。最後是小棠幫你寫的，下次分組她不會再找你。',
+  GL:'你交了，但她催了你三次。報告過了，下次分組她會先問別人。',
+  LL:'你負責的那一章是零分，全組都知道是為什麼。'
+ }
+},
+
+/* ===================== 手機與幾點睡 ===================== */
+G:{
+ title:'手機與幾點睡①　你是小安',
+ bg:'bgA',npc:'媽媽',me:'小安',
+ scene:'家裡，晚上十一點半，你房間門口。',
+ intro:`你高二。上週有三天滑到凌晨一點，媽媽知道。今天她十一點半來收手機。
+
+你真正想要的：十一點半到十二點看一下 YouTube、回訊息，然後睡。早上要用手機當鬧鐘。
+
+她真正擔心的：你的散光、明天打瞌睡、成績。`,
+ goal:`談出一個以後都適用的規則，不是只有今晚。而且不要吵到一點。`,
+ start:'g1',
+ nodes:{
+ g1:{ex:'angry',say:`十一點半了 手機拿來
+你散光已經很嚴重了 明天又要打瞌睡`,
+  opts:[
+   {t:'好 我上禮拜真的滑太晚 三天都一點 這個我認',m:'合',r:1,g:1,mood:1,next:'g2',
+    tip:{k:'先承認她說對的部分',p:'她說的理由有一半是真的，你先承認那一半，她就不用一直舉證說服你，也比較願意聽你接下來的話。',s:'「秦、晉圍鄭，鄭既知亡矣。」先承認對方佔上風。',th:'Walster 等人 1966 年的研究發現，說話者承認對自己不利的事時，別人會更相信他。'}},
+   {t:'我才剛洗完澡欸 而且現在高中生哪有人十一點睡 你去問全班 沒有人十一點睡的',m:'攻',r:-2,g:0,mood:-2,next:'g2_loop',
+    tip:{k:'講道理，還拿別人來比',p:'你說的每一句可能都對，但一提到別人，她馬上就能回你「他們成績好嗎」，話題就被帶走了。',s:'',th:'拿別人當理由，對方只要否定那些人，你的理由就不成立了。'}},
+   {t:'好啦 拿去',m:'讓',r:1,g:-1,mood:1,next:'g_sneak',
+    tip:{k:'交出手機，但沒有談',p:'今晚不會吵架，但規則沒有改變，明天晚上同樣的事還會再來一次。',s:'',th:'這是衝突處理裡的「退讓」，你先順著她，把自己的需要放到後面，氣氛當下比較好，但你想要的事沒有往前。'}},
+   {t:'我看一下就好 我真的很快 妳先去睡 我等一下自己關 不用等我',m:'避',r:-1,g:-1,mood:-1,next:'g_no',
+    tip:{k:'「我等一下自己關」',p:'這句話她上週已經聽過三次了，她不會再相信。',s:'',th:'承諾裡沒有她能確認的內容，她只能選擇信或不信，而她上次已經失望過了。'}}
+  ]},
+ g2:{ex:'troubled',say:`你知道就好
+那還不睡`,
+  opts:[
+   {t:'我想談一個固定的 妳要的是我十二點前睡 對吧 不是手機本身',m:'合',r:1,g:1,mood:1,next:'g3',
+    tip:{k:'談她真正在意的睡眠',p:'她嘴上說「手機拿來」，真正在意的是你有沒有睡夠。你直接談睡眠，她就不必堅持收手機，討論才有空間。',s:'燭之武不談「鄭要不要亡」，談「對秦有沒有好處」。',th:'Fisher 與 Ury《哈佛這樣教談判力》主張談利益、不談立場，要找出對方要求背後真正在意的事。'}},
+   {t:'可是妳每次都說十一點 別人家都十二點',m:'攻',r:-2,g:0,mood:-2,next:'g2_loop',
+    tip:{k:'剛承認完，又拿別人比',p:'你剛讓她放鬆一點，這句話又讓她回到要跟你爭論的狀態。',s:'',th:'拿別人當理由，對方只要否定那些人，你的理由就不成立了，還會讓爭論重新開始。'}},
+   {t:'好 我睡',m:'讓',r:1,g:-2,mood:1,next:'END',
+    tip:{k:'今晚結束了，規則沒變',p:'你今晚去睡了，但什麼都沒談，明天十一點半她還是會來收手機。',s:'',th:'這是衝突處理裡的「退讓」，你順著她結束了今晚，但你們之間的規則一點都沒有改變。'}},
+   {t:'我知道妳是為我好 我都懂 妳不用擔心 我自己會控制 妳相信我',m:'避',r:0,g:-1,mood:0,next:'g3',
+    tip:{k:'「相信我」不是方案',p:'這段話聽起來很懂事，但沒有一件她可以檢查的事，而且她上週已經相信過一次了。',s:'',th:'承諾要有對方看得到、可以檢查的內容，光說「相信我」很難讓人放心。'}}
+  ]},
+ g2_loop:{ex:'angry',say:`別人？ 他們成績好嗎
+人家成績好才有資格 成績不好就是晚睡害的`,
+  q:'這個論證怎麼講她都贏。你要怎麼接？',
+  opts:[
+   {t:'我們不講別人 講我就好 我的問題是上週滑到一點',m:'合',r:1,g:1,mood:1,next:'g3',
+    tip:{k:'不談別人，只談自己',p:'她那套「成績好才有資格」只能用在別人身上，你把話題拉回自己的問題，她就沒辦法再用這個說法。',s:'',th:'不要在對方設定的題目裡爭論，換一個題目，談話才有機會往前。'}},
+   {t:'成績好的也十二點睡啊 妳根本沒去問 妳就是想找理由',m:'攻',r:-2,g:-1,mood:-2,next:'g_no',
+    tip:{k:'跟著她的說法繞圈子',p:'她會再說「人家成績好才有資格」，你又會回嘴，兩個人繞來繞去，一下就到一點了。',s:'',th:'在對方設定的說法裡爭論，不管你怎麼說，她都能用同一套理由回你。'}},
+   {t:'好啦好啦 妳都對 我不講了 妳要收就收 可以了吧',m:'讓',r:0,g:-1,mood:0,next:'END',
+    tip:{k:'用投降結束對話',p:'你嘴上說她都對，她聽得出你並沒有被說服，明天還是會再來一次。',s:'',th:'這是衝突處理裡的「退讓」，表面上爭吵停了，但你們的想法都沒有改變。'}}
+  ]},
+ g3:{ex:'troubled',say:`十二點前睡？
+你上禮拜說的也一樣`,
+  opts:[
+   {t:'這次換個方式 十一點五十我把手機放客廳充電 妳就不用進來收',m:'合',r:1,g:2,mood:1,next:'g4',
+    tip:{k:'她不信你的話，就給她看得到的做法',p:'手機放在客廳充電，是她走出房間就看得到的事，她不必相信你，只要看一眼就知道你有沒有做到。',s:'「若舍鄭以為東道主，行李之往來，共其乏困。」給具體方案。',th:'能讓對方自己確認的做法，比口頭承諾更容易讓人相信。'}},
+   {t:'妳就是不信我 那我講什麼都沒用啊 妳自己決定就好',m:'攻',r:-2,g:-1,mood:-2,next:'g_no',
+    tip:{k:'她說的是事實',p:'上週你確實沒做到，說「妳就是不信我」，等於在怪她記得這件事。',s:'',th:'對方的懷疑有根據時，把它當成攻擊來反擊，只會讓她更不相信你。'}},
+   {t:'那算了 妳收就收 反正講了也沒用',m:'讓',r:0,g:-2,mood:0,next:'END',
+    tip:{k:'一被質疑就放棄',p:'她只是說了一句「上禮拜也一樣」，你就不想談了，好不容易開始的討論也就停了。',s:'',th:'這是衝突處理裡的「退讓」，你一遇到懷疑就放棄自己的需要，問題留到下次還是一樣。'}},
+   {t:'我這次真的會 相信我 妳就讓我試一個禮拜嘛 不行再收',m:'避',r:0,g:0,mood:0,next:'g4',
+    tip:{k:'想試一週沒錯，但缺少做法',p:'想試一個禮拜的方向是對的，但你沒說這週跟上週有什麼不同，她會回你上週也是在試。',s:'',th:'承諾如果沒有具體的做法，對方無從判斷這次為什麼會不一樣。'}}
+  ]},
+ g4:{ex:'neutral',say:`……放客廳
+那你早上要用怎麼辦 不是要當鬧鐘`,
+  opts:[
+   {t:'鬧鐘就用桌上那個時鐘 早上六點半起來再去客廳拿手機 那時候妳也起來了',m:'合',r:1,g:1,mood:1,next:'g5',
+    tip:{k:'她提出疑問，你補上細節',p:'她問早上怎麼辦，表示她在認真考慮你的方案，你回答細節就好，不要把它當成她在反對。',s:'',th:'對方提出的疑問是有用的資訊，告訴你方案還缺什麼，補上之後就更容易談成。'}},
+   {t:'妳管那麼多幹嘛 我會起來啦 妳每次都這樣 一定要挑毛病',m:'攻',r:-2,g:-1,mood:-2,next:'g_no',
+    tip:{k:'她在考慮，你卻當她找麻煩',p:'她問早上要用怎麼辦，是在替你的方案想細節，你卻說她在挑毛病，她會覺得自己的好意被誤會。',s:'',th:'這是誤讀了對方的善意，把認真考慮看成刁難，原本快談成的事就可能談不成。'}},
+   {t:'對喔… 那算了 早上還是要用 我想不到辦法',m:'讓',r:0,g:-2,mood:0,next:'END',
+    tip:{k:'一個細節問題就讓你放棄',p:'她只是問了早上鬧鐘怎麼辦，你就放棄整個方案，但這個問題只要多想一下就能解決。',s:'',th:'這是衝突處理裡的「退讓」，你因為一個小問題就放下自己的需要，方案也就跟著沒了。'}}
+  ]},
+ g5:{ex:'happy',say:`好 試一個禮拜
+只要有一次滑到一點 我就收回來`,
+  opts:[
+   {t:'好 妳決定 一個禮拜後妳再看結果',m:'合',r:1,g:1,mood:1,next:'END',
+    tip:{k:'把決定權交還給她',p:'最後的規則是她定的，所以她會遵守；方案是你提的，所以你也會遵守。',s:'「唯君圖之。」',th:'BYAF 技巧（But You Are Free）是提醒對方決定權在他，人覺得是自己做的決定，才會真的去執行。'}},
+   {t:'一次就收太嚴了吧 妳這樣我壓力很大 至少三次',m:'攻',r:-2,g:0,mood:-2,next:'END',
+    tip:{k:'她答應了，你還要再討價',p:'她才剛答應讓你試，你馬上又要放寬條件，她會後悔剛才答應你。',s:'',th:'對方讓步之後馬上再要更多，對方會覺得讓步只會換來更多要求。'}},
+   {t:'好啦好啦 妳說了算 我去睡了',m:'讓',r:0,g:0,mood:0,next:'END',
+    tip:{k:'敷衍地答應',p:'她聽得出你在敷衍，這一個禮拜裡她很可能提早把手機收走。',s:'',th:'這是衝突處理裡的「退讓」，你表面上同意，但沒有真心接受，她也不會真的放心。'}}
+  ]},
+ g_sneak:{ex:'angry',say:`（十二點十五分，她拿著遙控器衝進來）
+你還在用 iPad？`,
+  opts:[
+   {t:'對 我沒做到 明天我們談一個真的做得到的',m:'合',r:1,g:0,mood:1,next:'g3',
+    tip:{k:'被發現就承認，不辯解',p:'這時候說「這是看電子書不是手機」只會讓事情更糟，你先承認沒做到，把重新談的事留到明天。',s:'',th:'自己沒做到時先承擔責任，對方才願意再跟你談下一次的做法。'}},
+   {t:'這是看電子書欸 不是手機 不是打遊戲 也不是跟朋友聊天',m:'攻',r:-2,g:-1,mood:-2,next:'g_no',
+    tip:{k:'字面上沒錯，但不是她的意思',p:'她收手機是要你去睡覺，不是要你別碰那台機器。你在爭字面上的意思，她在意的是你有沒有睡。',s:'',th:'字面和用意要分開看，就算你在字面上講贏了，也沒有回應她真正在意的事。'}},
+   {t:'好啦 睡了',m:'讓',r:0,g:-1,mood:0,next:'END',
+    tip:{k:'一句「睡了」就結束',p:'今晚雖然結束了，但什麼都沒談，明天還會再發生一次。',s:'',th:'這是衝突處理裡的「退讓」，你順著她結束今晚，問題卻留到了明天。'}}
+  ]},
+ g_no:{ex:'angry',say:`不要再講了 去睡
+明天再說`,
+  q:'她喊停了。',
+  opts:[
+   {t:'好 明天早餐的時候講 我先去睡',m:'合',r:2,g:0,mood:2,next:'END',end:'RESPECT',
+    tip:{k:'她說先停，你就先停',p:'現在已經十一點五十了，再講下去兩個人都會弄到一點，也談不出結果，明天早餐時她會比較聽得進去。',s:'「吾其還也。」知道哪裡該停。',th:'情緒高漲的時候很難談出規則，先停下來，是為了明天能好好談。'}},
+   {t:'妳每次都這樣 講不過就說明天 然後明天又說沒空',m:'攻',r:-3,g:-1,mood:-3,next:'END',
+    tip:{k:'不肯停，繼續吵',p:'你們會一路吵到一點，明天你真的在課堂上打瞌睡，正好證明她說的是對的。',s:'',th:'兩個人都不肯停，最常見的結果是雙方都輸，誰也沒有得到想要的。'}},
+   {t:'我去跟爸講 他上次說可以到十二點',m:'攻',r:-3,g:-1,mood:-3,next:'END',end:'HARASS',
+    tip:{k:'找爸爸來對付她',p:'家裡會變成兩邊，以後媽媽說什麼你都去找爸爸，爸爸說什麼你都去找媽媽。',s:'',th:'透過另一個人向對方施壓，在家裡的代價會持續很久，因為大家天天都要相處。'}}
+  ]}
+ },
+ endings:{
+  WW:'手機放客廳一個禮拜，你十二點前睡了六天。她沒再進來收過。',
+  RL:'今晚沒吵起來。但什麼規則都沒談，明天十一點半她又會站在門口。',
+  GL:'規則談到了，但她覺得是被你講贏的。接下來一個禮拜，她都在等你犯錯。',
+  LL:'你們吵到半夜一點。隔天你上課打瞌睡，她說：「你看吧。」'
+ },
+ special:{RESPECT:{n:'停在該停的地方',s:'你去睡了。隔天早餐你說「我想談一個固定的」，她說好。'},HARASS:{n:'越線了',s:'爸媽為了你吵了一架。之後家裡談任何事都先看對方臉色。'}}
+},
+H:{
+ title:'手機與幾點睡②　你是媽媽',
+ bg:'bgB',npc:'小安',me:'媽媽',
+ scene:'家裡，晚上十一點半，小安房門口。',
+ intro:`你是小安的媽媽。他上週三天滑到一點，隔天上課打瞌睡，散光又加深了。
+
+你真正要的：他十二點前睡。手機只是你能抓到的東西。
+
+你知道一開口他就會防衛。`,
+ goal:`談出一個他會真的照做的規則。不是你贏，是他做。`,
+ start:'h1',
+ nodes:{
+ h1:{ex:'cold',say:`（戴著耳機，看到你站在門口）
+……幹嘛`,
+  opts:[
+   {t:'我看你這週都很晚 我有點擔心 我們談一下幾點睡 五分鐘',m:'合',r:1,g:1,mood:1,next:'h2',
+    tip:{k:'說自己的擔心，不先下結論',p:'你沒有說「手機拿來」，而是說「我有點擔心」，他不需要先防著你，比較願意聽你說。',s:'',th:'Gordon 的「我訊息」是用「我覺得」說出自己的感受，而不是用「你怎樣」指責對方，對方比較不會防衛。'}},
+   {t:'十一點半了 手機拿來',m:'攻',r:-2,g:0,mood:-2,next:'h2_atk',
+    tip:{k:'直接下命令',p:'這樣講最快，但也最沒效果，他會把手機交給你，然後改拿 iPad。',s:'',th:'命令是最直接威脅面子的說法，對方就算照做，心裡也不會服氣。'}},
+   {t:'我是為你好 你散光那麼嚴重 明天又打瞌睡 你知道媽媽多擔心嗎',m:'攻',r:-1,g:0,mood:-1,next:'h2_atk',
+    tip:{k:'「你知道媽媽多擔心嗎」',p:'這句話是想讓他覺得內疚，他聽到的不是你的擔心，而是壓力。',s:'',th:'情緒訴求如果沒有給對方一件可以做的事，對方只會選擇不再聽下去。'}},
+   {t:'好啦 再十分鐘',m:'讓',r:1,g:-2,mood:1,next:'END',
+    tip:{k:'只說再十分鐘，沒有規則',p:'這十分鐘很容易變成四十分鐘，明天晚上又要再來一次。',s:'',th:'這是衝突處理裡的「退讓」，你順著他的要求，氣氛當下比較好，但他太晚睡的問題沒有改善。'}}
+  ]},
+ h2:{ex:'troubled',say:`現在高中生沒人十一點睡啦
+你去問`,
+  q:'他搬出「別人」了。你要怎麼接？',
+  opts:[
+   {t:'我不管別人 我在意的是你 你覺得幾點睡 早上才起得來',m:'合',r:1,g:1,mood:1,next:'h3',
+    tip:{k:'不談別人，改成問他',p:'你不反駁別人怎樣，也不拿他跟別人比，而是問他自己覺得幾點睡起得來，方案是他說的，他才會去做。',s:'',th:'這是「自我說服」，人最相信自己說出口的話，由他提出的答案，他會比較願意遵守。'}},
+   {t:'他們成績好嗎 人家成績好才有資格 你呢',m:'攻',r:-2,g:-1,mood:-2,next:'h_loop',
+    tip:{k:'用一套怎麼說都贏的話回他',p:'這套說法你永遠不會輸，成績好的是例外，成績不好就是晚睡害的。但他會不再說話，你們還是吵到一點。',s:'',th:'你在辯論上贏了，卻失去了跟他好好溝通的機會。'}},
+   {t:'好 那你說幾點 你說了算 我不管你',m:'讓',r:0,g:0,mood:0,next:'h3',
+    tip:{k:'問了他，卻沒說你的底線',p:'他很可能會說一點，到時你再反對，你們又回到爭吵。',s:'',th:'問對方意見時，要先說出你能接受的範圍，不然他給的答案你可能無法接受。'}}
+  ]},
+ h2_atk:{ex:'angry',say:`每次都這樣
+我才剛洗完澡欸 而且現在高中生哪有人十一點睡`,
+  opts:[
+   {t:'好 我剛剛講太快了 不是要收你手機 你覺得幾點睡 早上才起得來',m:'合',r:1,g:1,mood:1,next:'h3',
+    tip:{k:'收回命令，改成問他',p:'你承認自己講太快，把「收手機」這件事收回來，改問他自己的想法，他就不用再跟你爭了。',s:'',th:'吵起來之後主動修補關係，對方的防備會降下來，談話才能回到事情本身。'}},
+   {t:'他們成績好嗎 你拿別人比 那你成績跟人家比得上嗎',m:'攻',r:-2,g:-1,mood:-2,next:'h_loop',
+    tip:{k:'用一套怎麼說都贏的話回他',p:'你拿成績回他，這套說法你怎麼講都不會輸，但他會覺得被拿來比較，接下來只會更難談。',s:'',th:'你在辯論上贏了，卻失去了跟他好好溝通的機會。'}},
+   {t:'好啦 你自己看著辦',m:'避',r:0,g:-2,mood:0,next:'END',
+    tip:{k:'放手不管',p:'你說「自己看著辦」，他今晚很可能就滑到一點。',s:'',th:'這是衝突處理裡的「逃避」，你不想再吵就避開問題，但問題還在，只是暫時沒人處理。'}}
+  ]},
+ h_loop:{ex:'angry',say:`成績好的也十二點睡啊
+你根本沒去問`,
+  opts:[
+   {t:'好 不講別人了 上週你有三天滑到一點 這你自己知道 我們來談怎麼做',m:'合',r:1,g:1,mood:1,next:'h3',
+    tip:{k:'自己先停下繞圈的爭論',p:'你先不爭了，把話題拉回他自己的情況，而且是他「自己知道」的事實，他就很難再拿別人來說。',s:'「君之所知也」：不替他下結論，讓他自己想起來。',th:'不要在對方設定的題目裡爭論，換回你們自己的題目，談話才有機會往前。'}},
+   {t:'人家成績好才有資格晚睡 你先把成績弄好再來跟我講',m:'攻',r:-3,g:-1,mood:-3,next:'END',
+    tip:{k:'把這套說法講到底',p:'你在道理上贏了，但他會戴上耳機不理你，到了十二點四十你們還在吵。',s:'',th:'兩個人都只想贏，最後的結果是雙方都輸，他沒睡，你也沒達到目的。'}}
+  ]},
+ h3:{ex:'neutral',say:`……十二點吧
+十二點前睡我起得來`,
+  opts:[
+   {t:'十二點可以 那手機呢 怎麼做你才會真的十二點睡',m:'合',r:1,g:1,mood:1,next:'h4',
+    tip:{k:'接受他的時間，再讓他想做法',p:'你接受他說的十二點，再把「怎麼做到」也交給他想，他自己提出來的辦法，他會比較願意遵守。',s:'',th:'這是「自我說服」，人最相信自己說出口的話，所以讓他自己想辦法比你規定更有用。'}},
+   {t:'十二點太晚 十一點半 我是你媽 這種事我比你清楚',m:'攻',r:-2,g:0,mood:-2,next:'h_no',
+    tip:{k:'他說了，你卻否決',p:'是你問他的，他也回答了，你卻不接受，下次你再問，他就不會回答了。',s:'',th:'問了對方的意見又馬上否定，比一開始就不問還糟，因為他會覺得你根本不想聽。'}},
+   {t:'好 十二點 你說的喔 那我不管你了',m:'讓',r:1,g:-1,mood:1,next:'END',
+    tip:{k:'只有時間，沒有方法',p:'上週他也說十二點睡，結果沒做到，這次沒有任何新做法，很可能還是一樣。',s:'',th:'規則如果沒有配上具體的做法，就只是把上次的約定再說一遍。'}}
+  ]},
+ h4:{ex:'neutral',say:`……手機放客廳充電 十一點五十
+但早上我要用 當鬧鐘`,
+  opts:[
+   {t:'可以 早上再拿 先試一個禮拜 規則是你自己定的 一週後我們再看',m:'合',r:1,g:1,mood:1,next:'END',
+    tip:{k:'用他提的方案，你只加上期限',p:'規則是他自己提的，你只說先試一個禮拜，他沒有理由不去做。',s:'「唯君圖之。」',th:'BYAF 技巧（But You Are Free）是把決定權留給對方，人覺得是自己做的決定，才會真的去執行。'}},
+   {t:'鬧鐘？你以前都起不來 我還是進來叫你 不然又遲到',m:'攻',r:-2,g:-1,mood:-2,next:'h_no',
+    tip:{k:'翻舊帳',p:'他剛提出一個方案，你卻拿以前起不來的事來否定它，他會覺得自己說什麼都沒用。',s:'',th:'對方剛讓步就翻舊帳，他會覺得讓步也沒用，下次就不想再讓了。'}},
+   {t:'好 就這樣 你自己說的 我相信你',m:'讓',r:1,g:0,mood:1,next:'END',
+    tip:{k:'沒有說好什麼時候檢查',p:'這樣也可以，但你沒有說多久要檢查一次，一段時間後很可能又回到原本的樣子。',s:'',th:'約定少了檢查的時間點，就沒有機會確認做得好不好，也不知道什麼時候該調整。'}}
+  ]},
+ h_no:{ex:'angry',say:`不要講了 我要睡了`,
+  q:'他關機了。',
+  opts:[
+   {t:'好 明天早餐講 晚安',m:'合',r:2,g:0,mood:2,next:'END',end:'RESPECT',
+    tip:{k:'他說先停，你就先停',p:'現在談不出結果，明天早餐時他會比較清醒，你也一樣。',s:'「吾其還也。」',th:'情緒高漲的時候很難談出規則，先停下來，是為了明天能好好談。'}},
+   {t:'（把手機、iPad、筆電全部收走）',m:'攻',r:-4,g:-1,mood:-3,next:'END',end:'HARASS',
+    tip:{k:'把所有設備都收走',p:'他今晚是睡了，但明天三台設備都沒電，他出門要用，你們可能一整個禮拜都不講話。',s:'',th:'懲罰可以解決今晚的問題，卻會帶來接下來一整週的新問題。'}},
+   {t:'你每次都這樣 講不過就說要睡',m:'攻',r:-3,g:-1,mood:-3,next:'END',
+    tip:{k:'不肯停，繼續吵',p:'他想停下來，你卻繼續說，你們會一路吵到一點。',s:'',th:'兩個人都不肯停，最常見的結果是雙方都輸，誰也沒有得到想要的。'}}
+  ]}
+ },
+ endings:{
+  WW:'手機放客廳一個禮拜，他十二點前睡了六天。第七天他自己說要繼續。',
+  RL:'今晚沒吵起來。但什麼規則都沒談，明天十一點半你又會站在他門口。',
+  GL:'他照做了，但每天把手機放客廳的時候都瞪你一眼。',
+  LL:'你們吵到半夜一點。隔天他上課打瞌睡，你說「你看吧」，他回你「都是妳害的」。'
+ },
+ special:{RESPECT:{n:'停在該停的地方',s:'隔天早餐他主動說：手機放客廳好了。'},HARASS:{n:'越線了',s:'他隔天出門三台設備都沒電。一週內他沒跟你講過一句話。'}}
+},
+
+/* ===================== 被拱去開嗆 ===================== */
+I:{
+ title:'被拱去開嗆　你是阿翰',
+ bg:'bgB',npc:'群組',me:'阿翰',
+ scene:'好友群組，晚上十點。',
+ intro:`隔壁班的某人在限動講你朋友小萱：「某人穿那樣也敢」。截圖傳進群組，大家氣炸。
+
+你是群組裡最會講的人。阿凱 @ 你：去她 IG 底下留言。
+
+小萱也在群組，但還沒講話。`,
+ goal:`不讓事情變成兩班互嗆，不讓小萱更難堪，也不要變成群組裡的叛徒。`,
+ start:'i1',
+ nodes:{
+ i1:{ex:'angry',say:`阿凱：@阿翰 你最會講 去她 IG 底下留一下 幫小萱出口氣
+阿鈞：+1
+阿凱：等你`,
+  opts:[
+   {t:'等一下 小萱自己想怎麼處理 我們先問她',m:'合',r:0,g:1,mood:0,next:'i2',
+    tip:{k:'先問小萱自己的意思',p:'這件事的當事人是小萱，群組卻在替她做決定。你先停下來問她想怎麼處理，就是把決定權交還給她。',s:'子犯說「請擊之」，晉文公沒有跟著衝，先說「不可」，再講理由。被拱的時候，先停下來想。',th:'當事人自主權的意思是，要不要被幫、怎麼被幫，應該由當事人決定，所以要先問她要不要。'}},
+   {t:'好 我去 看她還敢不敢',m:'攻',r:1,g:-2,mood:1,next:'i_go',
+    tip:{k:'照群組說的去留言',p:'群組的人看了會很開心，但對方會把你的留言截圖，明天兩班的人都在傳，最後被議論的是小萱。',s:'',th:'在群體壓力下出手攻擊，起鬨的人不必承擔後果，真正付出代價的是當事人小萱。'}},
+   {t:'好啦我去留 但我會講得很有道理 不會罵人 就是讓她知道這樣不對',m:'讓',r:1,g:-2,mood:1,next:'i_go',
+    tip:{k:'講得有道理，也還是去留言',p:'你以為語氣客氣就不算吵架，但對方截圖轉傳的時候，不會附註「他講得很有道理」，大家只看到別班的人跑來留言。',s:'',th:'措辭上的克制改變不了行為本身，跑到對方帳號底下公開留言，這件事就已經是在回擊。'}},
+   {t:'我等一下有事 你們先',m:'避',r:-1,g:-1,mood:-1,next:'i_no',
+    tip:{k:'找藉口先離開',p:'你沒有去留言，也沒有阻止大家。他們去了以後小萱還是被捲進去，而且群組的人會記得你那時候躲開了。',s:'',th:'逃避看起來像保持中立，但你不表態，事情就會照著起鬨的人的意思發展下去。'}}
+  ]},
+ i2:{ex:'angry',say:`阿凱：問什麼 她一定不爽啊
+阿凱：你就是怕吧`,
+  opts:[
+   {t:'我要是怕就不會回了 這是小萱的事 她要我去我就去 先問她',m:'合',r:1,g:1,mood:1,next:'i3',
+    tip:{k:'不被激將法帶著走',p:'阿凱說「你就是怕吧」，是想讓你為了證明自己不怕而去留言。你沒有去證明，而是把話題帶回先問小萱，這句激將就沒有作用了。',s:'',th:'激將法利用的是人想證明自己的心理，只要你不急著證明，對方的話就推不動你。'}},
+   {t:'我才不怕 你怎麼不自己去 每次都叫別人衝 你最會講',m:'攻',r:-2,g:0,mood:-2,next:'i_split',
+    tip:{k:'被激將法激到',p:'你為了證明自己不怕，開始跟阿凱互相嗆聲，結果大家吵的是你們兩個，小萱的事反而沒有人在管了。',s:'',th:'激將法讓人把注意力放在自己的面子上，你一回嘴，對話就從小萱的事變成你和阿凱的爭執。'}},
+   {t:'好啦好啦我去 你們不要再 @ 我了 等我',m:'讓',r:1,g:-2,mood:1,next:'i_go',
+    tip:{k:'被一句「你怕」推著去',p:'你不是因為小萱需要才去，而是為了讓群組不要再 @ 你。這樣留下的言論，後果還是會落到小萱身上。',s:'',th:'這是在群體壓力下退讓，為了讓別人不再催你而照做，卻沒有先問清楚當事人要不要。'}}
+  ]},
+ i3:{ex:'troubled',who:'小萱',say:`（小萱私訊你）
+不要去啦 她本來就那樣 你們去留言 她會更誇張
+我不想鬧大`,
+  opts:[
+   {t:'OK 那我跟大家說妳不要 有需要再找我們',m:'合',r:1,g:2,mood:1,next:'i4',
+    tip:{k:'小萱說不要，就照她的意思',p:'她說不想把事情鬧大，你尊重她的決定，接著還去群組告訴大家她不要，這樣才真的幫得上她。',s:'',th:'幫忙的前提是對方需要，小萱已經說不要了，照她的意思做才是在幫她。'}},
+   {t:'可是她這樣講妳欸 妳不氣喔 妳不講我們幫妳講',m:'攻',r:-1,g:-1,mood:-1,next:'i3b',
+    tip:{k:'替她決定她應該生氣',p:'她已經說不想鬧大，你卻告訴她應該生氣、應該讓你們去講，這等於否定了她自己的判斷。',s:'',th:'否定當事人的判斷，會讓她覺得自己的想法不被當一回事，即使你的出發點是想幫她。'}},
+   {t:'好 那我不管了 反正是妳的事 他們要去我也攔不住',m:'避',r:0,g:-1,mood:0,next:'i_no',
+    tip:{k:'知道她不要，卻沒去阻止',p:'你知道小萱不想鬧大，但群組的人不知道。你不去告訴他們，他們還是會照原本的打算去留言。',s:'',th:'知道而不行動，等於沒有知道。只有你清楚小萱的意思，你不轉達給群組，事情就不會改變。'}}
+  ]},
+ i3b:{ex:'troubled',who:'小萱',say:`氣啊 但你們去留言 明天全校都會知道
+我更丟臉`,
+  opts:[
+   {t:'對 我沒想到 我去跟大家說',m:'合',r:1,g:1,mood:1,next:'i4',
+    tip:{k:'承認自己沒想到',p:'小萱點出你沒考慮到的後果，你直接承認，然後去跟群組說明，她會覺得自己的意見有被聽進去。',s:'',th:'承擔自己的那一份，是指承認自己想得不周到，並且負責去處理群組那一邊。'}},
+   {t:'好吧 那我不講了 妳自己看著辦',m:'避',r:0,g:-1,mood:0,next:'i_no',
+    tip:{k:'讓她自己看著辦',p:'你聽到她的擔心了，但群組的人沒有聽到。你不去說，他們可能還是會去留言，小萱只能自己面對後果。',s:'',th:'這是逃避，你把責任推回給小萱，可是能去跟群組說明的人只有你。'}}
+  ]},
+ i4:{ex:'angry',say:`阿凱：小萱就是太好欺負 我們幫她討回來
+阿鈞：對啊 她不好意思講而已`,
+  opts:[
+   {t:'她說不要 我們去就是幫她惹事 不是幫她 她不要就是不要',m:'合',r:1,g:2,mood:1,next:'i_no',
+    tip:{k:'替她向群組說明',p:'你把小萱的「不要」轉告群組，也說清楚去留言是在替她惹麻煩，並不是在幫她。',s:'「因人之力而敝之，不仁；失其所與，不知；以亂易整，不武。吾其還也。」',th:'拒絕群體壓力時，講出你重視的理由，留給大家改變主意的空間，也不罵人，別人比較聽得進去。'}},
+   {t:'你們要去自己去 白癡 到時候出事不要哭',m:'攻',r:-3,g:0,mood:-3,next:'END',
+    tip:{k:'用罵人的方式阻止',p:'大家確實沒有去留言，但你是用罵人的方式阻止的，朋友覺得被羞辱，群組因此三天沒有人講話。',s:'',th:'目的雖然達到了，但你罵了朋友，彼此的關係也跟著受傷，之後就很難好好說話。'}},
+   {t:'好啦 那我也去 反正大家都要去 我不去也怪怪的',m:'讓',r:1,g:-3,mood:1,next:'i_go',
+    tip:{k:'小萱說不要，你還是去了',p:'你明明知道小萱不想鬧大，還是因為大家都去而跟著去，最後要面對別人議論的是她。',s:'',th:'這是對群體的退讓，你避開了自己不合群的尷尬，代價卻是由小萱來承擔。'}}
+  ]},
+ i_split:{ex:'angry',say:`阿凱：我就說你怕
+阿凱：算了 我自己去`,
+  opts:[
+   {t:'等一下 剛剛那句我收回 我們先問小萱 她要的話我就陪你去',m:'合',r:1,g:1,mood:1,next:'i3',
+    tip:{k:'收回氣話，回到正題',p:'你承認剛才那句話說得不好，再把話題帶回先問小萱，阿凱比較不會覺得被針對，討論也回到原本該談的事。',s:'',th:'主動收回說錯的話是在修復關係，讓對方知道你不是要跟他吵，而是在意同一件事。'}},
+   {t:'去啊 你要去就去 我不想跟你吵 隨便你',m:'避',r:-2,g:-2,mood:-2,next:'END',
+    tip:{k:'不想吵就隨他去',p:'你不想再吵，就讓阿凱自己去留言，結果他真的去了，小萱也因此被捲進這件事。',s:'',th:'這是逃避，你避開了眼前的爭吵，卻也放掉了阻止事情變糟的機會。'}}
+  ]},
+ i_go:{ex:'happy',say:`阿凱：讚 等你截圖
+（你留了。十分鐘後，對方把你的留言截圖發限動：「某班的人來我這裡吠」）`,
+  opts:[
+   {t:'（刪留言，私訊小萱道歉）',m:'合',r:0,g:0,mood:0,next:'END',
+    tip:{k:'刪掉留言，向小萱道歉',p:'雖然已經晚了，但你刪掉留言、私下向小萱道歉，至少讓事情不再擴大，她也知道你在意她的感受。',s:'',th:'這是在修復關係，做錯之後盡快停下來並道歉，能讓傷害不再繼續變大。'}},
+   {t:'（再留一則：「截圖啊 怕你不截」）',m:'攻',r:-2,g:-2,mood:-2,next:'END',
+    tip:{k:'再留一則回嗆',p:'你再回一則挑釁的留言，兩班就正式吵起來了，而這場爭吵的起因是小萱，她會是最難受的那個人。',s:'',th:'這是衝突升級，每一次回嗆都會讓對方想回得更兇，事情就越來越難結束。'}}
+  ]},
+ i_no:{ex:'cold',say:`阿凱：不去就算了 我們自己去`,
+  q:'他們決定要去。你攔不住，但你能決定自己做什麼。',
+  opts:[
+   {t:'你們決定 我不去 但不要截圖丟班群 那是小萱的事',m:'合',r:1,g:1,mood:1,next:'END',end:'RESPECT',
+    tip:{k:'尊重他們，也說出自己的原則',p:'你攔不住他們，但你選擇不跟著去，還說清楚不要把截圖傳到班群，這是你能替小萱守住的底線。',s:'子犯「請擊之」，晉文公一句「不可」就否決了，因為他是國君，可以下令。你跟朋友是平輩，下不了令；能學的是他的做法：講出理由，自己不出手。',th:'你能控制的只有自己的行為，別人怎麼做你決定不了，但你可以不參與，並把原則講出來。'}},
+   {t:'你們去我就退群 我不想跟會做這種事的人同一群',m:'攻',r:-2,g:0,mood:-2,next:'END',
+    tip:{k:'用退群來威脅',p:'他們聽到後多半會回你一句「那你退啊」，到時候你不是真的退群，就是說話不算數。',s:'',th:'威脅只能在你真的願意做到的時候使用，否則對方不理會，尷尬的就是你自己。'}},
+   {t:'（搶先把對方限動截圖丟到班群：大家評評理）',m:'攻',r:-3,g:-3,mood:-3,next:'END',end:'HARASS',
+    tip:{k:'把截圖傳到班群公審',p:'你以為這是在幫小萱討公道，但班群五十個人都看到了這件事，小萱明天會不想來學校。',s:'',th:'把事情公開到大群組是最難挽回的升級，訊息一傳出去就收不回來，小萱也失去了自己決定的機會。'}}
+  ]}
+ },
+ endings:{
+  WW:'沒人去。隔週小萱自己跟那人講開了。阿凱說「好險沒去」。',
+  RL:'你沒去，也沒攔。他們去了，小萱被捲進去，而且你什麼都沒說。',
+  GL:'你把大家壓下來了，但用的是嗆人。群組三天沒人講話。',
+  LL:'你去留了，對方截圖，兩班互嗆一個禮拜。小萱最慘。'
+ },
+ special:{RESPECT:{n:'守住自己的線',s:'他們去了，但沒丟班群。小萱後來跟你說：謝謝你沒去。'},HARASS:{n:'越線了',s:'班群五十個人都看到了。小萱隔天請假。'}}
+},
+
+/* ===================== 告白之後 ===================== */
+J:{
+ title:'告白之後①　你是小傑',
+ bg:'bgA',npc:'小晴',me:'小傑',
+ labels:['尊重她','照顧自己'],
+ prof:{
+  攻:{n:'把難過變成質問的人',k:'被拒絕很痛，你把這份痛變成了追問',
+   a:'小晴會覺得好像是自己做錯了什麼，才會被你這樣問。之後看到你，她可能會先緊張起來。可是拒絕你並不是她的錯。',
+   b:'你也許只是想要一個交代。但被拒絕這件事，沒有哪一種說法能讓你不痛。',
+   t:'被拒絕之後，先離開現場，找一個信任的朋友聊聊。想問她的話先寫在備忘錄裡，隔天再看，通常你就不會想傳了。'},
+  讓:{n:'假裝沒事的人',k:'為了不讓她尷尬，你把自己的難過藏了起來',
+   a:'小晴看到你跟平常一樣，會以為你真的沒事，反而不知道該不該給你一點空間。',
+   b:'每一次一起吃午餐，你都比前一天更難受。',
+   t:'你可以老實說：「我需要一段時間，不是在生氣。」這句話對你們兩個人都比較輕鬆。'},
+  避:{n:'突然消失的人',k:'你不想面對，所以乾脆整個躲開',
+   a:'小晴會以為你在恨她，甚至覺得是她害你難過。',
+   b:'躲開的時候比較不痛，但這件事會一直懸在那裡。',
+   t:'要躲開之前，先說一句「我想先自己靜一靜」，她就知道你不是在生她的氣。'},
+  合W:{n:'被拒絕以後，依然好好的人',k:'你很難過，但你尊重她的答案，也照顧了自己',
+   a:'小晴會覺得對你說真話是安全的，不必擔心你會一直追問。之後要不要繼續當朋友，可以等你們都準備好了再說。',
+   b:'接下來幾天還是會難過，這很正常，不代表你做錯了什麼。',
+   t:'難過的時候找朋友或家人聊聊，或去做一件能讓你專心的事，會比一直去看她的動態有用。'},
+  合L:{n:'晚一點才放下的人',k:'一開始有點失控，後來你讓自己停了下來',
+   a:'小晴會記得你追問過，也會記得你最後停下來了。',
+   b:'回想前面那幾句話，你可能會有點不好意思，這也很正常。',
+   t:'下次情緒很滿的時候，先讓自己離開手機和現場，等到隔天再決定要不要說。'},
+  burst:{n:'忍到最後才失控的人',k:'一開始說沒事，後來在一件小事上情緒潰堤',
+   a:'小晴不知道你一直在忍，只看到你突然變得很激動，會覺得很困惑，也有點害怕。',
+   b:'你可能覺得自己已經很努力在忍了，所以更委屈。',
+   t:'難過不需要忍到極限。先誠實地說你需要一點距離，比假裝沒事再突然失控好得多。'},
+  RESPECT:{n:'在第二次就停下來的人',k:'你差一點越線，但你停住了',
+   a:'小晴會記得你多問了一次，也會記得你最後尊重了她的決定。',
+   b:'停下來的那一刻很難，但這是你這一場做得最好的決定。',
+   t:'下一次，在對方第一次說不的時候就停下來。'},
+  HARASS:{n:'把在乎變成糾纏的人',k:'她已經說了兩次不要，你還在繼續',
+   a:'在小晴眼中，你已經從朋友變成一個讓她害怕的人。她可能會開始躲你，或者告訴老師和家人，這是她保護自己的方式。',
+   b:'你可能覺得自己只是太在乎她了。可是在乎，不能成為一直追問的理由。',
+   t:'被拒絕的難過，要找別人說，不是找她說。如果你發現自己停不下來，去找輔導老師聊一聊，這一點也不丟臉。'}
+ },
+ titles:{WW:'你尊重了她，也照顧好自己',RL:'你尊重了她，卻委屈了自己',GL:'你照顧了自己，但讓她不好受',LL:'她不好受，你也沒有好過'},
+ quads:{WW:'尊重她・照顧自己',RL:'尊重她・委屈自己',GL:'顧自己・讓她難受',LL:'兩個人都難受'},
+ scene:'放學後，操場旁邊。',
+ intro:`你是小傑，高二男生。你跟隔壁班的小晴是好朋友，每天聊到一點。今天你跟她告白了。
+
+她說：「我們還是當朋友吧。」
+
+這一關沒有「說服成功」的路線，被拒絕之後也不一定要繼續當朋友。兩條表是「尊重她」：你有沒有把她的決定當真；以及「照顧自己」：你有沒有好好處理自己的難過，沒有做出會後悔的事。`,
+ goal:`不做出會後悔的事。「當朋友」是拒絕，不是暗示，也不是考驗。很多恐怖情人的故事，都是從「我只是想問清楚」開始的。之後要不要繼續當朋友，可以慢慢決定，先保持距離也沒有關係。`,
+ start:'j1',
+ nodes:{
+ j1:{ex:'troubled',say:`……謝謝你跟我說
+但我覺得我們還是當朋友比較好`,
+  q:'「當朋友」是什麼意思？',
+  opts:[
+   {t:'好 我知道了 謝謝妳直接跟我講',m:'合',r:1,g:2,mood:1,next:'j2',
+    tip:{k:'好好接受她的拒絕',p:'她已經說得很清楚了。你不追問原因、不解釋，也不討價還價，這是你在這時候能做到最有尊嚴的回應。',s:'',th:'拒絕就是拒絕，平靜地接受對方的答案，是對她的尊重，也保住了你自己的尊嚴。'}},
+   {t:'我只是想知道原因 是我哪裡不好嗎 妳跟我說 我知道了就會放下',m:'攻',r:-1,g:-1,mood:-1,next:'j2_why',
+    tip:{k:'「我知道了就會放下」',p:'這句話聽起來很成熟，可是它是在要求她給你一個交代。不管她說出什麼原因，你都會想把那一點改掉，然後再問她一次。',s:'',th:'追問被拒絕的理由，等於換個方式再問一次，她會感覺到你還沒有接受她的答案。'}},
+   {t:'沒關係啦 我開玩笑的 哈哈 妳不要放在心上',m:'讓',r:0,g:-2,mood:0,next:'j2',
+    tip:{k:'說是開玩笑，否認自己',p:'你剛才是認真的，現在說是開玩笑，等於把自己的心意抹掉，而小晴也知道那不是玩笑。',s:'',th:'為了保住關係而否認自己的感受，結果你自己受委屈，她也覺得尷尬，兩邊都沒有顧好。'}},
+   {t:'當朋友？ 那之前妳每天跟我聊到一點是什麼',m:'攻',r:-3,g:-1,mood:-3,next:'j_no',
+    tip:{k:'翻出舊事當證據',p:'聊天聊到半夜一點，是好朋友之間也會做的事。你把它拿出來當證據，她會覺得自己對你好的每件事都被你記在帳上。',s:'',th:'把對方的善意當成她欠你的，會讓她以後不敢再對你好，這是破壞關係最快的方式。'}}
+  ]},
+ j2_why:{ex:'troubled',say:`沒有哪裡不好
+就是… 沒有那種感覺`,
+  opts:[
+   {t:'好 我懂了 謝謝',m:'合',r:1,g:1,mood:1,next:'j2',
+    tip:{k:'聽完就停下來',p:'她的答案很簡單，因為那就是她真實的感受，沒有什麼可以反駁的。你在這裡停下來，是最好的做法。',s:'',th:'拒絕就是拒絕，「沒有那種感覺」本身就是完整的答案，不需要再追問下去。'}},
+   {t:'那種感覺是可以培養的吧 妳給我一點時間',m:'攻',r:-2,g:-2,mood:-2,next:'j_no',
+    tip:{k:'跟她討價還價',p:'她說沒有那種感覺，你回答感覺可以培養，這是在跟她的感受討價還價，要她改變答案。',s:'',th:'這已經不是在說服她，而是不接受她的答案，繼續要求只會讓她更有壓力。'}},
+   {t:'是不是因為我太黏 我可以改',m:'讓',r:-1,g:-2,mood:-1,next:'j_no',
+    tip:{k:'自己找原因，說要改',p:'她已經說沒有哪裡不好，你卻硬找一個原因然後說要改，她會擔心你還不打算放棄，因此更加不安。',s:'',th:'這是把拒絕當成可以修好的問題，以為改掉缺點就能換到不同答案，可是她說的是感覺，不是缺點。'}}
+  ]},
+ j2:{ex:'neutral',say:`嗯…
+那我們還是可以一起吃午餐吧？`,
+  opts:[
+   {t:'先不要好了 我需要一點時間 過陣子再說 不是在生妳的氣',m:'合',r:1,g:2,mood:1,next:'j3',
+    tip:{k:'誠實說需要一點時間',p:'你可以替自己要一段時間，這不是在懲罰她。你也說了「不是生氣」，她就不必猜你是不是在怪她。',s:'',th:'界線是為了照顧自己而設的，把原因說清楚，對方就知道這不是冷戰。'}},
+   {t:'可以啊 跟以前一樣 我沒事 真的 妳不用擔心我',m:'讓',r:0,g:-2,mood:1,next:'j3_pretend',
+    tip:{k:'假裝自己沒事',p:'你說一切跟以前一樣，可是明天坐在她旁邊吃飯的時候，你心裡會很難受，每一口飯都吃不太下去。',s:'',th:'為了維持關係而壓抑自己的感受，撐不了多久，難受的情緒遲早會冒出來。'}},
+   {t:'妳說呢 妳覺得我現在可以跟妳一起吃午餐嗎',m:'攻',r:-2,g:-1,mood:-2,next:'j3',
+    tip:{k:'用反問讓她猜',p:'她是認真在問你，你卻用反問回答，她不知道你是生氣還是難過，也不知道之後該怎麼對你。',s:'',th:'這是被動攻擊，也就是不直接說出不滿，而是用反問或冷淡的語氣讓對方難受。'}}
+  ]},
+ j3:{ex:'neutral',who:'對話框',say:`（晚上十一點。你盯著跟小晴的對話框。）`,
+  q:'你要做什麼？',
+  opts:[
+   {t:'（把手機放到客廳，去睡）',m:'合',r:1,g:2,mood:1,next:'j4',
+    tip:{k:'今晚先不傳訊息',p:'晚上十一點想傳出去的訊息，到了早上多半會後悔。你把手機放到客廳去睡，是在保護明天的自己。',s:'',th:'情緒激動時做的決定通常比較衝動，睡一覺冷靜下來，比較能想清楚要不要說、怎麼說。'}},
+   {t:'「妳睡了嗎 我還是想講一下」',m:'攻',r:-2,g:-2,mood:-2,next:'j_no',
+    tip:{k:'半夜說還想再講',p:'她下午已經把話說清楚了，你傳「我還是想講一下」，她讀到的意思是你還沒有接受她的拒絕。',s:'',th:'對方拒絕一次之後，你每追問一次，都會變成她的壓力，她得一再重複拒絕你。'}},
+   {t:'（寫了五百字，講妳們認識以來的每一件事，傳出去）',m:'攻',r:-3,g:-3,mood:-3,next:'j_no',
+    tip:{k:'傳出五百字長訊息',p:'她多半不會回覆，你明天看到已讀會更難受，而且這五百字很可能被截圖傳出去。',s:'',th:'長訊息一旦傳出去就收不回來，把所有心情一次攤在她面前，她只會覺得更有壓力。'}}
+  ]},
+ j3_pretend:{ex:'neutral',say:`（隔天中午。你坐在她旁邊，她在講別人的事，你一直在想別的。）
+你怎麼都不講話`,
+  opts:[
+   {t:'我其實還需要一點時間 昨天說沒事是說太快了',m:'合',r:1,g:2,mood:1,next:'j4',
+    tip:{k:'收回昨天說的「沒事」',p:'雖然晚了一天，但你還是說出來了。她會鬆一口氣，因為她也覺得你們之間怪怪的。',s:'',th:'晚一點說還是比不說好，把真實的狀態講出來，兩個人才不用一直互相猜。'}},
+   {t:'沒有啊 我很好 只是有點累 妳繼續講',m:'讓',r:0,g:-2,mood:0,next:'END',
+    tip:{k:'繼續假裝沒事',p:'你一直把難受壓在心裡，大概一個月後，就會在一件小事上突然控制不住情緒。',s:'',th:'長期壓抑情緒不會讓它消失，累積到最後，常常會在不相干的小事上一次發洩出來。'}}
+  ]},
+ j4:{ex:'neutral',say:`（隔天早上。小晴在教室跟別人講話，笑得很大聲。）`,
+  q:'你要做什麼？',
+  opts:[
+   {t:'（跟平常一樣打招呼，然後去找自己的朋友）',m:'合',r:1,g:2,mood:1,next:'END',
+    tip:{k:'照平常一樣打招呼',p:'你照常跟她打招呼，讓她知道你們還是朋友，之後去找自己的朋友聊天，也表示你有自己的生活。',s:'',th:'被拒絕之後，讓對方看到你過得還好，是讓彼此都能放心的最好方式。'}},
+   {t:'（問共同朋友：小晴最近在跟誰聊 她是不是喜歡別人）',m:'攻',r:-3,g:-3,mood:-3,next:'END',end:'HARASS',
+    tip:{k:'向朋友打聽她的事',p:'共同朋友很可能會告訴小晴你在打聽她，從那天起，她看到你就會想繞路走。',s:'',th:'透過別人去探聽或監看對方，是越線的開始，她會覺得自己的生活被你盯著。'}},
+   {t:'（繞路，整天避開她，午餐去福利社吃）',m:'避',r:0,g:0,mood:-1,next:'END',
+    tip:{k:'先避開一陣子',p:'需要一段距離是可以的，這也是在照顧自己。只是如果你之前沒說過需要時間，她可能會以為你在生她的氣。',s:'',th:'保持距離本身沒有錯，事先說一句「我想先自己靜一靜」，對方就不會誤會。'}}
+  ]},
+ j_no:{ex:'cold',say:`我已經說了
+不要再問了 可以嗎`,
+  q:'她第二次說了。',
+  opts:[
+   {t:'好 對不起 我不問了',m:'合',r:1,g:1,mood:1,next:'END',end:'RESPECT',
+    tip:{k:'被提醒後馬上停下來',p:'等她說了第二次你才停，她會記得你曾經逼問過她一次，但你最後確實停下來了。',s:'',th:'不管什麼時候，願意停下來都不算太晚，停下來就是在尊重她的意願。'}},
+   {t:'我只是… 我只是想知道妳有沒有一點點喜歡過我',m:'攻',r:-4,g:-3,mood:-3,next:'END',end:'HARASS',
+    tip:{k:'這就是恐怖情人的第一步',p:'她已經說了兩次不要。不管「我只是」後面接的是什麼，對她來說都是你第三次在問。',s:'',th:'「精誠所至，金石為開」說的是對石頭有用的耐心，可是人不是石頭，人說不要，就是不要。'}}
+  ]}
+ },
+ endings:{
+  WW:'兩個月後你們還是會打招呼。你喜歡上別人了。回想那天，沒有哪一句話讓你後悔。',
+  RL:'你假裝沒事，繼續跟她一起吃午餐，可是每一次都更難受。三個月後，你為了一件小事突然發了很大的脾氣。',
+  GL:'你替自己留了空間，但用的方式是冷淡不理，小晴以為你在恨她。',
+  LL:'那天之後，她沒再回你訊息。在走廊遇到，你們都假裝沒看到對方。'
+ },
+ special:{RESPECT:{n:'停在該停的地方',s:'你停了。一個月後她主動找你講話。'},HARASS:{n:'越線了',s:'她看到你會繞路。共同朋友都知道了。這件事會跟著你到畢業。'}}
+},
+K:{
+ title:'告白之後②　你是小晴',
+ bg:'bgB',npc:'小傑',me:'小晴',
+ labels:['照顧自己','講清楚'],
+ prof:{
+  攻:{n:'把話說得太重的人',k:'你講清楚了，但用的話傷到了他',
+   a:'小傑知道答案了，但也覺得自己被取笑，很難再像以前一樣跟你相處。',
+   b:'你可能只是太緊張，想趕快把這件事結束。',
+   t:'可以先謝謝他願意說出口，再清楚地說「我對你沒有那種感覺」。清楚和溫和，是可以同時做到的。'},
+  讓:{n:'不忍心說不的人',k:'你怕他難過，所以一直沒有把話說清楚',
+   a:'小傑會以為自己還有機會，於是一直等下去。',
+   b:'你每天都要想辦法躲他，這比直接拒絕還要累。',
+   t:'模糊的拒絕會讓他多難過好幾個月。直接告訴他「不是以後，是沒有」，對他反而比較好。'},
+  避:{n:'選擇不回應的人',k:'你不知道怎麼說，所以乾脆不回覆',
+   a:'小傑不知道發生了什麼事，只能一直猜，而猜測往往比被拒絕更難受。',
+   b:'不回訊息當下比較輕鬆，可是這件事一直沒有結束。',
+   t:'如果不想當面說，傳一則清楚的訊息也可以，重點是讓他知道你的答案。'},
+  合W:{n:'能說清楚又照顧自己的人',k:'你清楚地拒絕了，也照顧了自己的感受',
+   a:'小傑會難過一陣子，但他不用猜你的想法，也知道你並不是討厭他。之後要不要繼續當朋友，你可以照自己的感覺慢慢決定。',
+   b:'把「不」說出口很不容易，你做到了。',
+   t:'如果之後對方還是一直傳訊息、在你身邊打轉，讓你覺得不舒服，就告訴家人、導師或輔導老師。這不是小題大作，而是保護自己。'},
+  合L:{n:'後來才把話說清楚的人',k:'一開始說得模糊，後來你講清楚了',
+   a:'小傑多等了一段時間，但最後還是知道了答案。',
+   b:'你可能會後悔沒有一開始就說清楚。',
+   t:'下次被告白時，如果你心裡已經有答案，就在當下說清楚。'},
+  burst:{n:'忍到最後才翻臉的人',k:'你一直陪他聊、一直說好，最後受不了直接封鎖',
+   a:'小傑會覺得你好像突然變了一個人，完全不知道發生了什麼。',
+   b:'你其實早就不想再談了，只是一直說不出口。',
+   t:'第一次覺得不舒服的時候就說出來：「我不想再談這件事了。」如果他還是一直來找你，就請大人幫忙。'}
+ },
+ titles:{WW:'講清楚了，也照顧好自己',RL:'照顧了自己，但話沒講清楚',GL:'講清楚了，但委屈了自己',LL:'沒講清楚，自己也很累'},
+ quads:{WW:'講清楚・照顧自己',RL:'照顧自己・不夠清楚',GL:'講清楚・委屈自己',LL:'不清楚・自己很累'},
+ scene:'放學後，操場旁邊。',
+ intro:`同一場告白，換你當小晴。你是高二女生，隔壁班的小傑是你的好朋友。今天他跟你告白，但你對他沒有那種感覺。
+
+這一關的目標跟前面相反：你要說「不」，而且要說清楚。模糊的拒絕不是溫柔，是讓他多痛三個月。兩條表是「照顧自己」和「講清楚」。拒絕之後要不要繼續當朋友，是你可以決定的事，不需要為了讓他好過而勉強自己。`,
+ goal:`說清楚的不。不給假希望，不必勉強自己繼續當朋友，也不需要說得殘忍。`,
+ start:'k1',
+ nodes:{
+ k1:{ex:'troubled',say:`我喜歡你很久了
+你願不願意跟我在一起`,
+  opts:[
+   {t:'謝謝你跟我說 可是我對你沒有那樣的感覺 對不起',m:'合',r:1,g:2,mood:0,next:'k2',
+    tip:{k:'清楚地說不',p:'你先道謝，再清楚地說沒有那種感覺。他會難過，但不需要猜你的意思。之後要不要繼續當朋友，可以等你們都冷靜下來再決定。',s:'',th:'清楚地拒絕是對他的尊重，讓他知道真正的答案，他才不會抱著不存在的希望。'}},
+   {t:'我現在不想談戀愛 以後再說 現在想先專心讀書 你懂吧',m:'讓',r:-1,g:-2,mood:1,next:'k2_hope',
+    tip:{k:'給了假的希望',p:'你說「以後再說」，他會當真而一直等。這段時間你也得一直想辦法回避他，三個月後他再問一次，你還是得拒絕。',s:'',th:'含糊的拒絕只是把痛苦往後延，而且對方要承受的難過會變成兩次。'}},
+   {t:'蛤 我想一下 這個太突然了 下週跟你說 可以嗎',m:'避',r:-1,g:-2,mood:0,next:'k2_hope',
+    tip:{k:'拖延回答',p:'你心裡已經知道答案了，卻要他等一週，這段時間他會以為自己還有機會。',s:'',th:'這是逃避，拖延看起來比較溫和，卻讓他懷著期待等下去，最後的失望反而更大。'}},
+   {t:'你不要鬧 我們是朋友欸 你這樣我很難做',m:'攻',r:0,g:-1,mood:-2,next:'k2',
+    tip:{k:'說他「不要鬧」',p:'他是鼓起勇氣認真說的，你說他在鬧，他會覺得很丟臉，也可能以為你在開玩笑，還沒聽到真正的答案。',s:'',th:'這是面子攻擊，也就是讓對方覺得自己被看輕，他認真的心意被當成玩笑，就是這種情形。'}}
+  ]},
+ k2_hope:{ex:'happy',say:`好 那我等你
+（三週後，他又問了一次）`,
+  opts:[
+   {t:'對不起 那時候我該直接說 我沒有那種感覺 不是以後 是沒有',m:'合',r:1,g:2,mood:0,next:'k3',
+    tip:{k:'補上一句清楚的拒絕',p:'雖然晚了三週，但你還是說清楚了，也承認當初應該直接講，他雖然難過，卻終於不用再等。',s:'',th:'晚一點說還是比不說好，越早把話說清楚，對方就越早能放下。'}},
+   {t:'再給我一點時間 我真的還沒想清楚 你不要逼我',m:'讓',r:-1,g:-3,mood:0,next:'END',
+    tip:{k:'第二次給假希望',p:'他會繼續等，你也會繼續拖，到最後他要難過三次。',s:'',th:'一路退讓下去，你和他都停在等待裡，只是讓最後的拒絕更痛。'}}
+  ]},
+ k2:{ex:'troubled',say:`……可以給我一個原因嗎`,
+  opts:[
+   {t:'沒有哪裡不好 就是沒那種感覺 我講得越具體你越難過',m:'合',r:1,g:2,mood:0,next:'k3',
+    tip:{k:'不給他可以改的原因',p:'你只要說出具體的原因，他就會努力去改，然後再來問你。「沒有那種感覺」是唯一不會變成他的功課的答案。',s:'',th:'拒絕的理由講得越具體，對方越會把它當成待辦事項，以為改完就能換到不同答案。'}},
+   {t:'因為你有時候太黏了 如果你沒那麼黏 也許…',m:'讓',r:-1,g:-2,mood:0,next:'END',
+    tip:{k:'給了一個他能改的原因',p:'他會努力讓自己不那麼黏，然後再來問你一次，你又得重新拒絕他。',s:'',th:'這個理由不是真正的原因，卻讓他以為改掉就有機會，假的理由只會帶來假的希望。'}},
+   {t:'就是不行 不要問了 問了也不會改',m:'攻',r:0,g:1,mood:-2,next:'k3',
+    tip:{k:'拒絕得太強硬',p:'說清楚是對的，但他才問第一次，你就說「不要問了」，這句話來得太早，聽起來像在趕他走。',s:'',th:'清楚和殘忍是兩回事，你可以堅定地拒絕，同時保留基本的溫和。'}}
+  ]},
+ k3:{ex:'troubled',say:`那我們… 還是可以一起吃午餐吧`,
+  opts:[
+   {t:'可以啊 不過你如果想先分開一陣子 也沒關係 你決定',m:'合',r:0,g:1,mood:1,next:'k4',
+    tip:{k:'把要不要一起交給他',p:'如果你自己也覺得自在，這樣說很體貼，他不用為了證明沒事而勉強坐在你旁邊。但要記得，你沒有義務一定要跟他一起吃飯。',s:'',th:'給對方選擇的空間，他才不用假裝自己已經沒事。'}},
+   {t:'當然 跟以前一樣 我們還是好朋友 什麼都沒變',m:'讓',r:-1,g:-1,mood:1,next:'k4',
+    tip:{k:'說「跟以前一樣」',p:'告白之後，你們很難完全跟以前一樣。你說一切都沒變，他只好跟著假裝，你自己也得每天假裝沒事。',s:'',th:'這句話忽略了他可能需要一段時間和距離，好好整理自己的心情。'}},
+   {t:'我想先保持一點距離 不是討厭你 是我現在需要這樣',m:'合',r:2,g:1,mood:0,next:'k4',
+    tip:{k:'替自己保留距離',p:'你說清楚需要距離，也說明不是討厭他。告白被拒之後保持一段距離，對兩個人都是健康的，你不需要為了讓他好過而勉強自己。',s:'',th:'界線是為了照顧自己而設的，只要說明清楚，就不是懲罰，也不是冷戰。'}},
+   {t:'先不要吧 我覺得這樣對大家都好',m:'避',r:1,g:-1,mood:-1,next:'k4',
+    tip:{k:'想保持距離，但沒說清楚',p:'想暫時不一起吃飯是你的權利。只是你沒說原因，他可能會以為你在生氣，或是討厭他。',s:'',th:'保持距離沒有錯，說明一句原因，對方就比較不會把它當成懲罰。'}}
+  ]},
+ k4:{ex:'neutral',who:'對話框',say:`小傑：你睡了嗎
+小傑：我還是想講一下`,
+  opts:[
+   {t:'「我看到了 我明天再回你 晚安」',m:'合',r:1,g:1,mood:1,next:'k5',
+    tip:{k:'回覆了，也說今晚不談',p:'你讓他知道你看到訊息了，也讓他知道今晚不會談這件事。你沒有消失，也不必陪他熬夜。',s:'',th:'回應不等於順從，你可以禮貌地回覆，同時自己決定什麼時候、用什麼方式談。'}},
+   {t:'（你已讀，沒有回）',m:'避',r:0,g:-1,mood:-1,next:'k5',
+    tip:{k:'今晚先不回',p:'深夜不回訊息是可以的，你不需要陪他熬夜。只是他會一直盯著「已讀」，如果隔天簡單回一句，他就不用一直猜。',s:'',th:'你有權決定什麼時候回覆；隔天給一個簡短的回應，可以減少對方的猜測。'}},
+   {t:'「好啊 你說 我還沒睡 你慢慢講」',m:'讓',r:-2,g:-2,mood:0,next:'k5',
+    tip:{k:'陪他講到半夜一點',p:'你會聽他把下午講過的話再講一遍，最後你還是得再拒絕他一次。',s:'',th:'這是退讓，你犧牲了自己休息的時間，結果卻沒有改變，他也更難放下。'}}
+  ]},
+ k5:{ex:'troubled',say:`（隔天）
+我真的只是想再講一下 給我十分鐘`,
+  opts:[
+   {t:'我已經說過了 答案不會改 你再傳的話我會先不回 這不是討厭你',m:'合',r:1,g:2,mood:0,next:'END',
+    tip:{k:'第二次拒絕，講清楚界線',p:'你說了答案不會改、他再傳你會先不回，也說了這不是討厭他。他知道界線在哪裡，也知道你不是在恨他。',s:'',th:'設界線時要講清楚越線的後果，同時說明這不是懲罰，對方才比較能接受。'}},
+   {t:'好啦 十分鐘 就十分鐘喔 講完就不要再講了',m:'讓',r:-2,g:-2,mood:0,next:'END',
+    tip:{k:'第三次聽他說',p:'說好的十分鐘很可能拖成一小時，而且下週他還會再來找你一次。',s:'',th:'一再退讓會讓對方以為只要多要求就有機會，這樣的對話就停不下來。'}},
+   {t:'（直接封鎖，不回任何訊息）',m:'避',r:1,g:0,mood:-2,next:'END',
+    tip:{k:'直接封鎖',p:'封鎖是保護自己的方法，你有權利這樣做。如果你覺得安全、也還有力氣，先說一次界線，他會比較清楚為什麼。',s:'',th:'當對方一再越線，封鎖和告訴大人都是正當的自我保護，不需要覺得對不起他。'}}
+  ]}
+ },
+ endings:{
+  WW:'他難過了一陣子，後來慢慢好了。你們在走廊遇到會點頭打招呼，要不要再當好朋友，你們都不急。他後來說，還好你那時候講清楚。',
+  RL:'你沒有勉強自己，可是答案說得不夠清楚。他還在等，你偶爾得想辦法回避他的訊息。',
+  GL:'你把話講清楚了，可是之後還是一直陪他聊、聽他說，把自己弄得很累。',
+  LL:'答案一直沒講清楚，你也一直在躲，兩個人都很累。'
+ }
+}
+});
+
+/* ===================== 立繪 ===================== */
+const FACE = {
+ neutral:{brow:0,mouth:'M70 118 Q90 124 110 118',eye:1},
+ happy:{brow:-2,mouth:'M68 116 Q90 136 112 116',eye:1},
+ surprised:{brow:-6,mouth:'M82 118 Q90 134 98 118 Q90 128 82 118',eye:1.35},
+ cold:{brow:2,mouth:'M72 122 L108 122',eye:.75},
+ angry:{brow:8,mouth:'M70 126 Q90 112 110 126',eye:.9},
+ tired:{brow:3,mouth:'M72 124 Q90 120 108 124',eye:.6},
+ troubled:{brow:5,mouth:'M72 122 Q82 118 90 123 Q98 128 108 122',eye:.9}
+};
+function faceSVG(ex,color){
+ const f=FACE[ex]||FACE.neutral;
+ const b=f.brow;
+ return `<svg id="char" viewBox="0 0 180 230" xmlns="http://www.w3.org/2000/svg">
+  <path d="M30 230 Q30 160 90 150 Q150 160 150 230 Z" fill="${color}"/>
+  <path d="M60 150 L120 150 L112 172 L68 172 Z" fill="#f1dcc5"/>
+  <ellipse cx="90" cy="95" rx="52" ry="58" fill="#f6e3cf"/>
+  <path d="M38 90 Q40 30 90 32 Q140 30 142 90 Q130 60 90 56 Q50 60 38 90 Z" fill="#2b2420"/>
+  <ellipse cx="70" cy="100" rx="6" ry="${7*f.eye}" fill="#2b2420"/>
+  <ellipse cx="110" cy="100" rx="6" ry="${7*f.eye}" fill="#2b2420"/>
+  <path d="M58 ${84+b} Q70 ${80-b/2} 82 ${86-b/3}" stroke="#2b2420" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M98 ${86-b/3} Q110 ${80-b/2} 122 ${84+b}" stroke="#2b2420" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="${f.mouth}" stroke="#a14a3c" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+ </svg>`;
+}
+
+/* ===================== 遊戲狀態 ===================== */
+const $=s=>document.querySelector(s);
+let S=null; // {ch, node, R, G, mood, log:[], turn, flag, end, perm}
+let PREV=null; // 上一章的結果，給連續關卡用：{ch, flag, R, G}
+let MODE='easy';   // 依情境固定：前三個情境簡單、後面困難（見 TIER）
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const MODENAME={攻:'攻擊',讓:'退讓',避:'逃避',合:'合作'};
+const labelsOf=c=>c.labels||['關係','目標'];
+const scenOf=ch=>SCEN.find(s=>s.ch.includes(ch));
+
+function hud(dr,dg){
+ $('#barR').style.width=(S?S.R*10:50)+'%';
+ $('#barG').style.width=(S?S.G*10:50)+'%';
+ const f=(el,d)=>{el.textContent=d?(d>0?'+'+d:d):'';el.className='d '+(d>0?'up':d<0?'dn':'');};
+ f($('#dR'),dr||0);f($('#dG'),dg||0);
+ const L=S?labelsOf(C[S.ch]):['關係','目標'];
+ $('#lR').textContent=L[0];$('#lG').textContent=L[1];
+ $('#hudTitle').textContent=S?C[S.ch].title:'說話的棋局';
+ $('#hudMode').textContent=MODE==='hard'?'困難':'簡單';
+}
+
+/* ===================== 任務、紀錄與上傳 ===================== */
+// 情境分區：前三個簡單模式、後兩個困難模式、告白是加分題
+const TIER={0:'easy',1:'easy',2:'easy',3:'hard',4:'hard',5:'bonus'};
+const NEED={easy:2,hard:1};
+const tierOfCh=ch=>{const i=SCEN.findIndex(s=>s.ch.includes(ch));return TIER[i]||'easy';};
+const modeOfCh=ch=>tierOfCh(ch)==='easy'?'easy':'hard';
+function scenDone(sc,done){return sc.ch.some(ch=>done[ch]);}
+function calcProg(done){const c={easy:0,hard:0,bonus:0,both:0};
+ SCEN.forEach((sc,i)=>{if(sc.ch.some(ch=>done[ch]))c[TIER[i]]++;if(TIER[i]==='easy'&&sc.ch.every(ch=>done[ch]))c.both++;});
+ c.easyMet=c.easy>=NEED.easy&&c.both>=1;c.met=c.easyMet&&c.hard>=NEED.hard;return c;}
+function progress(){return calcProg(getDone());}
+
+// 每一章結局後的課文連結題（告白兩章改問拒絕的理解，不硬接課文）
+const QUIZ={
+ A:{q:'這一場裡，阿武用「我上學期連歌單都排不進去」暗示自己被冷落。課文裡燭之武也用過同樣的說法，是哪一句？',
+    o:['臣之壯也，猶不如人；今老矣，無能為也已。','吾不能早用子，今急而求子，是寡人之過也。','闕秦以利晉，唯君圖之。'],
+    e:'燭之武說自己年輕時都比不上別人，老了更沒用，表面上推辭，其實是在提醒鄭文公一直沒重用他。'},
+ B:{q:'小鄭先承認上學期沒處理好，再請阿武幫忙。課文裡誰說過類似的話？',
+    o:['鄭文公：「吾不能早用子，今急而求子，是寡人之過也。」','燭之武：「臣之壯也，猶不如人。」','子犯：「請擊之。」'],
+    e:'鄭文公沒有找藉口，直接承認「是寡人之過也」，燭之武才答應出城。'},
+ C:{q:'阿哲提出「平日我還你一班」，讓小芸幫忙不吃虧。燭之武哪一句也是在告訴秦伯「這樣做你不吃虧」？',
+    o:['若舍鄭以為東道主，行李之往來，共其乏困，君亦無所害。','秦、晉圍鄭，鄭既知亡矣。','夫晉，何厭之有？'],
+    e:'燭之武提出替代方案：留下鄭國當東方路上的主人，秦國使者往來都有照應，對秦國沒有壞處。'},
+ D:{q:'鄭姐擔心收店沒人，阿哲先回應她擔心的事。燭之武說服秦伯時，也一直從秦國的利益來說，哪一句最明顯？',
+    o:['焉用亡鄭以陪鄰？鄰之厚，君之薄也。','是寡人之過也。','臣之壯也，猶不如人。'],
+    e:'燭之武指出滅了鄭國只會讓晉國變強，晉國強了，秦國就相對變弱，句句站在秦國的立場算利害。'},
+ E:{q:'組長事先講好「沒收到就用我的版本」，後來也照做了。課文裡燭之武用哪一句提醒秦伯，晉國曾經說話不算話？',
+    o:['許君焦、瑕，朝濟而夕設版焉，君之所知也。','若亡鄭而有益於君，敢以煩執事。','唯君圖之。'],
+    e:'晉惠公答應給秦國焦、瑕兩地，早上渡河回國，晚上就築城防守。說了不做，之後說什麼都沒人信。'},
+ F:{q:'阿翔先承認「我拖了」，再說自己看不懂。燭之武見秦伯時，開頭也先承認了鄭國的處境，是哪一句？',
+    o:['秦、晉圍鄭，鄭既知亡矣。','闕秦以利晉，唯君圖之。','焉用亡鄭以陪鄰？'],
+    e:'燭之武一開口就承認鄭國知道自己要亡了，不逞強，秦伯反而比較願意聽下去。'},
+ G:{q:'小安不跟媽媽爭「別人幾點睡」，改談媽媽真正擔心的事。燭之武也不談鄭國該不該亡，而是談什麼？',
+    o:['若亡鄭而有益於君，敢以煩執事。（只談對秦國有沒有好處）','臣之壯也，猶不如人。（談自己老了）','是寡人之過也。（談誰做錯了）'],
+    e:'燭之武把話題放在秦國的利益上：如果滅鄭對你有好處，那就麻煩你了。他不辯論鄭國該不該亡。'},
+ H:{q:'媽媽最後說「規則是你自己定的，一週後我們再看」，把決定交給小安。燭之武說完也把決定交給秦伯，是哪一句？',
+    o:['闕秦以利晉，唯君圖之。','夫晉，何厭之有？','鄭既知亡矣。'],
+    e:'「唯君圖之」是請您自己考慮。對方自己做的決定，才會真的去做。'},
+ I:{q:'阿翰被拱去開嗆時先停下來想。課文最後，子犯想追擊秦軍，晉文公怎麼回答？',
+    o:['不可。因人之力而敝之，不仁；失其所與，不知；以亂易整，不武。吾其還也。','請擊之。','夫晉，何厭之有？'],
+    e:'晉文公沒有被手下的情緒帶走，他說出不打的三個理由，然後撤兵。被拱的時候，先停下來想。'},
+ J:{q:'小晴說「我們還是當朋友比較好」，這句話的意思是？',
+    o:['她在拒絕，你應該尊重她的決定','她在考驗你，再努力一點就有機會','她只是害羞，過幾天再問一次'],
+    e:'「當朋友」就是拒絕，不是暗示，也不是考驗。追問或再試一次，對她來說都是壓力。'},
+ K:{q:'如果小傑在你拒絕之後，還一直傳訊息、在你身邊打轉，你可以怎麼做？',
+    o:['清楚說出界線，必要時封鎖，並告訴家人或老師','再陪他聊一次，讓他死心','為了不傷害他，答應試試看'],
+    e:'你沒有義務一直回應他。說清楚界線、封鎖、找大人幫忙，都是保護自己的正當方法。'}
+};
+
+// ---------- 學生身分 ----------
+function getStu(){try{return JSON.parse(localStorage.getItem('talk-stu')||'null')}catch(e){return null}}
+function askStu(then){
+ const st=getStu()||{};
+ const box=document.createElement('div');box.className='modal';
+ box.innerHTML=`<div class="mcard"><h3>先登記一下</h3>
+  <p>老師會用班級和座號看到你的遊戲紀錄，不需要填姓名。</p>
+  <div class="stuf"><label>班級<input id="sCls" inputmode="numeric" maxlength="10" placeholder="例如 301" value="${st.cls||''}"></label>
+  <label>座號<input id="sNo" inputmode="numeric" maxlength="2" placeholder="例如 12" value="${st.no||''}"></label></div>
+  <p class="err" id="sErr"></p>
+  <button class="big wide" id="sOk">好了</button></div>`;
+ document.body.appendChild(box);
+ box.querySelector('#sOk').onclick=()=>{
+  const cls=box.querySelector('#sCls').value.trim(),no=parseInt(box.querySelector('#sNo').value,10);
+  if(!cls||!(no>=1&&no<=99)){box.querySelector('#sErr').textContent='請填班級，座號要是 1 到 99。';return;}
+  try{localStorage.setItem('talk-stu',JSON.stringify({cls,no}))}catch(e){}
+  box.remove();then&&then();
+ };
+}
+
+// ---------- 上傳（失敗就暫存，之後自動重送） ----------
+const FB_DOCS='projects/hlbh-admin-duty/databases/(default)/documents';
+const FS='https://firestore.googleapis.com/v1/';
+const FB_KEY='AIzaSyBS3Y8Vj4-Ty-jmM2oGEWzZ3kXCgpbGOfE';   // Firebase 網頁金鑰，本來就公開，只用於老師的 Google 登入；學生寫入只受資料庫規則管
+const twDate=()=>new Date(Date.now()+8*3600e3).toISOString().slice(0,10);
+function getQueue(){try{return JSON.parse(localStorage.getItem('talk-queue')||'[]')}catch(e){return []}}
+function setQueue(q){try{localStorage.setItem('talk-queue',JSON.stringify(q))}catch(e){}}
+async function postRec(rec){
+ const str=v=>({stringValue:String(v)}),int=v=>({integerValue:String(Math.round(v))});
+ const f={cls:str(rec.cls),no:int(rec.no),ch:str(rec.ch),refl:str(rec.refl),d:str(rec.d)};
+ ['end','prof','path','mode'].forEach(k=>{if(rec[k]!=null)f[k]=str(rec[k]);});
+ ['R','G','quiz'].forEach(k=>{if(rec[k]!=null)f[k]=int(rec[k]);});
+ const id=Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+ const r=await fetch(`${FS}${FB_DOCS}:commit`,{method:'POST',headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({writes:[{update:{name:`${FB_DOCS}/talk/${id}`,fields:f},currentDocument:{exists:false},
+   updateTransforms:[{fieldPath:'t',setToServerValue:'REQUEST_TIME'}]}]})});
+ if(!r.ok)throw new Error(r.status);
+}
+async function sendRec(rec){
+ const q=getQueue();q.push(rec);setQueue(q);
+ return flushQueue();
+}
+async function flushQueue(){
+ let q=getQueue(),ok=true;
+ while(q.length){try{await postRec(q[0]);q.shift();setQueue(q);}catch(e){ok=false;break;}}
+ return ok;
+}
+
+// ---------- 結局後的兩題 ----------
+function afterHTML(){
+ const z=QUIZ[S.ch];if(!z)return '';
+ const order=z.o.map((_,i)=>i).sort(()=>Math.random()-.5);
+ S.quizOrder=order;S.quizPick=null;
+ return `<div class="after" id="after"><h2>結束前的兩題</h2>
+  <p class="sub">回答完按「送出」，這一場才算完成，老師也才看得到。</p>
+  <div class="qz"><div class="qq">一、${z.q}</div>
+   ${order.map(i=>`<button class="qo" data-i="${i}" onclick="pickQuiz(${i},this)">${z.o[i]}</button>`).join('')}
+   <div class="qe" id="qe"></div></div>
+  <div class="qz"><div class="qq">二、回到剛剛這一場「${C[S.ch].title.replace('　','：')}」。如果可以重新來過，你會把自己說過的哪一句話換掉？要換成什麼說法？為什麼？</div>
+   <p class="sub" style="margin:0 0 6px">可以往上看「回顧」，裡面有你這一場說過的每一句話。如果覺得每一句都選得很好，就寫你最想保留哪一句、為什麼。</p>
+   <textarea id="refl" maxlength="200" rows="3" placeholder="例如：我會把「……」換成「……」，因為……（至少 10 個字）"></textarea></div>
+  <p class="err" id="aErr"></p>
+  <button class="btn" id="aSend" onclick="submitAfter()">送出</button>
+ </div>`;
+}
+function pickQuiz(i,el){
+ if(S.quizPick!=null)return;
+ S.quizPick=i;const z=QUIZ[S.ch];
+ document.querySelectorAll('.qo').forEach(b=>{const k=+b.dataset.i;b.disabled=true;if(k===0)b.classList.add('right');else if(k===i)b.classList.add('wrong');});
+ $('#qe').innerHTML=`${i===0?'答對了。':'正確答案是標成綠色的那一個。'}${z.e}`;
+}
+async function submitAfter(){
+ const refl=($('#refl').value||'').trim();
+ if(S.quizPick==null){$('#aErr').textContent='第一題還沒選。';return;}
+ if(refl.length<10){$('#aErr').textContent='第二題請至少寫 10 個字。';return;}
+ const st=getStu();if(!st){askStu(submitAfter);return;}
+ $('#aSend').disabled=true;$('#aErr').textContent='';
+ const rec={cls:st.cls,no:st.no,ch:S.ch,end:S.endName.slice(0,30),prof:(S.profName||'').slice(0,20),
+  path:S.log.map(l=>l.m).join('').slice(0,30),R:S.R,G:S.G,mode:MODE,quiz:S.quizPick===0?1:0,refl,d:twDate()};
+ setDone(S.ch,S.endName.length>12?S.endName.slice(0,12)+'…':S.endName);
+ saveLocal(rec);
+ const ok=await sendRec(rec);
+ const P=progress();
+ const sc=scenOf(S.ch);const sib=sc?sc.ch.find(x=>x!==S.ch):null;const c=C[S.ch];
+ $('#after').innerHTML=`<h2>完成了</h2>
+  <p>${ok?'已經送出，老師看得到你的紀錄。':'網路好像不太穩，紀錄先存在這台裝置，下次打開遊戲會自動重送。'}</p>
+  <p class="sub">任務進度：簡單區 ${Math.min(P.easy,2)}／2 個情境、兩邊都玩 ${Math.min(P.both,1)}／1，困難區 ${Math.min(P.hard,1)}／1。${P.met?'任務完成，加分題已經打開了。':P.easyMet?'困難區已經打開了。':''}</p>
+  ${c.next?`<button class="btn" onclick="startCh('${c.next}')">下一關：${C[c.next].title}</button>`:''}
+  <button class="btn ${c.next?'alt':''}" onclick="select()">回到選關</button>
+  ${!c.next&&sib?`<button class="btn alt" onclick="startCh('${sib}')">換個視角：${C[sib].title}</button>`:''}`;
+}
+function getLocal(){try{return JSON.parse(localStorage.getItem('talk-recs')||'[]')}catch(e){return []}}
+function saveLocal(rec){try{const a=getLocal().filter(r=>r.ch!==rec.ch);a.push(rec);localStorage.setItem('talk-recs',JSON.stringify(a))}catch(e){}}
+
+// ---------- 通關報告 ----------
+function report(){
+ S=null;SCREEN='report';menuMode(true);hud();
+ const recs=getLocal().filter(r=>r.ch!=='Z');const P=progress();const st=getStu()||{};
+ const ok=recs.filter(r=>r.quiz===1).length;
+ let fin='';try{fin=localStorage.getItem('talk-final')||''}catch(e){}
+ $('#view').innerHTML=`<div class="howto">
+  <div class="mhead"><button class="back" onclick="select()">‹ 選關</button><h2>通關報告</h2></div>
+  <div class="hcard c1"><h3>${st.cls||''} 班 ${st.no||''} 號</h3>
+   <p>完成 ${recs.length} 場，課文連結題答對 ${ok} 題。${P.met?'任務已完成。':'任務還沒完成：簡單區要完成 2 個情境，其中 1 個要兩邊都玩；困難區要完成 1 個情境。'}</p></div>
+  ${recs.map(r=>`<div class="hcard c2"><h3>${C[r.ch].title}</h3><p><b>結局</b>　${r.end}</p><p><b>你是</b>　${r.prof||''}</p>
+   <p><b>課文連結題</b>　${r.quiz?'答對':'答錯'}</p><p><b>想換掉的話</b>　${esc2(r.refl)}</p></div>`).join('')}
+  ${P.met?`<div class="hcard c3"><h3>最後一題</h3><p>燭之武說服秦伯用了好幾招，例如先承認處境、站在對方的立場算利害、提出替代方案、把決定交給對方。你覺得哪一招在生活中最有用？舉一個你自己的例子。</p>
+   <textarea id="fin" maxlength="300" rows="4" placeholder="至少 20 個字">${esc2(fin)}</textarea><p class="err" id="fErr"></p>
+   <button class="big wide" id="fSend" onclick="submitFinal()">${fin?'修改後再送一次':'送出總結'}</button></div>`:''}
+ </div>`;
+ window.scrollTo(0,0);
+}
+const esc2=t=>String(t||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function submitFinal(){
+ const t=($('#fin').value||'').trim();
+ if(t.length<20){$('#fErr').textContent='請至少寫 20 個字。';return;}
+ const st=getStu();if(!st){askStu(submitFinal);return;}
+ $('#fSend').disabled=true;
+ try{localStorage.setItem('talk-final',t)}catch(e){}
+ const ok=await sendRec({cls:st.cls,no:st.no,ch:'Z',refl:t,d:twDate()});
+ $('#fErr').textContent=ok?'已經送出，謝謝你。':'先存在這台裝置，下次打開會自動重送。';
+}
+
+// ---------- 老師專區 ----------
+const ADMIN='walala@hlbh.hlc.edu.tw';   // 唯一的老師帳號（學校 Google 帳號）
+let tToken='',tAuth=null,tMod=null;
+function teacher(){
+ S=null;SCREEN='teacher';menuMode(true);hud();
+ $('#view').innerHTML=`<div class="howto">
+  <div class="mhead"><button class="back" onclick="title()">‹ 標題</button><h2>老師專區</h2></div>
+  <div class="hcard c4"><h3>查看學生紀錄</h3><p>請用學校 Google 帳號（${ADMIN}）登入。</p>
+   <button class="big" style="padding:10px 22px;font-size:17px" onclick="teacherLogin()">用 Google 帳號登入</button>
+   <p class="err" id="tMsg"></p></div>
+  <div id="tBox"></div>
+  <div class="hcard"><h3>這台裝置</h3><p class="sub">教室公用電腦換人玩之前，可以清除這台裝置上的班級座號與遊玩紀錄。</p>
+   <button class="back" onclick="if(confirmClear())title()">清除這台裝置的紀錄</button></div>
+ </div>`;
+ window.scrollTo(0,0);
+}
+async function teacherLogin(){
+ const msg=$('#tMsg');msg.textContent='登入中…';
+ try{
+  const V='10.12.2';
+  const [{initializeApp,getApps},A]=await Promise.all([import(`https://www.gstatic.com/firebasejs/${V}/firebase-app.js`),import(`https://www.gstatic.com/firebasejs/${V}/firebase-auth.js`)]);
+  const app=getApps()[0]||initializeApp({apiKey:FB_KEY,authDomain:'hlbh-admin-duty.firebaseapp.com',projectId:'hlbh-admin-duty'});
+  const auth=A.getAuth(app),prov=new A.GoogleAuthProvider();tAuth=auth;tMod=A;
+  prov.setCustomParameters({prompt:'select_account'});
+  const cred=await A.signInWithPopup(auth,prov);
+  const email=(cred.user.email||'').toLowerCase();
+  if(email!==ADMIN){await A.signOut(auth);msg.textContent=`${email} 沒有查看權限。`;return;}
+  tToken=await cred.user.getIdToken();
+  msg.innerHTML=`已登入：${email}　<a href="#" onclick="teacherLogout();return false">登出</a>`;
+  await loadTeacher();
+ }catch(e){
+  msg.textContent='登入失敗：'+(e.code==='auth/popup-closed-by-user'?'登入視窗被關掉了。':e.code==='auth/unauthorized-domain'?'這個網址還沒加入 Firebase 的授權網域。':e.code==='auth/popup-blocked'?'瀏覽器擋住了登入視窗，請允許彈出視窗後再試。':(e.code||e.message));
+ }
+}
+async function teacherLogout(){try{if(tMod&&tAuth)await tMod.signOut(tAuth)}catch(e){}tToken='';teacher();}
+async function loadTeacher(){
+ const msg=$('#tMsg');const rows=[];let page='';
+ do{const r=await fetch(`${FS}${FB_DOCS}/talk?pageSize=300${page?'&pageToken='+page:''}`,{headers:{Authorization:'Bearer '+tToken}});
+  if(!r.ok){$('#tBox').innerHTML=`<p class="err">讀取失敗（${r.status}）。</p>`;return;}
+  const j=await r.json();(j.documents||[]).forEach(d=>{const o={_name:d.name};for(const k in d.fields){const v=d.fields[k];o[k]=v.stringValue??(v.integerValue!=null?+v.integerValue:v.timestampValue??'');}rows.push(o);});
+  page=j.nextPageToken||'';}while(page);
+ renderTeacher(rows);
+}
+async function deleteTestRows(){
+ const L=(window._tRows||[]).filter(r=>r.cls==='測試');
+ if(!L.length||!window.confirm(`要刪除 ${L.length} 筆班級為「測試」的紀錄嗎？`))return;
+ await Promise.all(L.map(r=>fetch(`${FS}${r._name}`,{method:'DELETE',headers:{Authorization:'Bearer '+tToken}})));
+ await loadTeacher();
+}
+function confirmClear(){
+ if(!window.confirm('確定要清除這台裝置的班級座號和遊玩紀錄嗎？已經送出的紀錄不受影響。'))return false;
+ ['talk-stu','talk-done','talk-recs','talk-final','talk-seen','talk-queue'].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});return true;
+}
+function renderTeacher(rows){
+ const by={};rows.forEach(r=>{const k=r.cls+'|'+String(r.no).padStart(2,'0');(by[k]=by[k]||[]).push(r);});
+ const keys=Object.keys(by).sort();
+ const classes=[...new Set(rows.map(r=>r.cls))].sort();
+ const chs='ABCDEFGHIJK'.split('');
+ const cell=(list,ch)=>{const r=list.filter(x=>x.ch===ch).sort((a,b)=>String(b.t).localeCompare(String(a.t)))[0];
+  return r?`<td class="${r.quiz?'okc':'noc'}" title="${esc2(r.end)}｜${esc2(r.refl)}">${r.quiz?'✓':'✗'}</td>`:'<td></td>';};
+ const status=list=>{const done={};list.forEach(r=>{if(r.ch!=='Z')done[r.ch]=1;});const c=calcProg(done);
+  return c.met?'完成':`簡${c.easy}（雙${c.both}）/困${c.hard}`;};
+ $('#tBox').innerHTML=`<div class="hcard c2"><h3>全班總覽</h3>
+  <p class="sub">✓ 表示課文連結題答對、✗ 答錯，空白是沒玩。滑鼠停在格子上會顯示結局和反思。點座號看完整內容。</p>
+  <div class="stuf"><select id="tCls"><option value="">全部班級</option>${classes.map(c=>`<option>${esc2(c)}</option>`).join('')}</select>
+   <button class="back" onclick="exportCSV()">匯出 CSV</button>${rows.some(r=>r.cls==='測試')?'<button class="back" onclick="deleteTestRows()">刪除「測試」班級的紀錄</button>':''}</div>
+  <div class="tbl"><table><thead><tr><th>班級</th><th>座號</th><th>任務</th>${chs.map(ch=>`<th title="${C[ch].title}">${ch}</th>`).join('')}<th>總結</th></tr></thead>
+  <tbody>${keys.map(k=>{const L=by[k];const [cls,no]=k.split('|');const z=L.find(r=>r.ch==='Z');
+   return `<tr data-cls="${esc2(cls)}"><td>${esc2(cls)}</td><td><a href="#" onclick="showStu('${esc2(k)}');return false">${+no}</a></td><td>${status(L)}</td>${chs.map(ch=>cell(L,ch)).join('')}<td>${z?'✓':''}</td></tr>`;}).join('')}</tbody></table></div>
+  <p class="sub">欄位：${chs.map(ch=>`${ch}＝${C[ch].title}`).join('、')}</p></div><div id="tStu"></div>`;
+ window._tRows=rows;window._tBy=by;
+ $('#tCls').onchange=e=>{const v=e.target.value;document.querySelectorAll('#tBox tbody tr').forEach(tr=>tr.style.display=!v||tr.dataset.cls===v?'':'none');};
+}
+function showStu(k){
+ const L=(window._tBy[k]||[]).slice().sort((a,b)=>String(a.t).localeCompare(String(b.t)));const [cls,no]=k.split('|');
+ $('#tStu').innerHTML=`<div class="hcard c3"><h3>${esc2(cls)} 班 ${+no} 號</h3>${L.map(r=>r.ch==='Z'?`<p><b>總結</b>　${esc2(r.refl)}</p>`:
+  `<p><b>${C[r.ch].title}</b>（${r.mode==='hard'?'困難':'簡單'}）<br>結局：${esc2(r.end)}｜${esc2(r.prof)}｜選擇路線：${esc2(r.path)}｜課文題：${r.quiz?'答對':'答錯'}<br>想換掉的話：${esc2(r.refl)}</p>`).join('')}</div>`;
+ $('#tStu').scrollIntoView({behavior:'smooth'});
+}
+function exportCSV(){
+ const rows=window._tRows||[];const head=['班級','座號','章節','章名','模式','結局','側寫','選擇路線','課文題','反思／總結','日期','時間'];
+ const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+ const lines=[head.join(',')].concat(rows.slice().sort((a,b)=>(a.cls+String(a.no).padStart(2,'0')+a.ch).localeCompare(b.cls+String(b.no).padStart(2,'0')+b.ch))
+  .map(r=>[r.cls,r.no,r.ch,r.ch==='Z'?'總結':C[r.ch].title,r.mode==='hard'?'困難':(r.ch==='Z'?'':'簡單'),r.end,r.prof,r.path,r.ch==='Z'?'':(r.quiz?'答對':'答錯'),r.refl,r.d,r.t].map(q).join(',')));
+ const blob=new Blob(['﻿'+lines.join('\n')],{type:'text/csv'});const a=document.createElement('a');
+ a.href=URL.createObjectURL(blob);a.download='說話的棋局_學生紀錄.csv';a.click();
+}
+flushQueue();
+
+/* ===================== 標題、說明、選關 ===================== */
+let SCREEN='title';
+const DONE_KEY='talk-done';
+function getDone(){try{return JSON.parse(localStorage.getItem(DONE_KEY)||'{}')}catch(e){return {}}}
+function setDone(ch,name){try{const d=getDone();d[ch]=name;localStorage.setItem(DONE_KEY,JSON.stringify(d))}catch(e){}}
+function menuMode(on){document.body.classList.toggle('menu',on);}
+function faceOf(ch){const a=ART[ch];const f=a&&Object.values(a.chars)[0];return f?`img/${f}_neutral.webp`:null;}
+
+function cover(){title();}
+function title(){
+ S=null;SCREEN='title';menuMode(true);hud();
+ const petals=Array.from({length:16},(_,i)=>`<i style="left:${(i*37+11)%100}%;animation-delay:${-(i*1.7)%12}s;animation-duration:${9+(i%5)*1.6}s;--s:${.6+(i%4)*.18}"></i>`).join('');
+ $('#view').innerHTML=`<div class="ttlpage cover">
+  <div class="ttlbg" style="background-image:url('img/bg_cover.jpg'),url('img/bg_title.jpg')"></div>
+  <div class="petals">${petals}</div>
+  <button class="gear" onclick="teacher()" aria-label="老師專區">老師專區</button>
+  <div class="logo2">
+   <div class="kick">燭之武退秦師 × 校園生活</div>
+   <h1><span class="a">說話的</span><span class="b">棋局</span></h1>
+   <div class="en">— The Art of Talking —</div>
+   <ul class="menu2">
+    <li><button onclick="startGame()" autofocus>開始遊戲</button></li>
+    <li><button onclick="howto()">遊戲說明</button></li>
+    <li><button onclick="select()">選擇情境</button></li>
+   </ul>
+  </div>
+  <div class="copy">國文科 115 學年　說話的棋局</div>
+ </div>`;
+ window.scrollTo(0,0);
+}
+function startGame(){if(!getStu()){askStu(startGame);return;}let seen=false;try{seen=localStorage.getItem('talk-seen')==='1'}catch(e){}seen?select():howto(true);}
+
+function howto(first){
+ S=null;SCREEN='howto';menuMode(true);hud();
+ $('#view').innerHTML=`<div class="howto">
+  <div class="mhead"><button class="back" onclick="title()">‹ 標題</button><h2>開始之前</h2></div>
+  <div class="hcard c4">
+   <h3>你的任務</h3>
+   <p>簡單區要完成 <b>2 個情境</b>，其中 <b>1 個要兩邊視角都玩</b>（例如社團救火玩阿武，也玩小鄭；打工換班兩關都玩完也算）。完成後打開困難區。困難區只要完成 <b>1 個情境</b>、玩一邊就好。困難區完成後，打開加分題「告白之後」和你的通關報告。</p>
+   <p>完成後會打開加分題「告白之後」，也能看到你的通關報告。每一場結束要回答兩個小題目並送出，才算完成。簡單區每一句都有軍師講解；困難區玩的時候看不到分數，只能看對方的表情，講解到結局才一次揭曉。</p>
+  </div>
+  <div class="hcard c1">
+   <h3>這是一場對話遊戲</h3>
+   <p>每個情境裡，你會扮演一個角色，跟另一個人談一件事。對方會記得你前面說過的話，就算你說得很好，他也可能提出新的困難。說錯了通常還有一次補救的機會，但做不到卻先答應的事，之後會再找上你。</p>
+  </div>
+  <div class="hcard c2">
+   <h3>看兩條表</h3>
+   <div class="demo"><span class="r">關係</span><i class="br"><b style="width:70%"></b></i><span class="g">目標</span><i class="bg"><b style="width:40%"></b></i></div>
+   <p><b>關係</b>是對方還願不願意跟你說話，<b>目標</b>是你想做的事有沒有往前。兩條都高，才是最好的結局。</p>
+  </div>
+  <div class="hcard c3">
+   <h3>只有一條規則</h3>
+   <p>「我再看看」是還在猶豫，可以給對方時間。「不用了」「我不要」是拒絕，拒絕就是拒絕。你可以問一次「有沒有我能幫忙的地方」，對方說不，就停下來。一直追問、一直傳訊息、找別人去勸，都不是說服，而是糾纏。</p>
+  </div>
+  <div class="hcard c4">
+   <h3>先說清楚</h3>
+   <p>這是模擬，遊戲裡的對方是程式，真人不會照劇本走。這些說法不保證有好結局，只是讓好結局比較有可能發生。你要帶走的不是台詞，而是順序：先承認對方說對的地方，說他在意的事，提出做得到的辦法，該停的時候就停。</p>
+  </div>
+  <button class="big wide" onclick="seenHowto()">${first?'我懂了，選擇情境':'回到選關'}</button>
+ </div>`;
+ window.scrollTo(0,0);
+}
+function seenHowto(){try{localStorage.setItem('talk-seen','1')}catch(e){}select();}
+
+function select(){
+ S=null;SCREEN='select';menuMode(true);hud();
+ const done=getDone();const P=progress();const st=getStu();
+ const card=(sc,i)=>{
+  const tier=TIER[i],locked=(tier==='bonus'&&!P.met)||(tier==='hard'&&!P.easyMet);
+  const bg=ART[sc.ch[0]]?`img/${ART[sc.ch[0]].bg}.jpg`:'';
+  const faces=sc.ch.map(faceOf).filter(Boolean);
+  return `<div class="lv${locked?' locked':''}" style="--hue:${['#ff6b3d','#f5b700','#22a36a','#2b6fd6','#9b6cf2','#ef5da8'][i%6]}">
+   <div class="thumb" style="background-image:url('${bg}')"><span class="no">${i+1}</span>
+    <div class="faces">${faces.map(f=>`<span style="background-image:url('${f}')"></span>`).join('')}</div>${locked?`<div class="lockv">${tier==='hard'?'完成簡單區後開啟':'完成困難區後開啟'}</div>`:''}</div>
+   <div class="lvbody"><div class="lvt">${sc.t}${scenDone(sc,done)?' <span class="okb">完成</span>':''}</div><div class="lvd">${sc.d}</div>
+    ${sc.ch.map(ch=>`<button class="lvbtn" ${locked?'disabled':''} onclick="startCh('${ch}')"><span>${C[ch].title.replace(/^[^　]*　/,'')}</span>${done[ch]?`<em>✓ ${done[ch]}</em>`:'<em class="new">未玩</em>'}</button>`).join('')}
+   </div></div>`;};
+ const zone=(title,sub,idx)=>`<div class="zone"><div class="zt">${title}</div><div class="zs">${sub}</div></div><div class="grid">${idx.map(i=>card(SCEN[i],i)).join('')}</div>`;
+ const bar=(n,need)=>`<span class="pb">${Array.from({length:need},(_,k)=>`<i class="${k<n?'on':''}"></i>`).join('')}</span>`;
+ $('#view').innerHTML=`<div class="sel">
+  <div class="mhead"><button class="back" onclick="title()">‹ 標題</button><h2>選擇情境</h2>
+   <button class="back r" onclick="askStu(select)">${st?`${esc2(st.cls)} 班 ${st.no} 號`:'登記班級座號'}</button><button class="back r" onclick="howto()">說明</button></div>
+  <div class="rulebox"><b>過關規則</b>　簡單區要完成 <b>2 個情境</b>，其中 <b>1 個要兩邊視角都玩</b>（例如社團救火玩阿武，也玩小鄭；打工換班兩關都玩完也算）。完成後打開困難區。困難區只要完成 <b>1 個情境</b>、玩一邊就好。困難區完成後，打開加分題「告白之後」和你的通關報告。</div>
+  <div class="mission"><b>任務</b>
+   <span>簡單區 ${bar(Math.min(P.easy,2),2)} ${Math.min(P.easy,2)}／2</span>
+   <span>兩邊都玩 ${bar(Math.min(P.both,1),1)} ${Math.min(P.both,1)}／1</span>
+   <span>困難區 ${bar(Math.min(P.hard,1),1)} ${Math.min(P.hard,1)}／1</span>
+   ${P.met?'<button class="big" style="margin:0 0 0 auto;padding:8px 20px;font-size:16px;animation:breathe 2.4s ease-in-out infinite" onclick="report()">看通關報告</button>':`<span class="sub" style="margin-left:auto">${P.easyMet?'完成困難區就打開加分題與通關報告':'完成簡單區就打開困難區'}</span>`}</div>
+  ${zone('簡單區','每一句都有軍師講解。完成 2 個情境，其中 1 個要兩邊都玩',[0,1,2])}
+  ${zone('困難區','玩的時候只看得到對方的表情，講解到結局才揭曉。完成 1 個情境、玩一邊就好',[3,4])}
+  ${zone('加分題','完成困難區後開啟',[5])}
+ </div>`;
+ window.scrollTo(0,0);
+}
+function settings(){teacher();return;
+ const box=document.createElement('div');box.className='modal';box.onclick=e=>{if(e.target===box)box.remove();};
+ box.innerHTML=`<div class="mcard"><h3>老師設定</h3>
+  <div class="seg"><button class="${MODE==='easy'?'on':''}" onclick="setMode('easy');this.closest('.modal').remove()">簡單模式</button><button class="${MODE==='hard'?'on':''}" onclick="setMode('hard');this.closest('.modal').remove()">困難模式</button></div>
+  <p>簡單模式：每選一句，就能看到兩條表的變化和軍師的講解。</p>
+  <p>困難模式：玩的時候看不到數據，只能看對方的表情，所有講解在結局一次揭曉。</p>
+  <p class="sub">分享給學生時，在網址後面加上 <code>#easy</code> 或 <code>#hard</code>，就能直接指定模式。</p>
+  <p class="sub"><a href="#" onclick="try{localStorage.removeItem('talk-done');localStorage.removeItem('talk-seen')}catch(e){};this.closest('.modal').remove();title();return false">清除這台裝置的遊玩紀錄</a></p>
+  <button class="big wide" onclick="this.closest('.modal').remove()">關閉</button></div>`;
+ document.body.appendChild(box);
+}
+
+function startCh(ch){
+ const c=C[ch];
+ const prev=(PREV&&scenOf(ch)&&scenOf(ch).ch.includes(PREV.ch)&&PREV.ch!==ch)?PREV:null;
+ const intro=typeof c.intro==='function'?c.intro(prev):c.intro;
+ const start=typeof c.start==='function'?c.start(prev):c.start;
+ SCREEN='game';menuMode(false);
+ MODE=modeOfCh(ch);document.body.classList.toggle('hard',MODE==='hard');
+ S={ch,node:null,R:5,G:5,mood:0,log:[],turn:0,flag:null,end:null,prev,threads:{},clock:null,chatT:null};
+ preloadCh(ch);
+ hud();
+ $('#view').innerHTML=`<div class="page">
+  <div class="sub">${c.title}</div>
+  <h1>${c.scene}</h1>
+  <p style="white-space:pre-line">${intro}</p>
+  <div class="goal"><b>你的目標</b><br>${c.goal}</div>
+  <button class="btn" onclick="go('${start}')">開始對話</button>
+ </div>`;
+ window.scrollTo(0,0);
+}
+
+/* ===================== 圖片 =====================
+   背景 img/<bg>.jpg；立繪 img/<角色>_<表情>.webp（tools/gen_talk.py 產圖、tools/talk_post.py 切圖）
+   缺圖時自動退回 CSS 漸層與 SVG 臉，可以分批補圖。 */
+const ART={
+ A:{bg:'bg_club',chars:{'小鄭':'zheng'}},
+ B:{bg:'bg_club',chars:{'阿武':'wu'}},
+ C:{bg:'bg_shop_night',chars:{'小芸':'yun'}},
+ D:{bg:'bg_shop_day',chars:{'鄭姐':'boss'}},
+ E:{bg:'bg_class',chars:{'阿翔':'xiang'}},
+ F:{bg:'bg_class',chars:{'小棠':'tang'}},
+ G:{bg:'bg_home',chars:{'媽媽':'mom'}},
+ H:{bg:'bg_home',chars:{'小安':'an'}},
+ I:{bg:'bg_phone',chars:{'小萱':'xuan'}},
+ J:{bg:'bg_field',chars:{'小晴':'qing'}},
+ K:{bg:'bg_field',chars:{'小傑':'jie'}}
+};
+// 個別節點換場景（隔天、深夜看手機）
+const NODEBG={'J.j3':'bg_phone','J.j3_pretend':'bg_class','J.j4':'bg_class','K.k4':'bg_phone','K.k5':'bg_class'};
+// 不畫人物的說話者
+const NOCHAR=['對話框','群組'];
+// 立繪只畫四種表情，其他對應過去
+const EXMAP={neutral:'neutral',happy:'happy',angry:'angry',cold:'angry',troubled:'troubled',tired:'troubled',surprised:'troubled'};
+function bgOf(ch,id){const k=NODEBG[ch+'.'+id]||(ART[ch]&&ART[ch].bg);return k?`img/${k}.jpg`:null;}
+function charSrc(ch,who,ex){const a=ART[ch];const n=a&&a.chars[who];return n?`img/${n}_${EXMAP[ex]||'neutral'}.webp`:null;}
+function preloadCh(ch){const a=ART[ch];if(!a)return;const L=[`img/${a.bg}.jpg`];
+ Object.entries(NODEBG).filter(([k])=>k.startsWith(ch+'.')).forEach(([,v])=>L.push(`img/${v}.jpg`));
+ Object.values(a.chars).forEach(n=>['neutral','happy','angry','troubled'].forEach(e=>L.push(`img/${n}_${e}.webp`)));
+ L.forEach(u=>{const i=new Image();i.src=u;});}
+/* ===================== 擬真聊天畫面 ===================== */
+const CHAT={I:n=>n.who==='小萱'?'小萱':'好朋友（6）','J.j3':'小晴','K.k4':'小傑'};
+const CLOCK={I:22*60+3,J:23*60+1,K:23*60+2};
+function chatOf(ch,id,n){const f=CHAT[ch+'.'+id]||CHAT[ch];return typeof f==='function'?f(n):(f||null);}
+const hhmm=m=>{m=((m%1440)+1440)%1440;const h=Math.floor(m/60),mm=m%60;return (h<12?'上午 ':'下午 ')+((h%12)||12)+':'+String(mm).padStart(2,'0');};
+const clk=m=>String(Math.floor(m/60)%24).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+const AVC=['#ff8a65','#4fb3ff','#ffb300','#7c6cf2','#26b37a','#ef5da8'];
+function avHTML(name){for(const k in ART){const f=ART[k].chars[name];if(f)return `<div class="av" style="background-image:url('img/${f}_neutral.webp');background-color:#c9d6ea"></div>`;}
+ let h=0;for(const c of name)h=(h*31+c.charCodeAt(0))%997;return `<div class="av" style="background:${AVC[h%AVC.length]}">${name.slice(-1)}</div>`;}
+function parseSay(say,title){return say.split('\n').map(x=>x.trim()).filter(Boolean).map(x=>{
+ let m=x.match(/^（(.*)）$/);if(m)return {sys:m[1]};
+ m=x.match(/^([^：\s]{1,4})：(.+)$/);if(m)return {from:m[1],text:m[2]};
+ return {from:title,text:x};});}
+function addMsgs(title,list){S.threads=S.threads||{};const T=S.threads[title]=S.threads[title]||[];
+ list.forEach(m=>{if(!m.sys){S.clock+=Math.random()<.5?1:0;}m.t=S.clock;T.push(m);});}
+function msgsHTML(title,fresh){const T=(S.threads&&S.threads[title])||[];const group=title.includes('（');const L=T.slice(-10);
+ return `<div class="dt">今天</div>`+L.map((m,i)=>{const nw=i>=L.length-fresh?' new':'';
+  if(m.sys)return `<div class="sys${nw}">${m.sys}</div>`;
+  if(m.me)return `<div class="row me${nw}"><div class="col"><div class="bw"><div class="bb">${m.text}</div><div class="tm">${group?'已讀 4':'已讀'}<br>${hhmm(m.t)}</div></div></div></div>`;
+  return `<div class="row${nw}">${avHTML(m.from)}<div class="col">${group?`<div class="who2">${m.from}</div>`:''}<div class="bw"><div class="bb">${m.text}</div><div class="tm">${hhmm(m.t)}</div></div></div></div>`;}).join('');}
+function phoneHTML(title,fresh){
+ return `<div class="phone"><div class="scr"><div class="sb"><span>${clk(S.clock)}</span><span class="ic"><span class="sig"><i style="height:4px"></i><i style="height:6px"></i><i style="height:8px"></i><i style="height:10px"></i></span>5G<span class="bat"></span></span></div>
+ <div class="hd"><span class="bk">‹</span><span class="nm">${title}</span><span class="mn">⋯</span></div>
+ <div class="ms" id="pms">${msgsHTML(title,fresh)}</div>
+ <div class="in"><b>＋</b><span>輸入訊息</span><b>Aa</b></div></div></div>`;}
+function myMsg(t){let m=t.match(/^（(.*)）$/);if(m)return {sys:m[1]};m=t.match(/^「(.*)」$/);return {me:true,text:m?m[1]:t};}
+
+function charHTML(c,ex,who){
+ if(NOCHAR.includes(who))return '';
+ const color=c.bg==='bgA'?'#4a6fa5':'#a5584a';
+ const src=charSrc(S.ch,who,ex);
+ if(src)return `<img id="char" class="art" src="${src}" alt="" onerror="this.outerHTML=faceSVG('${ex}','${color}')">`;
+ return faceSVG(ex,color);
+}
+
+function go(id){
+ if(id==='END')return ending();
+ const c=C[S.ch],n=c.nodes[id];
+ S.node=id;S.turn++;
+ S.perm=n.opts.map((_,i)=>i).sort(()=>Math.random()-.5);
+ const ex=n.ex||'neutral';
+ const who=n.who||c.npc;
+ const bgu=bgOf(S.ch,id);
+ const bgStyle=bgu?` style="background-image:url('${bgu}'),var(--grad)"`:'';
+ const chatT=chatOf(S.ch,id,n);S.chatT=chatT;
+ let inner;
+ if(chatT){if(S.clock==null)S.clock=CLOCK[S.ch]||22*60;const L=parseSay(n.say,chatT);addMsgs(chatT,L);inner=phoneHTML(chatT,L.length);}
+ else inner=`<div id="scene">${c.scene}　｜　第 ${S.turn} 回合</div>${charHTML(c,ex,who)}`;
+ $('#view').innerHTML=`
+  <div id="stage" class="${c.bg}${bgu?' img':''}${chatT?' chat':''}"${bgStyle}>${inner}</div>
+  <div id="dlg"><div id="who">${who}</div><div id="say">${n.say}</div></div>
+  <div id="opts">${n.q?`<div class="hint">${n.q}</div>`:''}${S.perm.map((j,i)=>`<button class="opt${n.q?' q':''}" onclick="pick(${j})"><b>${i+1}</b><span>${n.opts[j].t}</span></button>`).join('')}</div>`;
+ hud();
+ window.scrollTo(0,0);
+}
+
+function pick(i){
+ const c=C[S.ch],n=c.nodes[S.node],o=n.opts[i];
+ const r0=S.R,g0=S.G;
+ S.R=clamp(S.R+o.r,0,10);S.G=clamp(S.G+o.g,0,10);S.mood=clamp(S.mood+o.mood,-3,3);
+ if(o.end)S.end=o.end;
+ if(o.flag)S.flag=o.flag;
+ S.log.push({turn:S.turn,npc:n.say.split('\n')[0],t:o.t,m:o.m,k:o.tip.k,p:o.tip.p,s:o.tip.s,r:o.r,g:o.g});
+ if(S.chatT){S.clock+=1;addMsgs(S.chatT,[myMsg(o.t)]);const ms=$('#pms');if(ms)ms.innerHTML=msgsHTML(S.chatT,1);}
+ $('#who').textContent=c.me;$('#who').className='me';
+ $('#say').textContent=o.t;
+ $('#opts').innerHTML='';
+ const ch=$('#char');
+ if(ch){if(o.mood<0)ch.classList.add('shake');else if(o.mood>0)ch.classList.add('pop');}
+ hud(S.R-r0,S.G-g0);
+ if(MODE==='hard'){setTimeout(()=>go(o.next),1100);}else setTimeout(()=>coach(o),420);
+}
+
+function coach(o){
+ const t=o.tip;const L=labelsOf(C[S.ch]);
+ const d=(v,l)=>`<span class="${v>0?'up':v<0?'dn':''}">${l} ${v>0?'+'+v:v}</span>`;
+ $('#coachCard').innerHTML=`
+  <span class="tag m${o.m}">${MODENAME[o.m]}</span>
+  <h3>${t.k||'　'}</h3>
+  <div class="delta">${d(o.r,L[0])}${d(o.g,L[1])}</div>
+  <p>${t.p}</p>
+  ${t.s?`<div class="src">課文：${t.s}</div>`:''}
+  ${t.th?`<p class="th">學理：${t.th}</p>`:''}
+  <button onclick="closeCoach('${o.next}')">繼續</button>`;
+ $('#coach').classList.add('on');
+}
+function closeCoach(next){$('#coach').classList.remove('on');go(next);}
+
+function quadSVG(c,L,key){
+ const Q=c.quads||{WW:'雙贏',RL:'關係好・事沒成',GL:'事成・關係傷',LL:'雙輸'};
+ const X=v=>48+v*25.6, Y=v=>270-v*25.6, T=5.5;   // 0..10 映到 48..304 / 270..14；6 分以上算「好」
+ // 重建每一回合的位置
+ let r=5,g=5;const P=[[g,r]];S.log.forEach(l=>{r=clamp(r+l.r,0,10);g=clamp(g+l.g,0,10);P.push([g,r]);});
+ const pts=P.map(([g,r])=>`${X(g).toFixed(1)},${Y(r).toFixed(1)}`).join(' ');
+ const on=k=>(!S.end&&k===key)?' on':'';
+ const cell=(k,x,y,w,h,fill)=>`<rect class="qc${on(k)}" x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"/>`;
+ const lab=(k,x,y,anchor)=>`<text class="ql${on(k)}" x="${x}" y="${y}" text-anchor="${anchor}">${Q[k]}</text>`;
+ const xm=X(T),ym=Y(T);
+ return `<figure class="quad"><svg viewBox="0 0 320 312" role="img" aria-label="${L[0]}與${L[1]}的落點">
+  <defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d2433"/></marker>
+  <radialGradient id="glow"><stop offset="0" stop-color="#ff6b3d" stop-opacity=".45"/><stop offset="1" stop-color="#ff6b3d" stop-opacity="0"/></radialGradient></defs>
+  ${cell('RL',48,14,xm-48,ym-14,'#fff4cc')}${cell('WW',xm,14,304-xm,ym-14,'#d9f5e6')}
+  ${cell('LL',48,ym,xm-48,270-ym,'#eceef2')}${cell('GL',xm,ym,304-xm,270-ym,'#ffe3d8')}
+  <line x1="${xm}" y1="14" x2="${xm}" y2="270" class="mid"/><line x1="48" y1="${ym}" x2="304" y2="${ym}" class="mid"/>
+  ${lab('RL',56,32,'start')}${lab('WW',296,32,'end')}${lab('LL',56,262,'start')}${lab('GL',296,262,'end')}
+  <line x1="48" y1="270" x2="312" y2="270" class="axis" marker-end="url(#ar)"/><line x1="48" y1="270" x2="48" y2="6" class="axis" marker-end="url(#ar)"/>
+  <text class="at" x="176" y="296" text-anchor="middle">${L[1]}</text>
+  <text class="at" x="22" y="142" text-anchor="middle" writing-mode="tb" glyph-orientation-vertical="0">${L[0]}</text>
+  <text class="tk" x="48" y="288" text-anchor="middle">0</text><text class="tk" x="304" y="288" text-anchor="middle">10</text>
+  <polyline points="${pts}" class="path"/>
+  ${P.slice(0,-1).map(([g,r],i)=>`<circle cx="${X(g)}" cy="${Y(r)}" r="${i?3.5:5}" class="${i?'step':'start'}"/>`).join('')}
+  <text class="tk" x="${X(5)-8}" y="${Y(5)-9}" text-anchor="end">起點</text>
+  <circle cx="${X(P.at(-1)[0])}" cy="${Y(P.at(-1)[1])}" r="20" fill="url(#glow)"/>
+  <circle cx="${X(P.at(-1)[0])}" cy="${Y(P.at(-1)[1])}" r="8" class="end"/>
+ </svg><figcaption>${S.end?'這是特別結局，不看象限，看的是你最後有沒有停下來。虛線是你每一回合的移動。':'虛線是你每一回合的移動，橘點是結局落點。'}</figcaption></figure>`;
+}
+function ending(){
+ const c=C[S.ch];const L=labelsOf(c);const dflt=!c.labels;
+ const q=(S.R>=6?'W':'L')+(S.G>=6?'W':'L');
+ const key={WW:'WW',WL:'RL',LW:'GL',LL:'LL'}[q];
+ let name=dflt?{WW:'雙贏：事情談成，關係還在',RL:'關係還在，但事情沒談成',GL:'事情談成，但關係傷了',LL:'雙輸：事情沒成，關係也沒了'}[key]
+  :{WW:'兩邊都保住了',RL:'關係還在，但目標沒達到',GL:'目標達到，但關係傷了',LL:'兩邊都沒了'}[key];
+ if(c.titles&&c.titles[key])name=c.titles[key];
+ let story=c.endings[key];
+ const sp=c.special||{};
+ if(S.end==='RESPECT'){name=(sp.RESPECT&&sp.RESPECT.n)||'停在該停的地方';story=(sp.RESPECT&&sp.RESPECT.s)||story;}
+ if(S.end==='HARASS'){name=(sp.HARASS&&sp.HARASS.n)||'越線了';story=(sp.HARASS&&sp.HARASS.s)||story;}
+ const modes=S.log.reduce((a,l)=>(a[l.m]=(a[l.m]||0)+1,a),{});
+ const main=Object.entries(modes).sort((a,b)=>b[1]-a[1])[0];
+ S.endName=name;
+ PREV={ch:S.ch,flag:S.flag||'none',R:S.R,G:S.G,end:S.end};
+ const sc=scenOf(S.ch);
+ const sib=sc?sc.ch.find(x=>x!==S.ch):null;
+ const nextBtn=c.next?`<button class="btn alt" onclick="startCh('${c.next}')">下一關：${C[c.next].title}</button>`
+  :(sib?`<button class="btn alt" onclick="startCh('${sib}')">換個視角：${C[sib].title}</button>`:'');
+ $('#view').innerHTML=`<div class="page">
+  <span class="end-tag">${c.title}　結局</span>
+  <h1>${name}</h1>
+  ${quadSVG(c,L,key)}
+  <p>${story}</p>
+  ${profileHTML(key,modes)}
+  <p class="sub">你這場最常用的模式：<span class="m m${main[0]}" style="padding:1px 8px;border-radius:6px;margin:0 6px">${MODENAME[main[0]]}</span> 共 ${S.turn} 回合</p>
+  <h2>回顧</h2>
+  ${S.log.map(l=>`<div class="rev"><div class="t">第 ${l.turn} 回合　${l.npc}</div><div><span class="m m${l.m}">${MODENAME[l.m]}</span> ${l.t}</div><div class="t">${l.k||''}　${L[0]} ${l.r>0?'+':''}${l.r}　${L[1]} ${l.g>0?'+':''}${l.g}</div>${MODE==='hard'?`<div class="p">${l.p}</div>${l.s?`<div class="s">課文：${l.s}</div>`:''}`:''}</div>`).join('')}
+  <div class="note">這場的結局是遊戲算的。現實裡同一句話可能沒用，也可能比這裡更好，因為真人會給你第二次機會，程式不會。燭之武那天把話講到最好，兩年後秦國還是來了。說話改變的是機會，不是結果。但有講，機會就在；沒講，什麼都不會變。</div>
+  <h2>想一想</h2>
+  <ul>
+   <li>哪一回合是轉折？如果那一句換一種講法，後面會不會不一樣？</li>
+   <li>有沒有哪一句「婉轉」的話，對方其實沒聽懂？那時候該不該直接講？</li>
+   <li>對方哪一句是「再看看」，哪一句是「不要」？你分得出來嗎？分出來之後，你做的事有不一樣嗎？</li>
+   <li>你有沒有挑過「最長、看起來最周到」的那個選項？它是對的嗎？講得多和講得對是兩件事。</li>
+  </ul>
+  ${afterHTML()}
+  <p class="sub" style="text-align:center;margin-top:18px"><a href="#" onclick="startCh('${S.ch}');return false">不送出，重玩這一場</a>　｜　<a href="#" onclick="select();return false">不送出，回到選關</a></p>
+ </div>`;
+ hud();window.scrollTo(0,0);
+}
+
+/* ===================== 溝通者側寫 ===================== */
+const PROFILES={
+ burst:{n:'忍到最後才爆發的人',k:'前面都答應，最後一次全部說出來',
+  a:'大家覺得你很好相處，所以你突然生氣時，他們會嚇一跳。對方通常只記得你發脾氣的那一次，不知道你前面已經忍了好幾次。',
+  b:'你心裡想的大概是：我明明已經配合很多了，為什麼最後還是變成我不對。',
+  w:'課文裡找不到這樣的人。在《左傳》裡，一直忍著不說的人通常沒有台詞，事情也就這樣過去了。',
+  t:'第一次想忍下來的時候，就試著說：「可以，不過我有一件事想先講。」不要等到第三次才說。'},
+ 讓:{n:'什麼都說好的人',k:'大家都喜歡找你幫忙，因為你很少拒絕',
+  a:'大家覺得你很好說話，也很可靠。但因為你從來不說自己的想法，沒有人知道你其實不太開心，事情也就一直沒有改變。',
+  b:'你可能常常回家以後才覺得生氣，而且氣的是自己為什麼又答應了。',
+  w:'課文裡找不到這樣的人。如果鄭國的大臣都只會說好，燭之武那天晚上也不會被請出來。',
+  t:'答應和提出要求可以放在同一句話裡，例如：「好，不過我也有一件事想請你幫忙。」先答應，再把你需要的說出來。'},
+ 攻:{n:'一開口就先指責的人',k:'你說的常常有道理，但對方先感受到的是怒氣',
+  a:'大家知道你講得有道理，但跟你說話會有壓力。他們會慢慢避開你，不是因為你錯，而是跟你說話之前得先準備好防衛。',
+  b:'你可能覺得自己只是把事實說出來，是對方太敏感。結果道理講贏了，想做的事卻沒有談成。',
+  w:'課文裡比較像子犯。他一開口就說「請擊之」，想直接出兵，後來是晉文公一句「不可」把他擋下來。',
+  t:'開口之前，先想清楚你希望對方接下來做什麼，然後直接把這件事提出來。一直講對方過去哪裡做錯，他會忙著解釋；說出具體的要求，事情才會往前走。'},
+ 避:{n:'總是說「再看看」的人',k:'不想吵架，也不想答應，所以先拖著',
+  a:'在對方看來，你是在推託。他等了一天，問題還是一樣，耐心卻少了一些。',
+  b:'你可能覺得自己只是需要時間想一想，但心裡其實希望事情會自己消失，而它通常不會。',
+  w:'課文裡找不到這樣的人。春秋時代的外交場合沒有「再看看」，不回答本身就會被當成一種回答。',
+  t:'需要時間可以直接說，但要給一個確定的時間，例如：「我明天中午前回你。」到時候也要真的回。'},
+ 合W:{n:'能把人和事情分開談的人',k:'該說的說了，該停的時候也停了，事情和關係都顧到了',
+  a:'大家覺得跟你談事情不累。你會先把自己的感受說清楚，接著只談問題本身，談不下去的時候會換一個方法。',
+  b:'你可能覺得這次談得很順。要記得，順利的一部分原因是對方也願意談。換成一個不想談的人，你的做法依然是對的，只是結果不一定一樣。',
+  w:'課文裡最像燭之武。他先用一句暗示讓鄭文公認錯，再用一段話讓秦伯退兵，說完以後只說「唯君圖之」，把決定交給對方。',
+  t:'下次可以把這次的做法用在一個你比較怕的人身上，例如老師或家長。'},
+ 合L:{n:'總是晚一步才說對話的人',k:'你知道該怎麼說，只是說得晚了一兩回合',
+  a:'你後來說的話是對的，可是對方已經對你前面那幾句有了印象，他記得的往往是一開始那一句。',
+  b:'你可能會想：早知道一開始就這樣說。',
+  w:'課文裡有點像鄭文公。他認錯認得很乾脆，可是那是「今急而求子」，城已經被包圍了才去找燭之武。',
+  t:'回頭看看這一場，你是在第幾回合改變說法的？下次試著在那一回合之前就說出來。'},
+ RESPECT:{n:'知道什麼時候該停下來的人',k:'對方說不要，你就停下來，但仍然保持友善',
+  a:'別人可以放心地對你說「不」。這一點很重要，因為敢對你說不的人，才會對你說真話。',
+  b:'事情沒有談成，你也許會有點不甘心，但你沒有變成讓人害怕的那種人。',
+  w:'課文裡最像晉文公。子犯想出兵，他說「不可」，最後說「吾其還也」，知道什麼時候該停，是整篇最不容易做到的事。',
+  t:'這件事仍然可以想別的辦法解決，只是不要再回頭去找同一個人。'},
+ HARASS:{n:'聽不進「不要」的人',k:'對方已經說了兩次不要，你還在繼續說',
+  a:'對方會覺得跟你說話很累，因為不管說什麼都沒有用，只能躲開。就算他最後答應了，也不是被你說服，而是被你磨到沒有力氣。',
+  b:'你可能覺得自己已經很有誠意，對方怎麼可以不答應。可是誠意不能拿來交換，對方並不欠你一個「好」。',
+  w:'課文裡找不到這樣的人。燭之武說完就離開，秦伯也可以選擇不聽。如果不讓對方有說不的權利，那就不是說服了。',
+  t:'「我再看看」可以等，「不要」就是不要。你可以問一次「有沒有我能幫忙的地方」，對方拒絕了就停下來。'}
+};
+function profileHTML(key,modes){
+ const ov=C[S.ch].prof||{};const P=k=>ov[k]||PROFILES[k];
+ let p;
+ if(S.end==='HARASS')p=P('HARASS');
+ else if(S.end==='RESPECT')p=P('RESPECT');
+ else{
+  const firstY=S.log.findIndex(l=>l.m==='讓'),lastA=S.log.map(l=>l.m).lastIndexOf('攻');
+  const top=Object.entries(modes).sort((a,b)=>b[1]-a[1])[0][0];
+  if((modes['讓']||0)>=2&&lastA>firstY&&firstY>=0)p=P('burst');
+  else if(top==='合')p=key==='WW'?P('合W'):P('合L');
+  else p=P(top);
+ }
+ S.profName=p.n;
+ return `<div class="who"><div class="k">${C[S.ch].prof?'這一場的你':'這場你是哪一種溝通者'}</div><h3>${p.n}</h3><p><b>${p.k}</b></p><h4>別人眼中的你</h4><p>${p.a}</p><h4>你自己的感覺</h4><p>${p.b}</p>${p.w?`<h4>課文裡像誰</h4><p>${p.w}</p>`:''}<div class="try"><b>下次試試看</b><br>${p.t}</div></div>`;
+}
+
+document.addEventListener('keydown',e=>{
+ if($('#coach').classList.contains('on')){if(e.key==='Enter'||e.key===' '){e.preventDefault();$('#coachCard button').click();}return;}
+ const k=parseInt(e.key);if(k>=1&&k<=4){const b=document.querySelectorAll('.opt')[k-1];if(b)b.click();}
+});
+cover();
+</script>
+</body>
+</html>
