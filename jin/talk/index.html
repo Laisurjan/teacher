@@ -248,6 +248,8 @@ body.menu #app{max-width:none;box-shadow:none}
 .rulebox{background:#fff8e1;border-left:5px solid #f5b700;border-radius:0 12px 12px 0;padding:10px 14px;margin:0 0 10px;line-height:1.75;font-size:16px}
 .rulebox b{color:#a87800}
 .mission span{white-space:nowrap}
+.hudback{flex:0 0 auto;background:#f2f3f5;border:1px solid var(--line);border-radius:999px;padding:4px 12px;font:inherit;font-weight:800;font-size:14px;color:var(--ink);cursor:pointer}
+.page>.mhead{margin-top:0}
 .mission{display:flex;flex-wrap:wrap;align-items:center;gap:10px;background:#fff;border-radius:14px;padding:10px 14px;margin:0 0 6px;box-shadow:0 4px 14px rgba(29,36,51,.06);font-weight:800}
 .pb{display:inline-flex;gap:3px;vertical-align:-2px}.pb i{width:22px;height:12px;border-radius:4px;background:#e6e8ec}.pb i.on{background:var(--green)}
 .zone{margin:20px 0 8px}.zt{font-size:20px;font-weight:900}.zs{font-size:14px;color:var(--muted)}
@@ -285,6 +287,7 @@ textarea{width:100%;font:inherit;font-weight:600;font-size:16px;line-height:1.6;
 <body>
 <div id="app">
   <div id="hud">
+    <button class="hudback" onclick="leaveGame()">‹ 回上一頁</button>
     <div class="ttl" id="hudTitle">第一章</div><span class="mode" id="hudMode"></span>
     <div class="meter r"><span id="lR">關係</span><div class="bar"><i id="barR"></i></div><span class="d" id="dR"></span></div>
     <div class="meter g"><span id="lG">目標</span><div class="bar"><i id="barG"></i></div><span class="d" id="dG"></span></div>
@@ -1767,7 +1770,7 @@ function report(){
  const ok=recs.filter(r=>r.quiz===1).length;
  let fin='';try{fin=localStorage.getItem('talk-final')||''}catch(e){}
  $('#view').innerHTML=`<div class="howto">
-  <div class="mhead"><button class="back" onclick="select()">‹ 選關</button><h2>通關報告</h2></div>
+  <div class="mhead"><button class="back" onclick="select()">‹ 回上一頁</button><h2>通關報告</h2></div>
   <div class="hcard c1"><h3>${st.cls||''} 班 ${st.no||''} 號</h3>
    <p>完成 ${recs.length} 場，課文連結題答對 ${ok} 題。${P.met?'任務已完成。':'任務還沒完成：簡單區要完成 2 個情境，其中 1 個要兩邊都玩；困難區要完成 1 個情境。'}</p></div>
   ${recs.map(r=>`<div class="hcard c2"><h3>${C[r.ch].title}</h3><p><b>結局</b>　${r.end}</p><p><b>你是</b>　${r.prof||''}</p>
@@ -1795,13 +1798,13 @@ let tToken='',tAuth=null,tMod=null;
 function teacher(){
  S=null;SCREEN='teacher';menuMode(true);hud();
  $('#view').innerHTML=`<div class="howto">
-  <div class="mhead"><button class="back" onclick="title()">‹ 標題</button><h2>老師專區</h2></div>
+  <div class="mhead"><button class="back" onclick="goTitle()">‹ 回上一頁</button><h2>老師專區</h2></div>
   <div class="hcard c4"><h3>查看學生紀錄</h3><p>請用學校 Google 帳號（${ADMIN}）登入。</p>
    <button class="big" style="padding:10px 22px;font-size:17px" onclick="teacherLogin()">用 Google 帳號登入</button>
    <p class="err" id="tMsg"></p></div>
   <div id="tBox"></div>
   <div class="hcard"><h3>這台裝置</h3><p class="sub">教室公用電腦換人玩之前，可以清除這台裝置上的班級座號與遊玩紀錄。</p>
-   <button class="back" onclick="if(confirmClear())title()">清除這台裝置的紀錄</button></div>
+   <button class="back" onclick="if(confirmClear())goTitle()">清除這台裝置的紀錄</button></div>
  </div>`;
  window.scrollTo(0,0);
 }
@@ -1832,10 +1835,15 @@ async function loadTeacher(){
   page=j.nextPageToken||'';}while(page);
  renderTeacher(rows);
 }
-async function deleteTestRows(){
- const L=(window._tRows||[]).filter(r=>r.cls==='測試');
- if(!L.length||!window.confirm(`要刪除 ${L.length} 筆班級為「測試」的紀錄嗎？`))return;
- await Promise.all(L.map(r=>fetch(`${FS}${r._name}`,{method:'DELETE',headers:{Authorization:'Bearer '+tToken}})));
+async function deleteClass(){
+ const cls=$('#tDel').value;if(!cls)return;
+ const L=(window._tRows||[]).filter(r=>r.cls===cls);
+ const typed=window.prompt(`這會永久刪除「${cls}」班的 ${L.length} 筆紀錄，刪除後無法復原。\n要確定刪除，請輸入班級名稱「${cls}」：`);
+ if(typed===null)return;
+ if(typed.trim()!==cls){window.alert('輸入的班級名稱不一致，沒有刪除。');return;}
+ const msg=$('#tMsg');msg.textContent=`刪除中…（共 ${L.length} 筆）`;let fail=0;
+ for(let i=0;i<L.length;i+=20){const rs=await Promise.all(L.slice(i,i+20).map(r=>fetch(`${FS}${r._name}`,{method:'DELETE',headers:{Authorization:'Bearer '+tToken}}).then(x=>x.ok).catch(()=>false)));fail+=rs.filter(x=>!x).length;}
+ msg.textContent=fail?`刪除完成，但有 ${fail} 筆失敗，請重新整理後再試。`:`已刪除「${cls}」班的 ${L.length} 筆紀錄。`;
  await loadTeacher();
 }
 function confirmClear(){
@@ -1854,11 +1862,14 @@ function renderTeacher(rows){
  $('#tBox').innerHTML=`<div class="hcard c2"><h3>全班總覽</h3>
   <p class="sub">✓ 表示課文連結題答對、✗ 答錯，空白是沒玩。滑鼠停在格子上會顯示結局和反思。點座號看完整內容。</p>
   <div class="stuf"><select id="tCls"><option value="">全部班級</option>${classes.map(c=>`<option>${esc2(c)}</option>`).join('')}</select>
-   <button class="back" onclick="exportCSV()">匯出 CSV</button>${rows.some(r=>r.cls==='測試')?'<button class="back" onclick="deleteTestRows()">刪除「測試」班級的紀錄</button>':''}</div>
+   <button class="back" onclick="exportCSV()">匯出 CSV</button></div>
   <div class="tbl"><table><thead><tr><th>班級</th><th>座號</th><th>任務</th>${chs.map(ch=>`<th title="${C[ch].title}">${ch}</th>`).join('')}<th>總結</th></tr></thead>
   <tbody>${keys.map(k=>{const L=by[k];const [cls,no]=k.split('|');const z=L.find(r=>r.ch==='Z');
    return `<tr data-cls="${esc2(cls)}"><td>${esc2(cls)}</td><td><a href="#" onclick="showStu('${esc2(k)}');return false">${+no}</a></td><td>${status(L)}</td>${chs.map(ch=>cell(L,ch)).join('')}<td>${z?'✓':''}</td></tr>`;}).join('')}</tbody></table></div>
-  <p class="sub">欄位：${chs.map(ch=>`${ch}＝${C[ch].title}`).join('、')}</p></div><div id="tStu"></div>`;
+  <p class="sub">欄位：${chs.map(ch=>`${ch}＝${C[ch].title}`).join('、')}</p></div><div id="tStu"></div>
+  <div class="hcard c1"><h3>刪除班級</h3><p class="sub">學期結束或測試完，可以刪除某一班的全部紀錄。刪除後無法復原，送出前會請你再輸入一次班級名稱確認。</p>
+   <div class="stuf"><select id="tDel"><option value="">選擇班級</option>${classes.map(c=>`<option>${esc2(c)}</option>`).join('')}</select>
+   <button class="back" style="color:#d23b2a;border-color:#d23b2a" onclick="deleteClass()">刪除這個班級的紀錄</button></div></div>`;
  window._tRows=rows;window._tBy=by;
  $('#tCls').onchange=e=>{const v=e.target.value;document.querySelectorAll('#tBox tbody tr').forEach(tr=>tr.style.display=!v||tr.dataset.cls===v?'':'none');};
 }
@@ -1886,8 +1897,8 @@ function setDone(ch,name){try{const d=getDone();d[ch]=name;localStorage.setItem(
 function menuMode(on){document.body.classList.toggle('menu',on);}
 function faceOf(ch){const a=ART[ch];const f=a&&Object.values(a.chars)[0];return f?`img/${f}_neutral.webp`:null;}
 
-function cover(){title();}
-function title(){
+function cover(){goTitle();}
+function goTitle(){
  S=null;SCREEN='title';menuMode(true);hud();
  const petals=Array.from({length:16},(_,i)=>`<i style="left:${(i*37+11)%100}%;animation-delay:${-(i*1.7)%12}s;animation-duration:${9+(i%5)*1.6}s;--s:${.6+(i%4)*.18}"></i>`).join('');
  $('#view').innerHTML=`<div class="ttlpage cover">
@@ -1915,12 +1926,22 @@ function showQR(){
  box.innerHTML=`<div class="qrcard"><h3>用手機掃描，進入遊戲首頁</h3>${QR_SVG}<div class="qrurl">${GAME_URL.replace('https://','')}</div><p class="sub">點畫面任何地方關閉</p></div>`;
  document.body.appendChild(box);
 }
+function leaveGame(){
+ if(!S){select();return;}
+ const atEnd=!!document.querySelector('#after');
+ const sent=atEnd&&!document.querySelector('#aSend');
+ if(sent){select();return;}
+ const msg=atEnd?'這一場的兩題還沒送出，現在離開就不算完成。確定要回到選關嗎？':'要離開這一場嗎？這一場的進度不會保存。';
+ if(window.confirm(msg))select();
+}
 function startGame(){if(!getStu()){askStu(startGame);return;}let seen=false;try{seen=localStorage.getItem('talk-seen')==='1'}catch(e){}seen?select():howto(true);}
 
+let HOWTO_FROM='title';
 function howto(first){
+ HOWTO_FROM=SCREEN==='select'?'select':'title';
  S=null;SCREEN='howto';menuMode(true);hud();
  $('#view').innerHTML=`<div class="howto">
-  <div class="mhead"><button class="back" onclick="title()">‹ 標題</button><h2>開始之前</h2></div>
+  <div class="mhead"><button class="back" onclick="(HOWTO_FROM==='select'?select:goTitle)()">‹ 回上一頁</button><h2>開始之前</h2></div>
   <div class="hcard c4">
    <h3>你的任務</h3>
    <p>簡單區要完成 <b>2 個情境</b>，其中 <b>1 個要兩邊視角都玩</b>（例如社團救火玩阿武，也玩小鄭；打工換班兩關都玩完也算）。完成後打開困難區。困難區只要完成 <b>1 個情境</b>、玩一邊就好。困難區完成後，打開加分題「告白之後」和你的通關報告。</p>
@@ -1965,7 +1986,7 @@ function select(){
  const zone=(title,sub,idx)=>`<div class="zone"><div class="zt">${title}</div><div class="zs">${sub}</div></div><div class="grid">${idx.map(i=>card(SCEN[i],i)).join('')}</div>`;
  const bar=(n,need)=>`<span class="pb">${Array.from({length:need},(_,k)=>`<i class="${k<n?'on':''}"></i>`).join('')}</span>`;
  $('#view').innerHTML=`<div class="sel">
-  <div class="mhead"><button class="back" onclick="title()">‹ 標題</button><h2>選擇情境</h2>
+  <div class="mhead"><button class="back" onclick="goTitle()">‹ 回上一頁</button><h2>選擇情境</h2>
    <button class="back r" onclick="askStu(select)">${st?`${esc2(st.cls)} 班 ${st.no} 號`:'登記班級座號'}</button><button class="back r" onclick="howto()">說明</button></div>
   <div class="rulebox"><b>過關規則</b>　簡單區要完成 <b>2 個情境</b>，其中 <b>1 個要兩邊視角都玩</b>（例如社團救火玩阿武，也玩小鄭；打工換班兩關都玩完也算）。完成後打開困難區。困難區只要完成 <b>1 個情境</b>、玩一邊就好。困難區完成後，打開加分題「告白之後」和你的通關報告。</div>
   <div class="mission"><b>任務</b>
@@ -1986,7 +2007,7 @@ function settings(){teacher();return;
   <p>簡單模式：每選一句，就能看到兩條表的變化和軍師的講解。</p>
   <p>困難模式：玩的時候看不到數據，只能看對方的表情，所有講解在結局一次揭曉。</p>
   <p class="sub">分享給學生時，在網址後面加上 <code>#easy</code> 或 <code>#hard</code>，就能直接指定模式。</p>
-  <p class="sub"><a href="#" onclick="try{localStorage.removeItem('talk-done');localStorage.removeItem('talk-seen')}catch(e){};this.closest('.modal').remove();title();return false">清除這台裝置的遊玩紀錄</a></p>
+  <p class="sub"><a href="#" onclick="try{localStorage.removeItem('talk-done');localStorage.removeItem('talk-seen')}catch(e){};this.closest('.modal').remove();goTitle();return false">清除這台裝置的遊玩紀錄</a></p>
   <button class="big wide" onclick="this.closest('.modal').remove()">關閉</button></div>`;
  document.body.appendChild(box);
 }
@@ -2002,6 +2023,7 @@ function startCh(ch){
  preloadCh(ch);
  hud();
  $('#view').innerHTML=`<div class="page">
+  <div class="mhead"><button class="back" onclick="select()">‹ 回上一頁</button></div>
   <div class="sub">${c.title}</div>
   <h1>${c.scene}</h1>
   <p style="white-space:pre-line">${intro}</p>
