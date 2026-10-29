@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>免費版 GPT 做教學遊戲</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --page:#f2f3f5; --card:#ffffff; --ink:#1d2433; --muted:#5a6475; --line:#dde1e7;
+  --blue:#2b6fd6; --orange:#ff6b3d; --yellow:#ffc928; --green:#22a36a;
+  --blue-l:#e6efff; --orange-l:#ffece5; --yellow-l:#fff6d6; --green-l:#e2f7ee;
+  --sans:"Noto Sans TC","Microsoft JhengHei",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:#d9dce1;overflow:hidden;position:fixed;inset:0;overscroll-behavior:none;color:var(--ink);font-family:var(--sans);font-weight:600;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center center;overflow:hidden;background:var(--page)}
+#stage.zs{transition:transform .3s ease}
+.s{position:absolute;inset:0;padding:96px 120px 80px;opacity:0;visibility:hidden;transition:opacity .5s ease,visibility 0s .5s}
+.s.on{opacity:1;visibility:visible;transition:opacity .5s ease}
+
+/* 頁首：章節標籤＋以終為始進度條 */
+.tag{display:inline-flex;align-items:center;gap:14px;font-size:30px;font-weight:700;color:var(--muted);margin-bottom:18px}
+.tag i{display:inline-block;width:18px;height:18px;border-radius:50%}
+h1{font-size:76px;font-weight:900;line-height:1.25;letter-spacing:.01em}
+h1 em{font-style:normal;color:var(--blue)}
+.lead{font-size:38px;color:var(--muted);margin-top:22px;line-height:1.55}
+.flow{position:absolute;right:120px;top:100px;display:flex;gap:10px}
+.flow b{font-size:22px;font-weight:700;padding:6px 16px;border-radius:30px;background:#e4e7ec;color:#8a93a3}
+.flow b.on{background:var(--ink);color:#fff}
+
+.card{background:var(--card);border-radius:22px;box-shadow:0 6px 20px rgba(30,40,60,.08);padding:36px 40px}
+.grid{display:grid;gap:30px;margin-top:56px}
+.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+.card h3{font-size:50px;font-weight:900;margin-bottom:20px}
+.card p{font-size:40px;line-height:1.6;color:#34405a}
+.r4 .card{padding:28px 40px}.r4 .card p{font-size:36px}.r4 .card h3{font-size:46px;margin-bottom:10px}
+.tall .card{padding:48px 50px;min-height:330px}
+.bar-o{border-top:12px solid var(--orange)}.bar-b{border-top:12px solid var(--blue)}
+.bar-y{border-top:12px solid var(--yellow)}.bar-g{border-top:12px solid var(--green)}
+.note{position:absolute;left:120px;right:120px;bottom:70px;font-size:36px;line-height:1.5;padding:26px 36px;border-radius:18px;background:var(--card);border-left:14px solid var(--blue)}
+.note.o{border-left-color:var(--orange)}.note.g{border-left-color:var(--green)}.note.y{border-left-color:var(--yellow)}
+.pg{position:absolute;right:46px;bottom:26px;font-size:22px;color:#9aa2b1}
+.shot{border-radius:18px;box-shadow:0 8px 26px rgba(30,40,60,.16);background:#fff;overflow:hidden;border:2px solid var(--line)}
+.shot img{display:block;width:100%}
+
+/* 封面 */
+.cover{display:flex;flex-direction:column;justify-content:center;padding-left:160px}
+.cover h1{font-size:118px;line-height:1.2}
+.cover .lead{font-size:44px;margin-top:34px}
+.cover .meta{margin-top:70px;font-size:30px;color:var(--muted)}
+.dots{position:absolute;right:150px;top:50%;transform:translateY(-50%);display:grid;grid-template-columns:repeat(2,150px);gap:26px}
+.dots span{width:150px;height:150px;border-radius:34px}
+
+/* 以終為始：倒推箭頭 */
+.back{display:flex;align-items:stretch;gap:0;margin-top:70px}
+.back .card{flex:1;position:relative;padding:50px 44px;min-height:440px}
+.back .num{font-size:96px;font-weight:900;line-height:1;margin-bottom:18px}
+.back .arr{width:110px;display:flex;align-items:center;justify-content:center;font-size:70px;color:#a8b0bd}
+
+/* 提示句 */
+.prompt{margin-top:50px;display:flex;flex-direction:column;gap:22px}
+.prompt div{display:flex;gap:28px;align-items:flex-start;background:var(--card);border-radius:18px;padding:26px 34px;font-size:36px;line-height:1.55}
+.prompt b{flex:none;width:210px;font-size:36px;font-weight:900;padding:6px 0;text-align:center;border-radius:12px;color:#fff}
+
+/* 左右分欄 */
+.split{display:grid;grid-template-columns:1.05fr 1fr;gap:60px;margin-top:50px;align-items:start}
+ul.pts{list-style:none;display:flex;flex-direction:column;gap:22px}
+ul.pts li{font-size:38px;line-height:1.5;padding-left:52px;position:relative}
+ul.pts li::before{content:"";position:absolute;left:0;top:14px;width:28px;height:28px;border-radius:8px;background:var(--orange)}
+ul.pts.g li::before{background:var(--green)}
+.big{font-size:52px;font-weight:900;line-height:1.35;margin-bottom:30px}
+
+/* 選項示範 */
+.opt{display:flex;flex-direction:column;gap:16px;margin-top:14px}
+.opt div{font-size:32px;line-height:1.45;padding:18px 24px;border:2px solid var(--line);border-radius:14px;background:#fafbfc}
+.opt div b{color:var(--blue);margin-right:12px}
+.quote{font-size:34px;line-height:1.65;background:var(--card);border-radius:18px;padding:34px 40px;border-left:14px solid var(--orange)}
+.quote small{display:block;font-size:26px;color:var(--muted);margin-bottom:12px}
+.cap{font-size:30px;color:var(--muted);line-height:1.5;margin-top:22px}
+.cap b{color:var(--orange)}
+
+/* 時間線 */
+.tl{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;margin-top:70px}
+.tl .card{padding:40px}
+.tl .t{font-size:30px;color:var(--muted)}
+.tl .n{font-size:58px;font-weight:900;margin:8px 0 18px}
+.tl .score{display:inline-block;font-size:30px;font-weight:900;padding:6px 20px;border-radius:30px;margin-top:20px}
+
+/* 帶走的模板 */
+.tpl{background:var(--card);border-radius:22px;padding:44px 50px;border:4px dashed #b9c3d3}
+.tpl p{font-size:36px;line-height:1.55;margin:14px 0}
+.tpl b{color:var(--blue)}
+.steps{counter-reset:k;list-style:none;display:flex;flex-direction:column;gap:44px;margin-top:20px}
+.steps li{counter-increment:k;font-size:42px;line-height:1.45;display:flex;gap:24px;align-items:flex-start}
+.steps li::before{content:counter(k);flex:none;width:64px;height:64px;border-radius:50%;background:var(--blue);color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:36px}
+
+.shotw{position:relative}
+.mk{position:absolute;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;background:var(--orange);color:#fff;font-size:36px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 6px rgba(255,107,61,.3),0 4px 10px rgba(0,0,0,.25)}
+.pr{background:var(--card);border-radius:22px;padding:36px 46px;margin-top:34px;border:4px dashed #b9c3d3}
+.pr p{font-size:31px;line-height:1.6;margin:6px 0;color:#1d2433}
+.pr b{color:var(--blue)}
+.pr.l p{font-size:35px}
+.pr.xl p{font-size:40px;margin:12px 0}
+.camera{display:inline-block;font-size:24px;font-weight:700;padding:4px 16px;border-radius:20px;background:var(--blue-l);color:var(--blue);margin-left:16px;vertical-align:middle}
+.node{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:44px;position:relative}
+.node .card{padding:30px 30px;position:relative}
+.node .k{font-size:28px;color:var(--muted)}
+.node .nm{font-size:60px;font-weight:900;margin:6px 0 18px}
+.node dl{font-size:33px;line-height:1.45}
+.node dt{color:var(--muted);font-size:26px;margin-top:16px}
+.node dd{margin:0;color:#1d2433}
+.stat{display:flex;gap:24px;margin-top:10px}
+.stat div{flex:1;background:var(--card);border-radius:18px;padding:22px 26px}
+.stat b{display:block;font-size:56px;font-weight:900;color:var(--green)}
+.stat span{font-size:28px;color:var(--muted)}
+.ring{position:absolute;border:6px solid var(--orange);border-radius:14px;box-shadow:0 0 0 5px rgba(255,107,61,.22)}
+.legend{list-style:none;display:flex;flex-direction:column;gap:26px}
+.legend li{display:flex;gap:22px;align-items:flex-start;font-size:36px;line-height:1.5}
+.legend li b.n{flex:none;width:56px;height:56px;border-radius:50%;background:var(--orange);color:#fff;font-size:32px;display:flex;align-items:center;justify-content:center}
+.legend small{display:block;font-size:28px;color:var(--muted);margin-top:4px}
+.todo{display:inline-block;font-size:24px;font-weight:700;padding:4px 14px;border-radius:20px;background:var(--yellow-l);color:#a07800;margin-left:12px;vertical-align:middle}
+.ok{display:inline-block;font-size:24px;font-weight:700;padding:4px 14px;border-radius:20px;background:var(--green-l);color:#17804f;margin-left:12px;vertical-align:middle}
+.chain{display:flex;align-items:stretch;gap:0;margin-top:40px}
+.chain .card{flex:1;padding:30px 26px;text-align:center}
+.chain .card p{font-size:32px}
+.chain .arr{width:60px;display:flex;align-items:center;justify-content:center;font-size:48px;color:#a8b0bd}
+#unzoom{position:fixed;z-index:20;display:none;font:700 18px var(--sans);background:var(--orange);color:#fff;border:none;border-radius:24px;padding:10px 20px;cursor:pointer}
+body.zoomed #unzoom{display:block}
+</style>
+</head>
+<body>
+<div id="stage">
+
+<!-- 1 封面 -->
+<section class="s cover on">
+  <div class="tag"><i style="background:var(--orange)"></i>教師社群分享</div>
+  <h1>免費版 GPT<br>也能做<em>教學遊戲</em></h1>
+  <p class="lead">以國文第三冊第七課〈結核〉為例，三輪對話的實測紀錄</p>
+  <p class="meta">花蓮高商｜115 學年 10 月 29 日實測</p>
+  <div class="dots"><span style="background:var(--orange)"></span><span style="background:var(--yellow)"></span><span style="background:var(--green)"></span><span style="background:var(--blue)"></span></div>
+</section>
+
+<!-- 2 以終為始 -->
+<section class="s">
+  <div class="tag"><i style="background:var(--blue)"></i>設計方法</div>
+  <h1>以終為始：先決定終點，再交給 AI</h1>
+  <div class="back">
+    <div class="card bar-o"><div class="num" style="color:var(--orange)">1</div><h3>學生帶走什麼</h3><p>下課時，學生要能說出哪一句話？</p></div>
+    <div class="arr">→</div>
+    <div class="card bar-y"><div class="num" style="color:#d9a400">2</div><h3>學生做什麼選擇</h3><p>哪些兩難最能逼出這句話？</p></div>
+    <div class="arr">→</div>
+    <div class="card bar-b"><div class="num" style="color:var(--blue)">3</div><h3>交給 AI 做出來</h3><p>把前兩步寫進提示句，請它做成遊戲。</p></div>
+  </div>
+  <div class="note">多數人直接從第 3 步開始問 AI，拿到的常是一份看起來像遊戲的測驗。</div>
+</section>
+
+<!-- 3 終點 -->
+<section class="s">
+  <div class="flow"><b class="on">終點</b><b>選擇</b><b>交給 AI</b><b>試玩修正</b></div>
+  <div class="tag"><i style="background:var(--orange)"></i>第 1 步</div>
+  <h1>這一課的終點</h1>
+  <div class="grid g2 tall">
+    <div class="card bar-o"><h3>食藥安全</h3><p>按時服藥、不可自行停藥。症狀好轉不代表療程完成，中斷治療可能留下有抗藥性的細菌。</p></div>
+    <div class="card bar-b"><h3>課文核心</h3><p>形象化語言：藥丸像健素糖、治療像坐牢、痊癒後像假釋，把抽象的醫療經驗寫成畫面。</p></div>
+  </div>
+  <div class="note o">學生下課時能說出：「覺得好了也要把藥吃完，因為抗藥性是看不見的。」</div>
+</section>
+
+<!-- 4 準備 -->
+<section class="s">
+  <div class="flow"><b>終點</b><b>選擇</b><b class="on">交給 AI</b><b>試玩修正</b></div>
+  <div class="tag"><i style="background:var(--blue)"></i>準備工作</div>
+  <h1>準備只有兩步</h1>
+  <div class="grid g2 tall">
+    <div class="card bar-b"><h3>建立「專案」</h3><p>把這一課的教師用書 PDF 放進專案的「來源」。這次上傳 54 頁、9 MB，一次就成功。</p></div>
+    <div class="card bar-g"><h3>寫提示句</h3><p>照四個欄位寫：教學目標、對象、玩法、限制。前兩個欄位就是第 1、2 步想好的終點與選擇。</p></div>
+  </div>
+  <div class="note y">免費版實測：每個專案最多 5 個檔案。Canvas 已不提供，遊戲改在對話裡直接預覽試玩。一次放一課就好，整本課本太長，GPT 讀不仔細。</div>
+</section>
+
+<!-- 4a 位置：建立專案 -->
+<section class="s">
+  <div class="flow"><b>終點</b><b>選擇</b><b class="on">交給 AI</b><b>試玩修正</b></div>
+  <div class="tag"><i style="background:var(--blue)"></i>畫面在哪裡（一）</div>
+  <h1>建立專案</h1>
+  <div class="split" style="grid-template-columns:1fr 1.1fr;gap:50px;margin-top:40px;align-items:center">
+    <div class="shot shotw"><img src="img/nav1_sidebar.jpg" alt="左側欄的專案與加號"><span class="ring" style="left:54%;top:32%;width:9.5%;height:28%"></span><span class="mk" style="left:58.7%;top:14%">1</span></div>
+    <div class="shot shotw"><img src="img/nav2_dialog.jpg" alt="建立專案對話框"><span class="mk" style="left:50%;top:40%">2</span><span class="ring" style="left:79%;top:74%;width:19.5%;height:24%"></span><span class="mk" style="left:70%;top:86%">3</span></div>
+  </div>
+  <ul class="legend" style="margin-top:44px;flex-direction:row;gap:40px">
+    <li style="flex:1.4"><b class="n">1</b><span>左側欄「專案」右邊的「＋」<small>游標移到「專案」上才會出現</small></span></li>
+    <li style="flex:1"><b class="n">2</b><span>輸入專案名稱，例如課名</span></li>
+    <li style="flex:.8"><b class="n">3</b><span>按「建立專案」</span></li>
+  </ul>
+</section>
+
+<!-- 4b 位置：上傳與開始對話 -->
+<section class="s">
+  <div class="flow"><b>終點</b><b>選擇</b><b class="on">交給 AI</b><b>試玩修正</b></div>
+  <div class="tag"><i style="background:var(--blue)"></i>畫面在哪裡（二）</div>
+  <h1>放進課本，開始對話</h1>
+  <div class="split" style="grid-template-columns:1.5fr 1fr;gap:50px;margin-top:40px">
+    <div class="shot shotw"><img src="img/nav3_project.jpg" alt="專案頁的來源與輸入框"><span class="mk" style="left:30.8%;top:44.6%">1</span><span class="mk" style="left:3.9%;top:60.3%">2</span><span class="mk" style="left:3.2%;top:26.2%">3</span></div>
+    <ul class="legend">
+      <li><b class="n">1</b><span>點專案頁的「來源」分頁</span></li>
+      <li><b class="n">2</b><span>按「新增來源」，選教師用書 PDF<small>上傳完成後，檔案會列在下方</small></span></li>
+      <li><b class="n">3</b><span>在上方「在…中開始新對話」貼上提示句，按 Enter 送出</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 4c 位置：追問與下載 -->
+<section class="s">
+  <div class="flow"><b>終點</b><b>選擇</b><b>交給 AI</b><b class="on">試玩修正</b></div>
+  <div class="tag"><i style="background:var(--blue)"></i>畫面在哪裡（三）</div>
+  <h1>追問與下載</h1>
+  <div class="split" style="grid-template-columns:1.45fr 1fr;gap:50px;margin-top:40px">
+    <div class="shot shotw"><img src="img/nav4_chat.jpg" alt="對話頁的下載連結與輸入框"><span class="mk" style="left:42.5%;top:91%">1</span><span class="ring" style="left:10.5%;top:33.5%;width:18.5%;height:7%"></span><span class="mk" style="left:6.5%;top:37%">2</span></div>
+    <ul class="legend">
+      <li><b class="n">1</b><span>最下方的輸入框<small>試玩後把看到的問題打在這裡追問</small></span></li>
+      <li><b class="n">2</b><span>下載連結<small>只有附檔的回覆才有。最後一版若只有預覽，就追問「請把目前這一版做成 HTML 檔讓我下載」</small></span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 5 第一輪提示句 -->
+<section class="s">
+  <div class="flow"><b>終點</b><b>選擇</b><b class="on">交給 AI</b><b>試玩修正</b></div>
+  <div class="tag"><i style="background:var(--blue)"></i>第一輪</div>
+  <h1>照四個欄位寫提示句</h1>
+  <div class="prompt">
+    <div><b style="background:var(--orange)">教學目標</b><span>理解按時服藥與抗藥性的關係；練習課文的形象化語言</span></div>
+    <div><b style="background:#d9a400">對象</b><span>高二學生，用手機或平板玩，10 分鐘玩得完</span></div>
+    <div><b style="background:var(--green)">玩法</b><span>扮演病人走完 6 個月療程，選擇會改變「健康」與「抗藥性」兩條量表，每段之後出一題課文題</span></div>
+    <div><b style="background:var(--blue)">限制</b><span>內容以課本為準；不寫真實藥名與劑量；繁體中文；單一 HTML 檔</span></div>
+  </div>
+</section>
+
+<!-- 範例：第一輪 -->
+<section class="s">
+  <div class="tag"><i style="background:var(--blue)"></i>提示句範例<span class="camera">可拍照</span></div>
+  <h1>第一輪：生成遊戲</h1>
+  <div class="pr l">
+    <p>我是技術型高中國文老師。請根據專案裡的〈結核〉教師用書，設計一個 10 分鐘玩得完的小遊戲，全部寫在單一 HTML 檔，並在對話裡直接預覽讓我試玩。</p>
+    <p><b>【教學目標】</b>一、理解課文提到的「按時服藥、不可擅自停藥」與多重抗藥性結核的關係，連結食藥安全；二、練習課文的形象化語言（例如把藥丸比喻成健素糖、把治療比喻成坐牢）。</p>
+    <p><b>【對象】</b>高二學生，用手機或平板玩。</p>
+    <p><b>【玩法】</b>學生扮演結核病人走完約 6 個月療程；途中遇到情境抉擇（症狀好轉想停藥、副作用不舒服、親友推薦偏方或來路不明的保健食品、忘記吃藥），選擇會改變「健康」與「細菌抗藥性」兩條量表；每段之後出一題課文的形象化語言或內容理解題。結尾依量表給不同結局，並逐一說明每個選擇背後的正確觀念。</p>
+    <p><b>【限制】</b>內容以課本為準，不確定的醫藥知識不要寫；不寫真實藥名與劑量；繁體中文（台灣用語）；不用外部套件。</p>
+  </div>
+</section>
+
+<!-- 6 第一輪結果 -->
+<section class="s">
+  <div class="flow"><b>終點</b><b>選擇</b><b>交給 AI</b><b class="on">試玩修正</b></div>
+  <div class="tag"><i style="background:var(--blue)"></i>第一輪結果</div>
+  <h1>約 2 分鐘就能玩，玩起來像測驗</h1>
+  <div class="split">
+    <div class="shot"><img src="img/v1_title.jpg" alt="第一版遊戲標題畫面"></div>
+    <div>
+      <p class="big">老師試玩後發現</p>
+      <ul class="pts">
+        <li>每題只有兩個選項</li>
+        <li>正確答案都是最長、寫著「找醫療團隊」的那個</li>
+        <li>課文題的答案幾乎都是 A</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note o">比喻的出處都查得到（健素糖、坐牢、假釋、記憶的海洋），內容可靠，玩法還太淺。</div>
+</section>
+
+<!-- 7 第二輪 -->
+<section class="s">
+  <div class="flow"><b>終點</b><b class="on">選擇</b><b>交給 AI</b><b>試玩修正</b></div>
+  <div class="tag"><i style="background:var(--green)"></i>第二輪</div>
+  <h1>用老師的專業補上第 2 步</h1>
+  <div class="grid g4" style="margin-top:46px">
+    <div class="card bar-o"><h3>有代價的兩難</h3><p>每站三個選項，每個都要付出一些東西</p></div>
+    <div class="card bar-y"><h3>延遲後果</h3><p>漏藥當下沒事，幾個月後才反噬</p></div>
+    <div class="card bar-b"><h3>回到課文</h3><p>加入醫護視角，讓學生自己寫一句比喻</p></div>
+    <div class="card bar-g"><h3>修正細節</h3><p>答案位置打亂，選項長度相近</p></div>
+  </div>
+  <div class="card" style="margin-top:34px;padding:28px 36px">
+    <p style="font-size:30px;color:var(--muted)">改版後的第 1 個月：服藥後很不舒服，明天又排了打工班</p>
+    <div class="opt" style="flex-direction:row">
+      <div style="flex:1"><b>A</b>照常去打工，先把不舒服忍過去</div>
+      <div style="flex:1"><b>B</b>先跳過今天的藥，避免上班時更不舒服</div>
+      <div style="flex:1"><b>C</b>反映不適，協調工作與治療安排</div>
+    </div>
+  </div>
+</section>
+
+<!-- 範例：第二輪 -->
+<section class="s">
+  <div class="tag"><i style="background:var(--green)"></i>提示句範例<span class="camera">可拍照</span></div>
+  <h1>第二輪：讓每個選擇都有代價</h1>
+  <div class="pr" style="padding:28px 40px;margin-top:24px">
+    <p style="font-size:28px">我試玩完了，畫面很好，但它比較像測驗，不像遊戲。請改成第二版，一樣在對話裡直接預覽：</p>
+    <p style="font-size:28px"><b>【一、有代價的兩難】</b>每個情境都要 3 個選項，每個選項都有代價、沒有一眼就看出的標準答案，例如：吃藥副作用很難受但明天要打工賺錢、被隔離時想念家人同學、每天被人看著吃藥覺得沒尊嚴、怕同學知道自己得結核而被貼標籤。選項長度要相近，不要讓「找醫療團隊」永遠是最長的那個。</p>
+    <p style="font-size:28px"><b>【二、延遲後果】</b>前面漏藥或停藥當下看起來沒事，要到後面的月份才反噬（例如第 4 個月突然惡化、抗藥性跳升），讓學生體會抗藥性是看不見的；結局要回顧「哪一個選擇在哪個月造成影響」。</p>
+    <p style="font-size:28px"><b>【三、回到課文核心】</b>本課重點是形象化語言與醫護人員的職場態度：請加入一段「醫護視角」，讓學生換成課文中史瓦濟蘭的醫護人員，在資源不足的環境下做選擇；課文題請改成讓學生判斷或選出最貼切的比喻，並有一題讓學生自己寫一句形象化的比喻（不評分，結尾顯示課文原句對照）。</p>
+    <p style="font-size:28px"><b>【四、修正】</b>測驗正確答案的位置要隨機打亂；學生看到的文字不要出現「教師用書」四個字；仍以課本為準，不寫真實藥名與劑量。</p>
+  </div>
+</section>
+
+<!-- 8 第二輪出錯 -->
+<section class="s">
+  <div class="flow"><b>終點</b><b>選擇</b><b>交給 AI</b><b class="on">試玩修正</b></div>
+  <div class="tag"><i style="background:var(--orange)"></i>第二輪結果</div>
+  <h1>GPT 說完成了，遊戲還有錯</h1>
+  <div class="shot" style="margin-top:44px"><img src="img/v2_bug_crop.jpg" alt="延遲事件顯示 undefined"></div>
+  <ul class="pts" style="margin-top:36px;flex-direction:row;gap:60px">
+    <li>延遲事件的框框只顯示「undefined」</li>
+    <li>連續三站都選有風險的選項，分數完全沒動</li>
+  </ul>
+  <div class="note o">交給學生之前，老師一定要自己從頭玩一次，而且要故意選錯。</div>
+</section>
+
+<!-- 9 第三輪 -->
+<section class="s">
+  <div class="flow"><b>終點</b><b>選擇</b><b>交給 AI</b><b class="on">試玩修正</b></div>
+  <div class="tag"><i style="background:var(--green)"></i>第三輪</div>
+  <h1>照實描述畫面，GPT 就能修</h1>
+  <div class="split" style="grid-template-columns:1fr 1fr">
+    <div>
+      <div class="quote"><small>老師送出的話（節錄）</small>延遲事件框框裡只顯示英文 undefined。我前三站都選了有風險的選項，健康和抗藥性完全沒變。請修正，並先自己檢查每一站的文字與數值。</div>
+      <p class="cap" style="font-size:34px">第 1 個月跳過吃藥，當下分數沒變；到了第 4 個月才出現延遲後果。</p>
+    </div>
+    <div><div class="card" style="display:flex;gap:30px;padding:30px 36px;margin-bottom:24px"><div style="flex:1"><p style="font-size:30px;color:var(--muted)">健康</p><p style="font-size:72px;font-weight:900;color:var(--green)">62 → 48</p></div><div style="flex:1"><p style="font-size:30px;color:var(--muted)">抗藥性</p><p style="font-size:72px;font-weight:900;color:var(--orange)">22 → 47</p></div></div><div class="shot" style="height:250px"><img style="object-fit:cover;object-position:top;height:100%" src="img/v3_month4.jpg" alt="第三版第 4 個月延遲後果出現"></div></div>
+  </div>
+  <div class="note g">不用看懂程式，只要說清楚看到什麼、原本希望看到什麼。</div>
+</section>
+
+<!-- 範例：第三輪 -->
+<section class="s">
+  <div class="tag"><i style="background:var(--orange)"></i>提示句範例<span class="camera">可拍照</span></div>
+  <h1>第三輪：照實回報問題</h1>
+  <div class="pr xl">
+    <p>我試玩第二版，發現兩個問題：</p>
+    <p><b>一、</b>從第 2 站開始，「延遲事件出現」框框裡只顯示英文「undefined」，沒有內容。</p>
+    <p><b>二、</b>我前三站都選了有風險的選項，但健康 65、抗藥性 22 完全沒變，延遲後果好像沒有真的作用。</p>
+    <p>請修正後重新給我可試玩的版本，並在修正前先自己檢查一遍每一站、每一個選項的文字與數值都有正確顯示。</p>
+  </div>
+  <div class="note g">寫法：我做了什麼、看到什麼、原本希望看到什麼，最後請它自己先檢查一遍。</div>
+</section>
+
+<!-- 10 三輪總覽 -->
+<section class="s">
+  <div class="tag"><i style="background:var(--blue)"></i>回顧</div>
+  <h1>三輪對話，一節備課時間做得完</h1>
+  <div class="tl">
+    <div class="card bar-o"><div class="t">第一輪｜約 2 分鐘</div><div class="n">可以玩</div><p style="font-size:32px;line-height:1.55;color:#34405a">內容可靠，玩起來像測驗</p><span class="score" style="background:var(--orange-l);color:#c94a20">60 分</span></div>
+    <div class="card bar-y"><div class="t">第二輪｜約 1.5 分鐘</div><div class="n">有兩難</div><p style="font-size:32px;line-height:1.55;color:#34405a">選擇有了代價，程式出錯</p><span class="score" style="background:var(--yellow-l);color:#a07800">還要試玩</span></div>
+    <div class="card bar-g"><div class="t">第三輪｜約 1.5 分鐘</div><div class="n">後果成立</div><p style="font-size:32px;line-height:1.55;color:#34405a">漏藥的影響在後面月份出現</p><span class="score" style="background:var(--green-l);color:#17804f">85 分</span></div>
+  </div>
+  <div class="note">AI 先給 60 分，老師的教學專業把它補到 85 分。</div>
+</section>
+
+<!-- 追加功能的兩個狀況 -->
+<section class="s">
+  <div class="tag"><i style="background:var(--orange)"></i>追加成績功能時</div>
+  <h1>又遇到兩個狀況</h1>
+  <div class="grid g2" style="margin-top:46px">
+    <div class="card bar-o"><h3>GPT 給一段程式碼</h3><p>它要老師「在 script 裡找到這一行，在後面加入以下程式」。</p><p style="margin-top:18px;color:var(--green)">回一句「我不會改程式，請直接給我完整的 HTML 檔」，就拿到完整檔案。</p></div>
+    <div class="card bar-y"><h3>改了後面，忘了前面</h3><p>重寫完整檔時，前幾輪改好的地方被改回去：課文題剩 2 題，選項又變成一眼看穿。</p><p style="margin-top:18px;color:var(--orange)">追問的輪數越多，越容易發生。</p></div>
+  </div>
+  <div class="note">解決方法：把所有要求寫成一整包，開一段新對話，一次送出。</div>
+</section>
+
+<!-- 整包一次送出 -->
+<section class="s">
+  <div class="tag"><i style="background:var(--green)"></i>換個做法</div>
+  <h1>整包提示句，一次送出</h1>
+  <div class="split" style="grid-template-columns:1.25fr 1fr;gap:46px;margin-top:36px">
+    <div class="shot"><img src="img/os_check.jpg" alt="GPT 交件前自我檢查表與遊戲預覽"></div>
+    <div>
+      <div class="stat"><div><b>1 次</b><span>送出</span></div><div><b>2 分鐘</b><span>做好</span></div></div>
+      <div class="stat"><div><b>8 項</b><span>要求逐條核對都有做到</span></div></div>
+      <p class="cap" style="font-size:30px">課文題的錯誤選項還可以更難，其餘全部符合；成績圖與表單回傳實際測試成功。</p>
+    </div>
+  </div>
+  <div class="note g">新專案的「預設記憶」選「僅限專案的記憶」，舊對話就不會影響新的結果。</div>
+</section>
+
+<!-- 11b 表單設定 -->
+<section class="s">
+  <div class="tag"><i style="background:var(--green)"></i>要收成績才需要</div>
+  <h1>先準備 Google 表單</h1>
+  <div class="grid" style="grid-template-columns:.75fr 1fr;gap:36px;margin-top:30px">
+    <div class="shot shotw"><img src="img/form_menu.jpg" alt="表單右上角選單的預先填寫表單"><span class="ring" style="left:73%;top:27%;width:26%;height:11%"></span><span class="mk" style="left:66%;top:32.7%">3</span></div>
+    <div class="shot shotw"><img src="img/form_prefill.jpg" alt="預先填寫後的複製連結"><span class="ring" style="left:32%;top:84%;width:13.5%;height:11%"></span><span class="mk" style="left:50%;top:90%">4</span></div>
+  </div>
+  <ol style="font-size:30px;line-height:1.6;margin-top:24px;padding-left:44px;columns:2;column-gap:50px">
+    <li>新增三題：座號姓名（簡答）、各站選擇（詳答）、分數（詳答）</li>
+    <li>按右上角「發布」</li>
+    <li>右上角「⋮」→「預先填寫表單」</li>
+    <li>每題隨便填一個字，按「取得連結」→「複製連結」</li>
+    <li>貼進整包提示句的連結那一行</li>
+  </ol>
+</section>
+
+<!-- 整包提示句（上） -->
+<section class="s">
+  <div class="tag"><i style="background:var(--blue)"></i>整包提示句（上）<span class="camera">可拍照</span></div>
+  <h1>遊戲內容</h1>
+  <div class="pr" style="padding:24px 38px;margin-top:20px">
+    <p style="font-size:26px">我是技術型高中國文老師，不會寫程式。請根據專案裡的〈結核〉教師用書，做一個 10 分鐘玩得完的教學遊戲。請直接給我完整的單一 HTML 檔下載，不要給程式片段，也不要叫我自己修改程式。</p>
+    <p style="font-size:26px"><b>【教學目標】</b>一、理解課文提到的「按時服藥、不可擅自停藥」與多重抗藥性結核的關係，連結食藥安全。二、練習課文的形象化語言（例如藥丸像健素糖、治療像坐牢、痊癒後像假釋）。</p>
+    <p style="font-size:26px"><b>【對象】</b>高二學生，用手機或平板玩。</p>
+    <p style="font-size:26px"><b>【遊戲內容】</b><br>1. 共 6 站：前 5 站學生扮演結核病人走完 6 個月療程，第 6 站換成課文中史瓦濟蘭的醫護人員，在資源不足的環境下做選擇。<br>2. 每站 3 個選項，每個選項都有代價，沒有一眼就看出的標準答案（例如副作用很難受但明天要打工、隔離時想念家人、怕同學知道而被貼標籤）。3 個選項長度相近，比較好的選擇不可以總是最長的那個，也不可以總是寫著「找醫療團隊」。<br>3. 「健康」與「抗藥性」兩條量表。有些選擇當下沒有變化，到後面的月份才出現延遲後果；結局要回顧每一個延遲後果是哪一站的選擇造成的。<br>4. 每站之後一題課文題，共 6 題，考形象化語言或課文理解。選項順序每次隨機，錯誤選項也要說得通，學生要讀過課文才分得出來。<br>5. 結局前讓學生自己寫一句形象化的比喻（不評分），結局顯示課文原句對照。</p>
+  </div>
+</section>
+
+<!-- 整包提示句（下） -->
+<section class="s">
+  <div class="tag"><i style="background:var(--blue)"></i>整包提示句（下）<span class="camera">可拍照</span></div>
+  <h1>成績回傳與自我檢查</h1>
+  <div class="pr l" style="margin-top:26px">
+    <p><b>【成績回傳】</b><br>6. 結局有「座號」與「姓名」兩個輸入欄。<br>7. 「產生成績圖」按鈕：產生 PNG 圖片並下載，圖上有座號、姓名、每一站的選擇、兩條量表的最終分數、課文題答對題數。<br>8. 「送出給老師」按鈕：開啟下面這個 Google 表單預先填入連結，自動帶入資料後讓學生按提交。表單三個欄位依序填入：「座號 姓名」、「每一站的選擇（每站一行）」、「健康、抗藥性、課文題答對題數」。<br>連結：<span style="background:var(--yellow-l);padding:0 8px">（貼上你的預先填入連結）</span></p>
+    <p><b>【限制】</b>內容以課本為準，不確定的醫藥知識不要寫；不寫真實藥名與劑量；學生看到的文字不要出現「教師用書」；繁體中文（台灣用語）；不用外部套件。</p>
+    <p><b>【交件前自我檢查】</b>完成後請逐條對照上面 1 到 8 項，用表格列出每一項是否做到。有沒做到的，先修好再給我檔案。</p>
+  </div>
+</section>
+
+<!-- 成績真的收得到 -->
+<section class="s">
+  <div class="tag"><i style="background:var(--green)"></i>實測結果</div>
+  <h1>成績真的收得到</h1>
+  <div class="grid" style="grid-template-columns:.8fr 1fr;gap:40px;margin-top:36px;align-items:start">
+    <div><div class="shot"><img src="img/score_png.jpg" alt="學生下載的成績圖"></div><p class="cap">按「產生成績圖」：學生存下的圖片</p></div>
+    <div><div class="shot"><img src="img/form_filled.jpg" alt="Google 表單自動帶入作答"></div><p class="cap">按「送出給老師」：表單自動帶入座號姓名、六站選擇與分數，學生按「提交」後，老師的表單回覆數立刻增加。</p></div>
+  </div>
+</section>
+
+<!-- 節點 -->
+<section class="s">
+  <div class="tag"><i style="background:var(--blue)"></i>依時間與熟悉度選擇</div>
+  <h1>做到哪裡都可以停</h1>
+  <div class="node">
+    <div class="card bar-o"><div class="k">節點 1｜第一輪</div><div class="nm">能玩</div><dl><dt>時間</dt><dd>約 5 分鐘</dd><dt>需要會的事</dt><dd>填四個欄位</dd><dt>可以這樣用</dt><dd>全班投影一起討論</dd></dl></div>
+    <div class="card bar-y"><div class="k">節點 2｜第二輪</div><div class="nm">好玩</div><dl><dt>時間</dt><dd>再 5 分鐘</dd><dt>需要會的事</dt><dd>說得出哪裡太簡單</dd><dt>可以這樣用</dt><dd>選擇有代價，討論更深</dd></dl></div>
+    <div class="card bar-b"><div class="k">節點 3｜第三輪</div><div class="nm">沒錯誤</div><dl><dt>時間</dt><dd>再 5 分鐘</dd><dt>需要會的事</dt><dd>故意選錯、描述畫面</dd><dt>可以這樣用</dt><dd>交給學生各自玩</dd></dl></div>
+    <div class="card bar-g"><div class="k">節點 4｜整包提示句</div><div class="nm">收成績</div><dl><dt>時間</dt><dd>約 20 分鐘，含建表單</dd><dt>需要會的事</dt><dd>建表單、複製連結</dd><dt>可以這樣用</dt><dd>成績自動進到試算表</dd></dl></div>
+  </div>
+  <div class="note">時間不夠，停在節點 1 就能上課；熟悉之後，可以直接用整包提示句跳到節點 4。</div>
+</section>
+
+<!-- 11 提醒 -->
+<section class="s">
+  <div class="tag"><i style="background:var(--orange)"></i>給第一次嘗試的老師</div>
+  <h1>四個提醒</h1>
+  <div class="grid g2 r4" style="margin-top:36px;gap:24px">
+    <div class="card bar-o"><h3>一次放一課</h3><p>整本課本太長，GPT 讀不仔細，教師用書的單課 PDF 最合適。</p></div>
+    <div class="card bar-y"><h3>自己玩，故意選錯</h3><p>第二版 GPT 也說做好了，實際上延遲後果完全沒有作用。</p></div>
+    <div class="card bar-b"><h3>核對課本原句</h3><p>遊戲裡引用的比喻與數字，回到 PDF 搜尋一次出處。</p></div>
+    <div class="card bar-g"><h3>限制寫清楚</h3><p>醫藥、法律這類內容，請它不寫不確定的事，也不寫藥名與劑量。</p></div>
+  </div>
+  <div class="note y" style="font-size:32px">免費額度用完會換成較小的模型，長時間修改可以分兩三次完成。</div>
+</section>
+
+<!-- 11a 下載交給學生 -->
+<section class="s">
+  <div class="tag"><i style="background:var(--green)"></i>做好之後</div>
+  <h1>下載檔案，交給學生</h1>
+  <div class="split" style="grid-template-columns:1.1fr 1fr;gap:50px;margin-top:36px">
+    <div class="shot shotw"><img src="img/dl_panel.jpg" alt="下載預覽面板與下載圖示"><span class="ring" style="left:85.6%;top:0.5%;width:7%;height:9.5%"></span><span class="mk" style="left:80%;top:15%">2</span></div>
+    <ol class="steps" style="gap:26px;margin-top:0">
+      <li style="font-size:36px">按回覆裡的下載連結，右邊會先開預覽</li>
+      <li style="font-size:36px">按預覽右上角的下載圖示，檔案才會存到電腦</li>
+      <li style="font-size:36px">檔名若變成一串 % 符號，改回中文名稱</li>
+      <li style="font-size:36px">雙擊檔案，用瀏覽器打開</li>
+    </ol>
+  </div>
+  <div class="note y" style="font-size:32px">課堂投影直接開；學生各自玩就把檔案放上 Classroom。學生用手機開檔前，老師先用自己的手機試一次。</div>
+</section>
+
+
+
+
+
+<!-- 12 第四輪留給你 -->
+<section class="s">
+  <div class="tag"><i style="background:var(--yellow)"></i>回家作業</div>
+  <h1>第四輪，留給你回去做</h1>
+  <p class="lead">一次到位的版本，課文題還有一個問題：錯誤選項太容易排除。</p>
+  <div class="card" style="margin-top:40px">
+    <p style="font-size:36px;font-weight:900;margin-bottom:8px">課文以「草原之海中央的孤島」形容醫院建築，主要突顯什麼？</p>
+    <div class="opt">
+      <div><b>A</b>醫院位於觀光景點，遠離城市而景色優美</div>
+      <div><b>B</b>醫院像與外界隔絕的孤島，呈現醫療環境的艱難與孤立</div>
+      <div><b>C</b>醫護人員選擇與患者保持距離，不願意照顧病人</div>
+    </div>
+  </div>
+  <div class="note y">試著寫一句要求，讓每個錯誤選項也說得通，學生要讀過課文才分得出來。</div>
+</section>
+
+<!-- 13 收尾 -->
+<section class="s">
+  <div class="tag"><i style="background:var(--green)"></i>帶走</div>
+  <h1>今晚就可以開始</h1>
+  <div class="split" style="grid-template-columns:1fr 1fr;margin-top:56px">
+    <ol class="steps">
+      <li>選一課，上傳教師用書 PDF</li>
+      <li>寫下學生下課時要帶走的一句話</li>
+      <li>套用右邊的提示句，一次送出</li>
+      <li>自己玩一次，故意選錯</li>
+      <li>下載檔案，交給學生</li>
+    </ol>
+    <div class="tpl">
+      <p><b>【教學目標】</b>學生玩完要能說出＿＿＿</p>
+      <p><b>【對象】</b>＿年級，用＿＿玩，＿分鐘玩完</p>
+      <p><b>【玩法】</b>學生扮演＿＿，遇到＿＿的兩難，每個選項都有代價，選擇會影響＿＿</p>
+      <p><b>【成績】</b>需要時加上成績圖與表單連結</p>
+      <p><b>【限制】</b>以課本為準；不確定的不要寫；直接給完整 HTML 檔</p>
+      <p><b>【自我檢查】</b>逐條核對，做到再交件</p>
+    </div>
+  </div>
+</section>
+
+<div class="pg" id="pg"></div>
+</div>
+<button id="unzoom">還原</button>
+
+<script>
+/* ===== 縮放到視窗（沿用晉文公簡報的做法） ===== */
+const stage=document.getElementById('stage');
+function VV(){const v=window.visualViewport;
+  if(v)return{x:v.offsetLeft,y:v.offsetTop,w:v.width,h:v.height,s:v.scale||1};
+  return{x:0,y:0,w:innerWidth,h:innerHeight,s:1};}
+let Z=1,TX=0,TY=0;const baseK=()=>{const v=VV();return Math.min(v.w/1920,v.h/1080);};
+const unz=document.getElementById('unzoom');
+function clampZ(){const k=baseK();Z=Math.max(1,Math.min(5,Z));
+  const mx=1920*k*(Z-1)/2,my=1080*k*(Z-1)/2;TX=Math.max(-mx,Math.min(mx,TX));TY=Math.max(-my,Math.min(my,TY));}
+let lastFit='';
+function fit(){clampZ();const v=VV();
+  const key=[v.x,v.y,v.w,v.h,v.s,Z,TX,TY].map(n=>Math.round(n*100)).join();if(key===lastFit)return;lastFit=key;
+  stage.style.left=(v.x+v.w/2)+'px';stage.style.top=(v.y+v.h/2)+'px';
+  stage.style.transform=`translate(-50%,-50%) translate(${TX}px,${TY}px) scale(${baseK()*Z})`;
+  unz.style.left=(v.x+v.w-12/v.s)+'px';unz.style.top=(v.y+v.h-12/v.s)+'px';unz.style.transform=`translate(-100%,-100%) scale(${1/v.s})`;
+  document.body.classList.toggle('zoomed',Z>1);}
+(()=>{const m=document.querySelector('meta[name=viewport]'),c=m.content;m.content=c+', maximum-scale=1';setTimeout(()=>{m.content=c;fit();},300);})();
+addEventListener('resize',fit);addEventListener('orientationchange',()=>setTimeout(fit,300));
+if(window.visualViewport)visualViewport.addEventListener('resize',fit);
+fit();
+const CX=()=>{const v=VV();return v.x+v.w/2},CY=()=>{const v=VV();return v.y+v.h/2};
+
+/* ===== 觸控放大：雙指縮放、單指拖曳；放大時不換頁 ===== */
+const zoomed=()=>Z>1;
+function unzoom(){stage.classList.add('zs');Z=1;TX=TY=0;fit();setTimeout(()=>stage.classList.remove('zs'),320);}
+function zoomAt(px,py,z){const k=baseK(),cx=CX(),cy=CY();
+  const ux=(px-cx-TX)/(k*Z),uy=(py-cy-TY)/(k*Z);
+  Z=Math.max(1,Math.min(5,z));TX=px-cx-ux*k*Z;TY=py-cy-uy*k*Z;fit();}
+const pts=new Map();let g=null,moved=false,blockUntil=0,lastTap=0;
+addEventListener('pointerdown',e=>{
+  if(e.target.id==='unzoom')return;
+  const P0={x:e.clientX,y:e.clientY};pts.set(e.pointerId,P0);
+  if(pts.size===1){moved=false;g={x:P0.x,y:P0.y,tx:TX,ty:TY};}
+  if(pts.size===2){moved=true;const[a,b]=[...pts.values()];
+    const mx=(a.x+b.x)/2,my=(a.y+b.y)/2,k=baseK();
+    g={pinch:1,d:Math.hypot(a.x-b.x,a.y-b.y)||1,z:Z,ux:(mx-CX()-TX)/(k*Z),uy:(my-CY()-TY)/(k*Z)};}
+});
+addEventListener('pointermove',e=>{
+  if(!pts.has(e.pointerId)||!g)return;const P1={x:e.clientX,y:e.clientY};pts.set(e.pointerId,P1);
+  if(g.pinch&&pts.size>=2){const[a,b]=[...pts.values()];const k0=baseK();
+    Z=Math.max(1,Math.min(5,g.z*Math.hypot(a.x-b.x,a.y-b.y)/g.d));const k=k0*Z;
+    TX=(a.x+b.x)/2-CX()-g.ux*k;TY=(a.y+b.y)/2-CY()-g.uy*k;fit();}
+  else if(!g.pinch){const dx=P1.x-g.x,dy=P1.y-g.y;
+    if(Math.hypot(dx,dy)>10)moved=true;
+    if(moved&&zoomed()){TX=g.tx+dx;TY=g.ty+dy;fit();}}
+});
+function up(e){
+  if(!pts.delete(e.pointerId))return;
+  if(moved||g&&g.pinch)blockUntil=Date.now()+400;
+  if(pts.size===0){
+    if(g&&g.pinch&&Z<1.08)unzoom();
+    else if(!moved&&zoomed()){const t=Date.now();if(t-lastTap<350){unzoom();lastTap=0;}else lastTap=t;}
+    g=null;}
+  else if(pts.size===1){const[a]=[...pts.values()];g={x:a.x,y:a.y,tx:TX,ty:TY};}
+}
+addEventListener('pointerup',up);addEventListener('pointercancel',up);
+addEventListener('click',e=>{if(e.target.id==='unzoom')return;if(zoomed()||Date.now()<blockUntil){e.stopPropagation();e.preventDefault();}},true);
+addEventListener('wheel',e=>{if(!e.ctrlKey&&!zoomed())return;e.preventDefault();
+  if(e.ctrlKey)zoomAt(e.clientX,e.clientY,Z*Math.exp(-e.deltaY/200));else{TX-=e.deltaX;TY-=e.deltaY;fit();}
+  if(Z<1.02)unzoom();},{passive:false});
+['gesturestart','gesturechange','gestureend'].forEach(t=>addEventListener(t,e=>e.preventDefault()));
+addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+unz.addEventListener('click',e=>{e.stopPropagation();unzoom();});
+
+/* ===== 換頁：→／空白鍵下一頁，←上一頁，點畫面左 1/4 上一頁，F 全螢幕 ===== */
+const S=[...document.querySelectorAll('.s')],pg=document.getElementById('pg');
+let cur=0;
+function show(i){cur=Math.max(0,Math.min(S.length-1,i));S.forEach((s,k)=>s.classList.toggle('on',k===cur));
+  pg.textContent=(cur+1)+' / '+S.length;try{history.replaceState(null,'','#'+(cur+1));}catch(e){}}
+addEventListener('keydown',e=>{
+  if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();show(cur+1);}
+  else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();show(cur-1);}
+  else if(e.key==='Home')show(0);else if(e.key==='End')show(S.length-1);
+  else if(e.key==='Escape'&&zoomed())unzoom();
+  else if(e.key==='f'||e.key==='F'){if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();}
+});
+addEventListener('click',e=>{if(e.target.id==='unzoom')return;const v=VV();show(e.clientX<v.x+v.w/4?cur-1:cur+1);});
+show((parseInt(location.hash.slice(1))||1)-1);
+</script>
+</body>
+</html>
