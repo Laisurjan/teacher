@@ -55,10 +55,7 @@ header h1{margin:0;font-size:17px;font-weight:800;background:var(--panel);paddin
   var el = document.getElementById('load');
   function show(msg){ if (!document.getElementById('load')) return;
     el.style.cssText += ';pointer-events:auto;padding:24px;text-align:center;line-height:1.7;font-size:15px;white-space:pre-wrap';
-    el.textContent = msg + '
-
-請截圖這個畫面給老師。
-' + navigator.userAgent; }
+    el.textContent = msg + '\n\n請截圖這個畫面給老師。\n' + navigator.userAgent; }
   window.addEventListener('error', function(e){ show('載入失敗：' + (e.message || (e.target && e.target.src) || '未知錯誤')); }, true);
   window.addEventListener('unhandledrejection', function(e){ show('載入失敗：' + (e.reason && e.reason.message || e.reason)); });
   setTimeout(function(){ show('載入逾時（超過 20 秒）：可能是網路連不到 cdn.jsdelivr.net，或瀏覽器版本太舊。'); }, 20000);
@@ -85,6 +82,7 @@ header h1{margin:0;font-size:17px;font-weight:800;background:var(--panel);paddin
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 /* 座標系：Google 衛星圖轉正 38.3° 後量測，單位公尺。
    x 向右（往操場、活動中心）、z 向下（往泗水園、資訊館）；中山路在左（x≈-18）、商校街在上。
@@ -632,23 +630,89 @@ function resize(){
 document.getElementById('load').remove();
 // 視角設定（測試與日後「導覽點」功能用）
 window.setView = (px, py, pz, tx, ty, tz) => { fly = null; camera.position.set(px, py, pz); controls.target.set(tx, ty, tz); controls.update(); };
-// 標籤遮擋：被建築擋住的名稱自動隱藏，放大近看時畫面才不會雜亂
-const occluders = [];
-scene.traverse(m => { if (m.isMesh && m.castShadow){ m.geometry.computeBoundingBox(); const b = m.geometry.boundingBox; if ((b.max.y - b.min.y) * m.scale.y > 3) occluders.push(m); } });
-const ray = new THREE.Raycaster(), tmp = new THREE.Vector3();
+// 標籤遮擋：先記下每棟建築的外框（合併前），放大近看時被擋住的名稱自動隱藏
+scene.updateMatrixWorld(true);
+const occBoxes = [];
+scene.traverse(m => { if (m.isMesh && m.castShadow){ const b = new THREE.Box3().setFromObject(m); if (b.max.y - b.min.y > 3) occBoxes.push(b); } });
+
+/* ================= 同材質合併 =================
+   原本約兩三千個物件、每個各畫一次；手機繪圖晶片負擔太重。
+   1. 相同外觀的材質去重  2. 多材質物件依面拆開  3. 同材質＋同陰影設定的幾何合併成一個物件 */
+const drawBefore = (() => { let n = 0; scene.traverse(m => { if (m.isMesh) n += Array.isArray(m.material) ? m.material.length : 1; }); return n; })();
+const matCache = new Map();
+function canonical(mt){
+  const key = [mt.type, mt.color && mt.color.getHex(), mt.map ? mt.map.uuid : '', mt.transparent, mt.opacity, mt.side].join('|');
+  if (!matCache.has(key)) matCache.set(key, mt);
+  return matCache.get(key);
+}
+function prep(geo){ // 統一成非索引、只留 position / normal / uv，才能合併
+  let g = geo.index ? geo.toNonIndexed() : geo.clone();
+  for (const k of Object.keys(g.attributes)) if (!['position', 'normal', 'uv'].includes(k)) g.deleteAttribute(k);
+  if (!g.attributes.normal) g.computeVertexNormals();
+  if (!g.attributes.uv) g.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(g.attributes.position.count * 2), 2));
+  return g;
+}
+function slice(g, start, count){
+  const out = new THREE.BufferGeometry();
+  for (const k of ['position', 'normal', 'uv']){
+    const a = g.attributes[k];
+    out.setAttribute(k, new THREE.BufferAttribute(a.array.slice(start * a.itemSize, (start + count) * a.itemSize), a.itemSize));
+  }
+  return out;
+}
+const buckets = new Map(), olds = [];
+scene.traverse(m => {
+  if (!m.isMesh || m === base) return;
+  olds.push(m);
+  const g = prep(m.geometry); g.applyMatrix4(m.matrixWorld);
+  const parts = Array.isArray(m.material)
+    ? (g.groups.length ? g.groups : [{ start: 0, count: g.attributes.position.count, materialIndex: 0 }]).map(gr => [slice(g, gr.start, gr.count), m.material[gr.materialIndex]])
+    : [[g, m.material]];
+  for (const [pg, mt0] of parts){
+    if (!pg.attributes.position.count) continue;
+    const mt = canonical(mt0), key = mt.uuid + (m.castShadow ? 'C' : '') + (m.receiveShadow ? 'R' : '');
+    if (!buckets.has(key)) buckets.set(key, { mt, cast: m.castShadow, recv: m.receiveShadow, list: [] });
+    buckets.get(key).list.push(pg);
+  }
+});
+olds.forEach(m => m.parent.remove(m));
+for (const { mt, cast, recv, list } of buckets.values()){
+  const merged = new THREE.Mesh(mergeGeometries(list, false), mt);
+  merged.castShadow = cast; merged.receiveShadow = recv; merged.matrixAutoUpdate = false;
+  scene.add(merged);
+}
+console.log(`[合併] 物件 ${olds.length} 個、繪製 ${drawBefore} 次 → ${buckets.size} 次`);
+
+const ray = new THREE.Ray(), tmp = new THREE.Vector3(), hit = new THREE.Vector3();
 let frame = 0;
 function updateLabels(){
   labels.forEach(o => {
     o.getWorldPosition(tmp); const dist = tmp.distanceTo(camera.position);
-    ray.set(camera.position, tmp.clone().sub(camera.position).normalize()); ray.far = dist - 3;
-    o.element.style.visibility = ray.intersectObjects(occluders, false).length ? 'hidden' : 'visible';
+    ray.set(camera.position, tmp.clone().sub(camera.position).normalize());
+    const blocked = occBoxes.some(b => !b.containsPoint(tmp) && ray.intersectBox(b, hit) && hit.distanceTo(camera.position) < dist - 3);
+    o.element.style.visibility = blocked ? 'hidden' : 'visible';
   });
 }
+
+// 繪圖階段出錯或 3D 畫面被系統收回時，顯示訊息而不是靜默空白
+function fail(msg){
+  let el = document.getElementById('gfxerr');
+  if (!el){ el = document.createElement('div'); el.id = 'gfxerr';
+    el.style.cssText = 'position:absolute;left:12px;right:12px;top:64px;z-index:20;background:var(--panel);padding:14px;border-radius:10px;font-size:14px;line-height:1.6;white-space:pre-wrap';
+    document.body.appendChild(el); }
+  const gl = renderer.getContext(), dbg = gl.getExtension('WEBGL_debug_renderer_info');
+  el.textContent = msg + '\n繪圖晶片：' + (dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : '未知') + '\n' + navigator.userAgent + '\n請截圖給老師。';
+}
+renderer.domElement.addEventListener('webglcontextlost', (e) => { e.preventDefault(); fail('3D 畫面被系統收回（可能是繪圖記憶體不足）。'); });
+let failed = false;
 renderer.setAnimationLoop(() => {
-  if (++frame % 12 === 0) updateLabels();
-  if (fly){ fly.t = Math.min(1, fly.t + .035); const k = 1 - Math.pow(1 - fly.t, 3);
-    controls.target.lerpVectors(fly.ft, fly.tt, k); camera.position.lerpVectors(fly.fp, fly.tp, k); if (fly.t >= 1) fly = null; }
-  controls.update(); renderer.render(scene, camera); labelRenderer.render(scene, camera);
+  if (failed) return;
+  try {
+    if (++frame % 12 === 0) updateLabels();
+    if (fly){ fly.t = Math.min(1, fly.t + .035); const k = 1 - Math.pow(1 - fly.t, 3);
+      controls.target.lerpVectors(fly.ft, fly.tt, k); camera.position.lerpVectors(fly.fp, fly.tp, k); if (fly.t >= 1) fly = null; }
+    controls.update(); renderer.render(scene, camera); labelRenderer.render(scene, camera);
+  } catch (err){ failed = true; fail('繪圖錯誤：' + err.message); }
 });
 </script>
 </body>
