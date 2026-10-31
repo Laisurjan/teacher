@@ -334,7 +334,11 @@ for (let i = 0; i < BOUND.length - 1; i++){
   const f = new THREE.Mesh(new THREE.PlaneGeometry(len, 1.6), M.fence); f.position.y = 2.8; g.add(f);
 }
 // 中山路側：留校門（z 69–83）
-[[-31, 69], [83, 187]].forEach(([a, b]) => box(.4, 2, b - a, M.wallPink, -10, 0, (a + b) / 2));
+box(.4, 2, 100, M.wallPink, -10, 0, 19);
+// 校門南側臨中山路：灰色水泥矮牆＋方柱，牆後樹籬（街景）
+box(.4, 1.1, 104, M.concrete, -10, 0, 135);
+for (let z = 84; z <= 186; z += 4) box(.7, 1.6, .7, M.concrete, -10, 0, z);
+hedge(-9.1, 84, -9.1, 105);
 
 // 草地、鋪面
 rect(31, 10, 54, 68, M.grass); rect(31, 77, 54, 126, M.grass);
@@ -357,10 +361,6 @@ rect(-10, 67, 19, 85, M.stonePave, .04);          // 校門進來的車道
     }
     addLabel('停車場', 2.5, 2, (z0 + z1) / 2);
   });
-  // 校長宿舍前（臨中山路）的停車格，接南側停車場
-  rect(-8, 103, 2, 127, ASPH, .045);
-  for (let z = 103.5; z <= 126.5; z += 2.5) scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-8, .08, z), new THREE.Vector3(-2.8, .08, z)]), M.line));
-  [[108, 0x6b7f6a], [113, 0xe6e6e2]].forEach(([z, c]) => { box(4.2, .9, 1.8, lam(c), -5.4, .25, z + 1.25); box(2.3, .65, 1.6, lam(0x3a4650), -5.1, 1.15, z + 1.25); });
 })();
 rect(92.5, 32, 95.5, 128, M.brickPave, .05);      // 人文館前紅磚步道
 rect(70, 76, 104, 79, M.brickPave, .05);
@@ -594,12 +594,18 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
 
 // --- 其他建築
 (function(){ // 校長宿舍：2F 住宅＋斜屋頂
-  const g = group(9, 119);   // 從中山路後退，前方留作停車
-  building(g, { w: 12, d: 12, floors: 2, roof: 'gray', faces: { all: { wall: '#ece3d3', win: 'glass' } } });
-  const sh = new THREE.Shape(); sh.moveTo(-6.7, 0); sh.lineTo(6.7, 0); sh.lineTo(0, 3); sh.lineTo(-6.7, 0);
-  const rf = new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth: 12.6, bevelEnabled: false }), lam(0x8c5a46));
-  rf.position.set(0, 2 * FLOOR + .4, -6.3); rf.castShadow = true; g.add(rf);
-  addLabel('校長宿舍', 9, 12, 119);
+  // 依 2025 年 8 月街景：在南側停車場之後、自中山路後退，前有庭院與 1 層附屬小屋；
+  //   主屋 2 層淺灰白、灰色斜屋頂、山牆朝校門（北）
+  rect(-9.6, 106, 14, 132, M.grass, .05);
+  const g = group(8, 119);
+  building(g, { w: 11, d: 11, floors: 2, roof: 'gray', faces: { all: { wall: '#e8e8e3', win: 'glass', frame: '#f4f4f0' } } });
+  const sh = new THREE.Shape(); sh.moveTo(-6.2, 0); sh.lineTo(6.2, 0); sh.lineTo(0, 2.8); sh.lineTo(-6.2, 0);
+  const rf = new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth: 12, bevelEnabled: false }), lam(0x6f7579));
+  rf.position.set(0, 2 * FLOOR + .4, -6); rf.castShadow = true; g.add(rf);
+  // 附屬小屋：1 層、面中山路鐵捲門、紅褐色屋簷
+  building(group(-3.5, 121), { w: 6, d: 8, floors: 1, h: 3, roof: 'gray', faces: { all: { wall: '#dcdcd6', win: 'glass' }, w: { wall: '#dcdcd6', win: 'shutter', bay: 3 } } });
+  box(6.6, .35, 8.6, lam(0x8c4a3a), -3.5, 3, 121);
+  addLabel('校長宿舍', 8, 12, 119);
 })();
 building(group(267.5, 141), { w: 25, d: 22, floors: 4, roof: 'gray', faces: { all: { wall: '#eadfcb', win: 'glass', band: '#cdbb9d' } }, stairs: [[0, 0, 4, 5, 3]] });
 addLabel('女生宿舍', 267.5, 19, 141);
