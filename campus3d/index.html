@@ -84,6 +84,7 @@ window.__stage = '建立校園模型';
    x 向右（往操場、活動中心）、z 向下（往泗水園、資訊館）；中山路在左（x≈-18）、商校街在上。
    方位與學校〈校園安全地圖〉一致。外觀依 Google 地圖使用者照片與街景精修。 */
 const FLOOR = 3.6;
+let ledTex = null;   // 行政大樓跑馬燈貼圖（每格位移做捲動）
 const app = document.getElementById('app');
 const scene = new THREE.Scene();
 const BG = new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#dfe8ee');
@@ -444,21 +445,43 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
 
 // --- 行政教學大樓（前排）：3F 粉色磁磚、白色百葉窗；中央入口凸出量體；東側開放走廊
 (function(){
-  const g = group(25, 72);
-  building(g, { w: 12, d: 134, floors: 3, roof: 'solar', parapet: lam(0xe0c6b8),
+  const OPT = { w: 12, floors: 3, roof: 'solar', parapet: lam(0xe0c6b8),
     corridor: { side: 'e', depth: 2.6, col: 0xe8ddd4, rail: 0xe8ddd4 },
-    faces: { all: PINK, e: { wall: '#ece4dc', win: 'glass', ground: 'door' } }, stairs: [[0, -40, 4, 5, 3], [0, 40, 4, 5, 3]] });
-  // 入口凸出量體（面中山路），綠框窗
-  const e = group(16.5, 76);
-  building(e, { w: 5, d: 15, floors: 3, h: 3 * FLOOR + 1, roof: 'gray', parapet: lam(0xe0c6b8),
+    faces: { all: PINK, e: { wall: '#ece4dc', win: 'glass', ground: 'door' } } };
+  building(group(25, 37), { ...OPT, d: 64, stairs: [[0, -18, 4, 5, 3]] });     // 北段 z 5–69
+  building(group(25, 111), { ...OPT, d: 56, stairs: [[0, 16, 4, 5, 3]] });     // 南段 z 83–139
+  // 中段：一樓挖空成穿堂（從校門直通中庭的中央穿廊），二、三樓照常
+  const m = group(25, 76); m.position.y = FLOOR;
+  building(m, { ...OPT, d: 14, floors: 2 });
+  box(12, .35, 14, M.concrete, 25, FLOOR - .35, 76);                          // 穿堂天花板
+  [[19.6, 69.6], [19.6, 82.4], [30.4, 69.6], [30.4, 82.4], [25, 69.6], [25, 82.4]].forEach(([x, z]) => box(.7, FLOOR, .7, lam(0xe8ddd4), x, 0, z));
+  rect(19, 69, 31, 83, M.stonePave, .06);
+  // 入口凸出量體（面中山路）：一樓同樣挖空，只留柱子與雨遮
+  const e = group(16.5, 76); e.position.y = FLOOR;
+  building(e, { w: 5, d: 15, floors: 2, h: 2 * FLOOR + 1, roof: 'gray', parapet: lam(0xe0c6b8),
     faces: { all: { wall: '#e8d3c6', band: '#b8796a', win: 'teal' } } });
+  [[14.3, 68.8], [14.3, 83.2]].forEach(([x, z]) => box(.7, FLOOR, .7, lam(0xe8d3c6), x, 0, z));
+  rect(14, 69, 19, 83, M.stonePave, .06);
   // 入口雨遮＋英文校名＋紅布條
   box(4, .5, 16, lam(0xe2d6c8), 12.2, FLOOR - .2, 76);
   const en = textPlane(textTex('National Hualien Commercial High School', { w: 1024, h: 96, color: '#c9a54a', font: 'bold 54px "Times New Roman",serif' }), 15, 1.4);
   en.rotation.y = -Math.PI / 2; en.position.set(9.94, FLOOR + .4, 76); scene.add(en);
   box(.4, 1.2, 15, lam(0xe2d6c8), 10.2, FLOOR - .2, 76);
-  const ban = textPlane(textTex('您今天向父母師長問好了嗎？', { w: 1024, h: 96, color: '#fff3c4', bg: '#c7302a', font: 'bold 60px "Microsoft JhengHei",sans-serif' }), 11, 1.1);
-  ban.rotation.y = -Math.PI / 2; ban.position.set(13.9, FLOOR + 1.9, 76); scene.add(ban);
+  // 電子跑馬燈：黑底霓虹字「歡迎來到花蓮高商」，由右往左捲動（原紅布條已移除）
+  box(.3, 1.5, 11.6, lam(0x1a1a1a), 13.85, FLOOR + 1.15, 76);
+  ledTex = canvasTex(1024, 128, (c, W, H) => {
+    c.fillStyle = '#050505'; c.fillRect(0, 0, W, H);
+    c.font = 'bold 84px "Microsoft JhengHei","Noto Sans TC",sans-serif'; c.textBaseline = 'middle';
+    const gr = c.createLinearGradient(0, 0, W * .7, 0); gr.addColorStop(0, '#ff3b5c'); gr.addColorStop(.5, '#ffb02e'); gr.addColorStop(1, '#3df5ff');
+    c.shadowColor = '#ff6a3d'; c.shadowBlur = 18; c.fillStyle = gr;
+    c.fillText('歡迎來到花蓮高商', 40, H / 2 + 4); c.shadowBlur = 0; c.fillText('歡迎來到花蓮高商', 40, H / 2 + 4);
+    c.fillStyle = 'rgba(0,0,0,.55)';                     // LED 點陣格線
+    for (let x = 0; x < W; x += 6) c.fillRect(x, 0, 2, H);
+    for (let y = 0; y < H; y += 6) c.fillRect(0, y, W, 2);
+  });
+  ledTex.wrapS = THREE.RepeatWrapping; window.__led = ledTex;
+  const led = new THREE.Mesh(new THREE.PlaneGeometry(11, 1.2), new THREE.MeshBasicMaterial({ map: ledTex }));
+  led.rotation.y = -Math.PI / 2; led.position.set(13.68, FLOOR + 1.9, 76); scene.add(led);
   addLabel('行政教學大樓（前排）', 25, 15, 100);
 })();
 
@@ -579,24 +602,20 @@ addLabel('女生宿舍', 267.5, 19, 141);
 building(group(-6.5, -16), { w: 5, d: 27, floors: 2, roof: 'gray', faces: { all: { wall: '#f0eee8', win: 'glass' } } });
 addLabel('民舍', -6.5, 10, -16);
 
-// --- 校門：灰色大雨遮、金字校名、四方柱、紅色直布條、警衛室
+// --- 校門（依 2025 年照片）：單排三柱，薄雨遮從柱列向校外（中山路側）懸挑約 5.5 m，
+//     前緣梁上金字校名、中央開口上方橫梁有圓形徽飾、柱腳花崗石、伸縮門、右側警衛室
 (function(){
-  const g = group(-6, 76);
-  [[-3.4, -6.6], [-3.4, 6.6], [3.4, -6.6], [3.4, 6.6]].forEach(([x, z]) => box(1.4, 6.2, 1.4, lam(0xa9acad), x, 0, z, g));
-  box(10, .9, 20, lam(0x9ea3a5), 0, 6.2, 0, g);
-  box(.5, 1.6, 20.4, lam(0x8f9496), -5.2, 5.9, 0, g);
+  const g = group(-4, 76), CON = lam(0xa7abad), GRANITE = lam(0xc9cbc8), METAL = lam(0xc4c8cb);
+  [-4, 4, 7.6].forEach(z => { box(1.1, 6.3, 1.1, CON, 0, 0, z, g); box(1.2, 2.4, 1.2, GRANITE, 0, 0, z, g); });
+  box(6.3, .35, 20, lam(0x9ea3a5), -2.35, 6.3, 0, g);                 // 雨遮板（x -5.5 ~ +0.8）
+  box(.5, 1.5, 20.4, lam(0x8f9496), -5.5, 5.5, 0, g);                 // 前緣梁
   const name = [...'國立花蓮高級商業職業學校'].reverse().join('');   // 照片中由右往左書寫
-  const nt = textPlane(textTex(name, { w: 1536, h: 128, spacing: 1, color: '#d9b44f' }), 19, 1.5);
-  nt.rotation.y = -Math.PI / 2; nt.position.set(-5.47, 6.7, 0); g.add(nt);
-  [['入行有意，耳順目明長百歲', -6.6], ['輪轉無情，心專神注行千里', 6.6]].forEach(([s, z]) => {
-    const t = canvasTex(64, 512, (c) => { c.fillStyle = '#c7302a'; c.fillRect(0, 0, 64, 512); c.fillStyle = '#fff1c2'; c.font = 'bold 38px "Microsoft JhengHei",sans-serif'; c.textAlign = 'center';
-      [...s].forEach((ch, i) => c.fillText(ch, 32, 44 + i * 40)); });
-    const p = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 5.6), new THREE.MeshLambertMaterial({ map: t }));
-    p.rotation.y = -Math.PI / 2; p.position.set(-4.12, 3, z); g.add(p);
-  });
-  box(.3, 1.6, 10, lam(0xc0c4c6), 0, 0, -1, g); // 伸縮門
-  scene.add(g);
-  building(group(-3, 88), { w: 5, d: 4, floors: 1, h: 3, roof: 'gray', faces: { all: { wall: '#e8e6e0', win: 'glass' } } }); // 警衛室
+  const nt = textPlane(textTex(name, { w: 1536, h: 128, spacing: 1, color: '#d9b44f' }), 19, 1.3);
+  nt.rotation.y = -Math.PI / 2; nt.position.set(-5.77, 6.25, 0); g.add(nt);
+  box(.7, .8, 8, CON, 0, 4.7, 0, g);                                   // 中央橫梁
+  const em = new THREE.Mesh(new THREE.CircleGeometry(.55, 24), lam(0x2a2a2a)); em.rotation.y = -Math.PI / 2; em.position.set(-.37, 5.1, 0); g.add(em);
+  box(.3, 1.5, 7, METAL, 0, 0, 0, g); box(.3, 1.5, 5.5, METAL, 0, 0, -6.8, g);   // 伸縮門
+  building(group(-1.5, 87.6), { w: 5, d: 4, floors: 1, h: 3, roof: 'gray', faces: { all: { wall: '#e8e6e0', win: 'glass' } } }); // 警衛室
   addLabel('校門', -6, 10, 76);
 })();
 // 後門、腳踏車棚
@@ -773,6 +792,7 @@ renderer.setAnimationLoop(() => {
   if (failed) return;
   try {
     if (++frame % 12 === 0) updateLabels();
+    if (ledTex) ledTex.offset.x = (performance.now() / 1000 * .12) % 1;   // 依時間捲動，幀率高低都等速
     if (fly){ fly.t = Math.min(1, fly.t + .035); const k = 1 - Math.pow(1 - fly.t, 3);
       controls.target.lerpVectors(fly.ft, fly.tt, k); camera.position.lerpVectors(fly.fp, fly.tp, k); if (fly.t >= 1) fly = null; }
     controls.update(); renderer.render(scene, camera); labelRenderer.render(scene, camera);
