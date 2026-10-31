@@ -89,10 +89,18 @@ const scene = new THREE.Scene();
 const BG = new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#dfe8ee');
 scene.background = BG; scene.fog = new THREE.Fog(BG, 450, 900);
 
-const renderer = new THREE.WebGLRenderer({ antialias: true });
 const MOBILE = matchMedia('(pointer: coarse)').matches;
-renderer.setPixelRatio(Math.min(devicePixelRatio, MOBILE ? 1.5 : 2));
-renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+/* 畫質等級：0 完整（陰影）、1 省電（無陰影）、2 精簡（貼圖減半、解析度 1）、3 極簡（無外牆貼圖）
+   手機從 1 開始；3D 畫面被系統收回時自動降一級重新載入，成功的等級記在本次瀏覽。網址加 ?q=0~3 可指定。 */
+const QNAME = ['完整', '省電', '精簡', '極簡'];
+let QL = MOBILE ? 1 : 0;
+try { const q = new URLSearchParams(location.search).get('q') ?? sessionStorage.getItem('campus3d-q'); if (q !== null && q !== '') QL = Math.max(0, Math.min(3, +q)); } catch (e) {}
+const TEXSCALE = QL >= 2 ? .5 : 1;
+const renderer = new THREE.WebGLRenderer({ antialias: QL === 0 });
+let GPU = '未知';
+try { const gl = renderer.getContext(), d = gl.getExtension('WEBGL_debug_renderer_info'); if (d) GPU = gl.getParameter(d.UNMASKED_RENDERER_WEBGL); } catch (e) {}
+renderer.setPixelRatio(Math.min(devicePixelRatio, [2, 1.5, 1, 1][QL]));
+renderer.shadowMap.enabled = QL === 0; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 app.appendChild(renderer.domElement);
 const labelRenderer = new CSS2DRenderer();
@@ -112,7 +120,7 @@ viewDefault();
 scene.add(new THREE.HemisphereLight(0xffffff, 0x8a9a7a, 1.0));
 const sun = new THREE.DirectionalLight(0xfff6e8, 1.7);
 sun.position.set(-120, 220, 60); sun.target.position.copy(CENTER);
-sun.castShadow = true; sun.shadow.mapSize.set(MOBILE ? 1024 : 2048, MOBILE ? 1024 : 2048); sun.shadow.bias = -0.0005;
+sun.castShadow = QL === 0; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0005;
 Object.assign(sun.shadow.camera, { left: -200, right: 200, top: 200, bottom: -200, near: 10, far: 600 });
 scene.add(sun, sun.target);
 
@@ -120,7 +128,10 @@ scene.add(sun, sun.target);
 const lam = (c, o = {}) => new THREE.MeshLambertMaterial({ color: c, ...o });
 function canvasTex(w, h, draw){
   const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h);
-  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
+  let src = c;
+  if (TEXSCALE < 1){ src = document.createElement('canvas'); src.width = Math.max(8, Math.round(w * TEXSCALE)); src.height = Math.max(8, Math.round(h * TEXSCALE));
+    src.getContext('2d').drawImage(c, 0, 0, src.width, src.height); }
+  const t = new THREE.CanvasTexture(src); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = QL >= 2 ? 1 : 4; return t;
 }
 function textTex(text, { w = 1024, h = 128, color = '#c9a54a', bg = null, font = 'bold 84px "DFKai-SB","BiauKai","Kaiti TC","Noto Serif TC",serif', spacing = 0 } = {}){
   return canvasTex(w, h, (g) => {
@@ -137,8 +148,12 @@ function textPlane(tex, w, h){
   return m;
 }
 // 立面貼圖：依實際長度與樓層數畫出每一格窗
+const facadeCache = new Map();
 function facade(len, floors, o){
   const bay = o.bay || 4, nb = Math.max(1, Math.round(len / bay)), cw = 48, ch = 48;
+  if (QL >= 3) return lam(o.wall);
+  const key = nb + '|' + floors + '|' + JSON.stringify(o);
+  if (facadeCache.has(key)) return facadeCache.get(key);
   const tex = canvasTex(Math.min(4096, nb * cw), floors * ch, (g, W, H) => {
     const bw = W / nb;
     g.fillStyle = o.wall; g.fillRect(0, 0, W, H);
@@ -177,13 +192,13 @@ function facade(len, floors, o){
       }
     }
   });
-  return new THREE.MeshLambertMaterial({ map: tex });
+  const m = new THREE.MeshLambertMaterial({ map: tex }); facadeCache.set(key, m); return m;
 }
 const solarTex = (() => { const t = canvasTex(64, 64, (g) => {
   g.fillStyle = '#1d2c55'; g.fillRect(0, 0, 64, 64); g.strokeStyle = '#8193c0'; g.lineWidth = 2;
   for (let i = 0; i <= 64; i += 16){ g.beginPath(); g.moveTo(i, 0); g.lineTo(i, 64); g.stroke(); }
   g.beginPath(); g.moveTo(0, 32); g.lineTo(64, 32); g.stroke(); }); t.wrapS = t.wrapT = THREE.RepeatWrapping; return t; })();
-function solarMat(w, d){ const t = solarTex.clone(); t.needsUpdate = true; t.repeat.set(w / 5, d / 5); return new THREE.MeshLambertMaterial({ map: t }); }
+function solarMat(w, d){ if (QL >= 3) return lam(0x24356a); const t = solarTex.clone(); t.needsUpdate = true; t.repeat.set(w / 5, d / 5); return new THREE.MeshLambertMaterial({ map: t }); }
 const brickTex = (() => { const t = canvasTex(64, 64, (g) => {
   g.fillStyle = '#9a5444'; g.fillRect(0, 0, 64, 64); g.strokeStyle = '#7d3f33'; g.lineWidth = 2;
   for (let y = 0; y < 64; y += 8){ g.beginPath(); g.moveTo(0, y); g.lineTo(64, y); g.stroke();
@@ -466,7 +481,7 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
   wt.wrapS = wt.wrapT = THREE.RepeatWrapping; wt.repeat.set(1 / 4, 1 / H);
   const body = new THREE.Mesh(new THREE.ExtrudeGeometry(rr(w, d, r), { depth: H, bevelEnabled: false, curveSegments: 8 }),
     [solarMat(w, d), new THREE.MeshLambertMaterial({ map: wt })]);
-  body.material[0].map.repeat.set(1 / 5, 1 / 5);
+  if (body.material[0].map) body.material[0].map.repeat.set(1 / 5, 1 / 5);
   body.rotation.x = -Math.PI / 2; body.castShadow = body.receiveShadow = true; g.add(body);
   [5.2, H].forEach(y => { const s = rr(w + 2.4, d + 2.4, r + 1.2); s.holes.push(rr(w - 1.6, d - 1.6, r - .8));  // 環狀出簷，露出屋頂太陽能板
     const e = new THREE.Mesh(new THREE.ExtrudeGeometry(s, { depth: .5, bevelEnabled: false, curveSegments: 8 }), M.white);
@@ -696,10 +711,14 @@ function fail(msg){
   if (!el){ el = document.createElement('div'); el.id = 'gfxerr';
     el.style.cssText = 'position:absolute;left:12px;right:12px;top:64px;z-index:20;background:var(--panel);padding:14px;border-radius:10px;font-size:14px;line-height:1.6;white-space:pre-wrap';
     document.body.appendChild(el); }
-  const gl = renderer.getContext(), dbg = gl.getExtension('WEBGL_debug_renderer_info');
-  el.textContent = msg + '\n繪圖晶片：' + (dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : '未知') + '\n' + navigator.userAgent + '\n請截圖給老師。';
+  el.textContent = msg + '\n畫質等級：' + QL + ' ' + QNAME[QL] + '\n繪圖晶片：' + GPU + '\n' + navigator.userAgent + '\n請截圖給老師。';
 }
-renderer.domElement.addEventListener('webglcontextlost', (e) => { e.preventDefault(); fail('3D 畫面被系統收回（可能是繪圖記憶體不足）。'); });
+renderer.domElement.addEventListener('webglcontextlost', (e) => {
+  e.preventDefault();
+  if (QL < 3){ try { sessionStorage.setItem('campus3d-q', QL + 1); } catch (er) {}
+    const u = new URL(location.href); u.searchParams.delete('q'); location.replace(u); return; }
+  fail('3D 畫面被系統收回（可能是繪圖記憶體不足），已降到最低畫質仍無法顯示。');
+});
 // 繪圖晶片編譯陰影效果失敗時：自動關閉陰影再試，而不是整個空白
 let shadowFallback = false;
 renderer.debug.onShaderError = (gl, program, vs, fs) => {
@@ -716,7 +735,9 @@ renderer.setAnimationLoop(() => {
     if (fly){ fly.t = Math.min(1, fly.t + .035); const k = 1 - Math.pow(1 - fly.t, 3);
       controls.target.lerpVectors(fly.ft, fly.tt, k); camera.position.lerpVectors(fly.fp, fly.tp, k); if (fly.t >= 1) fly = null; }
     controls.update(); renderer.render(scene, camera); labelRenderer.render(scene, camera);
-    if (first){ first = false; const l = document.getElementById('load'); if (l) l.remove(); window.__stage = '完成'; }
+    if (first){ first = false; const l = document.getElementById('load'); if (l) l.remove(); window.__stage = '完成';
+      try { sessionStorage.setItem('campus3d-q', QL); } catch (er) {}
+      document.querySelector('header').insertAdjacentHTML('beforeend', `<span style="background:var(--panel);padding:6px 10px;border-radius:8px;font-size:12px;color:var(--sub);pointer-events:auto">畫質：${QNAME[QL]}</span>`); }
   } catch (err){ failed = true; fail('繪圖錯誤：' + err.message); }
 });
 </script>
