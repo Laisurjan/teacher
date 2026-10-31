@@ -357,6 +357,10 @@ rect(-10, 67, 19, 85, M.stonePave, .04);          // 校門進來的車道
     }
     addLabel('停車場', 2.5, 2, (z0 + z1) / 2);
   });
+  // 校長宿舍前（臨中山路）的停車格，接南側停車場
+  rect(-8, 103, 2, 127, ASPH, .045);
+  for (let z = 103.5; z <= 126.5; z += 2.5) scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-8, .08, z), new THREE.Vector3(-2.8, .08, z)]), M.line));
+  [[108, 0x6b7f6a], [113, 0xe6e6e2]].forEach(([z, c]) => { box(4.2, .9, 1.8, lam(c), -5.4, .25, z + 1.25); box(2.3, .65, 1.6, lam(0x3a4650), -5.1, 1.15, z + 1.25); });
 })();
 rect(92.5, 32, 95.5, 128, M.brickPave, .05);      // 人文館前紅磚步道
 rect(70, 76, 104, 79, M.brickPave, .05);
@@ -590,12 +594,12 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
 
 // --- 其他建築
 (function(){ // 校長宿舍：2F 住宅＋斜屋頂
-  const g = group(1, 117);
-  building(g, { w: 13, d: 12, floors: 2, roof: 'gray', faces: { all: { wall: '#ece3d3', win: 'glass' } } });
-  const sh = new THREE.Shape(); sh.moveTo(-7.2, 0); sh.lineTo(7.2, 0); sh.lineTo(0, 3); sh.lineTo(-7.2, 0);
+  const g = group(9, 119);   // 從中山路後退，前方留作停車
+  building(g, { w: 12, d: 12, floors: 2, roof: 'gray', faces: { all: { wall: '#ece3d3', win: 'glass' } } });
+  const sh = new THREE.Shape(); sh.moveTo(-6.7, 0); sh.lineTo(6.7, 0); sh.lineTo(0, 3); sh.lineTo(-6.7, 0);
   const rf = new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth: 12.6, bevelEnabled: false }), lam(0x8c5a46));
   rf.position.set(0, 2 * FLOOR + .4, -6.3); rf.castShadow = true; g.add(rf);
-  addLabel('校長宿舍', 1, 12, 117);
+  addLabel('校長宿舍', 9, 12, 119);
 })();
 building(group(267.5, 141), { w: 25, d: 22, floors: 4, roof: 'gray', faces: { all: { wall: '#eadfcb', win: 'glass', band: '#cdbb9d' } }, stairs: [[0, 0, 4, 5, 3]] });
 addLabel('女生宿舍', 267.5, 19, 141);
