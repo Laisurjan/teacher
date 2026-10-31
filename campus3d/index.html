@@ -409,8 +409,8 @@ const MAIN_ROAD = [[69, 73.5], [80, 74.5], [89, 78], [97, 84], [103, 90]];
   rect(105, 54.8, 127, 56.2, M.track, .06);                         // 助跑道
   box(5, .6, 3.6, lam(0x2f5fb8), 111.5, 0, 56.5);                   // 跳高墊（衛星圖藍色方塊）
   const hill = new THREE.Mesh(new THREE.SphereGeometry(1, 40, 16, 0, Math.PI * 2, 0, Math.PI / 2), M.grass);
-  hill.scale.set(9, 1.2, 3.6); hill.position.set(156, 0, 54); hill.rotation.y = -THREE.MathUtils.degToRad(30); hill.receiveShadow = true; scene.add(hill);
-  addLabel('沙坑', 136, 3, 55.5); addLabel('小坡', 156, 3.5, 54);
+  hill.scale.set(8, 1.1, 3); hill.position.set(158, 0, 56); hill.rotation.y = -THREE.MathUtils.degToRad(30); hill.receiveShadow = true; scene.add(hill);
+  addLabel('沙坑', 136, 3, 55.5); addLabel('小坡', 158, 3.5, 56);
 })();
 rect(41, 12, 43.5, 71.5, M.brickPave, .05); rect(41, 80.5, 43.5, 124, M.brickPave, .05);
 
@@ -698,6 +698,29 @@ addLabel('後門', 211, 5, 187);
   [-w / 2 + .5, 0, w / 2 - .5].forEach(dx => box(.15, 2.5, .15, M.roofGray, x + dx, 0, z));
 });
 addLabel('腳踏車棚', 237, 6, 177);
+// --- 人文館到活動中心的小路（360 照校內06～08：草地上紅磚窄路、沿線大樹、活動中心端為碎石板廣場）
+const SMALL_PATH = [[122, 40], [145, 46], [170, 55], [186, 68], [194, 80]];
+(function(){
+  flat([[118, 18], [200, 70.5], [194, 78], [176, 62], [150, 54], [122, 43], [112, 30]], M.grass, .024);   // 小路北側樹下草地
+  SMALL_PATH.forEach((a, i) => { if (i === SMALL_PATH.length - 1) return; const b = SMALL_PATH[i + 1];
+    const dx = b[0] - a[0], dz = b[1] - a[1], L = Math.hypot(dx, dz), nx = -dz / L * .9, nz = dx / L * .9;
+    flat([[a[0] + nx, a[1] + nz], [b[0] + nx, b[1] + nz], [b[0] - nx, b[1] - nz], [a[0] - nx, a[1] - nz]], M.brickPave, .06);
+    const c = new THREE.Mesh(new THREE.CircleGeometry(.9, 12), M.brickPave); c.rotation.x = -Math.PI / 2; c.position.set(b[0], .06, b[1]); scene.add(c); });
+  // 碎石板廣場（不規則石板拼貼）
+  const stoneTex = canvasTex(256, 256, (c) => {
+    c.fillStyle = '#a7a8a3'; c.fillRect(0, 0, 256, 256); c.strokeStyle = '#6f716d'; c.lineWidth = 2;
+    let sd = 3; const r = () => (sd = (sd * 9301 + 49297) % 233280) / 233280;
+    for (let i = 0; i < 70; i++){ const x = r() * 256, y = r() * 256, n = 5 + Math.floor(r() * 2), rad = 12 + r() * 14;
+      c.fillStyle = `hsl(60,3%,${58 + r() * 14}%)`; c.beginPath();
+      for (let k = 0; k < n; k++){ const a = k / n * Math.PI * 2 + r() * .5; c[k ? 'lineTo' : 'moveTo'](x + Math.cos(a) * rad, y + Math.sin(a) * rad); }
+      c.closePath(); c.fill(); c.stroke(); } });
+  stoneTex.wrapS = stoneTex.wrapT = THREE.RepeatWrapping; stoneTex.repeat.set(1 / 8, 1 / 8);
+  flat([[190, 74], [205, 80], [206, 88], [199, 104], [192, 100]], new THREE.MeshLambertMaterial({ map: stoneTex }), .055);
+  // 小路與圍牆之間的大樹、路南側零星樹
+  for (let i = 0; i < 16; i++){ const t = i / 15, x = 124 + t * 66, zPath = 40 + t * 34; tree(x + (rnd() - .5) * 3, zPath - 4 - rnd() * 3, 1.1 + rnd() * .4); }
+  [[132, 50], [150, 50], [176, 64], [182, 76]].forEach(([x, z]) => tree(x, z, .9));
+  addLabel('小路', 160, 2.5, 51);
+})();
 // --- 活動中心東側圍牆（2022 年 8 月街景「體育館東側巷」）：深褐磚基座＋水泥柱＋淺褐色鐵欄杆
 (function(){
   const A = [237.5, 99.7], B = [216.4, 147.2];
