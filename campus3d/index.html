@@ -639,19 +639,58 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
   addLabel('資訊館', 88, 24, 155);
 })();
 
-// --- 司令台：灰色清水模、正面火車彩繪、側梯上屋頂平台、旗桿
+// --- 司令台（南側直道含往西延長段的正中間，東鄰網球場；Google 衛星圖量測、360 照校內03 印證），正面朝操場
+//     依 360 照校內01/02（正面）、g041/g065（背面與西側）：灰色清水模開放式舞台；
+//     台基約 1.8 m、正面 4 塊字牌；舞台後牆紅字標語＋國旗；兩端柱掛直式布條；屋簷橫梁「司令台」字牌；
+//     屋頂探照燈與喇叭、三根旗桿（中間最高）；兩端小階梯上台；西側牆面火車彩繪；南面斜外梯上屋頂、黃色小門
 (function(){
-  const g = group(114, 125.5);
-  const mural = canvasTex(256, 96, (c) => { c.fillStyle = '#c8c8c3'; c.fillRect(0, 0, 256, 96);
-    c.fillStyle = '#a8443a'; c.fillRect(60, 30, 130, 60); c.fillStyle = '#4b88c6'; c.fillRect(70, 6, 110, 22);
-    c.fillStyle = '#f2e3a0'; for (let i = 0; i < 4; i++) c.fillRect(80 + i * 26, 40, 16, 20); c.fillStyle = '#e8b52c'; c.fillRect(200, 30, 16, 60); });
-  const body = new THREE.Mesh(new THREE.BoxGeometry(10, 3.8, 9), [M.concrete, M.concrete, M.concrete, M.concrete, M.concrete, new THREE.MeshLambertMaterial({ map: mural })]);
-  body.position.y = 1.9; body.castShadow = true; g.add(body);
-  box(10.6, .35, 9.6, M.concrete, 0, 3.8, 0, g);
-  [[0, -4.7, 10.6, .1], [0, 4.7, 10.6, .1], [-5.2, 0, .1, 9.6], [5.2, 0, .1, 9.6]].forEach(([x, z, w, d]) => box(w || .1, 1, d || .1, lam(0x8a8f92), x, 4.15, z, g));
-  for (let k = 0; k < 10; k++) box(1.4, .38 * (k + 1), .45, M.concrete, 6, 0, -3.5 + k * .45, g); // 側梯
-  addLabel('司令台', 114, 8, 125.5);
-  [[104, 121], [106, 121], [108, 121]].forEach(([x, z], i) => { box(.15, 11 - i, .15, lam(0xd0d3d6), x, 0, z); });
+  const g = group(129, 126), CON = M.concrete, PALE = lam(0xd4d3cd);
+  const W = 16, D = 9, BASE = 1.8, STAGE = 2.9, ROOF = 1.4, TOP = BASE + STAGE + ROOF;
+  const plain = (m) => [m, m, m, m, m, m];
+  // 台基：正面 4 塊深色字牌
+  const baseFront = canvasTex(512, 64, (c) => { c.fillStyle = '#c4c3bd'; c.fillRect(0, 0, 512, 64);
+    for (let i = 0; i < 4; i++){ c.fillStyle = '#d9d6cc'; c.fillRect(140 + i * 66, 10, 44, 44); c.fillStyle = '#4a4744'; c.fillRect(144 + i * 66, 14, 36, 36); } });
+  const bf = plain(CON); bf[5] = new THREE.MeshLambertMaterial({ map: baseFront });
+  box(W, BASE, D, bf, 0, 0, 0, g);
+  // 舞台後牆：紅字標語＋國旗
+  const back = canvasTex(512, 96, (c) => { c.fillStyle = '#dcdcd6'; c.fillRect(0, 0, 512, 96);
+    c.fillStyle = '#b23a32'; [-5, -4, -3, -2, 2, 3, 4, 5].forEach((k, i) => { c.beginPath(); c.arc(256 + k * 34, 52 - Math.cos(k / 6) * 14 + 14, 10, 0, 7); c.fill(); });
+    c.fillStyle = '#c8202a'; c.fillRect(226, 26, 60, 40); c.fillStyle = '#123c8c'; c.fillRect(226, 26, 30, 20);
+    c.fillStyle = '#fff'; c.beginPath(); c.arc(241, 36, 6, 0, 7); c.fill(); });
+  const bw = plain(PALE); bw[5] = new THREE.MeshLambertMaterial({ map: back });
+  box(W - 1, STAGE, .4, bw, 0, BASE, D / 2 - .2, g);
+  // 兩端：西側牆面火車彩繪（g041、g065），東側素面
+  const train = canvasTex(256, 128, (c) => { c.fillStyle = '#c9c8c2'; c.fillRect(0, 0, 256, 128);
+    c.fillStyle = '#9e3b30'; c.fillRect(20, 60, 200, 68); c.fillStyle = '#e9e1c8'; for (let i = 0; i < 4; i++){ c.beginPath(); c.arc(50 + i * 46, 100, 14, Math.PI, 0); c.fillRect(36 + i * 46, 100, 28, 28); c.fill(); }
+    c.fillStyle = '#3f7fc6'; c.fillRect(30, 22, 170, 34); c.fillStyle = '#f2d14b'; for (let i = 0; i < 5; i++) c.fillRect(40 + i * 32, 28, 18, 16);
+    c.fillStyle = '#2d2d2d'; for (let i = 0; i < 6; i++){ c.beginPath(); c.arc(42 + i * 30, 58, 6, 0, 7); c.fill(); } });
+  const west = plain(CON); west[1] = new THREE.MeshLambertMaterial({ map: train });
+  box(.6, STAGE, D, west, -W / 2 + .3, BASE, 0, g);
+  box(.6, STAGE, D, CON, W / 2 - .3, BASE, 0, g);
+  // 正面兩端柱＋直式布條
+  const banner = canvasTex(32, 128, (c) => { c.fillStyle = '#f4f4f0'; c.fillRect(0, 0, 32, 128); c.fillStyle = '#3d8fd0'; c.fillRect(0, 0, 32, 10); c.fillRect(0, 118, 32, 10);
+    c.fillStyle = '#d24a3c'; for (let i = 0; i < 6; i++) c.fillRect(10, 18 + i * 16, 12, 10); });
+  [-1, 1].forEach(sd => { box(.7, STAGE, .7, CON, sd * (W / 2 - .35), BASE, -D / 2 + .35, g);
+    const b = textPlane(banner, .6, 2.2); b.position.set(sd * (W / 2 - .35), BASE + 1.4, -D / 2 - .01); b.rotation.y = Math.PI; g.add(b); });
+  // 屋頂板＋屋簷橫梁「司令台」字牌
+  const fascia = textTex('司 令 台', { w: 512, h: 64, color: '#3a3836', bg: '#bdbcb6', font: 'bold 40px "Noto Sans TC","Microsoft JhengHei",sans-serif' });
+  const rf = plain(CON); rf[5] = new THREE.MeshLambertMaterial({ map: fascia });
+  box(W + .4, ROOF, D + .4, rf, 0, BASE + STAGE, 0, g);
+  // 屋頂女兒牆
+  [[0, -D / 2, W + .4, .2], [0, D / 2, W + .4, .2], [-W / 2, 0, .2, D + .4], [W / 2, 0, .2, D + .4]].forEach(([x, z, w, d]) => box(w, .6, d, CON, x, TOP, z, g));
+  // 屋頂前緣探照燈、喇叭
+  for (let i = 0; i < 6; i++){ const x = -6 + i * 2.4; box(.3, .5, .3, lam(0x555a5e), x, TOP, -D / 2 + .8, g); box(.45, .35, .25, lam(0xdfe3e6), x, TOP + .5, -D / 2 + .7, g); }
+  // 三根旗桿（中間最高）
+  [[-2.4, 6], [0, 8.5], [2.4, 6]].forEach(([x, h]) => box(.12, h, .12, lam(0xd0d3d6), x, TOP, 1.5, g));
+  // 正面兩端上台小階梯（由兩側往中間爬）
+  [-1, 1].forEach(sd => { for (let k = 0; k < 6; k++) box(.4, .3 * (k + 1), 2.4, CON, sd * (W / 2 + .2 + (5 - k) * .4), 0, -D / 2 + 1.4, g); });
+  // 南面（背面）斜外梯往西爬上屋頂，梯下黃色小門
+  const N = 16;
+  for (let k = 0; k < N; k++) box(.55, .38, 1.3, CON, 7 - k * .55, (k + 1) * TOP / N - .38, D / 2 + .7, g);
+  const rail = new THREE.Mesh(new THREE.BoxGeometry(Math.hypot(N * .55, TOP), .08, .08), lam(0x7d8285));
+  rail.position.set(7 - N * .55 / 2, TOP / 2 + 1, D / 2 + 1.3); rail.rotation.z = -Math.atan2(TOP, N * .55); g.add(rail);
+  [[-6, .9], [5.8, 1.2]].forEach(([x, w]) => box(w, 1.6, .06, lam(0xe0b52c), x, 0, D / 2 + .03, g));
+  addLabel('司令台', 129, TOP + 3, 126);
 })();
 
 // --- 其他建築
@@ -728,15 +767,20 @@ const SMALL_PATH = [[122, 40], [145, 46], [170, 55], [186, 68], [194, 80]];
     flat([[a[0] + nx, a[1] + nz], [b[0] + nx, b[1] + nz], [b[0] - nx, b[1] - nz], [a[0] - nx, a[1] - nz]], mat, y); }
   function path(pts, w, mat, edge){ pts.forEach((a, i) => { if (i === pts.length - 1) return; const b = pts[i + 1];
     if (edge) seg(a, b, w + .5, edge, .058); seg(a, b, w, mat, .062); }); }
-  // ① 資訊館前草地上的水泥窄路（青綠色邊），橫越到司令台
-  path([[88, 136.5], [96, 134], [104, 131], [108, 130]], 1.2, CON, TEAL);
-  // ② 操場西彎道外側的淺灰水泥路
-  const arc = []; for (let a = 75; a <= 255; a += 12){ const r = THREE.MathUtils.degToRad(a); arc.push([131.5 + Math.cos(r) * 32, 91.5 + Math.sin(r) * 32]); }
-  path(arc, 2, CON);
-  // ③ 司令台周圍到網球場一側的紅磚鋪面
-  rect(106, 120, 121, 132, M.brickPave, .06);
-  rect(114, 132, 121, 140, M.brickPave, .06);
-  addLabel('水泥路', 98, 2.5, 133);
+  // ① 資訊館前草坪上的水泥窄路（青綠色邊），橫越草坪接到司令台西側紅磚帶（360 照校內03、g065）
+  path([[88, 136.5], [96, 134], [104, 131], [113, 130.5]], 1.2, CON, TEAL);
+  // ② 跑道南直道往西延長段（Google 衛星圖：直道延伸到後排教室前，約 x 76）
+  rect(76, 112.5, 131.5, 120, M.track, .052);
+  for (let k = 0; k <= 6; k++){ const z = 112.5 + k * 7.5 / 6;
+    scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(76.3, .07, z), new THREE.Vector3(131.5, .07, z)]), M.line)); }
+  scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(76.3, .07, 112.5), new THREE.Vector3(76.3, .07, 120)]), M.line));
+  // ③ 延長段南側：兩邊壓石頭的淺灰水泥窄路（g041）
+  path([[80, 123.2], [116, 123.2]], 1.4, CON);
+  for (let x = 80.5; x < 116; x += 1.6) [122.2, 124.2].forEach(z => { const r = new THREE.Mesh(new THREE.DodecahedronGeometry(.28), M.concrete); r.position.set(x + (z > 123 ? .8 : 0), .12, z); r.scale.y = .6; scene.add(r); });
+  // ④ 司令台周圍與西側往資訊館的棋盤格紅磚帶（g041、g065、360 照校內03）
+  rect(117, 120.5, 141, 133, M.brickPave, .06);
+  rect(113, 129, 120, 142, M.brickPave, .06);
+  addLabel('水泥路', 98, 2.5, 133); addLabel('直線跑道', 92, 2.5, 116);
 })();
 // --- 活動中心東側圍牆（2022 年 8 月街景「體育館東側巷」）：深褐磚基座＋水泥柱＋淺褐色鐵欄杆
 (function(){
@@ -794,11 +838,17 @@ addLabel('原舞台', 3.5, 4, -16);
 box(2.4, .6, 2.4, M.concrete, 93, 0, 127); box(1, 3.2, .5, lam(0x8d8f8c), 93, .6, 127);
 
 // ================= 植栽 =================
+(function(){ const W = lam(0xf0efe9), G = lam(0x4f8a3c);
+  const P = []; MAIN_ROAD.forEach((a, i) => { if (i < 1 || i === MAIN_ROAD.length - 1) return; const b = MAIN_ROAD[i + 1];
+    const dx = b[0] - a[0], dz = b[1] - a[1], L = Math.hypot(dx, dz); for (let t = 0; t < L; t += 5) [-1, 1].forEach(sd => P.push([a[0] + dx * t / L - dz / L * 2.8 * sd, a[1] + dz * t / L + dx / L * 2.8 * sd])); });
+  P.forEach(([x, z]) => {
+    const u = new THREE.Mesh(new THREE.CylinderGeometry(.42, .22, .7, 10), W); u.position.set(x, .45, z); u.castShadow = true; scene.add(u);
+    box(.3, .1, .3, W, x, 0, z); const b = new THREE.Mesh(new THREE.SphereGeometry(.4, 8, 6), G); b.position.set(x, 1, z); scene.add(b); }); })();
 function nearRoad(x, z, d){ return MAIN_ROAD.some((a, i) => { if (i === MAIN_ROAD.length - 1) return false; const b = MAIN_ROAD[i + 1];
   const vx = b[0] - a[0], vz = b[1] - a[1], t = Math.max(0, Math.min(1, ((x - a[0]) * vx + (z - a[1]) * vz) / (vx * vx + vz * vz)));
   return Math.hypot(x - a[0] - t * vx, z - a[1] - t * vz) < d; }); }
 for (let i = 0; i < 90; i++){ const x = 72 + rnd() * 30, z = 32 + rnd() * 92;
-  if (Math.hypot(x - 92, z - 38) < 10 || (Math.abs(x - 92) < 3 && z > 44 && z < 74) || nearRoad(x, z, 4.5) || Math.abs(z - 76) < 7) continue; tree(x, z, .8 + rnd() * .6); }
+  if (z > 108 || Math.hypot(x - 92, z - 38) < 10 || (Math.abs(x - 92) < 3 && z > 44 && z < 74) || nearRoad(x, z, 4.5) || Math.abs(z - 76) < 7) continue; tree(x, z, .8 + rnd() * .6); }
 for (let i = 0; i < 8; i++) tree(33 + rnd() * 6, 14 + rnd() * 50, .8 + rnd() * .4);
 for (let i = 0; i < 6; i++) tree(46 + rnd() * 6, 82 + rnd() * 40, .8 + rnd() * .4);
 // 中庭原有木造涼亭已拆除：現在是穿堂（中央穿廊）南北兩側各一組深綠色鐵圓桌＋有椅背的個人鐵椅
@@ -822,7 +872,7 @@ for (let k = 0; k < 28; k++){ const a = k / 28 * Math.PI * 2; if (Math.abs(a - M
   box(1.6, .9, .8, lam(0x4d8a3f), 92 + Math.cos(a) * 8.6, 0, 38 + Math.sin(a) * 8.6).rotation.y = -a + Math.PI / 2; }
 hedge(90.2, 47, 90.2, 72); hedge(93.8, 47, 93.8, 72);
 for (let i = 0; i < 12; i++) tree(2 + rnd() * 55, 178 + rnd() * 6, .9);
-for (let i = 0; i < 18; i++) tree(105 + i * 5, 131 - (i % 2), .8);
+for (let i = 0; i < 18; i++){ const x = 105 + i * 5; if (x > 117 && x < 141) continue; tree(x, 131 - (i % 2), .8); }   // 司令台背後不種
 // 行政大樓前原有一排大王椰子，因落葉落果危險已砍除，只剩樹根
 for (let z = 28; z < 138; z += 14){ if (z > 66 && z < 86) continue; const st = new THREE.Mesh(new THREE.CylinderGeometry(.45, .6, .5, 8), lam(0x8a7a66)); st.position.set(14, .25, z); scene.add(st); }
 [[36, 158], [50, 150], [12, 180], [56, 176]].forEach(([x, z]) => tree(x, z, 1.2));
