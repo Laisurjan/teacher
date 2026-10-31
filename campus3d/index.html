@@ -697,11 +697,7 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
       box(.05, .05, LAND, SS, xo, BASE + .95, z0 + len + LAND / 2, g); box(.05, .95, .05, SS, xo, BASE, z0 + len + LAND - .05, g); });   // 平台扶手
     box(SW, .05, .05, SS, xc, BASE + .95, z0 + len + LAND - .05, g);
   });
-  // 南面（背面）斜外梯往西爬上屋頂，梯下黃色小門
-  const N = 16;
-  for (let k = 0; k < N; k++) box(.55, .38, 1.3, CON, 7 - k * .55, (k + 1) * TOP / N - .38, D / 2 + .7, g);
-  const rail = new THREE.Mesh(new THREE.BoxGeometry(Math.hypot(N * .55, TOP), .08, .08), lam(0x7d8285));
-  rail.position.set(7 - N * .55 / 2, TOP / 2 + 1, D / 2 + 1.3); rail.rotation.z = -Math.atan2(TOP, N * .55); g.add(rail);
+  // 南面黃色小門
   [[-6, .9], [5.8, 1.2]].forEach(([x, w]) => box(w, 1.6, .06, lam(0xe0b52c), x, 0, D / 2 + .03, g));
   addLabel('司令台', 129, TOP + 3, 126);
 })();
