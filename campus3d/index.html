@@ -339,7 +339,24 @@ for (let i = 0; i < BOUND.length - 1; i++){
 rect(31, 10, 54, 68, M.grass); rect(31, 77, 54, 126, M.grass);
 rect(70, 30, 104, 128, M.grass); flat([[0, 140], [62, 140], [62, 186], [0, 186]], M.grass);
 rect(102, 58, 200, 130, M.grass);
-rect(-10, 64, 19, 88, M.stonePave, .04);          // 校門前廣場
+rect(-10, 67, 19, 85, M.stonePave, .04);          // 校門進來的車道
+// 校門進入左右兩側停車場（大小相近）：北側 z 49–67、南側 z 85–103
+(function(){
+  const ASPH = lam(0x7f8285), CARS = [0xd8d8d8, 0x2f3a46, 0xa83a32, 0xf2f2f0, 0x5b6f86];
+  [[49, 67], [85, 103]].forEach(([z0, z1], li) => {
+    rect(-8, z0, 13, z1, ASPH, .045);
+    for (let z = z0 + .5; z <= z1 - .5; z += 2.5){
+      [[-8, -2.8], [7.8, 13]].forEach(([x0, x1]) => scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x0, .08, z), new THREE.Vector3(x1, .08, z)]), M.line)));
+    }
+    for (let k = 0; k < 5; k++){   // 停放的車
+      const side = k % 2 ? 10.4 : -5.4, z = z0 + 1.75 + Math.floor(k * 1.7) * 2.5;
+      if (z > z1 - 1.5) continue;
+      const c = lam(CARS[(k + li) % CARS.length]);
+      box(4.2, .9, 1.8, c, side, .25, z); box(2.3, .65, 1.6, lam(0x3a4650), side + (side < 0 ? .3 : -.3), 1.15, z);
+    }
+    addLabel('停車場', 2.5, 2, (z0 + z1) / 2);
+  });
+})();
 rect(92.5, 32, 95.5, 128, M.brickPave, .05);      // 人文館前紅磚步道
 rect(70, 76, 104, 79, M.brickPave, .05);
 rect(41, 12, 43.5, 66, M.brickPave, .05); rect(41, 79, 43.5, 124, M.brickPave, .05);
@@ -492,21 +509,45 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
   [[-17, -14], [-17, -6], [-17, 6], [-17, 14]].forEach(([x, z]) => { const p = new THREE.Vector3(x, 0, z).applyAxisAngle(new THREE.Vector3(0, 1, 0), g.rotation.y); conifer(210 + p.x, 116 + p.z); });
 })();
 
-// --- 資訊館：咖啡色磁磚 5F，兩翼 V 形＋傾斜楔形塔＋大階梯
+// --- 資訊館：咖啡色磁磚 5F。正面朝北側草地（從草地看：左邊楔形塔、中間內凹入口、右翼前凸，有頂走廊通往後排教室）；大階梯升上 1.45 m 平台
 (function(){
-  const BR = { wall: '#b98468', band: '#a46c53', win: 'louver' };
-  building(group(83, 147), { w: 34, d: 10, floors: 5, roof: 'solar', parapet: lam(0xa97a60), faces: { all: BR } });
-  building(group(68, 162), { w: 10, d: 34, floors: 5, roof: 'solar', parapet: lam(0xa97a60), faces: { all: BR } });
-  building(group(92.5, 165), { w: 15, d: 18, floors: 3, roof: 'gray', parapet: lam(0xa97a60), faces: { all: BR } });
-  // 楔形塔：底寬上窄、向外傾斜
-  const sh = new THREE.Shape(); sh.moveTo(0, 0); sh.lineTo(7, 0); sh.lineTo(5.5, 21); sh.lineTo(2.6, 21); sh.lineTo(0, 0);
-  // 側面 UV：u 沿高度、v 沿厚度，所以窄窗畫成橫條
-  const tt = canvasTex(256, 64, (c) => { c.fillStyle = '#b5795d'; c.fillRect(0, 0, 256, 64); c.fillStyle = '#3e3a36'; c.fillRect(30, 22, 190, 5); c.fillRect(30, 37, 190, 5); });
-  tt.wrapS = tt.wrapT = THREE.RepeatWrapping; tt.repeat.set(1 / 21, 1 / 6);
-  const wedge = new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth: 6, bevelEnabled: false }), [lam(0xa86e54), new THREE.MeshLambertMaterial({ map: tt })]);
-  wedge.position.set(60.5, 0, 141); wedge.rotation.y = Math.PI / 2; wedge.castShadow = true; scene.add(wedge);
-  for (let k = 0; k < 5; k++) box(9, .3 * (k + 1), 1, lam(0xb98a72), 70, 0, 140.5 - (4 - k) * 1);
-  addLabel('資訊館', 76, 22, 155);
+  const BR = { wall: '#b98468', band: '#a46c53', win: 'louver' }, PAR = lam(0xa97a60), TILE = lam(0xb5795d);
+  building(group(88.5, 151), { w: 13, d: 10, floors: 5, roof: 'solar', parapet: PAR, faces: { all: BR } });   // 入口段（內凹）
+  building(group(74, 147), { w: 16, d: 10, floors: 5, roof: 'solar', parapet: PAR, faces: { all: BR } });     // 右翼（前凸）
+  building(group(99, 162), { w: 10, d: 36, floors: 5, roof: 'solar', parapet: PAR, faces: { all: BR } });     // 左翼（往後）
+  building(group(75, 166), { w: 14, d: 16, floors: 3, roof: 'gray', parapet: PAR, faces: { all: BR } });
+  // 楔形塔：正面輪廓底寬上窄（外側斜），正面兩道細長窗＋頂部小方窗
+  const sh = new THREE.Shape(); sh.moveTo(0, 0); sh.lineTo(9, 0); sh.lineTo(4.8, 22.5); sh.lineTo(0, 22.5); sh.lineTo(0, 0);
+  const tt = canvasTex(256, 512, (c) => {
+    c.fillStyle = '#b5795d'; c.fillRect(0, 0, 256, 512);
+    c.strokeStyle = 'rgba(90,50,35,.35)'; c.lineWidth = 1; for (let y = 0; y < 512; y += 23){ c.beginPath(); c.moveTo(0, y); c.lineTo(256, y); c.stroke(); }
+    c.fillStyle = '#2f2c2a'; c.fillRect(44, 92, 12, 300); c.fillRect(94, 92, 12, 300);   // 兩道細長窗
+    c.fillRect(43, 52, 14, 14); c.fillRect(93, 52, 14, 14);                              // 頂部小方窗
+  });
+  tt.wrapS = tt.wrapT = THREE.RepeatWrapping; tt.repeat.set(1 / 9, 1 / 22.5);
+  const wedge = new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth: 7, bevelEnabled: false }), [new THREE.MeshLambertMaterial({ map: tt }), TILE]);
+  wedge.position.set(95, 0, 140); wedge.castShadow = wedge.receiveShadow = true; scene.add(wedge);
+  box(4.8, .5, 7.2, PAR, 97.4, 22.5, 143.5);
+  // 平台＋大階梯（8 階；左端逐階內縮成側階）
+  const STEP = lam(0xc99683), PH = 1.45, N = 8, SD = .36;
+  box(18, PH, 6, STEP, 88, 0, 143);                                    // 入口平台 x79–97
+  for (let k = 0; k < N; k++){
+    const h = PH * (k + 1) / N, z0 = 140 - (N - k) * SD, x0 = 80, x1 = 101.5 - (N - 1 - k) * SD;
+    box(x1 - x0, h, 140 - z0, STEP, (x0 + x1) / 2, 0, (z0 + 140) / 2);
+  }
+  // 入口：雨遮帶＋「資訊館」（照片由右往左書寫）＋三樘門
+  box(13, 1.7, 2.4, lam(0xbd8a70), 88.5, 3.5, 144.9);
+  const sign = textPlane(textTex('館訊資', { w: 512, h: 128, spacing: 1, color: '#d9b44f' }), 7, 1.2);
+  sign.rotation.y = Math.PI; sign.position.set(88.5, 4.35, 143.68); scene.add(sign);
+  [84.5, 88.5, 92.5].forEach(x => box(2.2, 2.5, .2, lam(0x4a3a30), x, PH, 145.95));
+  // 右翼前：矮牆高台＋欄杆＋綠色遮陽棚
+  box(14, PH, 3, STEP, 74, 0, 140.5); box(14, .08, .08, lam(0x9aa0a4), 74, PH + .95, 139.1);
+  for (let x = 67.5; x <= 81; x += 2.7) box(.08, .95, .08, lam(0x9aa0a4), x, PH, 139.1);
+  box(13, .15, 1.6, lam(0x3d7a5a), 74, 3.4, 141.2);
+  // 紅色斜屋頂有頂走廊（往西通後排教室）
+  for (let x = 55; x <= 64; x += 3){ box(.2, 2.6, .2, M.white, x, 0, 139.5); box(.2, 3.2, .2, M.white, x, 0, 143.5); }
+  const rf = new THREE.Mesh(new THREE.BoxGeometry(13, .2, 5.4), lam(0xa8473a)); rf.position.set(60, 3.05, 141.5); rf.rotation.x = -.14; rf.castShadow = true; scene.add(rf);
+  addLabel('資訊館', 88, 24, 155);
 })();
 
 // --- 司令台：灰色清水模、正面火車彩繪、側梯上屋頂平台、旗桿
@@ -526,17 +567,17 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
 
 // --- 其他建築
 (function(){ // 校長宿舍：2F 住宅＋斜屋頂
-  const g = group(3.5, 112);
-  building(g, { w: 23, d: 25, floors: 2, roof: 'gray', faces: { all: { wall: '#ece3d3', win: 'glass' } } });
-  const sh = new THREE.Shape(); sh.moveTo(-12, 0); sh.lineTo(12, 0); sh.lineTo(0, 4); sh.lineTo(-12, 0);
-  const rf = new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth: 25, bevelEnabled: false }), lam(0x8c5a46));
-  rf.position.set(0, 2 * FLOOR + .4, -12.5); rf.castShadow = true; g.add(rf);
-  addLabel('校長宿舍', 3.5, 14, 112);
+  const g = group(1, 117);
+  building(g, { w: 13, d: 12, floors: 2, roof: 'gray', faces: { all: { wall: '#ece3d3', win: 'glass' } } });
+  const sh = new THREE.Shape(); sh.moveTo(-7.2, 0); sh.lineTo(7.2, 0); sh.lineTo(0, 3); sh.lineTo(-7.2, 0);
+  const rf = new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth: 12.6, bevelEnabled: false }), lam(0x8c5a46));
+  rf.position.set(0, 2 * FLOOR + .4, -6.3); rf.castShadow = true; g.add(rf);
+  addLabel('校長宿舍', 1, 12, 117);
 })();
 building(group(267.5, 141), { w: 25, d: 22, floors: 4, roof: 'gray', faces: { all: { wall: '#eadfcb', win: 'glass', band: '#cdbb9d' } }, stairs: [[0, 0, 4, 5, 3]] });
 addLabel('女生宿舍', 267.5, 19, 141);
-building(group(4.5, -16), { w: 9, d: 27, floors: 2, roof: 'gray', faces: { all: { wall: '#f0eee8', win: 'glass' } } });
-addLabel('民舍', 4.5, 10, -16);
+building(group(-6.5, -16), { w: 5, d: 27, floors: 2, roof: 'gray', faces: { all: { wall: '#f0eee8', win: 'glass' } } });
+addLabel('民舍', -6.5, 10, -16);
 
 // --- 校門：灰色大雨遮、金字校名、四方柱、紅色直布條、警衛室
 (function(){
@@ -567,12 +608,12 @@ addLabel('後門', 211, 5, 187);
 });
 addLabel('腳踏車棚', 237, 6, 177);
 // 圖書館後方：停車場、原舞台、回收站
-rect(11, -14, 55, 0, lam(0x8a8c8e), .04);
+rect(10, -14, 55, 0, lam(0x8a8c8e), .04);
 for (let x = 13; x < 54; x += 2.6) scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x, .07, -6), new THREE.Vector3(x, .07, 0)]), M.line));
 addLabel('停車場', 38, 2, -5);
-box(10, 1.2, 6, M.concrete, 26, 0, -18); for (let k = 0; k < 4; k++) box(3, .3 * (k + 1), .5, M.roofGray, 32.8, 0, -21.2 + k * .5);
-addLabel('原舞台', 26, 4, -18);
-box(7, 2.6, 4, lam(0x4f7f5a), 16, 0, -2.5); box(7.6, .25, 4.6, M.roofGray, 16, 2.6, -2.5); addLabel('回收站', 16, 5, -2.5);
+box(6, 1.2, 11, M.concrete, 3.5, 0, -16); for (let k = 0; k < 4; k++) box(.5, .3 * (k + 1), 3.2, M.roofGray, -1.75 + k * .5, 0, -16);   // 後方階梯
+addLabel('原舞台', 3.5, 4, -16);
+(function(){ const g = group(75, 9, 33); box(7, 2.6, 4, lam(0x4f7f5a), 0, 0, 0, g); box(7.6, .25, 4.6, M.roofGray, 0, 2.6, 0, g); addLabel('回收站', 75, 5, 9); })();
 // 毋忘在莒碑
 box(2.4, .6, 2.4, M.concrete, 93, 0, 127); box(1, 3.2, .5, lam(0x8d8f8c), 93, .6, 127);
 
@@ -586,7 +627,7 @@ hedge(91.8, 34, 91.8, 126); hedge(96.2, 34, 96.2, 126);
 for (let i = 0; i < 12; i++) tree(2 + rnd() * 55, 178 + rnd() * 6, .9);
 for (let i = 0; i < 18; i++) tree(105 + i * 5, 131 - (i % 2), .8);
 for (let z = 28; z < 138; z += 7){ if (z > 66 && z < 86) continue; palm(14, z); }      // 行政大樓前大王椰子
-[[-2, 62], [-2, 90], [4, 62], [4, 90]].forEach(([x, z]) => palm(x, z, 11));
+[[-4, 47], [8, 47], [-4, 105], [8, 105]].forEach(([x, z]) => palm(x, z, 11));
 [[36, 158], [50, 150], [12, 180], [56, 176]].forEach(([x, z]) => tree(x, z, 1.2));
 for (let i = 0; i < 14; i++) tree(200 + rnd() * 50, 150 + rnd() * 12, 1);
 for (let i = 0; i < 14; i++){ const x = 10 + i * 6, z = -28 + (x - 10) * .33 + 3; tree(x, z, .9); }
@@ -596,10 +637,10 @@ for (let i = 0; i < 20; i++){ const t = i / 20, x = 95 + t * 145, z = 3 + t * 92
 const LEVEL = { a: ['#d7263d', '最危險區域'], b: ['#e0457b', '危險區域'], c: ['#f29bb3', '次危險區域'] };
 const PTS = [
   [1, 'a', '泗水園', '長年蓄水，應慎防跌落。', 20, 160],
-  [2, 'b', '資訊館後方', '平時人群少至，屬於僻靜地點。', 82, 182],
+  [2, 'b', '資訊館後方', '平時人群少至，屬於僻靜地點。', 86, 182],
   [3, 'b', '活動中心後及側邊', '平時人群少至，屬於僻靜地點。', 230, 100],
   [4, 'b', '學生腳踏車車棚', '平時人群少至，屬於僻靜地點。', 240, 184],
-  [5, 'c', '停車場原舞台後方階梯', '平時人群少至，屬於僻靜地點。', 30, -21],
+  [5, 'c', '停車場原舞台後方階梯', '平時人群少至，屬於僻靜地點。', -1.5, -16],
   [6, 'c', '人文館東側', '平時人群少至，屬於僻靜地點。', 124, 42],
   [7, 'c', '圖書館一樓後方階梯', '平時人群少至，屬於僻靜地點。', 8, -1],
   [8, 'c', '校園後門', '平時人群少至，屬於僻靜地點。', 211, 182]
