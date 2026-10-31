@@ -767,13 +767,16 @@ const SMALL_PATH = [[122, 40], [145, 46], [170, 55], [186, 68], [194, 80]];
     flat([[a[0] + nx, a[1] + nz], [b[0] + nx, b[1] + nz], [b[0] - nx, b[1] - nz], [a[0] - nx, a[1] - nz]], mat, y); }
   function path(pts, w, mat, edge){ pts.forEach((a, i) => { if (i === pts.length - 1) return; const b = pts[i + 1];
     if (edge) seg(a, b, w + .5, edge, .058); seg(a, b, w, mat, .062); }); }
+  // ⓪ 資訊館前到跑道延長段之間是大片草坪（g065、360 照校內03），不是灰色空地
+  rect(72, 120.2, 113, 137.5, M.grass, .045);
   // ① 資訊館前草坪上的水泥窄路（青綠色邊），橫越草坪接到司令台西側紅磚帶（360 照校內03、g065）
   path([[88, 136.5], [96, 134], [104, 131], [113, 130.5]], 1.2, CON, TEAL);
-  // ② 跑道南直道往西延長段（Google 衛星圖：直道延伸到後排教室前，約 x 76）
-  rect(76, 112.5, 131.5, 120, M.track, .052);
+  // ② 跑道南直道往西延長段（Google 衛星圖；FB 運動會照：100 m 起跑點緊貼後排教室，中間一條灰綠水泥地）
+  rect(74.5, 112.5, 131.5, 120, M.track, .052);
+  rect(72, 109, 74.5, 123.5, lam(0xb7bdb2), .05);
   for (let k = 0; k <= 6; k++){ const z = 112.5 + k * 7.5 / 6;
-    scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(76.3, .07, z), new THREE.Vector3(131.5, .07, z)]), M.line)); }
-  scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(76.3, .07, 112.5), new THREE.Vector3(76.3, .07, 120)]), M.line));
+    scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(74.8, .07, z), new THREE.Vector3(131.5, .07, z)]), M.line)); }
+  scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(74.8, .07, 112.5), new THREE.Vector3(74.8, .07, 120)]), M.line));
   // ③ 延長段南側：兩邊壓石頭的淺灰水泥窄路（g041）
   path([[80, 123.2], [116, 123.2]], 1.4, CON);
   for (let x = 80.5; x < 116; x += 1.6) [122.2, 124.2].forEach(z => { const r = new THREE.Mesh(new THREE.DodecahedronGeometry(.28), M.concrete); r.position.set(x + (z > 123 ? .8 : 0), .12, z); r.scale.y = .6; scene.add(r); });
