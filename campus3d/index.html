@@ -362,8 +362,33 @@ rect(-10, 67, 19, 85, M.stonePave, .04);          // 校門進來的車道
     addLabel('停車場', 2.5, 2, (z0 + z1) / 2);
   });
 })();
-rect(92.5, 32, 95.5, 128, M.brickPave, .05);      // 人文館前紅磚步道
-rect(70, 76, 104, 79, M.brickPave, .05);
+// --- 人文館前與東側（衛星圖、俯瞰照 g024/g041、g009、運動會照 g070/g071、360 照校內05）
+// 主步道：後排教室中段往東彎向操場西端的淺色寬步道
+const MAIN_ROAD = [[69, 73.5], [80, 74.5], [89, 78], [97, 84], [103, 90]];
+(function(){
+  const PAVE = lam(0xd9d4c8);
+  MAIN_ROAD.forEach((a, i) => { if (i === MAIN_ROAD.length - 1) return; const b = MAIN_ROAD[i + 1];
+    const dx = b[0] - a[0], dz = b[1] - a[1], L = Math.hypot(dx, dz), nx = -dz / L * 2.2, nz = dx / L * 2.2;
+    flat([[a[0] + nx, a[1] + nz], [b[0] + nx, b[1] + nz], [b[0] - nx, b[1] - nz], [a[0] - nx, a[1] - nz]], PAVE, .055);
+    const c = new THREE.Mesh(new THREE.CircleGeometry(2.2, 16), PAVE); c.rotation.x = -Math.PI / 2; c.position.set(b[0], .055, b[1]); scene.add(c); });
+})();
+// 人文館前：樹籬圍起的圓形花園（紅磚環道），往南接一條兩側樹籬的直步道
+(function(){
+  const ring = new THREE.Mesh(new THREE.RingGeometry(6.2, 8, 40), M.brickPave); ring.rotation.x = -Math.PI / 2; ring.position.set(92, .06, 38); scene.add(ring);
+  rect(91, 30, 93, 31.2, M.brickPave, .06);
+  rect(90.8, 46, 93.2, 72, M.brickPave, .06);
+})();
+// 東側：沿操場北側直道的跳遠沙坑、藍色跳高墊、緩坡草地
+(function(){
+  flat([[103, 32], [122, 40], [176, 60], [103, 60]], M.grass, .025);          // 人文館東側到操場之間的草地（g009）
+  box(19, .25, 5.4, lam(0xb8a27a), 136, 0, 55.5);                  // 沙坑邊框
+  rect(127, 53.2, 145.6, 57.8, lam(0xc9b48a), .27);                 // 沙
+  rect(105, 54.8, 127, 56.2, M.track, .06);                         // 助跑道
+  box(5, .6, 3.6, lam(0x2f5fb8), 111.5, 0, 56.5);                   // 跳高墊（衛星圖藍色方塊）
+  const hill = new THREE.Mesh(new THREE.SphereGeometry(1, 40, 16, 0, Math.PI * 2, 0, Math.PI / 2), M.grass);
+  hill.scale.set(9, 1.2, 3.6); hill.position.set(156, 0, 54); hill.rotation.y = -THREE.MathUtils.degToRad(30); hill.receiveShadow = true; scene.add(hill);
+  addLabel('沙坑', 136, 3, 55.5); addLabel('小坡', 156, 3.5, 54);
+})();
 rect(41, 12, 43.5, 66, M.brickPave, .05); rect(41, 79, 43.5, 124, M.brickPave, .05);
 
 // ================= 操場 =================
@@ -682,12 +707,18 @@ addLabel('原舞台', 3.5, 4, -16);
 box(2.4, .6, 2.4, M.concrete, 93, 0, 127); box(1, 3.2, .5, lam(0x8d8f8c), 93, .6, 127);
 
 // ================= 植栽 =================
-for (let i = 0; i < 60; i++){ const x = 72 + rnd() * 30, z = 34 + rnd() * 90; if (Math.abs(x - 94) < 3 || Math.abs(z - 77.5) < 3) continue; tree(x, z, .8 + rnd() * .6); }
+function nearRoad(x, z, d){ return MAIN_ROAD.some((a, i) => { if (i === MAIN_ROAD.length - 1) return false; const b = MAIN_ROAD[i + 1];
+  const vx = b[0] - a[0], vz = b[1] - a[1], t = Math.max(0, Math.min(1, ((x - a[0]) * vx + (z - a[1]) * vz) / (vx * vx + vz * vz)));
+  return Math.hypot(x - a[0] - t * vx, z - a[1] - t * vz) < d; }); }
+for (let i = 0; i < 90; i++){ const x = 72 + rnd() * 30, z = 32 + rnd() * 92;
+  if (Math.hypot(x - 92, z - 38) < 10 || (Math.abs(x - 92) < 3 && z > 44 && z < 74) || nearRoad(x, z, 4.5)) continue; tree(x, z, .8 + rnd() * .6); }
 for (let i = 0; i < 8; i++) tree(33 + rnd() * 6, 14 + rnd() * 50, .8 + rnd() * .4);
 for (let i = 0; i < 6; i++) tree(46 + rnd() * 6, 82 + rnd() * 40, .8 + rnd() * .4);
 pavilion(48, 40, M.wood, '中庭涼亭');
 hedge(40.5, 14, 40.5, 64); hedge(44, 14, 44, 64); hedge(40.5, 81, 40.5, 122); hedge(44, 81, 44, 122);
-hedge(91.8, 34, 91.8, 126); hedge(96.2, 34, 96.2, 126);
+for (let k = 0; k < 28; k++){ const a = k / 28 * Math.PI * 2; if (Math.abs(a - Math.PI / 2) < .25 || Math.abs(a - Math.PI * 1.5) < .25) continue;   // 圓形花園外圈樹籬（南北留出入口）
+  box(1.6, .9, .8, lam(0x4d8a3f), 92 + Math.cos(a) * 8.6, 0, 38 + Math.sin(a) * 8.6).rotation.y = -a + Math.PI / 2; }
+hedge(90.2, 47, 90.2, 72); hedge(93.8, 47, 93.8, 72);
 for (let i = 0; i < 12; i++) tree(2 + rnd() * 55, 178 + rnd() * 6, .9);
 for (let i = 0; i < 18; i++) tree(105 + i * 5, 131 - (i % 2), .8);
 // 行政大樓前原有一排大王椰子，因落葉落果危險已砍除，只剩樹根
