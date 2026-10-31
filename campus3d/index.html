@@ -364,7 +364,7 @@ for (let z = 90; z <= 186; z += 4) box(.7, 1.6, .7, M.concrete, -10, 0, z);
 hedge(-9.1, 84, -9.1, 105);
 
 // 草地、鋪面
-rect(31, 10, 54, 68, M.grass); rect(31, 77, 54, 126, M.grass);
+rect(31, 10, 54, 71.5, M.grass); rect(31, 80.5, 54, 126, M.grass);
 rect(70, 30, 104, 128, M.grass); flat([[0, 140], [62, 140], [62, 186], [0, 186]], M.grass);
 rect(102, 58, 200, 130, M.grass);
 rect(-10, 67, 19, 85, M.stonePave, .04);          // 校門進來的車道
@@ -412,7 +412,7 @@ const MAIN_ROAD = [[69, 73.5], [80, 74.5], [89, 78], [97, 84], [103, 90]];
   hill.scale.set(9, 1.2, 3.6); hill.position.set(156, 0, 54); hill.rotation.y = -THREE.MathUtils.degToRad(30); hill.receiveShadow = true; scene.add(hill);
   addLabel('沙坑', 136, 3, 55.5); addLabel('小坡', 156, 3.5, 54);
 })();
-rect(41, 12, 43.5, 66, M.brickPave, .05); rect(41, 79, 43.5, 124, M.brickPave, .05);
+rect(41, 12, 43.5, 71.5, M.brickPave, .05); rect(41, 80.5, 43.5, 124, M.brickPave, .05);
 
 // ================= 操場 =================
 (function(){
@@ -539,16 +539,30 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
 
 // --- 後排教室：3F 灰白、面操場開放走廊
 (function(){
-  const g = group(61.5, 72);
-  building(g, { w: 15, d: 134, floors: 3, roof: 'solar',
+  const OPT = { w: 15, floors: 3, roof: 'solar',
     corridor: { side: 'e', depth: 3, col: 0xeeece6, rail: 0xeeece6 },
-    faces: { all: { wall: '#e2e0d9', win: 'glass', frame: '#cfd3d0' }, e: { wall: '#d7d6cf', win: 'glass', ground: 'door' } },
-    stairs: [[0, -30, 4, 5, 3], [0, 30, 4, 5, 3]] });
+    faces: { all: { wall: '#e2e0d9', win: 'glass', frame: '#cfd3d0' }, e: { wall: '#d7d6cf', win: 'glass', ground: 'door' } } };
+  building(group(61.5, 37), { ...OPT, d: 64, stairs: [[0, -12, 4, 5, 3]] });   // 北段 z 5–69
+  building(group(61.5, 111), { ...OPT, d: 56, stairs: [[0, 12, 4, 5, 3]] });   // 南段 z 83–139
+  // 中段一樓挖空成穿堂，與前排行政大樓穿堂對齊：從校門可一路看進操場
+  const m = group(61.5, 76); m.position.y = FLOOR;
+  building(m, { ...OPT, d: 14, floors: 2 });
+  box(15, .35, 14, M.concrete, 61.5, FLOOR - .35, 76);
+  [[54.4, 69.6], [54.4, 82.4], [68.6, 69.6], [68.6, 82.4], [61.5, 69.6], [61.5, 82.4]].forEach(([x, z]) => box(.6, FLOOR, .6, lam(0xeeece6), x, 0, z));
+  rect(54, 69, 69, 83, M.stonePave, .06);
   addLabel('後排教室', 61.5, 15, 60);
 })();
 // 連接棟
-[[42.5, 6.5, 23, 7], [42.5, 72.5, 23, 8], [42.5, 132.5, 23, 13]].forEach(([x, z, w, d]) => {
+[[42.5, 6.5, 23, 7], [42.5, 132.5, 23, 13]].forEach(([x, z, w, d]) => {
   const g = group(x, z); building(g, { w, d, floors: 3, roof: z > 100 ? 'solar' : 'gray', faces: { all: PINK } }); });
+// 中央穿廊：連接前後排，一樓挖空成通道（與兩排穿堂同一直線）
+(function(){
+  const g = group(42.5, 76); g.position.y = FLOOR;
+  building(g, { w: 23, d: 9, floors: 2, roof: 'gray', faces: { all: PINK } });
+  box(23, .35, 9, M.concrete, 42.5, FLOOR - .35, 76);
+  [31.6, 37.4, 42.5, 47.6, 53.4].forEach(x => { box(.6, FLOOR, .6, lam(0xe8ddd4), x, 0, 71.8); box(.6, FLOOR, .6, lam(0xe8ddd4), x, 0, 80.2); });
+  rect(31, 71.5, 54, 80.5, M.stonePave, .06);
+})();
 
 // --- 人文館：4F 白色框架＋紅磚欄板，西端圓窗樓梯間
 (function(){
@@ -744,10 +758,16 @@ function nearRoad(x, z, d){ return MAIN_ROAD.some((a, i) => { if (i === MAIN_ROA
   const vx = b[0] - a[0], vz = b[1] - a[1], t = Math.max(0, Math.min(1, ((x - a[0]) * vx + (z - a[1]) * vz) / (vx * vx + vz * vz)));
   return Math.hypot(x - a[0] - t * vx, z - a[1] - t * vz) < d; }); }
 for (let i = 0; i < 90; i++){ const x = 72 + rnd() * 30, z = 32 + rnd() * 92;
-  if (Math.hypot(x - 92, z - 38) < 10 || (Math.abs(x - 92) < 3 && z > 44 && z < 74) || nearRoad(x, z, 4.5)) continue; tree(x, z, .8 + rnd() * .6); }
+  if (Math.hypot(x - 92, z - 38) < 10 || (Math.abs(x - 92) < 3 && z > 44 && z < 74) || nearRoad(x, z, 4.5) || Math.abs(z - 76) < 7) continue; tree(x, z, .8 + rnd() * .6); }
 for (let i = 0; i < 8; i++) tree(33 + rnd() * 6, 14 + rnd() * 50, .8 + rnd() * .4);
 for (let i = 0; i < 6; i++) tree(46 + rnd() * 6, 82 + rnd() * 40, .8 + rnd() * .4);
-pavilion(48, 40, M.wood, '中庭涼亭');
+// 中庭原有木造涼亭已拆除，現在只剩幾張長椅
+[[47, 36, 0], [50, 40, 90], [47, 44, 0], [36, 52, 90]].forEach(([x, z, r]) => {
+  const g = group(x, z, r);
+  box(2, .1, .45, M.wood, 0, .45, 0, g); box(2, .45, .08, M.wood, 0, .55, -.22, g);   // 座板、椅背
+  [-.8, .8].forEach(dx => box(.08, .45, .4, lam(0x555a5e), dx, 0, 0, g));              // 椅腳
+});
+addLabel('中庭長椅', 48, 3, 40);
 hedge(40.5, 14, 40.5, 64); hedge(44, 14, 44, 64); hedge(40.5, 81, 40.5, 122); hedge(44, 81, 44, 122);
 for (let k = 0; k < 28; k++){ const a = k / 28 * Math.PI * 2; if (Math.abs(a - Math.PI / 2) < .25 || Math.abs(a - Math.PI * 1.5) < .25) continue;   // 圓形花園外圈樹籬（南北留出入口）
   box(1.6, .9, .8, lam(0x4d8a3f), 92 + Math.cos(a) * 8.6, 0, 38 + Math.sin(a) * 8.6).rotation.y = -a + Math.PI / 2; }
@@ -809,6 +829,7 @@ function resize(){
 (window.visualViewport || window).addEventListener('resize', resize); resize();
 window.__stage = '合併物件';
 // 視角設定（測試與日後「導覽點」功能用）
+window.__scene = scene; window.__THREE = THREE;   // 測試用：視線檢查
 window.setView = (px, py, pz, tx, ty, tz) => { fly = null; camera.position.set(px, py, pz); controls.target.set(tx, ty, tz); controls.update(); };
 // 標籤遮擋：先記下每棟建築的外框（合併前），放大近看時被擋住的名稱自動隱藏
 scene.updateMatrixWorld(true);
