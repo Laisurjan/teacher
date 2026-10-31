@@ -53,12 +53,14 @@ header h1{margin:0;font-size:17px;font-weight:800;background:var(--panel);paddin
 <script>
 (function(){
   var el = document.getElementById('load');
-  function show(msg){ if (!document.getElementById('load')) return;
+  var shown = false;
+  window.__stage = '下載 3D 程式庫';
+  function show(msg, soft){ if (!document.getElementById('load') || (soft && shown)) return; shown = true;
     el.style.cssText += ';pointer-events:auto;padding:24px;text-align:center;line-height:1.7;font-size:15px;white-space:pre-wrap';
-    el.textContent = msg + '\n\n請截圖這個畫面給老師。\n' + navigator.userAgent; }
+    el.textContent = msg + '\n卡在步驟：' + window.__stage + '\n\n請截圖這個畫面給老師。\n' + navigator.userAgent; }
   window.addEventListener('error', function(e){ show('載入失敗：' + (e.message || (e.target && e.target.src) || '未知錯誤')); }, true);
   window.addEventListener('unhandledrejection', function(e){ show('載入失敗：' + (e.reason && e.reason.message || e.reason)); });
-  setTimeout(function(){ show('載入逾時（超過 20 秒）：可能是網路連不到 cdn.jsdelivr.net，或瀏覽器版本太舊。'); }, 20000);
+  setTimeout(function(){ show('載入逾時（超過 20 秒）。', true); }, 20000);
 })();
 </script>
 <header><h1>國立花蓮高商・3D 校園模型</h1></header>
@@ -71,18 +73,12 @@ header h1{margin:0;font-size:17px;font-weight:800;background:var(--panel);paddin
   <button id="bPin" class="on">安全點位</button>
 </div>
 
-<script async src="https://cdn.jsdelivr.net/npm/es-module-shims@1.10.0/dist/es-module-shims.js"></script>
-<script type="importmap">
-{"imports":{
-  "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-}}
-</script>
 <script type="module">
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
-import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import * as THREE from './lib/three.module.js';
+import { OrbitControls } from './lib/OrbitControls.js';
+import { CSS2DRenderer, CSS2DObject } from './lib/CSS2DRenderer.js';
+import { mergeGeometries } from './lib/BufferGeometryUtils.js';
+window.__stage = '建立校園模型';
 
 /* 座標系：Google 衛星圖轉正 38.3° 後量測，單位公尺。
    x 向右（往操場、活動中心）、z 向下（往泗水園、資訊館）；中山路在左（x≈-18）、商校街在上。
@@ -627,7 +623,7 @@ function resize(){
   camera.aspect = w / h; camera.fov = w < h ? 60 : 45; camera.updateProjectionMatrix();
 }
 (window.visualViewport || window).addEventListener('resize', resize); resize();
-document.getElementById('load').remove();
+window.__stage = '合併物件';
 // 視角設定（測試與日後「導覽點」功能用）
 window.setView = (px, py, pz, tx, ty, tz) => { fly = null; camera.position.set(px, py, pz); controls.target.set(tx, ty, tz); controls.update(); };
 // 標籤遮擋：先記下每棟建築的外框（合併前），放大近看時被擋住的名稱自動隱藏
@@ -704,7 +700,15 @@ function fail(msg){
   el.textContent = msg + '\n繪圖晶片：' + (dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : '未知') + '\n' + navigator.userAgent + '\n請截圖給老師。';
 }
 renderer.domElement.addEventListener('webglcontextlost', (e) => { e.preventDefault(); fail('3D 畫面被系統收回（可能是繪圖記憶體不足）。'); });
-let failed = false;
+// 繪圖晶片編譯陰影效果失敗時：自動關閉陰影再試，而不是整個空白
+let shadowFallback = false;
+renderer.debug.onShaderError = (gl, program, vs, fs) => {
+  console.error('[著色器錯誤]', gl.getProgramInfoLog(program), gl.getShaderInfoLog(vs), gl.getShaderInfoLog(fs));
+  if (!shadowFallback){ shadowFallback = true; renderer.shadowMap.enabled = false;
+    scene.traverse(m => { if (m.material) [].concat(m.material).forEach(x => x.needsUpdate = true); }); }
+};
+let failed = false, first = true;
+window.__stage = '第一次繪製';
 renderer.setAnimationLoop(() => {
   if (failed) return;
   try {
@@ -712,6 +716,7 @@ renderer.setAnimationLoop(() => {
     if (fly){ fly.t = Math.min(1, fly.t + .035); const k = 1 - Math.pow(1 - fly.t, 3);
       controls.target.lerpVectors(fly.ft, fly.tt, k); camera.position.lerpVectors(fly.fp, fly.tp, k); if (fly.t >= 1) fly = null; }
     controls.update(); renderer.render(scene, camera); labelRenderer.render(scene, camera);
+    if (first){ first = false; const l = document.getElementById('load'); if (l) l.remove(); window.__stage = '完成'; }
   } catch (err){ failed = true; fail('繪圖錯誤：' + err.message); }
 });
 </script>
