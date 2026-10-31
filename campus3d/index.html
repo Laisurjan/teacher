@@ -761,21 +761,21 @@ for (let i = 0; i < 90; i++){ const x = 72 + rnd() * 30, z = 32 + rnd() * 92;
   if (Math.hypot(x - 92, z - 38) < 10 || (Math.abs(x - 92) < 3 && z > 44 && z < 74) || nearRoad(x, z, 4.5) || Math.abs(z - 76) < 7) continue; tree(x, z, .8 + rnd() * .6); }
 for (let i = 0; i < 8; i++) tree(33 + rnd() * 6, 14 + rnd() * 50, .8 + rnd() * .4);
 for (let i = 0; i < 6; i++) tree(46 + rnd() * 6, 82 + rnd() * 40, .8 + rnd() * .4);
-// 中庭原有木造涼亭已拆除：現在是中央步道左右各一組深綠色鐵圓桌＋有椅背的個人鐵椅
+// 中庭原有木造涼亭已拆除：現在是穿堂（中央穿廊）南北兩側各一組深綠色鐵圓桌＋有椅背的個人鐵椅
 (function(){
   const IRON = lam(0x1f4a32);
-  [[36, 40], [49, 40]].forEach(([cx, cz]) => {
+  [[36.5, 66.5], [36.5, 85.5]].forEach(([cx, cz]) => {
     const top = new THREE.Mesh(new THREE.CylinderGeometry(.6, .6, .05, 20), IRON); top.position.set(cx, .75, cz); top.castShadow = true; scene.add(top);
     const leg = new THREE.Mesh(new THREE.CylinderGeometry(.05, .05, .75, 8), IRON); leg.position.set(cx, .375, cz); scene.add(leg);
     const foot = new THREE.Mesh(new THREE.CylinderGeometry(.3, .3, .04, 12), IRON); foot.position.set(cx, .02, cz); scene.add(foot);
     for (let k = 0; k < 4; k++){
       const a = k * Math.PI / 2 + Math.PI / 4, g = group(cx + Math.cos(a) * 1.05, cz + Math.sin(a) * 1.05, THREE.MathUtils.radToDeg(a) + 90);
       box(.45, .04, .45, IRON, 0, .45, 0, g);                                   // 座面
-      box(.45, .5, .04, IRON, 0, .47, .21, g);                                  // 椅背（朝外）
+      box(.45, .5, .04, IRON, 0, .47, -.21, g);                                 // 椅背在遠離圓桌的一側（朝外）
       [[-.2, -.2], [.2, -.2], [-.2, .2], [.2, .2]].forEach(([dx, dz]) => box(.03, .45, .03, IRON, dx, 0, dz, g));
     }
   });
-  addLabel('中庭桌椅', 42.5, 3, 40);
+  addLabel('中庭桌椅', 36.5, 3, 66.5); addLabel('中庭桌椅', 36.5, 3, 85.5);
 })();
 hedge(40.5, 14, 40.5, 64); hedge(44, 14, 44, 64); hedge(40.5, 81, 40.5, 122); hedge(44, 81, 44, 122);
 for (let k = 0; k < 28; k++){ const a = k / 28 * Math.PI * 2; if (Math.abs(a - Math.PI / 2) < .25 || Math.abs(a - Math.PI * 1.5) < .25) continue;   // 圓形花園外圈樹籬（南北留出入口）
