@@ -684,15 +684,18 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
   for (let i = 0; i < 6; i++){ const x = -6 + i * 2.4; box(.3, .5, .3, lam(0x555a5e), x, TOP, -D / 2 + .8, g); box(.45, .35, .25, lam(0xdfe3e6), x, TOP + .5, -D / 2 + .7, g); }
   // 三根旗桿（中間最高）
   [[-2.4, 6], [0, 8.5], [2.4, 6]].forEach(([x, h]) => box(.12, h, .12, lam(0xd0d3d6), x, TOP, 1.5, g));
-  // 兩端側梯：約 8 階、寬約 3 m，從側面直接走上舞台前半段，兩側不鏽鋼扶手（2015 年活動照）
-  const SS = lam(0xc9ced2), SW = 3, NS = 8, rise = BASE / NS, run = .32;
+  // 兩端側梯：垂直於跑道，沿端牆外側由後（南）往前（北）爬約 8 階，上到前半段旁的平台再進舞台；寬約 3 m，不鏽鋼扶手（2015 年活動照）
+  const SS = lam(0xc9ced2), SW = 3, NS = 8, rise = BASE / NS, run = .32, LAND = 1.8, len = NS * run, ang = Math.atan2(BASE, len);
   [-1, 1].forEach(sd => {
-    for (let k = 0; k < NS; k++) box(run, rise * (k + 1), SW, CON, sd * (W / 2 + run / 2 + (NS - 1 - k) * run), 0, -D / 2 + 1.9, g);
-    const len = NS * run, ang = Math.atan2(BASE, len);
-    [-D / 2 + 1.9 - SW / 2 + .1, -D / 2 + 1.9 + SW / 2 - .1].forEach(z => {
-      const r = new THREE.Mesh(new THREE.CylinderGeometry(.04, .04, Math.hypot(len, BASE), 8), SS);
-      r.rotation.z = sd * (Math.PI / 2 - ang); r.position.set(sd * (W / 2 + len / 2), BASE / 2 + .95, z); g.add(r);
-      [0, NS - 1].forEach(k => box(.05, .95, .05, SS, sd * (W / 2 + run / 2 + (NS - 1 - k) * run), rise * (k + 1), z, g)); });
+    const xc = sd * (W / 2 + SW / 2), z0 = -D / 2 + LAND;
+    box(SW, BASE, LAND, CON, xc, 0, -D / 2 + LAND / 2, g);                                   // 平台
+    for (let k = 0; k < NS; k++) box(SW, rise * (k + 1), run, CON, xc, 0, z0 + (NS - 1 - k) * run + run / 2, g);
+    const xo = sd * (W / 2 + SW - .1);
+    const r = new THREE.Mesh(new THREE.CylinderGeometry(.04, .04, Math.hypot(len, BASE), 8), SS);   // 外側斜扶手
+    r.rotation.x = -(Math.PI / 2 - ang); r.position.set(xo, BASE / 2 + .95, z0 + len / 2); g.add(r);
+    [z0, z0 + len - run].forEach((z, i) => box(.05, .95, .05, SS, xo, i ? rise : BASE, z, g));
+    box(.05, .05, LAND, SS, xo, BASE + .95, -D / 2 + LAND / 2, g); box(.05, .95, .05, SS, xo, BASE, -D / 2 + .1, g);   // 平台扶手
+    box(SW, .05, .05, SS, xc, BASE + .95, -D / 2 + .05, g);
   });
   // 南面（背面）斜外梯往西爬上屋頂，梯下黃色小門
   const N = 16;
