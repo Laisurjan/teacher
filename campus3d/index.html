@@ -626,8 +626,8 @@ hedge(40.5, 14, 40.5, 64); hedge(44, 14, 44, 64); hedge(40.5, 81, 40.5, 122); he
 hedge(91.8, 34, 91.8, 126); hedge(96.2, 34, 96.2, 126);
 for (let i = 0; i < 12; i++) tree(2 + rnd() * 55, 178 + rnd() * 6, .9);
 for (let i = 0; i < 18; i++) tree(105 + i * 5, 131 - (i % 2), .8);
-for (let z = 28; z < 138; z += 7){ if (z > 66 && z < 86) continue; palm(14, z); }      // 行政大樓前大王椰子
-[[-4, 47], [8, 47], [-4, 105], [8, 105]].forEach(([x, z]) => palm(x, z, 11));
+// 行政大樓前原有一排大王椰子，因落葉落果危險已砍除，只剩樹根
+for (let z = 28; z < 138; z += 7){ if (z > 66 && z < 86) continue; const st = new THREE.Mesh(new THREE.CylinderGeometry(.45, .6, .5, 8), lam(0x8a7a66)); st.position.set(14, .25, z); scene.add(st); }
 [[36, 158], [50, 150], [12, 180], [56, 176]].forEach(([x, z]) => tree(x, z, 1.2));
 for (let i = 0; i < 14; i++) tree(200 + rnd() * 50, 150 + rnd() * 12, 1);
 for (let i = 0; i < 14; i++){ const x = 10 + i * 6, z = -28 + (x - 10) * .33 + 3; tree(x, z, .9); }
