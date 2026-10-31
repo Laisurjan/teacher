@@ -665,13 +665,15 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
     c.fillStyle = '#3f7fc6'; c.fillRect(30, 22, 170, 34); c.fillStyle = '#f2d14b'; for (let i = 0; i < 5; i++) c.fillRect(40 + i * 32, 28, 18, 16);
     c.fillStyle = '#2d2d2d'; for (let i = 0; i < 6; i++){ c.beginPath(); c.arc(42 + i * 30, 58, 6, 0, 7); c.fill(); } });
   const west = plain(CON); west[1] = new THREE.MeshLambertMaterial({ map: train });
-  box(.6, STAGE, D, west, -W / 2 + .3, BASE, 0, g);
-  box(.6, STAGE, D, CON, W / 2 - .3, BASE, 0, g);
+  // 兩端只有後半段是牆（西端外側為火車彩繪），前半段開放，由側梯上台（2015 年活動照）
+  box(.6, STAGE, D / 2, west, -W / 2 + .3, BASE, D / 4, g);
+  box(.6, STAGE, D / 2, CON, W / 2 - .3, BASE, D / 4, g);
   // 正面兩端柱＋直式布條
   const banner = canvasTex(32, 128, (c) => { c.fillStyle = '#f4f4f0'; c.fillRect(0, 0, 32, 128); c.fillStyle = '#3d8fd0'; c.fillRect(0, 0, 32, 10); c.fillRect(0, 118, 32, 10);
     c.fillStyle = '#d24a3c'; for (let i = 0; i < 6; i++) c.fillRect(10, 18 + i * 16, 12, 10); });
-  [-1, 1].forEach(sd => { box(.7, STAGE, .7, CON, sd * (W / 2 - .35), BASE, -D / 2 + .35, g);
-    const b = textPlane(banner, .6, 2.2); b.position.set(sd * (W / 2 - .35), BASE + 1.4, -D / 2 - .01); b.rotation.y = Math.PI; g.add(b); });
+  const colG = new THREE.CylinderGeometry(.38, .38, STAGE, 16);
+  [-1, 1].forEach(sd => { const c = new THREE.Mesh(colG, CON); c.position.set(sd * (W / 2 - .4), BASE + STAGE / 2, -D / 2 + .45); c.castShadow = true; g.add(c);
+    const b = textPlane(banner, .6, 2.2); b.position.set(sd * (W / 2 - .4), BASE + 1.4, -D / 2 + .05); b.rotation.y = Math.PI; g.add(b); });
   // 屋頂板＋屋簷橫梁「司令台」字牌
   const fascia = textTex('司 令 台', { w: 512, h: 64, color: '#3a3836', bg: '#bdbcb6', font: 'bold 40px "Noto Sans TC","Microsoft JhengHei",sans-serif' });
   const rf = plain(CON); rf[5] = new THREE.MeshLambertMaterial({ map: fascia });
@@ -682,8 +684,16 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
   for (let i = 0; i < 6; i++){ const x = -6 + i * 2.4; box(.3, .5, .3, lam(0x555a5e), x, TOP, -D / 2 + .8, g); box(.45, .35, .25, lam(0xdfe3e6), x, TOP + .5, -D / 2 + .7, g); }
   // 三根旗桿（中間最高）
   [[-2.4, 6], [0, 8.5], [2.4, 6]].forEach(([x, h]) => box(.12, h, .12, lam(0xd0d3d6), x, TOP, 1.5, g));
-  // 正面兩端上台小階梯（由兩側往中間爬）
-  [-1, 1].forEach(sd => { for (let k = 0; k < 6; k++) box(.4, .3 * (k + 1), 2.4, CON, sd * (W / 2 + .2 + (5 - k) * .4), 0, -D / 2 + 1.4, g); });
+  // 兩端側梯：約 8 階、寬約 3 m，從側面直接走上舞台前半段，兩側不鏽鋼扶手（2015 年活動照）
+  const SS = lam(0xc9ced2), SW = 3, NS = 8, rise = BASE / NS, run = .32;
+  [-1, 1].forEach(sd => {
+    for (let k = 0; k < NS; k++) box(run, rise * (k + 1), SW, CON, sd * (W / 2 + run / 2 + (NS - 1 - k) * run), 0, -D / 2 + 1.9, g);
+    const len = NS * run, ang = Math.atan2(BASE, len);
+    [-D / 2 + 1.9 - SW / 2 + .1, -D / 2 + 1.9 + SW / 2 - .1].forEach(z => {
+      const r = new THREE.Mesh(new THREE.CylinderGeometry(.04, .04, Math.hypot(len, BASE), 8), SS);
+      r.rotation.z = sd * (Math.PI / 2 - ang); r.position.set(sd * (W / 2 + len / 2), BASE / 2 + .95, z); g.add(r);
+      [0, NS - 1].forEach(k => box(.05, .95, .05, SS, sd * (W / 2 + run / 2 + (NS - 1 - k) * run), rise * (k + 1), z, g)); });
+  });
   // 南面（背面）斜外梯往西爬上屋頂，梯下黃色小門
   const N = 16;
   for (let k = 0; k < N; k++) box(.55, .38, 1.3, CON, 7 - k * .55, (k + 1) * TOP / N - .38, D / 2 + .7, g);
