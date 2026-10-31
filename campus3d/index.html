@@ -636,6 +636,41 @@ addLabel('後門', 211, 5, 187);
   [-w / 2 + .5, 0, w / 2 - .5].forEach(dx => box(.15, 2.5, .15, M.roofGray, x + dx, 0, z));
 });
 addLabel('腳踏車棚', 237, 6, 177);
+// --- 活動中心與腳踏車棚之間：水泥地上的機車考照模擬路線（照片 g028、g067：深色鋪面、黃色車道線、待轉區、白色箭頭與停止線）
+(function(){
+  const Y = .07, YEL = lam(0xe8c22e), WHT = M.white;
+  function strip(x0, z0, x1, z1, w, mat){          // 平貼地面的線段（有寬度，遠看也看得到）
+    const dx = x1 - x0, dz = z1 - z0, L = Math.hypot(dx, dz), nx = -dz / L * w / 2, nz = dx / L * w / 2;
+    flat([[x0 + nx, z0 + nz], [x1 + nx, z1 + nz], [x1 - nx, z1 - nz], [x0 - nx, z0 - nz]], mat, Y);
+  }
+  const loop = (pts, w, mat) => pts.forEach((a, i) => { const b = pts[(i + 1) % pts.length]; strip(a[0], a[1], b[0], b[1], w, mat); });
+  flat([[202, 151], [232, 149], [256, 158], [256, 171], [221, 171], [221, 186], [202, 186]], lam(0x55595b), .05);   // 水泥鋪面
+  // 環狀車道（寬 4 m）
+  loop([[212, 154], [252, 154], [252, 169], [212, 169]], .25, YEL);
+  loop([[216, 158], [248, 158], [248, 165], [216, 165]], .25, YEL);
+  // 直線平衡道（窄道 15 m）
+  strip(205.6, 183, 205.6, 166, .2, WHT); strip(207.2, 183, 207.2, 166, .2, WHT);
+  strip(205.6, 166, 207.2, 166, .4, WHT);
+  // 通往後門的直向車道
+  strip(210, 186, 210, 169, .25, YEL); strip(214, 186, 214, 169, .25, YEL);
+  // 兩段式左轉待轉區（黃框）
+  loop([[224, 165.6], [228.4, 165.6], [228.4, 168.4], [224, 168.4]], .22, YEL);
+  // 行人穿越道（斑馬線）與停止線
+  for (let k = 0; k < 6; k++) strip(232 + k * .9, 154.3, 232 + k * .9, 157.7, .45, WHT);
+  strip(230.6, 154.3, 230.6, 157.7, .5, WHT);
+  // 白色箭頭
+  function arrow(x, z, dir){
+    const c = Math.cos(dir), s2 = Math.sin(dir), P = (u, v) => [x + u * c - v * s2, z + u * s2 + v * c];
+    flat([P(-1.2, -.18), P(.3, -.18), P(.3, -.5), P(1.2, 0), P(.3, .5), P(.3, .18), P(-1.2, .18)], WHT, Y);
+  }
+  arrow(222, 156, 0); arrow(244, 156, 0); arrow(250, 161.5, Math.PI / 2); arrow(238, 167, Math.PI); arrow(214, 161.5, -Math.PI / 2);
+  // 紅綠燈與停讓標誌
+  box(.18, 4.2, .18, lam(0x8a8f92), 230, 0, 153); box(.5, 1.4, .5, lam(0x222222), 230, 4.2, 153);
+  [[0xd7263d, 5.3], [0xf2c12e, 4.85], [0x2fbf71, 4.4]].forEach(([c, y]) => { const l = new THREE.Mesh(new THREE.CircleGeometry(.15, 12), new THREE.MeshBasicMaterial({ color: c })); l.position.set(230, y, 152.74); l.rotation.y = Math.PI; scene.add(l); });
+  box(.1, 2.4, .1, lam(0x8a8f92), 220, 0, 153.3);
+  const stop = new THREE.Mesh(new THREE.CircleGeometry(.45, 8), new THREE.MeshLambertMaterial({ color: 0xc8322b, side: THREE.DoubleSide })); stop.position.set(220, 2.6, 153.3); stop.rotation.z = Math.PI / 8; scene.add(stop);
+  addLabel('機車考照路線', 228, 4, 162);
+})();
 // 圖書館後方：停車場、原舞台、回收站
 rect(10, -14, 55, 0, lam(0x8a8c8e), .04);
 for (let x = 13; x < 54; x += 2.6) scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x, .07, -6), new THREE.Vector3(x, .07, 0)]), M.line));
@@ -658,7 +693,7 @@ for (let i = 0; i < 18; i++) tree(105 + i * 5, 131 - (i % 2), .8);
 // 行政大樓前原有一排大王椰子，因落葉落果危險已砍除，只剩樹根
 for (let z = 28; z < 138; z += 14){ if (z > 66 && z < 86) continue; const st = new THREE.Mesh(new THREE.CylinderGeometry(.45, .6, .5, 8), lam(0x8a7a66)); st.position.set(14, .25, z); scene.add(st); }
 [[36, 158], [50, 150], [12, 180], [56, 176]].forEach(([x, z]) => tree(x, z, 1.2));
-for (let i = 0; i < 14; i++) tree(200 + rnd() * 50, 150 + rnd() * 12, 1);
+for (let i = 0; i < 9; i++) tree(258 + rnd() * 6, 150 + i * 4, 1);   // 機車路線東側沿圍牆的樹
 for (let i = 0; i < 14; i++){ const x = 10 + i * 6, z = -28 + (x - 10) * .33 + 3; tree(x, z, .9); }
 for (let i = 0; i < 20; i++){ const t = i / 20, x = 95 + t * 145, z = 3 + t * 92; tree(x + 2, z + 4, .9); } // 商校街側行道樹
 
