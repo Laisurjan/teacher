@@ -786,9 +786,9 @@ const SMALL_PATH = [[122, 40], [145, 46], [170, 55], [186, 68], [194, 80]];
   for (let k = 0; k <= 6; k++){ const z = 112.5 + k * 7.5 / 6;
     scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(74.8, .07, z), new THREE.Vector3(131.5, .07, z)]), M.line)); }
   scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(74.8, .07, 112.5), new THREE.Vector3(74.8, .07, 120)]), M.line));
-  // ③ 延長段南側：兩邊壓石頭的淺灰水泥窄路（g041）
-  path([[80, 123.2], [116, 123.2]], 1.4, CON);
-  for (let x = 80.5; x < 116; x += 1.6) [122.2, 124.2].forEach(z => { const r = new THREE.Mesh(new THREE.DodecahedronGeometry(.28), M.concrete); r.position.set(x + (z > 123 ? .8 : 0), .12, z); r.scale.y = .6; scene.add(r); });
+  // ③ 直道南側（司令台兩邊）：兩邊壓石頭的淺灰水泥窄路（g041），東段一路接到活動中心門前
+  path([[80, 123.2], [116, 123.2]], 1.4, CON); path([[142, 123.2], [185, 123.2]], 1.4, CON);
+  for (let x = 80.5; x < 185; x += 1.6) if (x < 116 || x > 142) [122.2, 124.2].forEach(z => { const r = new THREE.Mesh(new THREE.DodecahedronGeometry(.28), M.concrete); r.position.set(x + (z > 123 ? .8 : 0), .12, z); r.scale.y = .6; scene.add(r); });
   // ④ 司令台周圍與西側往資訊館的棋盤格紅磚帶（g041、g065、360 照校內03）
   rect(117, 120.5, 141, 133, M.brickPave, .06);
   rect(113, 129, 120, 142, M.brickPave, .06);
