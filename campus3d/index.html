@@ -326,12 +326,34 @@ rect(-26, -80, -10, 280, M.road, .02); addLabel('中山路', -18, 2, 40);
 for (let z = -70; z < 270; z += 8) rect(-18.2, z, -17.8, z + 4, M.white, .04);   // 中線
 flat([[-26, -34], [-10, -33], [10, -30], [50, -17], [90, -3], [247, 96], [258, 82], [95, -16], [55, -30], [10, -44], [-26, -48]], M.road, .02); addLabel('商校街', 175, 2, 46);
 flat([[200, 200], [290, 160], [296, 170], [206, 212]], M.road, .02); addLabel('進豐街', 250, 2, 190);
-// 圍牆：粉紅磁磚矮牆＋綠色鐵網（商校街照片）
+/* 圍牆依照片分段：
+   pink  ＝ 商校街：粉紅磁磚牆約 2 m＋綠色鐵網（2025 街景）；沒有照片的段落也暫用此式
+   rail  ＝ 南側進豐街（球場、腳踏車棚外）：矮基座＋水泥柱＋鐵欄杆＋綠色鐵網（進豐街 360 照、g067）
+   mural ＝ 西南側泗水園後方：彩繪牆（g055） */
+const muralTex = (() => { const t = canvasTex(256, 64, (c) => {
+  const cols = ['#5aa9e6', '#7fc8a9', '#f6c85f', '#f28482', '#84a59d', '#9b8ae6'];
+  for (let i = 0; i < 8; i++){ c.fillStyle = cols[i % cols.length]; c.fillRect(i * 32, 0, 32, 64); }
+  c.fillStyle = '#3f8f4f'; for (let i = 0; i < 4; i++){ c.beginPath(); c.arc(30 + i * 64, 30, 14, 0, 7); c.fill(); c.fillRect(27 + i * 64, 40, 6, 24); }
+  c.fillStyle = '#fff6'; for (let i = 0; i < 6; i++){ c.beginPath(); c.arc(20 + i * 45, 10, 8, 0, 7); c.fill(); } });
+  t.wrapS = THREE.RepeatWrapping; return t; })();
+const WALL_STYLE = ['pink', 'pink', 'pink', 'pink', 'pink', 'pink', 'pink', 'rail', 'mural'];
 for (let i = 0; i < BOUND.length - 1; i++){
-  const [x0, z0] = BOUND[i], [x1, z1] = BOUND[i + 1], len = Math.hypot(x1 - x0, z1 - z0);
+  const [x0, z0] = BOUND[i], [x1, z1] = BOUND[i + 1], len = Math.hypot(x1 - x0, z1 - z0), st = WALL_STYLE[i];
   const g = group((x0 + x1) / 2, (z0 + z1) / 2, THREE.MathUtils.radToDeg(Math.atan2(z1 - z0, x1 - x0)));
-  box(len, 2, .4, M.wallPink, 0, 0, 0, g);
-  const f = new THREE.Mesh(new THREE.PlaneGeometry(len, 1.6), M.fence); f.position.y = 2.8; g.add(f);
+  if (st === 'rail'){
+    box(len, .7, .4, lam(0xbdb6aa), 0, 0, 0, g);
+    for (let t = -len / 2; t <= len / 2; t += 3) box(.45, 2, .45, lam(0xcfc8bb), t, 0, 0, g);
+    box(len, .08, .08, lam(0x8d8f8c), 0, 1.85, 0, g); box(len, .08, .08, lam(0x8d8f8c), 0, .9, 0, g);
+    for (let t = -len / 2; t <= len / 2; t += .5) box(.05, 1.1, .05, lam(0x8d8f8c), t, .75, 0, g);
+    const f = new THREE.Mesh(new THREE.PlaneGeometry(len, 1.5), M.fence); f.position.y = 2.75; g.add(f);
+  } else if (st === 'mural'){
+    const t = muralTex.clone(); t.needsUpdate = true; t.repeat.set(len / 10, 1);
+    const m = new THREE.MeshLambertMaterial({ map: t });
+    box(len, 2, .4, [m, m, M.concrete, M.concrete, m, m], 0, 0, 0, g);
+  } else {
+    box(len, 2, .4, M.wallPink, 0, 0, 0, g);
+    const f = new THREE.Mesh(new THREE.PlaneGeometry(len, 1.6), M.fence); f.position.y = 2.8; g.add(f);
+  }
 }
 // 中山路側：留校門（z 69–83）
 box(.4, 2, 100, M.wallPink, -10, 0, 19);
@@ -661,6 +683,16 @@ addLabel('後門', 211, 5, 187);
   [-w / 2 + .5, 0, w / 2 - .5].forEach(dx => box(.15, 2.5, .15, M.roofGray, x + dx, 0, z));
 });
 addLabel('腳踏車棚', 237, 6, 177);
+// --- 活動中心東側圍牆（2022 年 8 月街景「體育館東側巷」）：深褐磚基座＋水泥柱＋淺褐色鐵欄杆
+(function(){
+  const A = [237.5, 99.7], B = [216.4, 147.2];
+  const dx = B[0] - A[0], dz = B[1] - A[1], L = Math.hypot(dx, dz);
+  const g = group((A[0] + B[0]) / 2, (A[1] + B[1]) / 2, THREE.MathUtils.radToDeg(Math.atan2(dz, dx)));
+  box(L, .6, .45, lam(0x5a4436), 0, 0, 0, g);                              // 磚基座
+  for (let t = -L / 2; t <= L / 2; t += 3.2) box(.45, 1.9, .45, lam(0xcfc8bb), t, 0, 0, g);   // 水泥柱
+  box(L, .08, .08, lam(0xa88f6c), 0, 1.7, 0, g); box(L, .08, .08, lam(0xa88f6c), 0, .75, 0, g);
+  for (let t = -L / 2; t <= L / 2; t += .5) box(.05, 1.05, .05, lam(0xa88f6c), t, .65, 0, g); // 鐵欄杆
+})();
 // --- 活動中心與腳踏車棚之間：水泥地上的機車考照模擬路線（照片 g028、g067：深色鋪面、黃色車道線、待轉區、白色箭頭與停止線）
 (function(){
   const Y = .07, YEL = lam(0xe8c22e), WHT = M.white;
