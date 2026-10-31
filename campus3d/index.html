@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>花蓮高商 3D 校園</title>
+<style>
+:root{
+  --bg:#dfe8ee; --panel:rgba(255,255,255,.94); --ink:#1d2a33; --sub:#4b5b66;
+  --line:rgba(0,0,0,.12); --accent:#1f6feb; --btn:#ffffff; --btnInk:#1d2a33;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#1b232b; --panel:rgba(28,36,44,.94); --ink:#eef3f6; --sub:#a9b6bf;
+    --line:rgba(255,255,255,.16); --accent:#5aa2ff; --btn:#26313b; --btnInk:#eef3f6;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1b232b; --panel:rgba(28,36,44,.94); --ink:#eef3f6; --sub:#a9b6bf;
+  --line:rgba(255,255,255,.16); --accent:#5aa2ff; --btn:#26313b; --btnInk:#eef3f6;
+}
+html,body{position:fixed;inset:0;margin:0;overflow:hidden;background:var(--bg);
+  font-family:"Noto Sans TC","Microsoft JhengHei","PingFang TC",sans-serif;font-weight:600;color:var(--ink)}
+#app{position:absolute;inset:0;touch-action:none}
+header,.bar,#info,#hint{z-index:10}
+canvas{display:block;touch-action:none}
+header{position:absolute;left:12px;top:12px;right:12px;display:flex;gap:8px;align-items:center;
+  pointer-events:none;flex-wrap:wrap}
+header h1{margin:0;font-size:17px;font-weight:800;background:var(--panel);padding:8px 12px;border-radius:10px;
+  box-shadow:0 2px 8px rgba(0,0,0,.15);pointer-events:auto}
+.bar{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));
+  display:flex;gap:6px;flex-wrap:wrap;justify-content:center;width:calc(100% - 24px);max-width:640px}
+.bar button{flex:1 1 auto;min-width:72px;padding:10px 10px;border:1px solid var(--line);border-radius:10px;
+  background:var(--btn);color:var(--btnInk);font:inherit;font-size:14px;font-weight:700;
+  box-shadow:0 2px 6px rgba(0,0,0,.12)}
+.bar button.on{background:var(--accent);color:#fff;border-color:transparent}
+#info{position:absolute;left:12px;right:12px;bottom:calc(70px + env(safe-area-inset-bottom));max-width:520px;margin:0 auto;
+  background:var(--panel);border-radius:12px;padding:14px 16px;box-shadow:0 4px 16px rgba(0,0,0,.2);display:none}
+#info h2{margin:0 0 6px;font-size:17px;font-weight:800}
+#info p{margin:0;color:var(--sub);font-size:15px;line-height:1.6}
+#info .x{position:absolute;right:8px;top:6px;border:0;background:none;font-size:22px;color:var(--sub);padding:4px 8px}
+#hint{position:absolute;right:12px;top:58px;background:var(--panel);padding:6px 10px;border-radius:8px;font-size:13px;color:var(--sub)}
+.lbl{font-size:12px;font-weight:800;color:#1d2a33;background:rgba(255,255,255,.88);padding:2px 6px;border-radius:6px;
+  white-space:nowrap;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.pin{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:900;color:#fff;border:3px solid #ffe14d;cursor:pointer;pointer-events:auto;
+  box-shadow:0 2px 6px rgba(0,0,0,.35)}
+.hideLbl .lbl{display:none} .hidePin .pin{display:none}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<header><h1>國立花蓮高商・3D 校園模型</h1></header>
+<div id="hint">單指旋轉・雙指縮放／平移</div>
+<div id="info"><button class="x" aria-label="關閉">×</button><h2></h2><p></p></div>
+<div class="bar">
+  <button id="bReset">預設視角</button>
+  <button id="bTop">俯視</button>
+  <button id="bLbl" class="on">建築名稱</button>
+  <button id="bPin" class="on">安全點位</button>
+</div>
+
+<script type="importmap">
+{"imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+/* 座標系：以衛星圖轉正 38.3° 後量測，單位公尺。x 向右（東北）、z 向下（西南方為中山路側在左）。
+   方位與學校安全地圖一致：中山路在左、商校街在上。 */
+const FLOOR = 3.6;
+const app = document.getElementById('app');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#dfe8ee');
+scene.fog = new THREE.Fog(scene.background, 450, 900);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+app.appendChild(renderer.domElement);
+const labelRenderer = new CSS2DRenderer();
+labelRenderer.domElement.style.cssText = 'position:absolute;inset:0;pointer-events:none';
+app.appendChild(labelRenderer.domElement);
+
+const camera = new THREE.PerspectiveCamera(45, 1, 1, 3000);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.maxPolarAngle = Math.PI * 0.48;
+controls.minDistance = 20; controls.maxDistance = 650;
+controls.screenSpacePanning = true;
+controls.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_PAN };
+
+const CENTER = new THREE.Vector3(130, 0, 95);
+function viewDefault(){ camera.position.set(130, 210, 330); controls.target.copy(CENTER); }
+function viewTop(){ camera.position.set(130, 380, 96); controls.target.copy(CENTER); }
+viewDefault();
+
+// 燈光
+scene.add(new THREE.HemisphereLight(0xffffff, 0x8a9a7a, 0.9));
+const sun = new THREE.DirectionalLight(0xffffff, 1.6);
+sun.position.set(-120, 220, 60); sun.target.position.copy(CENTER);
+sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+Object.assign(sun.shadow.camera, { left: -200, right: 200, top: 200, bottom: -200, near: 10, far: 600 });
+scene.add(sun, sun.target);
+
+// ---------- 材質 ----------
+function canvasTex(w, h, draw, rx = 1, ry = 1){
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  draw(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(rx, ry); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
+}
+// 立面：一層一格，含窗帶
+function facadeTex(wall, win, band){
+  return canvasTex(64, 64, (g, w, h) => {
+    g.fillStyle = wall; g.fillRect(0, 0, w, h);
+    if (band){ g.fillStyle = band; g.fillRect(0, 40, w, 10); }
+    g.fillStyle = win; g.fillRect(8, 14, 48, 22);
+    g.fillStyle = 'rgba(255,255,255,.25)'; g.fillRect(8, 14, 48, 4);
+  });
+}
+const solarTex = canvasTex(64, 64, (g, w, h) => {
+  g.fillStyle = '#1d2c55'; g.fillRect(0, 0, w, h);
+  g.strokeStyle = '#7f93c4'; g.lineWidth = 2;
+  for (let i = 0; i <= 64; i += 16){ g.beginPath(); g.moveTo(i, 0); g.lineTo(i, 64); g.stroke(); }
+  g.beginPath(); g.moveTo(0, 32); g.lineTo(64, 32); g.stroke();
+});
+const M = {
+  grass: new THREE.MeshLambertMaterial({ color: 0x86b36a }),
+  ground: new THREE.MeshLambertMaterial({ color: 0xc9c3b6 }),
+  road: new THREE.MeshLambertMaterial({ color: 0x5d6166 }),
+  track: new THREE.MeshLambertMaterial({ color: 0xc8553d }),
+  field: new THREE.MeshLambertMaterial({ color: 0x6fa556 }),
+  court: new THREE.MeshLambertMaterial({ color: 0x3567c9 }),
+  courtG: new THREE.MeshLambertMaterial({ color: 0x3f8f87 }),
+  water: new THREE.MeshLambertMaterial({ color: 0x2d4f63 }),
+  wall: new THREE.MeshLambertMaterial({ color: 0xc9a9a0 }),
+  roofGray: new THREE.MeshLambertMaterial({ color: 0x9aa3a8 }),
+  roofBlue: new THREE.MeshLambertMaterial({ color: 0x8fb0cf }),
+  white: new THREE.MeshLambertMaterial({ color: 0xf2f0ea }),
+  trunk: new THREE.MeshLambertMaterial({ color: 0x6b4f35 }),
+  leaf: new THREE.MeshLambertMaterial({ color: 0x3f7a3a }),
+  leaf2: new THREE.MeshLambertMaterial({ color: 0x568f3e }),
+  line: new THREE.LineBasicMaterial({ color: 0xffffff })
+};
+const FAC = {
+  pink:  facadeTex('#e3c9bf', '#4a5a66', '#b9685a'),   // 粉色磁磚＋紅磚陽台板（行政、後排、人文館）
+  beige: facadeTex('#e6d6b3', '#4a5a66'),              // 圖書館米色
+  brown: facadeTex('#b98a6a', '#3e4c56'),              // 資訊館咖啡色磁磚
+  white: facadeTex('#eceae4', '#56656f'),              // 活動中心白色
+  dorm:  facadeTex('#e8dcc8', '#56656f')
+};
+
+// ---------- 幾何工具 ----------
+const labels = [];
+function addLabel(text, x, y, z){
+  const d = document.createElement('div'); d.className = 'lbl'; d.textContent = text;
+  const o = new CSS2DObject(d); o.position.set(x, y, z); scene.add(o); labels.push(o);
+}
+// 量體：中心(cx,cz)、寬 w(x 向)、深 d(z 向)、樓層數、旋轉角(度，順時針)
+function building({ cx, cz, w, d, floors, fac = 'pink', roof = 'solar', rot = 0, name, h }){
+  const H = h ?? floors * FLOOR;
+  const g = new THREE.Group();
+  const facade = FAC[fac];
+  const mk = (len) => { const t = facade.clone(); t.needsUpdate = true; t.repeat.set(Math.max(1, Math.round(len / 4)), floors || Math.round(H / FLOOR)); return new THREE.MeshLambertMaterial({ map: t }); };
+  const sideX = mk(d), sideZ = mk(w);
+  const roofM = roof === 'solar' ? (() => { const t = solarTex.clone(); t.needsUpdate = true; t.repeat.set(w / 6, d / 6); return new THREE.MeshLambertMaterial({ map: t }); })()
+              : roof === 'blue' ? M.roofBlue : roof === 'white' ? M.white : M.roofGray;
+  const box = new THREE.Mesh(new THREE.BoxGeometry(w, H, d), [sideX, sideX, roofM, M.roofGray, sideZ, sideZ]);
+  box.position.y = H / 2; box.castShadow = box.receiveShadow = true; g.add(box);
+  // 女兒牆
+  const par = new THREE.Mesh(new THREE.BoxGeometry(w + .4, .8, d + .4), M.white);
+  par.position.y = H + .1; par.scale.set(1, 1, 1);
+  const inner = new THREE.Mesh(new THREE.BoxGeometry(w - .6, .9, d - .6), roofM);
+  inner.position.y = H + .15;
+  g.add(par, inner);
+  g.position.set(cx, 0, cz); g.rotation.y = -THREE.MathUtils.degToRad(rot);
+  scene.add(g);
+  if (name) addLabel(name, cx, H + 4, cz);
+  return g;
+}
+function flat(shapePts, mat, y = 0.02){
+  const s = new THREE.Shape(shapePts.map(([x, z]) => new THREE.Vector2(x, -z)));
+  const m = new THREE.Mesh(new THREE.ShapeGeometry(s), mat);
+  m.rotation.x = -Math.PI / 2; m.position.y = y; m.receiveShadow = true; scene.add(m); return m;
+}
+function rect(x0, z0, x1, z1, mat, y = 0.03){ return flat([[x0, z0], [x1, z0], [x1, z1], [x0, z1]], mat, y); }
+function tree(x, z, s = 1){
+  const g = new THREE.Group();
+  const t = new THREE.Mesh(new THREE.CylinderGeometry(.25 * s, .35 * s, 3 * s, 6), M.trunk); t.position.y = 1.5 * s;
+  const c = new THREE.Mesh(new THREE.IcosahedronGeometry(2.4 * s, 0), Math.random() < .5 ? M.leaf : M.leaf2);
+  c.position.y = 4.2 * s; c.castShadow = true;
+  g.add(t, c); g.position.set(x, 0, z); scene.add(g);
+}
+function palm(x, z){
+  const g = new THREE.Group();
+  const t = new THREE.Mesh(new THREE.CylinderGeometry(.2, .3, 9, 6), M.trunk); t.position.y = 4.5;
+  const c = new THREE.Mesh(new THREE.ConeGeometry(2.6, 1.6, 7), M.leaf2); c.position.y = 9.3; c.rotation.x = Math.PI; c.castShadow = true;
+  g.add(t, c); g.position.set(x, 0, z); scene.add(g);
+}
+
+// ---------- 地面、道路 ----------
+const BOUND = [[-10, -8], [40, -3], [70, 6], [245, 98], [282, 124], [282, 156], [258, 187], [60, 189], [-10, 187]];
+const base = new THREE.Mesh(new THREE.PlaneGeometry(900, 700), new THREE.MeshLambertMaterial({ color: 0xb9bcb8 }));
+base.rotation.x = -Math.PI / 2; base.position.set(130, -0.05, 95); base.receiveShadow = true; scene.add(base);
+flat(BOUND, M.ground, 0.01);
+// 中山路、商校街、進豐街
+rect(-26, -80, -10, 280, M.road, 0.02); addLabel('中山路', -18, 2, 60);
+flat([[-26, -30], [-10, -24], [70, -4], [250, 86], [262, 74], [72, -16], [-26, -42]], M.road, 0.02); addLabel('商校街', 175, 2, 46);
+flat([[200, 200], [290, 160], [296, 170], [206, 212]], M.road, 0.02); addLabel('進豐街', 250, 2, 190);
+// 圍牆
+for (let i = 0; i < BOUND.length; i++){
+  const [x0, z0] = BOUND[i], [x1, z1] = BOUND[(i + 1) % BOUND.length];
+  const len = Math.hypot(x1 - x0, z1 - z0);
+  if (i === BOUND.length - 1) continue; // 中山路側另做（校門）
+  const wl = new THREE.Mesh(new THREE.BoxGeometry(len, 2, .4), M.wall);
+  wl.position.set((x0 + x1) / 2, 1, (z0 + z1) / 2); wl.rotation.y = -Math.atan2(z1 - z0, x1 - x0);
+  wl.castShadow = true; scene.add(wl);
+}
+// 中山路側圍牆（留校門缺口 z 70–82）
+[[-8, 70], [82, 187]].forEach(([a, b]) => {
+  const wl = new THREE.Mesh(new THREE.BoxGeometry(.4, 2, b - a), M.wall); wl.position.set(-10, 1, (a + b) / 2); scene.add(wl);
+});
+
+// 草地、中庭
+rect(31, 10, 54, 68, M.grass); rect(31, 77, 54, 126, M.grass);
+rect(70, 30, 104, 128, M.grass);
+flat([[0, 140], [60, 140], [62, 186], [0, 186]], M.grass);
+rect(102, 58, 200, 130, M.grass);
+
+// ---------- 操場 ----------
+(function(){
+  const cx = 147, cz = 91.5, L = 88, W = 57, lane = 7.5;
+  function stadium(len, wid){
+    const r = wid / 2, s = (len - wid) / 2, sh = new THREE.Shape();
+    sh.moveTo(-s, -r); sh.lineTo(s, -r); sh.absarc(s, 0, r, -Math.PI / 2, Math.PI / 2, false);
+    sh.lineTo(-s, r); sh.absarc(-s, 0, r, Math.PI / 2, Math.PI * 1.5, false); return sh;
+  }
+  const outer = stadium(L, W); outer.holes.push(stadium(L - 2 * lane, W - 2 * lane));
+  const tr = new THREE.Mesh(new THREE.ShapeGeometry(outer, 32), M.track);
+  tr.rotation.x = -Math.PI / 2; tr.position.set(cx, .05, cz); tr.receiveShadow = true; scene.add(tr);
+  const fd = new THREE.Mesh(new THREE.ShapeGeometry(stadium(L - 2 * lane, W - 2 * lane), 32), M.field);
+  fd.rotation.x = -Math.PI / 2; fd.position.set(cx, .05, cz); fd.receiveShadow = true; scene.add(fd);
+  for (let k = 1; k < 5; k++){
+    const p = stadium(L - 2 * lane * k / 5, W - 2 * lane * k / 5).getPoints(40);
+    const ln = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(p.map(v => new THREE.Vector3(v.x, v.y, 0))), M.line);
+    ln.rotation.x = -Math.PI / 2; ln.position.set(cx, .07, cz); scene.add(ln);
+  }
+  addLabel('操場', cx, 3, cz);
+})();
+
+// ---------- 球場 ----------
+rect(113, 132, 200, 178, M.courtG, .04);
+function court(x0, z0, x1, z1, mat){
+  rect(x0, z0, x1, z1, mat, .06);
+  const p = [[x0, z0], [x1, z0], [x1, z1], [x0, z1], [x0, z0]].map(([x, z]) => new THREE.Vector3(x, .08, z));
+  scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(p), M.line));
+  const mid = (x1 - x0) > (z1 - z0) ? [[(x0 + x1) / 2, z0], [(x0 + x1) / 2, z1]] : [[x0, (z0 + z1) / 2], [x1, (z0 + z1) / 2]];
+  scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(mid.map(([x, z]) => new THREE.Vector3(x, .08, z))), M.line));
+}
+court(116, 141, 136, 176, M.courtG);        // 網球場
+court(140, 135, 167, 152, M.court);         // 籃球場
+court(140, 154, 167, 171, M.court);         // 籃球場
+court(170, 144, 184, 171, M.court);         // 籃球場
+court(186, 150, 197, 169, M.court);         // 排球場
+addLabel('網球場', 126, 2, 158); addLabel('籃球場', 154, 2, 153); addLabel('排球場', 191, 2, 160);
+
+// ---------- 泗水園 ----------
+flat([[6, 152], [18, 149], [30, 153], [37, 160], [34, 170], [26, 176], [24, 168], [16, 166], [10, 174], [4, 168], [3, 158]], M.water, .06);
+addLabel('泗水園', 20, 3, 162);
+// 泗水園涼亭（六角亭）
+(function(x, z){
+  const g = new THREE.Group(), r = 2.6, red = new THREE.MeshLambertMaterial({ color: 0x9c3b2e });
+  const base = new THREE.Mesh(new THREE.CylinderGeometry(r + .6, r + .8, .5, 6), M.ground); base.position.y = .25; g.add(base);
+  for (let i = 0; i < 6; i++){
+    const a = i * Math.PI / 3, p = new THREE.Mesh(new THREE.CylinderGeometry(.15, .15, 2.8, 6), red);
+    p.position.set(Math.cos(a) * r, 1.9, Math.sin(a) * r); p.castShadow = true; g.add(p);
+  }
+  const roof = new THREE.Mesh(new THREE.ConeGeometry(r + 1.4, 2.2, 6), new THREE.MeshLambertMaterial({ color: 0x5a3a2a }));
+  roof.position.y = 4.4; roof.castShadow = true; g.add(roof);
+  g.position.set(x, 0, z); scene.add(g); addLabel('涼亭', x, 7.5, z);
+})(45, 160);
+
+// ---------- 建築 ----------
+building({ cx: 5.5, cz: 12, w: 27, d: 24, floors: 5, fac: 'beige', roof: 'gray', name: '圖書資訊館' });
+building({ cx: 12, cz: 3, w: 6, d: 6, floors: 7, fac: 'beige', roof: 'gray' });               // 圖書館塔樓
+building({ cx: 25, cz: 81.5, w: 12, d: 115, floors: 4, fac: 'pink', roof: 'solar', name: '行政教學大樓（前排）' });
+building({ cx: 61.5, cz: 72, w: 15, d: 134, floors: 3, fac: 'pink', roof: 'solar', name: '後排教室' });
+building({ cx: 42.5, cz: 6.5, w: 23, d: 7, floors: 3, fac: 'pink', roof: 'solar' });           // 北側連接
+building({ cx: 42.5, cz: 72.5, w: 23, d: 8, floors: 3, fac: 'pink', roof: 'gray' });           // 中央穿廊
+building({ cx: 42.5, cz: 132.5, w: 23, d: 13, floors: 3, fac: 'pink', roof: 'solar' });        // 南側連接
+building({ cx: 100, cz: 24, w: 46, d: 14, floors: 4, fac: 'pink', roof: 'solar', rot: 33, name: '人文館（特別教室）' });
+building({ cx: 210, cz: 116, w: 29, d: 52, floors: 3, h: 14, fac: 'white', roof: 'solar', rot: 24, name: '活動中心' });
+building({ cx: 74, cz: 160, w: 22, d: 36, floors: 5, fac: 'brown', roof: 'solar', name: '資訊館' });
+building({ cx: 92.5, cz: 160, w: 15, d: 20, floors: 3, fac: 'brown', roof: 'gray' });
+building({ cx: 3.5, cz: 112, w: 23, d: 25, floors: 3, fac: 'dorm', roof: 'gray', name: '宿舍' });
+building({ cx: 267.5, cz: 141, w: 25, d: 22, floors: 4, fac: 'dorm', roof: 'gray', name: '女生宿舍' });
+building({ cx: 114, cz: 125.5, w: 10, d: 9, floors: 1, h: 4.5, fac: 'white', roof: 'gray', name: '司令台' });
+building({ cx: -4, cz: -2, w: 10, d: 8, floors: 2, fac: 'dorm', roof: 'gray', name: '民舍' });
+
+// 校門
+(function(){
+  const g = new THREE.Group();
+  [70.5, 81.5].forEach(z => { const p = new THREE.Mesh(new THREE.BoxGeometry(2, 7, 2), M.white); p.position.set(-9, 3.5, z); p.castShadow = true; g.add(p); });
+  const beam = new THREE.Mesh(new THREE.BoxGeometry(6, 1.6, 14), M.white); beam.position.set(-7, 7.6, 76); beam.castShadow = true; g.add(beam);
+  scene.add(g); addLabel('校門', -9, 11, 76);
+})();
+// 後門
+[[205, 186.5], [216, 187.5]].forEach(([x, z]) => { const p = new THREE.Mesh(new THREE.BoxGeometry(1.2, 3, 1.2), M.white); p.position.set(x, 1.5, z); scene.add(p); });
+addLabel('後門', 211, 5, 187);
+// 腳踏車棚
+[[230, 174.5, 16], [245.5, 174.5, 13], [230, 180.5, 16], [245.5, 180.5, 13]].forEach(([x, z, w]) => {
+  const r = new THREE.Mesh(new THREE.BoxGeometry(w, .3, 4.5), M.white); r.position.set(x, 2.6, z); r.castShadow = true; scene.add(r);
+  [-w / 2 + .5, w / 2 - .5].forEach(dx => { const p = new THREE.Mesh(new THREE.CylinderGeometry(.12, .12, 2.6), M.roofGray); p.position.set(x + dx, 1.3, z); scene.add(p); });
+});
+addLabel('腳踏車棚', 237, 6, 177);
+
+// ---------- 樹 ----------
+let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+for (let i = 0; i < 70; i++){ const x = 72 + rnd() * 30, z = 32 + rnd() * 92; if (Math.abs(x - 88) < 2) continue; tree(x, z, .8 + rnd() * .6); }
+for (let i = 0; i < 10; i++) tree(34 + rnd() * 18, 14 + rnd() * 50, .8 + rnd() * .4);
+for (let i = 0; i < 8; i++) tree(34 + rnd() * 14, 82 + rnd() * 40, .8 + rnd() * .4);
+for (let i = 0; i < 12; i++) tree(2 + rnd() * 55, 178 + rnd() * 6, .9);
+for (let i = 0; i < 18; i++) tree(105 + i * 5, 131 - (i % 2), .8);
+for (let i = 0; i < 9; i++) palm(14, 30 + i * 9);
+[[36, 158], [44, 168], [50, 150], [12, 180]].forEach(([x, z]) => tree(x, z, 1.2));
+for (let i = 0; i < 14; i++) tree(200 + rnd() * 50, 150 + rnd() * 12, 1);
+
+// ---------- 安全地圖點位（依學校〈校園安全地圖〉）----------
+const LEVEL = { a: ['#d7263d', '最危險區域'], b: ['#e0457b', '危險區域'], c: ['#f29bb3', '次危險區域'] };
+const PTS = [
+  [1, 'a', '泗水園', '長年蓄水，應慎防跌落。', 20, 160],
+  [2, 'b', '資訊館後方', '平時人群少至，屬於僻靜地點。', 82, 182],
+  [3, 'b', '活動中心後及側邊', '平時人群少至，屬於僻靜地點。', 230, 100],
+  [4, 'b', '學生腳踏車車棚', '平時人群少至，屬於僻靜地點。', 240, 184],
+  [5, 'c', '停車場原舞台後方階梯', '平時人群少至，屬於僻靜地點。', 30, -2],
+  [6, 'c', '人文館東側', '平時人群少至，屬於僻靜地點。', 124, 42],
+  [7, 'c', '圖書館一樓後方階梯', '平時人群少至，屬於僻靜地點。', 19, 20],
+  [8, 'c', '校園後門', '平時人群少至，屬於僻靜地點。', 211, 182]
+];
+const info = document.getElementById('info');
+info.querySelector('.x').onclick = () => info.style.display = 'none';
+const pins = [];
+PTS.forEach(([n, lv, title, desc, x, z]) => {
+  const d = document.createElement('div'); d.className = 'pin'; d.textContent = n; d.style.background = LEVEL[lv][0];
+  const o = new CSS2DObject(d); o.position.set(x, 9, z); scene.add(o); pins.push(o);
+  const pole = new THREE.Mesh(new THREE.CylinderGeometry(.15, .15, 8), new THREE.MeshBasicMaterial({ color: LEVEL[lv][0] }));
+  pole.position.set(x, 4, z); scene.add(pole);
+  const onTap = (e) => {
+    e.stopPropagation();
+    info.querySelector('h2').textContent = `${n}. ${title}`;
+    info.querySelector('p').textContent = `${LEVEL[lv][1]}：${desc}`;
+    info.style.display = 'block';
+    flyTo(x, z);
+  };
+  d.addEventListener('pointerdown', onTap);
+});
+
+// 平滑移動鏡頭到點位
+let fly = null;
+function flyTo(x, z){
+  const to = new THREE.Vector3(x, 0, z);
+  const off = new THREE.Vector3().subVectors(camera.position, controls.target).setLength(90);
+  off.y = Math.max(off.y, 45);
+  fly = { t: 0, ft: controls.target.clone(), fp: camera.position.clone(), tt: to, tp: to.clone().add(off) };
+}
+
+// ---------- 介面 ----------
+const root = document.documentElement;
+document.getElementById('bReset').onclick = () => { fly = null; viewDefault(); };
+document.getElementById('bTop').onclick = () => { fly = null; viewTop(); };
+const tog = (id, cls) => { const b = document.getElementById(id); b.onclick = () => { b.classList.toggle('on'); app.classList.toggle(cls); }; };
+tog('bLbl', 'hideLbl'); tog('bPin', 'hidePin');
+setTimeout(() => document.getElementById('hint').style.display = 'none', 6000);
+
+// iOS 系統手勢阻擋
+['gesturestart', 'gesturechange'].forEach(ev => document.addEventListener(ev, e => e.preventDefault()));
+document.addEventListener('touchmove', e => { if (e.touches.length > 1 || e.target.closest('#app')) e.preventDefault(); }, { passive: false });
+
+function resize(){
+  const vv = window.visualViewport, w = vv ? vv.width : innerWidth, h = vv ? vv.height : innerHeight;
+  renderer.setSize(w, h); labelRenderer.setSize(w, h);
+  camera.aspect = w / h;
+  camera.fov = w < h ? 60 : 45;   // 直式手機視野放寬
+  camera.updateProjectionMatrix();
+}
+(window.visualViewport || window).addEventListener('resize', resize); resize();
+
+renderer.setAnimationLoop(() => {
+  if (fly){
+    fly.t = Math.min(1, fly.t + 0.035); const k = 1 - Math.pow(1 - fly.t, 3);
+    controls.target.lerpVectors(fly.ft, fly.tt, k); camera.position.lerpVectors(fly.fp, fly.tp, k);
+    if (fly.t >= 1) fly = null;
+  }
+  controls.update();
+  renderer.render(scene, camera); labelRenderer.render(scene, camera);
+});
+</script>
+</body>
+</html>
