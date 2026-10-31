@@ -684,18 +684,18 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
   for (let i = 0; i < 6; i++){ const x = -6 + i * 2.4; box(.3, .5, .3, lam(0x555a5e), x, TOP, -D / 2 + .8, g); box(.45, .35, .25, lam(0xdfe3e6), x, TOP + .5, -D / 2 + .7, g); }
   // 三根旗桿（中間最高）
   [[-2.4, 6], [0, 8.5], [2.4, 6]].forEach(([x, h]) => box(.12, h, .12, lam(0xd0d3d6), x, TOP, 1.5, g));
-  // 兩端側梯：垂直於跑道，沿端牆外側由後（南）往前（北）爬約 8 階，上到前半段旁的平台再進舞台；寬約 3 m，不鏽鋼扶手（2015 年活動照）
+  // 兩端側梯：垂直於跑道，從操場正面（北）沿端牆外側往後爬約 8 階，上到平台再從側面進舞台；寬約 3 m，不鏽鋼扶手（2015 年活動照）
   const SS = lam(0xc9ced2), SW = 3, NS = 8, rise = BASE / NS, run = .32, LAND = 1.8, len = NS * run, ang = Math.atan2(BASE, len);
   [-1, 1].forEach(sd => {
-    const xc = sd * (W / 2 + SW / 2), z0 = -D / 2 + LAND;
-    box(SW, BASE, LAND, CON, xc, 0, -D / 2 + LAND / 2, g);                                   // 平台
-    for (let k = 0; k < NS; k++) box(SW, rise * (k + 1), run, CON, xc, 0, z0 + (NS - 1 - k) * run + run / 2, g);
-    const xo = sd * (W / 2 + SW - .1);
-    const r = new THREE.Mesh(new THREE.CylinderGeometry(.04, .04, Math.hypot(len, BASE), 8), SS);   // 外側斜扶手
-    r.rotation.x = -(Math.PI / 2 - ang); r.position.set(xo, BASE / 2 + .95, z0 + len / 2); g.add(r);
-    [z0, z0 + len - run].forEach((z, i) => box(.05, .95, .05, SS, xo, i ? rise : BASE, z, g));
-    box(.05, .05, LAND, SS, xo, BASE + .95, -D / 2 + LAND / 2, g); box(.05, .95, .05, SS, xo, BASE, -D / 2 + .1, g);   // 平台扶手
-    box(SW, .05, .05, SS, xc, BASE + .95, -D / 2 + .05, g);
+    const xc = sd * (W / 2 + SW / 2), z0 = -D / 2;
+    for (let k = 0; k < NS; k++) box(SW, rise * (k + 1), run, CON, xc, 0, z0 + k * run + run / 2, g);
+    box(SW, BASE, LAND, CON, xc, 0, z0 + len + LAND / 2, g);                                   // 平台
+    [sd * (W / 2 + SW - .1)].forEach(xo => {
+      const r = new THREE.Mesh(new THREE.CylinderGeometry(.04, .04, Math.hypot(len, BASE), 8), SS);   // 外側斜扶手
+      r.rotation.x = Math.PI / 2 - ang; r.position.set(xo, BASE / 2 + .95, z0 + len / 2); g.add(r);
+      [[z0 + run / 2, rise], [z0 + len - run / 2, BASE]].forEach(([z, y]) => box(.05, .95, .05, SS, xo, y, z, g));
+      box(.05, .05, LAND, SS, xo, BASE + .95, z0 + len + LAND / 2, g); box(.05, .95, .05, SS, xo, BASE, z0 + len + LAND - .05, g); });   // 平台扶手
+    box(SW, .05, .05, SS, xc, BASE + .95, z0 + len + LAND - .05, g);
   });
   // 南面（背面）斜外梯往西爬上屋頂，梯下黃色小門
   const N = 16;
@@ -796,7 +796,11 @@ const SMALL_PATH = [[122, 40], [145, 46], [170, 55], [186, 68], [194, 80]];
   // ④ 司令台周圍與西側往資訊館的棋盤格紅磚帶（g041、g065、360 照校內03）
   rect(117, 120.5, 141, 133, M.brickPave, .06);
   rect(113, 129, 120, 142, M.brickPave, .06);
-  addLabel('水泥路', 98, 2.5, 133); addLabel('直線跑道', 92, 2.5, 116);
+  addLabel('水泥路', 98, 2.5, 133);
+  // ⑤ 司令台往東到活動中心：跑道南緣到球場之間、東彎道外側到活動中心門前，整片水泥地（早年為灰綠 PU，現已改水泥；2015 年活動照、運動會照 #146/#158）
+  flat([[137, 120.3], [137, 132], [186, 132], [186.2, 133.9], [207.3, 86.4], [192, 92], [178, 104], [160, 120.3]], lam(0xc6c4bd), .045);
+  // 榕樹下的蕨類植栽
+  for (let x = 145; x <= 190; x += 5){ const f = new THREE.Mesh(new THREE.SphereGeometry(1, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), lam(0x3f7a3a)); f.scale.set(1.8, .5, 1.3); f.position.set(x, 0, 131 - ((x - 105) / 5 % 2)); scene.add(f); } addLabel('直線跑道', 92, 2.5, 116);
 })();
 // --- 活動中心東側圍牆（2022 年 8 月街景「體育館東側巷」）：深褐磚基座＋水泥柱＋淺褐色鐵欄杆
 (function(){
