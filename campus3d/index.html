@@ -322,8 +322,9 @@ function hedge(x0, z0, x1, z1){ box(Math.abs(x1 - x0) || .8, .9, Math.abs(z1 - z
 const BOUND = [[-10, -31], [10, -28], [50, -15], [90, -1], [245, 98], [282, 124], [282, 156], [258, 187], [60, 189], [-10, 187]];
 const base = new THREE.Mesh(new THREE.PlaneGeometry(900, 700), lam(0xb9bcb8)); base.rotation.x = -Math.PI / 2; base.position.set(130, -.05, 95); base.receiveShadow = true; scene.add(base);
 flat(BOUND, M.ground, .01);
-rect(-26, -80, -10, 280, M.road, .02); addLabel('中山路', -18, 2, 40);
-for (let z = -70; z < 270; z += 8) rect(-18.2, z, -17.8, z + 4, M.white, .04);   // 中線
+rect(-29, -80, -15, 280, M.road, .02); addLabel('中山路', -22, 2, 40);
+rect(-15, -80, -10, 280, M.stonePave, .025);   // 中山路側人行道（校門雨遮懸挑在其上）
+for (let z = -70; z < 270; z += 8) rect(-22.2, z, -21.8, z + 4, M.white, .04);   // 中線
 flat([[-26, -34], [-10, -33], [10, -30], [50, -17], [90, -3], [247, 96], [258, 82], [95, -16], [55, -30], [10, -44], [-26, -48]], M.road, .02); addLabel('商校街', 175, 2, 46);
 flat([[200, 200], [290, 160], [296, 170], [206, 212]], M.road, .02); addLabel('進豐街', 250, 2, 190);
 /* 圍牆依照片分段：
@@ -356,10 +357,10 @@ for (let i = 0; i < BOUND.length - 1; i++){
   }
 }
 // 中山路側：留校門（z 69–83）
-box(.4, 2, 100, M.wallPink, -10, 0, 19);
+box(.4, 2, 96.5, M.wallPink, -10, 0, 17.25);   // 校門北側到商校街（開口 z 65.5–84 為校門）
 // 校門南側臨中山路：灰色水泥矮牆＋方柱，牆後樹籬（街景）
-box(.4, 1.1, 104, M.concrete, -10, 0, 135);
-for (let z = 84; z <= 186; z += 4) box(.7, 1.6, .7, M.concrete, -10, 0, z);
+box(.4, 1.1, 97.5, M.concrete, -10, 0, 138.25);   // 自警衛室南側起
+for (let z = 90; z <= 186; z += 4) box(.7, 1.6, .7, M.concrete, -10, 0, z);
 hedge(-9.1, 84, -9.1, 105);
 
 // 草地、鋪面
@@ -662,7 +663,7 @@ addLabel('民舍', -6.5, 10, -16);
 // --- 校門（依 2025 年照片）：單排三柱，薄雨遮從柱列向校外（中山路側）懸挑約 5.5 m，
 //     前緣梁上金字校名、中央開口上方橫梁有圓形徽飾、柱腳花崗石、伸縮門、右側警衛室
 (function(){
-  const g = group(-4, 76), CON = lam(0xa7abad), GRANITE = lam(0xc9cbc8), METAL = lam(0xc4c8cb);
+  const g = group(-10, 76), CON = lam(0xa7abad), GRANITE = lam(0xc9cbc8), METAL = lam(0xc4c8cb);
   [-4, 4, 7.6].forEach(z => { box(1.1, 6.3, 1.1, CON, 0, 0, z, g); box(1.2, 2.4, 1.2, GRANITE, 0, 0, z, g); });
   box(6.3, .35, 20, lam(0x9ea3a5), -2.35, 6.3, 0, g);                 // 雨遮板（x -5.5 ~ +0.8）
   box(.5, 1.5, 20.4, lam(0x8f9496), -5.5, 5.5, 0, g);                 // 前緣梁
@@ -672,8 +673,8 @@ addLabel('民舍', -6.5, 10, -16);
   box(.7, .8, 8, CON, 0, 4.7, 0, g);                                   // 中央橫梁
   const em = new THREE.Mesh(new THREE.CircleGeometry(.55, 24), lam(0x2a2a2a)); em.rotation.y = -Math.PI / 2; em.position.set(-.37, 5.1, 0); g.add(em);
   box(.3, 1.5, 7, METAL, 0, 0, 0, g); box(.3, 1.5, 5.5, METAL, 0, 0, -6.8, g);   // 伸縮門
-  building(group(-1.5, 87.6), { w: 5, d: 4, floors: 1, h: 3, roof: 'gray', faces: { all: { wall: '#e8e6e0', win: 'glass' } } }); // 警衛室
-  addLabel('校門', -6, 10, 76);
+  building(group(-7.5, 87.2), { w: 5, d: 4, floors: 1, h: 3, roof: 'gray', faces: { all: { wall: '#e8e6e0', win: 'glass' } } }); // 警衛室
+  addLabel('校門', -12, 10, 76);
 })();
 // 後門、腳踏車棚
 [[205, 186.5], [216, 187.5]].forEach(([x, z]) => box(1.2, 3, 1.2, M.white, x, 0, z));
