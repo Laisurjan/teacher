@@ -721,6 +721,23 @@ const SMALL_PATH = [[122, 40], [145, 46], [170, 55], [186, 68], [194, 80]];
   [[132, 50], [150, 50], [176, 64], [182, 76]].forEach(([x, z]) => tree(x, z, .9));
   addLabel('小路', 160, 2.5, 51);
 })();
+// --- 司令台附近（360 照校內03＝資訊館門口、俯瞰照 g041、g065）
+(function(){
+  const CON = lam(0xcfccc4), TEAL = lam(0x3f9a8c);
+  function seg(a, b, w, mat, y){ const dx = b[0] - a[0], dz = b[1] - a[1], L = Math.hypot(dx, dz), nx = -dz / L * w / 2, nz = dx / L * w / 2;
+    flat([[a[0] + nx, a[1] + nz], [b[0] + nx, b[1] + nz], [b[0] - nx, b[1] - nz], [a[0] - nx, a[1] - nz]], mat, y); }
+  function path(pts, w, mat, edge){ pts.forEach((a, i) => { if (i === pts.length - 1) return; const b = pts[i + 1];
+    if (edge) seg(a, b, w + .5, edge, .058); seg(a, b, w, mat, .062); }); }
+  // ① 資訊館前草地上的水泥窄路（青綠色邊），橫越到司令台
+  path([[88, 136.5], [96, 134], [104, 131], [108, 130]], 1.2, CON, TEAL);
+  // ② 操場西彎道外側的淺灰水泥路
+  const arc = []; for (let a = 75; a <= 255; a += 12){ const r = THREE.MathUtils.degToRad(a); arc.push([131.5 + Math.cos(r) * 32, 91.5 + Math.sin(r) * 32]); }
+  path(arc, 2, CON);
+  // ③ 司令台周圍到網球場一側的紅磚鋪面
+  rect(106, 120, 121, 132, M.brickPave, .06);
+  rect(114, 132, 121, 140, M.brickPave, .06);
+  addLabel('水泥路', 98, 2.5, 133);
+})();
 // --- 活動中心東側圍牆（2022 年 8 月街景「體育館東側巷」）：深褐磚基座＋水泥柱＋淺褐色鐵欄杆
 (function(){
   const A = [237.5, 99.7], B = [216.4, 147.2];
