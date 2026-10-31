@@ -50,6 +50,20 @@ header h1{margin:0;font-size:17px;font-weight:800;background:var(--panel);paddin
 <body>
 <div id="app"></div>
 <div id="load">模型載入中…</div>
+<script>
+(function(){
+  var el = document.getElementById('load');
+  function show(msg){ if (!document.getElementById('load')) return;
+    el.style.cssText += ';pointer-events:auto;padding:24px;text-align:center;line-height:1.7;font-size:15px;white-space:pre-wrap';
+    el.textContent = msg + '
+
+請截圖這個畫面給老師。
+' + navigator.userAgent; }
+  window.addEventListener('error', function(e){ show('載入失敗：' + (e.message || (e.target && e.target.src) || '未知錯誤')); }, true);
+  window.addEventListener('unhandledrejection', function(e){ show('載入失敗：' + (e.reason && e.reason.message || e.reason)); });
+  setTimeout(function(){ show('載入逾時（超過 20 秒）：可能是網路連不到 cdn.jsdelivr.net，或瀏覽器版本太舊。'); }, 20000);
+})();
+</script>
 <header><h1>國立花蓮高商・3D 校園模型</h1></header>
 <div id="hint">單指旋轉・雙指縮放／平移</div>
 <div id="info"><button class="x" aria-label="關閉">×</button><h2></h2><p></p></div>
@@ -60,6 +74,7 @@ header h1{margin:0;font-size:17px;font-weight:800;background:var(--panel);paddin
   <button id="bPin" class="on">安全點位</button>
 </div>
 
+<script async src="https://cdn.jsdelivr.net/npm/es-module-shims@1.10.0/dist/es-module-shims.js"></script>
 <script type="importmap">
 {"imports":{
   "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
@@ -81,7 +96,8 @@ const BG = new THREE.Color(getComputedStyle(document.documentElement).getPropert
 scene.background = BG; scene.fog = new THREE.Fog(BG, 450, 900);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+const MOBILE = matchMedia('(pointer: coarse)').matches;
+renderer.setPixelRatio(Math.min(devicePixelRatio, MOBILE ? 1.5 : 2));
 renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 app.appendChild(renderer.domElement);
@@ -102,7 +118,7 @@ viewDefault();
 scene.add(new THREE.HemisphereLight(0xffffff, 0x8a9a7a, 1.0));
 const sun = new THREE.DirectionalLight(0xfff6e8, 1.7);
 sun.position.set(-120, 220, 60); sun.target.position.copy(CENTER);
-sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0005;
+sun.castShadow = true; sun.shadow.mapSize.set(MOBILE ? 1024 : 2048, MOBILE ? 1024 : 2048); sun.shadow.bias = -0.0005;
 Object.assign(sun.shadow.camera, { left: -200, right: 200, top: 200, bottom: -200, near: 10, far: 600 });
 scene.add(sun, sun.target);
 
