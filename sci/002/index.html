@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>地科天文期刊導讀 第 2 期</title>
+<meta name="description" content="本期四篇：月球形成時 Theia 的硬殼可能直接撞出一顆原月球、孟加拉灣氣旋 Arnab 與聖嬰年的颱風、地球古菌在土衛二海水裡活下來、Swift 望遠鏡 22 年後墜回大氣層。英文原文為主，中文導讀為輔。">
+<meta property="og:title" content="地科天文期刊導讀 第 2 期">
+<meta property="og:description" content="月球是撞出來還是捏出來的｜氣旋 Arnab 與聖嬰年的颱風｜地球古菌在土衛二海水裡活下來｜Swift 望遠鏡的最後一週">
+<meta property="og:type" content="article">
+<style>
+:root{
+  --bg:#f7f5ef;--card:#ffffff;--ink:#1d1d1b;--muted:#5c5a54;--line:#e3dfd3;
+  --geo:#1f6f5f;--geo-bg:#e3f1ec;--astro:#3b3f8f;--astro-bg:#e7e8f6;
+  --adv:#9a4a12;--adv-bg:#f8e8d8;--quote:#f3efe3;--link:#1a5bb5;--tw:#b03a3a;--tw-bg:#fbeaea;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#15161a;--card:#1f2127;--ink:#ececea;--muted:#b4b3ad;--line:#33363e;
+    --geo:#7fd1b9;--geo-bg:#1d332d;--astro:#a9adf0;--astro-bg:#272a4a;
+    --adv:#f0b07a;--adv-bg:#3d2a1a;--quote:#262830;--link:#8ab8ff;--tw:#ff9c9c;--tw-bg:#3a2222;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15161a;--card:#1f2127;--ink:#ececea;--muted:#b4b3ad;--line:#33363e;
+  --geo:#7fd1b9;--geo-bg:#1d332d;--astro:#a9adf0;--astro-bg:#272a4a;
+  --adv:#f0b07a;--adv-bg:#3d2a1a;--quote:#262830;--link:#8ab8ff;--tw:#ff9c9c;--tw-bg:#3a2222;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei","Helvetica Neue",Arial,sans-serif;font-weight:600;line-height:1.75;font-size:17px}
+a{color:var(--link);text-decoration-thickness:1px;text-underline-offset:3px}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px 64px}
+header.top{padding:40px 0 16px}
+header.top .brand{font-size:14px;letter-spacing:.12em;color:var(--muted)}
+header.top h1{font-size:30px;line-height:1.3;margin:6px 0 8px}
+header.top p{margin:0;color:var(--muted)}
+nav.issues{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
+nav.issues a{display:inline-block;padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);text-decoration:none;font-size:14px;font-weight:700}
+nav.issues a:hover{border-color:var(--link)}
+nav.issues a[aria-current]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+nav.issues a small{font-weight:600;color:inherit;opacity:.75;margin-left:4px}
+nav.toc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin:0 0 28px}
+nav.toc ol{margin:0;padding-left:22px}
+nav.toc li{margin:4px 0}
+nav.toc a{text-decoration:none}
+nav.toc .tag{font-size:12px;margin-right:6px}
+.how{border-left:4px solid var(--line);padding:4px 16px;color:var(--muted);font-size:15px;margin:0 0 32px}
+.how p{margin:6px 0}
+article{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 20px 10px;margin:0 0 36px}
+@media(min-width:640px){article{padding:30px 32px 16px}}
+.kicker{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--muted);margin-bottom:12px}
+.tag{display:inline-block;padding:2px 10px;border-radius:999px;font-size:13px;font-weight:700;line-height:1.6}
+.tag.geo{background:var(--geo-bg);color:var(--geo)}
+.tag.astro{background:var(--astro-bg);color:var(--astro)}
+.tag.adv{background:var(--adv-bg);color:var(--adv)}
+.tag.base{background:var(--quote);color:var(--muted)}
+article h2{font-size:25px;line-height:1.35;margin:0 0 4px}
+article h3.en{font-size:17px;font-weight:600;font-style:italic;color:var(--muted);margin:0 0 14px;font-family:Georgia,"Times New Roman",serif}
+.src{font-size:14px;color:var(--muted);border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);padding:10px 0;margin:0 0 18px}
+.src .go{display:inline-block;margin-top:4px;margin-right:10px;font-weight:700}
+figure{margin:0 0 20px}
+figure img{width:100%;height:auto;border-radius:10px;display:block;background:#000}
+figure .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:520px){figure .two{grid-template-columns:1fr}}
+figcaption{font-size:13px;color:var(--muted);line-height:1.6;margin-top:8px}
+h4{font-size:15px;letter-spacing:.08em;color:var(--muted);margin:26px 0 8px;text-transform:uppercase}
+h4::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--muted);margin-right:8px;vertical-align:1px}
+article.geo h4::before{background:var(--geo)}
+article.astro h4::before{background:var(--astro)}
+ol.sum{padding-left:22px;margin:0}
+ol.sum li{margin:8px 0}
+blockquote.en{background:var(--quote);border-radius:12px;padding:16px 18px;margin:0 0 10px;font-family:Georgia,"Times New Roman",serif;font-size:17px;line-height:1.7}
+blockquote.en p{margin:0 0 10px}
+blockquote.en p:last-child{margin:0}
+.zh{padding:0 6px;color:var(--ink)}
+.zh p{margin:0 0 10px}
+dl.terms{margin:0;display:grid;grid-template-columns:1fr;gap:6px 0}
+dl.terms div{display:grid;grid-template-columns:minmax(120px,36%) 1fr;gap:10px;border-bottom:1px solid var(--line);padding:7px 0}
+dl.terms dt{margin:0;font-weight:700}
+dl.terms dt small{display:block;font-weight:600;color:var(--muted);font-size:13px}
+dl.terms dd{margin:0;color:var(--ink);font-size:15.5px}
+ul.open{padding-left:22px;margin:0}
+ul.open li{margin:6px 0}
+ul.open li.warn{color:var(--tw)}
+.tw{background:var(--tw-bg);border-radius:12px;padding:14px 16px}
+.tw h4{margin-top:0;color:var(--tw)}
+.tw h4::before{background:var(--tw)}
+.tw p{margin:0 0 10px}
+.tw p:last-child{margin:0}
+.ask{border:2px solid var(--line);border-radius:12px;padding:12px 16px;margin:18px 0 0}
+.ask b{display:block;margin-bottom:4px}
+.adv-note{font-size:14.5px;color:var(--muted);margin:14px 0 0}
+details.check{margin:22px -4px 10px;border-top:1px solid var(--line);padding-top:8px}
+details.check summary{cursor:pointer;color:var(--muted);font-size:14px;padding:6px 4px}
+details.check table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px}
+details.check th,details.check td{text-align:left;vertical-align:top;padding:6px 6px;border-bottom:1px solid var(--line)}
+details.check th{color:var(--muted);font-weight:700;white-space:nowrap}
+details.check td:first-child{width:38%}
+details.check .warn{color:var(--tw);font-weight:700}
+section.next{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 20px;margin:0 0 28px}
+section.next h2{font-size:22px;margin:0 0 6px}
+section.next p.lead{color:var(--muted);margin:0 0 12px}
+section.next ol{padding-left:24px;margin:0}
+section.next li{margin:10px 0}
+section.next li b{display:block}
+section.next li span{color:var(--muted);font-size:15px}
+footer{font-size:13.5px;color:var(--muted);line-height:1.7;border-top:1px solid var(--line);padding-top:16px}
+footer p{margin:6px 0}
+.back{font-size:14px;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="brand">地科天文期刊導讀 · EARTH &amp; SPACE READER</div>
+  <h1>第 2 期</h1>
+  <p>115 學年 11 月 1 日出刊 · 地科 2 篇、天文 2 篇 · 原文全部可免費閱讀</p>
+</header>
+
+<nav class="issues" aria-label="期數">
+  <a href="../001/">第 1 期<small>10/25</small></a>
+  <a href="../002/" aria-current="page">第 2 期<small>11/1</small></a>
+</nav>
+
+<nav class="toc">
+  <ol>
+    <li><a href="#a1"><span class="tag geo">地科</span><span class="tag adv">進階</span>月球是「撞」出來還是「捏」出來的？給 Theia 加一層硬殼，答案就變了</a></li>
+    <li><a href="#a2"><span class="tag geo">地科</span>氣旋 Arnab 夜襲印度：同一個聖嬰，孟加拉灣颱風變少、西太平洋強颱變多</a></li>
+    <li><a href="#a3"><span class="tag astro">天文</span>地球的古菌在「土衛二的海水」裡活下來了，還吐出甲烷</a></li>
+    <li><a href="#a4"><span class="tag astro">天文</span>Swift 望遠鏡的最後一週：救援船自己轉暈了，22 年的老將要墜回大氣層</a></li>
+  </ol>
+</nav>
+
+<div class="how">
+  <p><b>怎麼讀</b>：每篇先看「三句話」，再讀英文「關鍵段」，然後點「讀原文」去讀完整英文。中文只是導讀，不是全譯。</p>
+  <p>讀完看「還沒解決的問題」，那才是真正有趣的地方。最後的「校對紀錄」列出導讀裡每個數字出自原文哪一段，歡迎抓錯。本期的進階篇在第 1 篇，可以先從第 3、4 篇讀起。</p>
+</div>
+
+<!-- ======================= A1 ======================= -->
+<article id="a1" class="geo">
+  <div class="kicker"><span class="tag geo">地科 · 行星科學</span><span class="tag adv">進階</span><span>原文約 1,200 字 · 9 分鐘（論文另計）</span></div>
+  <h2>月球是「撞」出來還是「捏」出來的？給 Theia 加一層硬殼，答案就變了</h2>
+  <h3 class="en">Was the Moon-Forming Impact Squishy or Crunchy?</h3>
+  <div class="src">
+    Eos（新聞）· 2026-10-23 · 作者 Matthew R. Francis · 論文：Denton 等人，<i>The Astrophysical Journal Letters</i> 1008, L30（2026-09-01），<a href="https://doi.org/10.3847/2041-8213/ae91e9" target="_blank" rel="noopener">doi:10.3847/2041-8213/ae91e9</a>（開放取用，CC BY 4.0）<br>
+    <a class="go" href="https://eos.org/articles/was-the-moon-forming-impact-squishy-or-crunchy" target="_blank" rel="noopener">讀原文 →</a>
+    <a class="go" href="https://iopscience.iop.org/article/10.3847/2041-8213/ae91e9" target="_blank" rel="noopener">讀論文（免費）→</a>
+  </div>
+
+  <figure>
+    <img src="img/moon.jpg" alt="月球表面斜照影像，低角度陽光下的山丘與撞擊坑拉出長長的陰影" width="1200" height="675">
+    <figcaption>月球表面的山地與撞擊坑。月球岩石的地球化學成分和地球極為相似，這正是「大碰撞說」最重要的證據之一。圖：NASA/GSFC/Arizona State University（NASA 影像，公有領域；取自 Eos 原文題圖）。</figcaption>
+  </figure>
+
+  <h4>三句話</h4>
+  <ol class="sum">
+    <li>主流說法是：太陽系很早期，一顆火星大小的行星 Theia 撞上剛誕生的地球，撞出來的碎屑在地球周圍形成一個盤，盤裡的物質再慢慢聚成月球。但幾十年來幾乎所有模擬都把地球和 Theia 當成「流體」來算，Theia 一撞上去就像熔岩燈裡的蠟一樣糊成一團。</li>
+    <li>美國西南研究院的 Adeene Denton 團隊第一次在模擬裡給 Theia 加上真實的「材料強度」（外層幾百公里是固體、有一層脆殼）。結果在同樣的標準撞擊條件下，一顆「熱但固態」的 Theia 不會糊掉，而是被剪成兩塊：內側那塊併入地球，外側那塊被直接甩進軌道，變成一顆完整的原月球，整個「碎屑盤」階段被跳過。</li>
+    <li>但如果 Theia 更冷、更硬（代表這場撞擊發生得更晚），它會碎成「穀麥片」一樣的小塊，結果又回到傳統的碎屑盤。新模型沒有告訴我們哪個才對；沒參與研究的 Sarah Stewart 說，月球形成「基本上還沒解決」，而且「我們可能不會只有一個答案，這沒關係」。</li>
+  </ol>
+
+  <h4>原文關鍵段</h4>
+  <blockquote class="en" lang="en">
+    <p>“We don’t actually know when the collision took place,” Denton said. “If Theia is cold, then it’s likely going to be stronger because the hotter you are, the weaker you are. So a cold, strong Theia that’s been around a long time isn’t going to deform as readily as a hot, squishy Theia.”</p>
+    <p>“But if you implement material strength, you have a crunchy outer layer. That makes a huge difference because if a hot Theia collides with the Earth, it’s just cool enough on the outside and hot enough on the inside that it experiences global deformation.”</p>
+  </blockquote>
+  <div class="zh">
+    <p>「我們其實不知道這場碰撞是什麼時候發生的，」Denton 說。「如果 Theia 是冷的，它大概就比較強硬，因為越熱就越軟。所以一顆已經存在很久、又冷又硬的 Theia，不會像一顆又熱又軟的 Theia 那樣輕易變形。」</p>
+    <p>「可是一旦把材料強度放進去，你就有了一層脆脆的外殼。這差別非常大：一顆熱的 Theia 撞上地球時，它外面剛好夠冷、裡面又夠熱，所以整顆會發生全面性的變形。」</p>
+  </div>
+
+  <h4>術語表</h4>
+  <dl class="terms">
+    <div><dt>giant impact hypothesis<small>大碰撞說</small></dt><dd>月球起源的主流假說：原始地球被一顆火星大小的天體撞擊，噴出的物質形成月球。課本裡講月球起源時的那一個。</dd></div>
+    <div><dt>Theia<small>忒伊亞</small></dt><dd>那顆假想的撞擊者，以希臘神話月神 Selene 的母親命名。論文設定它是 0.133 個地球質量，原始地球是 0.877 個。</dd></div>
+    <div><dt>protolunar debris disk<small>原月盤／碎屑盤</small></dt><dd>傳統模型裡撞擊後繞著地球轉的熔融與氣化物質盤，月球要再從裡面「吸積」出來。</dd></div>
+    <div><dt>proto-Moon<small>原月球</small></dt><dd>新模型裡撞擊後直接留在軌道上的一整塊 Theia 殘骸，不必經過盤的階段。</dd></div>
+    <div><dt>material strength<small>材料強度</small></dt><dd>固體抵抗變形、斷裂的能力。流體沒有這個性質，所以把行星當流體算，就等於假設它會任意變形。</dd></div>
+    <div><dt>SPH, smoothed-particle hydrodynamics<small>平滑粒子流體動力學</small></dt><dd>把行星拆成上百萬個「粒子」來算碰撞的模擬方法。這篇用了 100 萬粒子，並且第一次在這類月球模擬中加入強度。</dd></div>
+    <div><dt>subsolidus<small>固相線以下</small></dt><dd>溫度低於開始熔化的溫度，也就是「熱但還是固體」。論文的關鍵情境表面溫度約 2,000 K。</dd></div>
+    <div><dt>accretion<small>吸積</small></dt><dd>小物質靠重力一點一點聚成大天體的過程。從盤裡吸積出月球，Stewart 說比模擬撞擊本身還難。</dd></div>
+    <div><dt>isotopic match<small>同位素一致</small></dt><dd>地球和月球岩石的同位素比例幾乎相同，是所有月球形成模型都必須交代的最大難題。</dd></div>
+    <div><dt>Charon<small>冥衛一</small></dt><dd>冥王星的大衛星。Denton 先前研究冥衛一的形成時用過「固體撞擊」的想法，這次把它搬到地月系統。</dd></div>
+  </dl>
+
+  <h4>為什麼重要</h4>
+  <p>課本只說月球是「大碰撞形成的」，這篇讓你看到那一句話底下有多少沒說完的事。更值得學的是方法論：一個用了四十年的模型，只改掉一個看起來很合理的簡化假設（把行星當流體），結果就從「碎屑盤」變成「直接撞出一顆月球」。模型的結論永遠只跟它的假設一樣可靠。另外，是電腦變快了才讓這件事可能：以前跑一次模擬要好幾天，沒有人敢再加上材料強度這種麻煩的東西。</p>
+
+  <h4>還沒解決的問題</h4>
+  <ul class="open">
+    <li>這場撞擊到底什麼時候發生？Denton 直說「我們其實不知道」。而時間點決定 Theia 的冷熱，冷熱又決定結果是原月球還是碎屑盤。</li>
+    <li>如果真的走傳統路線，怎麼從一個熱的盤裡做出月球？Stewart 說這「比模擬大碰撞還難」，如果盤裡氣體比例太高，吸積會更困難。</li>
+    <li>地球化學資料（同位素、鐵核比例）能不能幫忙篩掉其中一種情境？這是團隊說的下一步：去找地球化學家談。</li>
+    <li>Stewart 的提醒：早期太陽系很亂，這場撞擊是一次隨機事件，計算資源也有限，「可能不會只有一個答案」。這算是科學上的失敗，還是誠實？</li>
+  </ul>
+
+  <div class="ask"><b>一個問題</b>論文裡「成功」做出來的原月球有 1.78 個月球質量，不是剛好一個。一個模型要做到多像真的月球，才算「解釋」了月球？差多少以內可以接受？</div>
+  <p class="adv-note">進階讀法：Eos 讀完後，打開論文（免費），直接看 Figure 1（同樣的撞擊，上圖無強度、下圖有強度）和 Table 1。表裡表面溫度 2,000 K 的 Theia 留下一顆完整殘骸，1,800 K 留下半完整的殘骸，1,400 K 就只剩碎屑盤。論文的 Methods 很硬，看圖和表就好。</p>
+
+  <details class="check">
+    <summary>校對紀錄：導讀裡的每個數字出自原文哪裡</summary>
+    <table>
+      <tr><th>導讀說法</th><th>原文依據</th></tr>
+      <tr><td>火星大小的 Theia、撞出的物質形成月球、解釋地月相似與月球偏大</td><td>Eos 第 1 段 "a Mars-sized planet known as Theia crashed into the newborn Earth… explain the strong geological resemblance our Moon bears to Earth, as well as the Moon's large size."</td></tr>
+      <tr><td>幾乎所有模擬把地球與 Theia 當流體</td><td>Eos 第 3 段 Denton 引言 "All of these [prior] explanations have relied on the assumption that we can treat the Earth and Theia as fluids when they collide."</td></tr>
+      <tr><td>西南研究院、Adeene Denton、源自冥衛一研究</td><td>Eos 第 3 段。</td></tr>
+      <tr><td>熱但固態的 Theia → 完整原月球；更冷更硬 → 碎屑盤；撞擊時間點</td><td>Eos 第 5 段與 "Lava Lamp or Crunchy Granola" 一節；論文摘要 "a hot but solid Theia produces an intact Moon, whereas a colder, stronger Theia—i.e., a later Moon-formation scenario—produces a classic protolunar disk."</td></tr>
+      <tr><td>Theia 被剪成兩塊，內側併入地球、外側進入軌道</td><td>Eos "The result of the new model is Theia splitting into two pieces, one that merges with Earth… and one that creates a proto-Moon."；論文 3.1 節 "the rebounding portion of Theia is sheared into two intact components… Only the inner, more massive component is consumed by the proto-Earth."</td></tr>
+      <tr><td>原始地球 88%、Theia 13%；表面接近但未達熔點</td><td>Eos "a proto-Earth about 88% of the present Earth's mass and a Theia of about 13%… surface temperatures close to but not quite at the melting point"；論文 2.1 節 0.877 與 0.133 M⊕。</td></tr>
+      <tr><td>100 萬粒子、第一次加入強度、2,000 K</td><td>論文 Figure 1 圖說 "at 1 M particle resolution… hot (∼2000 K) but mostly solid"；摘要 "for the first time using smoothed-particle hydrodynamics (SPH) simulations with realistic strength"。</td></tr>
+      <tr><td>1.78 個月球質量；2,000 / 1,800 / 1,400 K 三種結果</td><td>論文 Table 1（θ=45°、v/v<sub>esc</sub>=1 三列：Intact remnant 1.78 Moon masses；Semi-intact remnant 0.63；Debris disk）。</td></tr>
+      <tr><td>Stewart：比模擬撞擊還難、基本上未解、可能沒有單一答案、隨機事件</td><td>Eos 第 8、13、14 段 Sarah Stewart（亞利桑那州立大學）引言。</td></tr>
+      <tr><td>以前模擬要跑好幾天；下一步找地球化學家</td><td>Eos "can require days of runtime"；最後一段 "The next steps involve talking to geochemists"。</td></tr>
+      <tr><td>Theia 以月神之母命名</td><td><span class="warn">不在原文裡，是通行的命名典故，由導讀補充。</span></td></tr>
+    </table>
+  </details>
+</article>
+
+<!-- ======================= A2 ======================= -->
+<article id="a2" class="geo">
+  <div class="kicker"><span class="tag geo">地科 · 大氣與氣候</span><span class="tag base">基礎</span><span>原文約 430 字 · 3 分鐘</span></div>
+  <h2>氣旋 Arnab 夜襲印度：同一個聖嬰，孟加拉灣颱風變少、西太平洋強颱變多</h2>
+  <h3 class="en">Arnab Strikes India</h3>
+  <div class="src">
+    NASA Earth Observatory（Image of the Day）· 2026-10-29 · 文 Adam Voiland，圖 Michala Garrison<br>
+    <a class="go" href="https://science.nasa.gov/earth/earth-observatory/arnab-strikes-india/" target="_blank" rel="noopener">讀原文 →</a>
+  </div>
+
+  <figure>
+    <img src="img/arnab.jpg" alt="夜間衛星影像：左半邊是印度半島的城市燈光網，右半邊孟加拉灣上一個有清楚風眼的氣旋" width="1200" height="832">
+    <figcaption>2026 年 10 月 26 日 20:12 UTC（印度時間 27 日凌晨 1:42），NOAA-20 衛星 VIIRS 儀器的「日夜波段」夜間影像。左邊的亮點是印度的城市燈光，右邊是正在逼近安得拉邦海岸的氣旋 Arnab，風眼清晰可見。圖：NASA Earth Observatory / Michala Garrison，資料 NASA EOSDIS LANCE、GIBS/Worldview、JPSS。NASA 圖像為公有領域。</figcaption>
+  </figure>
+
+  <h4>三句話</h4>
+  <ol class="sum">
+    <li>Arnab 是 2026 年北印度洋氣旋季第一個被命名的風暴，10 月 25 日才在孟加拉灣生成。這個海域通常 4、5 月就會有第一個命名氣旋，今年算是開季很晚。</li>
+    <li>衛星拍下夜間影像時，印度氣象局（IMD）估計它的持續風速約每小時 140 公里；10 月 28 日清晨在安得拉邦登陸時是每小時 130 公里，IMD 分級為「極強氣旋風暴」，大約等於美國颶風等級的第 1 級。登陸地點介於 Bapatla 與維沙卡帕特南之間，是人口稠密的城市、農田與漁村地帶，事前已撤離數萬人。</li>
+    <li>這場風暴發生在聖嬰年裡。文章提到，有研究指出聖嬰年的環境條件會讓孟加拉灣的熱帶氣旋變少、也變弱。有趣的是，台灣這邊的氣象署同一週公布的統計卻是：超強聖嬰年西北太平洋的「強烈颱風」反而特別多。</li>
+  </ol>
+
+  <h4>原文關鍵段</h4>
+  <blockquote class="en" lang="en">
+    <p>The storm comes in the midst of an El Niño, a climate pattern marked by warmer-than-normal water temperatures in parts of the equatorial Pacific that emerges roughly every two to seven years. The changed ocean conditions can influence the atmosphere in ways that alter global weather patterns and change the distribution of rainfall, winds, tropical cyclones, fires, floods, and other phenomena.</p>
+    <p>In the Bay of Bengal, for instance, some research indicates that altered environmental conditions during an El Niño are associated with a reduction in tropical cyclone activity. The ocean basin sees both less frequent and less intense tropical cyclones during El Niño years, researchers have found.</p>
+  </blockquote>
+  <div class="zh">
+    <p>這場風暴發生在聖嬰期間。聖嬰是一種氣候型態，特徵是赤道太平洋部分海域的水溫比平常高，大約每 2 到 7 年出現一次。改變了的海洋狀態會影響大氣，進而改變全球的天氣型態，改變降雨、風、熱帶氣旋、火災、洪水等現象的分布。</p>
+    <p>以孟加拉灣為例，有些研究指出，聖嬰期間改變了的環境條件，和熱帶氣旋活動減少有關。研究者發現，這個海域在聖嬰年的熱帶氣旋不但比較少，也比較弱。</p>
+  </div>
+
+  <h4>術語表</h4>
+  <dl class="terms">
+    <div><dt>tropical cyclone<small>熱帶氣旋</small></dt><dd>通稱。同一種東西在西北太平洋叫颱風（typhoon）、在大西洋與東太平洋叫颶風（hurricane）、在印度洋叫氣旋（cyclone）。</dd></div>
+    <div><dt>Bay of Bengal<small>孟加拉灣</small></dt><dd>印度東邊的海灣。北印度洋氣旋季有兩個高峰：季風來之前的 4–5 月，和季風退去後的 10–12 月。</dd></div>
+    <div><dt>named storm<small>命名風暴</small></dt><dd>強度達到一定門檻才會被命名。Arnab 是今年北印度洋第一個，所以文章說「開季很晚」。</dd></div>
+    <div><dt>sustained winds<small>持續風速</small></dt><dd>一段時間內的平均風速，不是瞬間陣風。氣象署的「近中心最大風速」是類似的量，但各國平均的時間長度不同，數字不能直接比。</dd></div>
+    <div><dt>landfall<small>登陸</small></dt><dd>風暴中心跨過海岸線。</dd></div>
+    <div><dt>very severe cyclonic storm<small>極強氣旋風暴</small></dt><dd>印度氣象局 IMD 的分級名稱。每小時 130 公里約等於每秒 36 公尺，若用氣象署的分級，是「中度颱風」（32.7–50.9 m/s）。</dd></div>
+    <div><dt>Saffir-Simpson scale<small>薩菲爾—辛普森颶風風力等級</small></dt><dd>美國的 1–5 級分法。第 1 級是 119–153 km/h。台灣的輕度、中度、強烈三級是另一套。</dd></div>
+    <div><dt>VIIRS day-night band<small>日夜波段</small></dt><dd>NOAA-20 等衛星上的感測器，靈敏到能在夜裡靠月光與城市燈光成像，所以這張圖同時看得到燈火和雲。</dd></div>
+    <div><dt>teleconnection<small>遙相關</small></dt><dd>赤道太平洋的海溫改變，卻影響到幾千公里外的孟加拉灣或台灣，這種遠距離的大氣連動叫遙相關。原文沒用這個詞，但講的就是這件事。</dd></div>
+  </dl>
+
+  <h4>為什麼重要</h4>
+  <p>第 1 期講聖嬰本身，這一期看它的「遠端效果」。同一個聖嬰，在孟加拉灣讓氣旋變少變弱，在西北太平洋卻讓強颱變多：因為聖嬰改變的是整個熱帶的大氣環流，不同海域得到的「處方」不一樣。課本說聖嬰會「影響全球天氣」，這篇和下面的台灣連結合起來，就是一個具體例子，而且還是兩個方向相反的例子。</p>
+
+  <h4>還沒解決的問題</h4>
+  <ul class="open">
+    <li>為什麼今年北印度洋到 10 月底才出現第一個命名氣旋？文章只陳述「開季很晚」，沒有解釋，也沒有說這和聖嬰有沒有關係。</li>
+    <li>文章對聖嬰與孟加拉灣氣旋的關係措辭很保守：「有些研究指出」「有關」。那是統計上的傾向，不是每一年都成立。Arnab 本身就是一個聖嬰年裡登陸的極強氣旋。</li>
+    <li>災情（倒樹、淹沒農田與房屋、交通電力中斷）與撤離人數都是文章引新聞報導，不是測量資料。</li>
+  </ul>
+
+  <div class="tw">
+    <h4>台灣連結：超強聖嬰年的強颱</h4>
+    <p>中央氣象署 10 月 28 日在臉書「報氣候」公布統計：1997、2015、2026 這三個超強聖嬰年的強烈颱風數量分別是 11、9、10 個（2026 年截至 10 月 28 日），而 1998、1999、2007、2010、2020 五個強反聖嬰年每年都不超過 3 個。1996 到 2026 年間，超強聖嬰年強烈颱風占全年颱風的比例平均約 33.3%，正常年是 16.2%，反聖嬰年是 13.4%。</p>
+    <p>氣象署的解釋：超強聖嬰發展期間，西北太平洋季風槽往東延伸，颱風平均生成位置偏東，在海上發展的路徑和時間比較長，如果海洋熱含量與大氣條件配合，就有機會長成強颱。但氣象署也強調，颱風能否增強受多重因素影響，不能單憑生成位置判斷。第 1 期提過的另一面是：強聖嬰年台灣附近容易出現反氣旋式異常，颱風不容易靠近台灣。</p>
+    <p>原始資料：氣象署臉書「報氣候」；新聞整理見 <a href="https://news.cts.com.tw/cna/life/202610/202610283094924.html" target="_blank" rel="noopener">中央社 2026-10-28（華視轉載）</a>。</p>
+  </div>
+
+  <div class="ask"><b>一個問題</b>同一個聖嬰，為什麼孟加拉灣的氣旋變少變弱，西北太平洋的強颱卻變多？想想兩個海域的位置、季風槽、垂直風切各差在哪裡。你能畫一張圖解釋嗎？</div>
+
+  <details class="check">
+    <summary>校對紀錄：導讀裡的每個數字出自原文哪裡</summary>
+    <table>
+      <tr><th>導讀說法</th><th>原文依據</th></tr>
+      <tr><td>2026 北印度洋第一個命名風暴、10/25 生成、通常 4 或 5 月</td><td>第 1 段 "The first named storm of the 2026 North Indian Ocean cyclone season—Arnab… emerged in the Bay of Bengal on October 25, a rather late start for a basin that typically produces named cyclones in April or May."</td></tr>
+      <tr><td>影像時間 10/26 20:12 UTC（27 日 1:42 IST）、NOAA-20 VIIRS、約 140 km/h、IMD</td><td>第 2 段。</td></tr>
+      <tr><td>10/28 清晨登陸安得拉邦與 Yanam 海岸、130 km/h、極強氣旋風暴 ≈ 第 1 級、Bapatla 與 Visakhapatnam 之間</td><td>第 3 段。</td></tr>
+      <tr><td>災情與撤離數萬人</td><td>第 4 段 "according to news reports… evacuated tens of thousands of people"。<span class="warn">文章標明是新聞報導。</span></td></tr>
+      <tr><td>聖嬰每 2–7 年；孟加拉灣聖嬰年氣旋較少較弱</td><td>第 5、6 段（即關鍵段）；文末參考文獻 Bhardwaj et al. (2019), <i>International Journal of Climatology</i> 39(14)。</td></tr>
+      <tr><td>北印度洋氣旋季兩個高峰（4–5 月、10–12 月）</td><td><span class="warn">不在原文裡，是導讀補充的背景知識，請自行查證。</span></td></tr>
+      <tr><td>130 km/h ≈ 36 m/s ≈ 氣象署中度颱風；第 1 級 119–153 km/h</td><td>單位換算由導讀計算；氣象署三級門檻（17.2、32.7、51.0 m/s）與 Saffir-Simpson 門檻為通行定義，不在原文裡。</td></tr>
+      <tr><td>台灣：11／9／10 個、反聖嬰年 ≤3 個、33.3%／16.2%／13.4%、季風槽東伸</td><td>中央社 2026-10-28 引氣象署「報氣候」。</td></tr>
+      <tr><td>台灣：反氣旋式異常、颱風不易靠近</td><td>第 1 期已引用的 ETtoday 2026-10-24（氣象署預報中心主任黃椿喜）。</td></tr>
+    </table>
+  </details>
+</article>
+
+<!-- ======================= A3 ======================= -->
+<article id="a3" class="astro">
+  <div class="kicker"><span class="tag astro">天文 · 天文生物學</span><span class="tag base">基礎</span><span>原文約 1,100 字 · 8 分鐘</span></div>
+  <h2>地球的古菌在「土衛二的海水」裡活下來了，還吐出甲烷</h2>
+  <h3 class="en">Archaea Survived Enceladus-Like Conditions in Lab</h3>
+  <div class="src">
+    Eos（新聞）· 2026-10-29 · 作者 Kimberly M. S. Cartier · 論文：Helmbrecht 等人，<i>Science Advances</i>（2026-09-25），<a href="https://doi.org/10.1126/sciadv.aei0167" target="_blank" rel="noopener">doi:10.1126/sciadv.aei0167</a>（開放取用）<br>
+    <a class="go" href="https://eos.org/articles/archaea-survived-enceladus-like-conditions-in-lab" target="_blank" rel="noopener">讀原文 →</a>
+  </div>
+
+  <figure>
+    <img src="img/enceladus_plume.jpg" alt="卡西尼號影像：土衛二的弧形邊緣上有數十道細長的冰噴泉向上射入黑暗太空" width="1200" height="742">
+    <figcaption>土衛二南極的噴泉。卡西尼號影像（NASA 2010 年發布），數十道水冰噴流沿著「虎紋」裂縫噴向太空；2015 年卡西尼號直接穿過這些噴流採樣。圖：NASA/JPL/Space Science Institute（PIA11688，公有領域）。</figcaption>
+  </figure>
+
+  <h4>三句話</h4>
+  <ol class="sum">
+    <li>土星的衛星土衛二（Enceladus）會從南極裂縫把地下海洋噴進太空。卡西尼號 2015 年穿過噴流採樣，發現冰殼底下的海裡有大量溶解無機碳、氫氣和甲烷，所以它一直是找外星生命的頭號候選。問題是那片海非常鹼（pH 8 到 11.6，比較像小蘇打水或含氨清潔劑，不像海水），而且幾乎沒有二氧化碳，而二氧化碳是「產甲烷菌」的主食。</li>
+    <li>德國慕尼黑大學 Vanessa Helmbrecht 的團隊挑了一種來自沖繩海槽海底熱泉的產甲烷古菌 <i>Methanothermococcus okinawensis</i>（原本已知能在 pH 8.5 生長），把它丟進模擬土衛二海水化學與蛇紋岩化反應的溶液裡。結果它在 pH 高到 11 的「土衛二海水」裡存活、繁殖、持續產甲烷，而同樣 pH 的對照組反而死光了，因為蛇紋岩化提供的氫氣夠多，補足了二氧化碳的不足。</li>
+    <li>論文進一步發現，這些細胞靠著大量表現一條固碳路徑（還原性乙醯輔酶 A 路徑），在極低的二氧化碳濃度下也能把碳「撿」起來，而所有能量都來自無生命的礦物—水反應產生的氫氣。不過研究者也說，它們「不開心，但還是長了」：生長變慢，有壓力反應。</li>
+  </ol>
+
+  <h4>原文關鍵段</h4>
+  <blockquote class="en" lang="en">
+    <p>But Enceladus’s high alkalinity, a pH anywhere from 8 to 11.6, would be hard for any organism to survive, let alone maintain a stable or growing population. At those pH levels, DIC is mostly locked up in forms that organisms can’t access. Could the lack of CO2 starve methanogens out?</p>
+    <p>The experiments showed that the archaea survived, reproduced, and created methane in the Enceladus simulant better than in control mixtures at the same pH. In the Enceladus simulant, M. okinawensis produced methane at pH levels up to 11, while the control groups died out at lower pH. That suggests serpentinization created enough H2 to feed the archaea despite the low availability of CO2.</p>
+  </blockquote>
+  <div class="zh">
+    <p>但土衛二那麼高的鹼性（pH 從 8 到 11.6 都有可能）會讓任何生物都很難存活，更別說維持一個穩定或成長中的族群。在那樣的 pH 下，溶解無機碳大多被鎖在生物拿不到的形式裡。二氧化碳不足，會不會把產甲烷菌餓死？</p>
+    <p>實驗顯示，這些古菌在模擬土衛二的溶液裡存活、繁殖並製造甲烷，表現比同樣 pH 的對照組更好。在土衛二模擬液裡，<i>M. okinawensis</i> 在 pH 高到 11 時還在產甲烷，而對照組在更低的 pH 就死光了。這表示蛇紋岩化製造的氫氣，足以在二氧化碳很少的情況下餵飽這些古菌。</p>
+  </div>
+
+  <figure>
+    <img src="img/enceladus_hydro.jpg" alt="土衛二剖面示意圖：上層冰殼約 5 公里、中間海洋約 65 公里、底部岩石核心，海底有熱泉噴口" width="927" height="1200">
+    <figcaption>示意圖：土衛二的冰殼（約 5 公里）、海洋（約 65 公里）與岩石核心。海底的水—岩反應（蛇紋岩化）與熱泉，被認為是氫氣的來源，也是這篇實驗要模擬的環境。圖：NASA/JPL-Caltech/Southwest Research Institute（PIA21442，2017，NASA 影像）。</figcaption>
+  </figure>
+
+  <h4>術語表</h4>
+  <dl class="terms">
+    <div><dt>archaea<small>古菌</small></dt><dd>生物三域（細菌、古菌、真核生物）之一，很多住在火山溫泉、酸性礦坑水、海底熱泉這類極端環境。所有產甲烷菌都是古菌，但不是所有古菌都產甲烷。</dd></div>
+    <div><dt>methanogen<small>產甲烷菌</small></dt><dd>以氫氣和二氧化碳為原料、排出甲烷當廢物的微生物。土衛二噴流裡有甲烷，所以大家一直在猜是不是「有東西」在做甲烷。</dd></div>
+    <div><dt>Enceladus<small>土衛二</small></dt><dd>直徑約 500 公里的小冰衛星，冰殼下有全球性的液態海洋。原文「Enceladus's ocean」就是指這片地下海。</dd></div>
+    <div><dt>plume<small>羽流／噴流</small></dt><dd>從南極裂縫噴進太空的水氣與冰粒。它等於免費把海水送到卡西尼號面前，不用鑽冰就能採樣。</dd></div>
+    <div><dt>serpentinization<small>蛇紋岩化</small></dt><dd>橄欖岩類的岩石和水反應變成蛇紋岩，同時放出氫氣。地球的海底熱泉如此，土衛二海底可能也是。台灣東部也有蛇紋岩。</dd></div>
+    <div><dt>DIC, dissolved inorganic carbon<small>溶解無機碳</small></dt><dd>水裡的 CO₂、碳酸氫根、碳酸根的總和。pH 越高，碳越多以碳酸根形式存在，生物能直接用的 CO₂ 就越少。這是整篇的關鍵化學。</dd></div>
+    <div><dt>alkaline<small>鹼性的</small></dt><dd>pH 大於 7。海水約 8.1；小蘇打水約 8–9；含氨清潔劑約 11。土衛二的 8–11.6 就落在這個範圍。</dd></div>
+    <div><dt>chemolithoautotroph<small>化學無機自營生物</small></dt><dd>論文摘要用詞：靠氧化無機物（這裡是氫氣）取得能量、自己固定碳的生物，完全不需要陽光。</dd></div>
+    <div><dt>reductive acetyl-CoA pathway<small>還原性乙醯輔酶 A 路徑</small></dt><dd>一條古老的固碳代謝路徑。論文的轉錄體分析顯示，細胞在低 CO₂ 下把這條路徑開到最大，才撿得到碳。</dd></div>
+    <div><dt>habitability<small>適居性</small></dt><dd>環境能否支持生命。這篇把「適居」從單看 pH，改成同時看 pH、溶解無機碳和氫氣三者的組合。</dd></div>
+  </dl>
+
+  <h4>為什麼重要</h4>
+  <p>這是第一次有地球生物被證明能在接近土衛二海水化學的條件下生長並產甲烷，等於把「生命可以住在哪裡」的邊界往外推了一格。對未來任務也有實際意義：既然關鍵是 pH、無機碳和氫氣三者的組合，探測器該量什麼就清楚多了。另一個很有趣的點：這隻古菌不是隨便挑的，它來自離台灣不遠的沖繩海槽熱泉，是「如果只能挑一種，就挑它」的最佳人選。</p>
+
+  <h4>還沒解決的問題</h4>
+  <ul class="open">
+    <li>它們活下來了，但「不開心」：高 pH 下有壓力反應，長得比低 pH 慢。長期下去會適應，還是會逐漸衰退？團隊說這是下一步。</li>
+    <li>實驗是單一物種、48 小時一輪。一個更複雜的生態系撐得住嗎？</li>
+    <li>Helmbrecht 強調，土衛二如果有生命，不保證長得像地球生命、用一樣的化學路徑；這類實驗「必須假設一個共同基礎」。這個假設本身就是一個還沒解決的問題。</li>
+    <li class="warn"><b>找碴點</b>：Eos 原文引述了一位「Berne」的評論（談這篇研究如何改變任務要量的化學指標），但文章裡找不到介紹這個人是誰、哪個單位的段落，像是漏了一段。導讀因此沒有寫出這位評論者的身分。你可以去原文確認是不是真的漏了。</li>
+  </ul>
+
+  <div class="tw">
+    <h4>台灣連結：沖繩海槽的南端在宜蘭外海</h4>
+    <p>實驗主角 <i>M. okinawensis</i> 來自日本沖繩海槽的海底熱泉系統。沖繩海槽是一條弧後擴張盆地，它的最南端（研究上常簡稱 SPOT）就在宜蘭外海、龜山島一帶：台大 2014 年的碩士論文摘要寫到，這裡海底熱泉活動十分活躍，噴出型的熱泉噴口多達六十幾座；中央地質調查所 2019 年的調查也在龜山島東邊的沖繩海槽發現海底火山地形與「黑煙囪」熱液噴泉，並認為這類環境與地球原始生命形成初期相當類似。</p>
+    <p>也就是說，這篇土衛二研究用的生物，牠的「老家」和台灣東北角同屬一條海底裂谷。資料：<a href="https://tdr.lib.ntu.edu.tw/handle/123456789/55707" target="_blank" rel="noopener">台大碩士論文摘要（高莉昕，2014）</a>、<a href="https://news.pts.org.tw/article/438968" target="_blank" rel="noopener">公視新聞 2019-07-22</a>。</p>
+  </div>
+
+  <div class="ask"><b>一個問題</b>「地球的古菌能在模擬土衛二的水裡活」和「土衛二有生命」中間還差幾步？如果你是任務設計者，要在噴流裡量到什麼，才會讓你相信那裡真的有東西在產甲烷，而不是岩石自己做出來的？</div>
+
+  <details class="check">
+    <summary>校對紀錄：導讀裡的每個數字出自原文哪裡</summary>
+    <table>
+      <tr><th>導讀說法</th><th>原文依據</th></tr>
+      <tr><td>卡西尼 2015 穿越噴流、溶解無機碳／氫氣／甲烷</td><td>Eos 第 1 段 "The Cassini mission flew through and sampled the geyser spray in 2015, revealing… dissolved inorganic carbon (DIC), molecular hydrogen (H2), and methane (CH4)."</td></tr>
+      <tr><td>pH 8–11.6、小蘇打或含氨清潔劑、低 CO₂</td><td>Eos 第 2 段與 "Life at the Extremes" 一節 "a pH anywhere from 8 to 11.6"。</td></tr>
+      <tr><td>慕尼黑大學 LMU、Helmbrecht、Orsi；沖繩海槽、pH 8.5、「只能挑一種就挑它」</td><td>Eos "Life at the Extremes" 一節各段。</td></tr>
+      <tr><td>48 小時、pH 高到 11、對照組在更低 pH 死亡、蛇紋岩化供氫</td><td>Eos 同節末兩段（即關鍵段）。</td></tr>
+      <tr><td>還原性乙醯輔酶 A 路徑、能量全來自無生命氫氣、超過已知 pH 上限</td><td>論文摘要（Europe PMC 收錄）"overexpressing the reductive acetyl-CoA pathway for CO2 fixation… entirely fueled by the abiotic H2"。<span class="warn">只讀了摘要，未讀全文。</span></td></tr>
+      <tr><td>Science Advances、2026-09-25</td><td>Eos "The team published these results in Science Advances in September"；日期取自 Europe PMC 書目。</td></tr>
+      <tr><td>壓力反應、「不開心但還是長了」、下一步看適應與生態系</td><td>Eos "Exploring the Common Ground" 一節 Orsi 與 Helmbrecht 引言。</td></tr>
+      <tr><td>適居性改為 pH＋DIC＋H₂ 組合</td><td>Eos 同節 "Berne" 引言。<span class="warn">原文未交代此人身分。</span></td></tr>
+      <tr><td>土衛二直徑約 500 公里、海水 pH 約 8.1、冰殼 5 km／海洋 65 km</td><td><span class="warn">不在 Eos 原文裡：直徑與海水 pH 是導讀補充的常識數字，冰殼與海洋厚度取自 NASA 示意圖 PIA21442 上的標示。</span></td></tr>
+      <tr><td>台灣：六十幾座熱泉噴口、SPOT、黑煙囪、生命起源</td><td>台大論文摘要（2014）與公視新聞（2019-07-22）。</td></tr>
+    </table>
+  </details>
+</article>
+
+<!-- ======================= A4 ======================= -->
+<article id="a4" class="astro">
+  <div class="kicker"><span class="tag astro">天文 · 太空任務</span><span class="tag base">基礎</span><span>原文約 900 字 · 6 分鐘</span></div>
+  <h2>Swift 望遠鏡的最後一週：救援船自己轉暈了，22 年的老將要墜回大氣層</h2>
+  <h3 class="en">NASA’s Swift Mission Ends, Leaves Behind Scientific Bonanza</h3>
+  <div class="src">
+    NASA（新聞）· 2026-10-26 · 編輯 Francis Reddy · 另參考 NASA Swift 部落格 2026-10-23（Jeanette Kazmierczak）、<i>Nature</i> 新聞 2026-10-27、SpacePolicyOnline 2026-08-19（Marcia Smith）<br>
+    <a class="go" href="https://science.nasa.gov/missions/swift/nasas-swift-mission-ends/" target="_blank" rel="noopener">讀原文 →</a>
+    <a class="go" href="https://science.nasa.gov/blogs/swift/2026/10/23/nasas-swift-mission-ends-ahead-of-re-entry/" target="_blank" rel="noopener">NASA 部落格 →</a>
+    <a class="go" href="https://www.nature.com/articles/d41586-026-03461-w" target="_blank" rel="noopener">Nature 新聞 →</a>
+    <a class="go" href="https://spacepolicyonline.com/news/no-go-for-katalysts-reboost-of-nasas-swift-observatory/" target="_blank" rel="noopener">救援失敗始末 →</a>
+  </div>
+
+  <figure>
+    <img src="img/swift.jpg" alt="想像圖：Swift 衛星展開太陽能板，飛在藍白色的地球雲層上方" width="1200" height="635">
+    <figcaption>Neil Gehrels Swift 天文台在地球軌道上的想像圖。圖：NASA's Goddard Space Flight Center Conceptual Image Lab（NASA 影像，公有領域）。</figcaption>
+  </figure>
+
+  <h4>三句話</h4>
+  <ol class="sum">
+    <li>Swift 是 2004 年 11 月 20 日升空的 NASA 太空望遠鏡，原本只設計做兩年任務，結果飛了將近 22 年：看過超過 2,000 個伽瑪射線暴、1,400 多個超新星，貢獻了約 7,000 篇論文。它的絕活是「快」：偵測到伽瑪射線暴後，大約一分鐘內就能自己轉過去對準，趕在餘暉消失前拍到。</li>
+    <li>近兩年太陽活動旺盛，地球高層大氣被加熱膨脹，軌道上的阻力變大，Swift 越掉越低。NASA 去年底用 3,000 萬美元、11 個月的時間請新創公司 Katalyst 做一艘救援船 LINK 去把它抓住推回 600 公里高的軌道，7 月 3 日發射；但 LINK 上去不久就陷入每秒 9 度的多軸自轉，花一個月才降到每秒 1.47 度，8 月 19 日 NASA 宣布放棄救援。</li>
+    <li>Swift 重新開機做了幾百次觀測，但每次轉動望遠鏡都增加阻力。10 月 20 日它掉到 275 公里高、進入安全模式，當天做完最後一次觀測；10 月 23 日地面送出結束任務的指令。它預計在「未來幾週內」重返大氣層，大部分會燒掉，可能剩少量碎片落入海洋。</li>
+  </ol>
+
+  <h4>原文關鍵段</h4>
+  <blockquote class="en" lang="en">
+    <p>“Swift was designed as a satellite dedicated to studying gamma-ray bursts, outbursts that came and went so quickly that no one could target them with large telescopes to learn more,” said S. Bradley Cenko, the mission’s principal investigator at NASA’s Goddard Space Flight Center in Greenbelt, Maryland. “Swift needed to detect and locate gamma-ray bursts, communicate their position to other observatories, and then swing its telescopes around to image the burst locations before their afterglows faded out. This typically took Swift about a minute to do.”</p>
+    <p>On Oct. 20, Swift reached 171 miles (275 kilometers). At this point, the spacecraft was no longer able to compensate for the effects of the increased drag and entered safe mode.</p>
+  </blockquote>
+  <div class="zh">
+    <p>「Swift 被設計成一顆專門研究伽瑪射線暴的衛星，這種爆發來得快去得也快，沒有人來得及用大望遠鏡對準它們多看一眼，」任務首席科學家、NASA 戈達德太空飛行中心的 S. Bradley Cenko 說。「Swift 必須偵測並定位伽瑪射線暴，把位置通知其他天文台，然後把自己的望遠鏡轉過去，趕在餘暉消失前拍下爆發的位置。這整套動作 Swift 通常一分鐘左右就做完。」</p>
+    <p>10 月 20 日，Swift 降到 171 英里（275 公里）的高度。到這時候，它已經無法再抵銷增加的阻力，於是進入安全模式。</p>
+  </div>
+
+  <h4>術語表</h4>
+  <dl class="terms">
+    <div><dt>gamma-ray burst, GRB<small>伽瑪射線暴</small></dt><dd>宇宙中最劇烈的爆發，幾秒到幾分鐘就結束。短的那種（不到 2 秒）來自兩顆中子星相撞，這件事就是 Swift 幫忙證實的。</dd></div>
+    <div><dt>afterglow<small>餘暉</small></dt><dd>伽瑪射線暴之後，在 X 光、可見光、紫外光波段逐漸變暗的殘光。要抓到它，就得快。</dd></div>
+    <div><dt>neutron star merger<small>中子星合併</small></dt><dd>兩顆太陽質量、城市大小的死亡恆星核心撞在一起。2017 年那一次，Swift 幫忙看到合併之後的樣子，證明這種事件會造出金和鉑。</dd></div>
+    <div><dt>atmospheric drag<small>大氣阻力</small></dt><dd>低軌道上還有極稀薄的大氣，會一直拖慢衛星。太陽活動強時高層大氣受熱膨脹，阻力變大，衛星掉得更快。這是地科（太陽與高層大氣）和天文交會的地方。</dd></div>
+    <div><dt>safe mode<small>安全模式</small></dt><dd>衛星遇到無法處理的狀況時，自動關掉科學儀器、只維持基本功能等待地面指令。</dd></div>
+    <div><dt>re-entry<small>重返大氣層</small></dt><dd>衛星掉進濃密大氣、因摩擦燒毀的過程。Swift 不是受控再入，落點只能事前估一個很寬的範圍。</dd></div>
+    <div><dt>target of opportunity<small>機會目標</small></dt><dd>臨時出現、值得馬上看的天體事件。Swift 幾分鐘內就能接受地面的臨時指令，一天最多排 75 個目標。</dd></div>
+    <div><dt>multiwavelength<small>多波段</small></dt><dd>Swift 同時有伽瑪射線、X 光、紫外／可見光三種望遠鏡，而且對準同一個方向。</dd></div>
+    <div><dt>rendezvous and proximity operations<small>會合與近距離操作</small></dt><dd>救援船 LINK 原本要做的事：靠近 Swift、找到可以用三個「夾爪」抓住的位置，再用推進器花兩三個月把它推高。Swift 從來沒有設計要被抓。</dd></div>
+  </dl>
+
+  <h4>為什麼重要</h4>
+  <p>這是一個關於「時間」的故事：伽瑪射線暴只給你幾秒，Swift 用一分鐘回應；太陽週期用幾年的時間把大氣撐大，把衛星拉下來；NASA 用 11 個月賭一次救援，輸了。同時它也是地科與天文的交會點：讓望遠鏡墜毀的不是故障，而是太陽活動加熱了地球的高層大氣。最後一點值得記住：Swift 的全部資料（約 12 TB，相當於 600 部高畫質電影）都是公開的，它死了，資料還會繼續產生發現。</p>
+
+  <h4>還沒解決的問題</h4>
+  <ul class="open">
+    <li>到底哪一天、掉在哪裡？NASA 只說「未來幾週內」。<i>Nature</i> 寫有研究者預測 11 月 2 日；導讀另查到有新聞引用航太公司（Aerospace Corporation）的預測是 11 月 4 日 09:30 UTC、前後 26 小時誤差，但該頁面導讀無法直接開啟。你看到這篇時答案可能已經揭曉，去查查看哪個對。</li>
+    <li>伽瑪射線暴的「一分鐘快速反應」接下來誰來做？NASA 說正在評估用現有望遠鏡、商業快速發射與新任務來補，但目前沒有專門的接班者。</li>
+    <li>LINK 為什麼會失控自轉？公開資料只說有多軸自轉與姿態控制問題，詳細原因還沒有正式報告。</li>
+    <li class="warn"><b>找碴點</b>：NASA 新聞稿說 Swift 看過「超過 2,000 個」伽瑪射線暴，<i>Nature</i> 新聞卻寫「將近 2,000 個」。差異不大，但兩邊不可能同時對。你覺得哪一邊比較可能是對的？為什麼會差？</li>
+  </ul>
+
+  <div class="ask"><b>一個問題</b>NASA 署長說，這次救援雖然失敗，但「NASA 應該願意在潛在回報值得的時候快速行動、承擔聰明的風險」。3,000 萬美元、11 個月、失敗收場：你怎麼判斷一個失敗的嘗試值不值得？用什麼標準？</div>
+
+  <details class="check">
+    <summary>校對紀錄：導讀裡的每個數字出自原文哪裡</summary>
+    <table>
+      <tr><th>導讀說法</th><th>原文依據</th></tr>
+      <tr><td>2004-11-20 升空、設計兩年、超過 10 倍壽命、2018 年改名紀念 Neil Gehrels</td><td>NASA 新聞稿 "launched into orbit on Nov. 20, 2004"、Domagal-Goldman 引言 "designed for a two-year primary mission but productive for more than 10 times as long"、"In 2018, NASA renamed the mission to honor Gehrels following his death."</td></tr>
+      <tr><td>超過 2,000 個 GRB、1,400 多個超新星、約 7,000 篇論文</td><td>NASA 新聞稿 "observed more than 2,000 gamma-ray bursts… more than 1,400 supernova explosions… about 7,000 published scientific papers"。<span class="warn">Nature 寫 "almost 2,000"，矛盾，見找碴點。</span></td></tr>
+      <tr><td>約一分鐘轉向；一天 75 個目標；幾分鐘內接受臨時指令</td><td>NASA 新聞稿 Cenko 引言（即關鍵段）與 "could schedule up to 75 independent targets a day"。</td></tr>
+      <tr><td>短暴來自中子星合併；2017 合併造出金與鉑</td><td>NASA 新聞稿 GRB 050509B 一段；Nature 新聞 "In 2017, Swift also observed the aftermath of one especially momentous neutron-star collision to help to show that these events synthesize heavy elements such as gold and platinum."</td></tr>
+      <tr><td>太陽活動 → 阻力 → 下沉；觀測增加阻力</td><td>NASA 部落格 2026-10-23 "Recent solar activity increased this effect on Swift… The return to observations increased drag on the spacecraft."</td></tr>
+      <tr><td>10/20 到 275 公里、安全模式、最後一次觀測；10/23 送出結束指令</td><td>NASA 部落格與新聞稿 "On Oct. 20, Swift reached 171 miles (275 kilometers)… entered safe mode"、"Swift conducted its final observation on Oct. 20"；部落格發布日期 2026-10-23。</td></tr>
+      <tr><td>3,000 萬美元、11 個月、Katalyst、LINK、7/3 發射、9 → 4 → 1.47 度／秒、8/11 軟體更新、8/19 放棄、三個夾爪、推回 600 公里、Swift 沒有抓取點</td><td>SpacePolicyOnline 2026-08-19 全文。</td></tr>
+      <tr><td>救援船失控自轉</td><td>Nature 新聞 "the rescue mission began to spin uncontrollably before reaching its target"；SpacePolicyOnline "multi-axis spin"。</td></tr>
+      <tr><td>重返後大部分燒毀、少量碎片入海；11 月 2 日</td><td>Nature 新聞 "Some researchers predict Swift will re-enter Earth's atmosphere on 2 November. The majority of the observatory will burn up, likely leaving a small amount of debris to crash into the ocean."<span class="warn">Nature 全文需登入，導讀只讀到免費的前半段。</span></td></tr>
+      <tr><td>11 月 4 日 09:30 UTC ±26 小時</td><td><span class="warn">二手資料：搜尋結果引用 Aerospace Corporation 的再入預測頁，該頁導讀無法開啟（HTTP 403），未經直接查證。</span></td></tr>
+      <tr><td>12 TB ≈ 600 部高畫質電影、150 萬張紫外／可見光影像、資料公開</td><td>NASA 新聞稿倒數第 3 段。</td></tr>
+      <tr><td>署長「聰明的風險」引言</td><td>SpacePolicyOnline 引 NASA Administrator Jared Isaacman。</td></tr>
+    </table>
+  </details>
+</article>
+
+<!-- ======================= NEXT ======================= -->
+<section class="next">
+  <h2>下期候選：你想讀哪一篇？</h2>
+  <p class="lead">五個都是這兩週的新文章。挑一到兩個編號，或者說「都不要，我想看 ○○」。</p>
+  <ol>
+    <li><b>「空的」太空其實一直在翻攪</b><span>Quanta，10/30。第一張星際介質 3D 溫度地圖顯示，太陽附近 41% 的氣體卡在理論上「不該存在」的不穩定狀態，可能解釋為什麼星系造星這麼沒效率。天文／星際介質，進階。</span></li>
+    <li><b>貓頭星雲：哈伯和韋伯看同一隻貓</b><span>ESA／NASA，10/29。船底座星雲裡一根像貓背影的塵埃柱，可見光下是黑影，紅外光下滿是正在誕生的恆星。天文／恆星形成，圖很美。</span></li>
+    <li><b>雙胞胎探測器 11 月 7 日出發去火星</b><span>Eos，10/27。ESCAPADE 的 Blue 與 Gold 在地球附近「晃」了一年等窗口，順便鑽進沒人去過的地球磁尾深處；到火星後要看太陽風怎麼一點一點剝掉火星的大氣。天文／行星任務。</span></li>
+    <li><b>冰山 A-81 漂到南喬治亞島</b><span>NASA Earth Observatory，10/27。一座南極冰山快速離開威德爾海，卻在一座偏遠島嶼的海底陸棚邊緣慢了下來。地科／冰川與海洋。</span></li>
+    <li><b>酸性鹽湖的秘密</b><span>Eos，10/23。比海水還鹹、幾乎跟檸檬汁一樣酸的湖，能告訴我們生命在地球上、地球外可以活在哪裡。地科／地球化學，和本期的土衛二篇是一組。</span></li>
+  </ol>
+</section>
+
+<footer>
+  <p><b>關於這份導讀</b>：文章由編者挑選，中文導讀、翻譯與術語表由 AI（Claude）協助撰寫，編者讀過但不是科學專業。科學內容一律以英文原文和論文為準；發現導讀講錯、講淺的地方，就是最好的閱讀成果。</p>
+  <p><b>授權</b>：原文只做短篇引用並附連結；圖片僅使用公有領域（NASA）的影像，授權資訊見各圖說。Eos 文章依 CC BY-NC-ND 3.0 引用；NASA 文字為公有領域；<i>Nature</i> 與 SpacePolicyOnline 僅引用短句並附連結。</p>
+  <p class="back"><a href="../">← 所有期數</a></p>
+</footer>
+
+</div>
+</body>
+</html>

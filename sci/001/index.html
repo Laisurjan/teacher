@@ -35,6 +35,11 @@ header.top{padding:40px 0 16px}
 header.top .brand{font-size:14px;letter-spacing:.12em;color:var(--muted)}
 header.top h1{font-size:30px;line-height:1.3;margin:6px 0 8px}
 header.top p{margin:0;color:var(--muted)}
+nav.issues{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
+nav.issues a{display:inline-block;padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);text-decoration:none;font-size:14px;font-weight:700}
+nav.issues a:hover{border-color:var(--link)}
+nav.issues a[aria-current]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+nav.issues a small{font-weight:600;color:inherit;opacity:.75;margin-left:4px}
 nav.toc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin:18px 0 28px}
 nav.toc ol{margin:0;padding-left:22px}
 nav.toc li{margin:4px 0}
@@ -111,6 +116,11 @@ footer p{margin:6px 0}
   <h1>第 1 期</h1>
   <p>115 學年 10 月 25 日出刊 · 地科 2 篇、天文 2 篇 · 原文全部可免費閱讀</p>
 </header>
+
+<nav class="issues" aria-label="期數">
+  <a href="../001/" aria-current="page">第 1 期<small>10/25</small></a>
+  <a href="../002/">第 2 期<small>11/1</small></a>
+</nav>
 
 <nav class="toc">
   <ol>

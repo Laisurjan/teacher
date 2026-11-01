@@ -12,14 +12,22 @@
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15161a;--card:#1f2127;--ink:#ececea;--muted:#b4b3ad;--line:#33363e;--link:#8ab8ff;--geo:#7fd1b9;--geo-bg:#1d332d;--astro:#a9adf0;--astro-bg:#272a4a}}
 :root[data-theme="dark"]{--bg:#15161a;--card:#1f2127;--ink:#ececea;--muted:#b4b3ad;--line:#33363e;--link:#8ab8ff;--geo:#7fd1b9;--geo-bg:#1d332d;--astro:#a9adf0;--astro-bg:#272a4a}
 *{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei","Helvetica Neue",Arial,sans-serif;font-weight:600;line-height:1.75;font-size:17px}
 a{color:var(--link);text-underline-offset:3px}
 .wrap{max-width:760px;margin:0 auto;padding:40px 16px 64px}
 .brand{font-size:14px;letter-spacing:.12em;color:var(--muted)}
 h1{font-size:32px;line-height:1.3;margin:6px 0 10px}
-p.lead{color:var(--muted);margin:0 0 28px}
-.how{border-left:4px solid var(--line);padding:4px 16px;color:var(--muted);font-size:15px;margin:0 0 32px}
-.how p{margin:6px 0}
+p.lead{color:var(--muted);margin:0 0 20px}
+/* 期數切換列 */
+nav.switch{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0 12px;margin:0 0 6px;border-bottom:1px solid var(--line)}
+nav.switch .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+nav.switch .lbl{font-size:13px;color:var(--muted);margin-right:4px}
+nav.switch a{display:inline-block;padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);text-decoration:none;font-size:14px;font-weight:700}
+nav.switch a:hover{border-color:var(--link)}
+nav.switch a[aria-current]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+nav.switch a small{font-weight:600;opacity:.75;margin-left:4px}
+/* 各期目錄（無 JS、或載入前顯示） */
 .issue{display:block;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 22px;margin:0 0 18px;color:inherit;text-decoration:none}
 .issue:hover{border-color:var(--link)}
 .issue .no{font-size:13px;color:var(--muted);letter-spacing:.08em}
@@ -29,35 +37,117 @@ p.lead{color:var(--muted);margin:0 0 28px}
 .tag{display:inline-block;padding:1px 9px;border-radius:999px;font-size:12px;font-weight:700;margin-right:6px;vertical-align:1px}
 .tag.geo{background:var(--geo-bg);color:var(--geo)}
 .tag.astro{background:var(--astro-bg);color:var(--astro)}
-footer{font-size:13.5px;color:var(--muted);line-height:1.7;border-top:1px solid var(--line);padding-top:16px;margin-top:36px}
-footer p{margin:6px 0}
+#status{color:var(--muted);font-size:15px;margin:18px 0}
+/* 嵌入的期刊內容：藏掉重複的品牌列與返回連結，外層已有 .wrap 的邊距 */
+#issue .wrap{padding:0;max-width:none}
+#issue header.top{padding:18px 0 10px}
+#issue header.top .brand{display:none}
+#issue nav.issues{display:none}
+#issue footer .back{display:none}
+footer.site{font-size:13.5px;color:var(--muted);line-height:1.7;border-top:1px solid var(--line);padding-top:16px;margin-top:36px}
+footer.site p{margin:6px 0}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="brand">EARTH &amp; SPACE READER</div>
   <h1>地科天文期刊導讀</h1>
-  <p class="lead">每週四篇：地科 2 篇、天文 2 篇。文章來自 NASA、Eos、Nature、Quanta 等，全部可免費閱讀原文。</p>
+  <p class="lead">每週四篇：地科 2 篇、天文 2 篇。文章來自 NASA、Eos、Nature、Quanta 等，全部可免費閱讀原文。英文原文是主體，中文只是導讀；每篇最後的「校對紀錄」列出每個數字出自原文哪一段，抓到錯是正常的。</p>
 
-  <div class="how">
-    <p><b>怎麼讀</b>：英文原文是主體，中文只是導讀。每篇有三句話摘要、原文關鍵段與對照、術語表、為什麼重要、還沒解決的問題，有台灣相關的再加一段「台灣連結」。</p>
-    <p>每篇最後的「校對紀錄」列出導讀裡每個數字出自原文哪一段。導讀由 AI 協助撰寫，編者不是科學專業，所以抓到錯是正常的，也是這份東西存在的目的之一。</p>
+  <nav class="switch" aria-label="切換期數">
+    <div class="row">
+      <span class="lbl">期數</span>
+      <!-- ISSUES: 新的放最後；data-date 給分頁標題用 -->
+      <a href="001/" data-n="001" data-date="115 學年 10 月 25 日">第 1 期<small>10/25</small></a>
+      <a href="002/" data-n="002" data-date="115 學年 11 月 1 日">第 2 期<small>11/1</small></a>
+    </div>
+  </nav>
+
+  <div id="status" hidden>載入中…</div>
+
+  <!-- 各期內容由 JS 載入到這裡；沒有 JS 時顯示下面的目錄 -->
+  <div id="issue"></div>
+
+  <div id="list">
+    <a class="issue" href="002/">
+      <div class="no">第 2 期 · 115 學年 11 月 1 日</div>
+      <h2>月球是撞出來還是捏出來的、氣旋 Arnab 與聖嬰年的颱風、地球古菌在土衛二海水裡活下來、Swift 望遠鏡的最後一週</h2>
+      <ul>
+        <li><span class="tag geo">地科</span>給 Theia 加一層硬殼，月球可能直接被撞出來、跳過碎屑盤（Eos / ApJL，進階）</li>
+        <li><span class="tag geo">地科</span>氣旋 Arnab 夜襲印度：同一個聖嬰，孟加拉灣颱風變少、西太平洋強颱變多（NASA Earth Observatory）</li>
+        <li><span class="tag astro">天文</span>地球的古菌在「土衛二的海水」裡活下來了，還吐出甲烷（Eos / Science Advances）</li>
+        <li><span class="tag astro">天文</span>Swift 望遠鏡的最後一週：救援船自己轉暈了，22 年的老將要墜回大氣層（NASA / Nature）</li>
+      </ul>
+    </a>
+    <a class="issue" href="001/">
+      <div class="no">第 1 期 · 115 學年 10 月 25 日</div>
+      <h2>超強聖嬰、巴拿馬地震山崩、白矮星吃行星、沒有暗物質的星系</h2>
+      <ul>
+        <li><span class="tag geo">地科</span>超強聖嬰：2026 對照 1997，衛星看到幾乎一樣的太平洋（NASA Earth Observatory）</li>
+        <li><span class="tag geo">地科</span>巴拿馬 Mw 7.7 地震的山崩，和太魯閣的對照（Eos）</li>
+        <li><span class="tag astro">天文</span>白矮星正在吃掉它自己生出來的行星（Eos / Nature Astronomy）</li>
+        <li><span class="tag astro">天文</span>三個沒有暗物質的幽靈星系，反而證明暗物質是「東西」（Quanta，進階）</li>
+      </ul>
+    </a>
   </div>
 
-  <a class="issue" href="001/">
-    <div class="no">第 1 期 · 115 學年 10 月 25 日</div>
-    <h2>超強聖嬰、巴拿馬地震山崩、白矮星吃行星、沒有暗物質的星系</h2>
-    <ul>
-      <li><span class="tag geo">地科</span>超強聖嬰：2026 對照 1997，衛星看到幾乎一樣的太平洋（NASA Earth Observatory）</li>
-      <li><span class="tag geo">地科</span>巴拿馬 Mw 7.7 地震的山崩，和太魯閣的對照（Eos）</li>
-      <li><span class="tag astro">天文</span>白矮星正在吃掉它自己生出來的行星（Eos / Nature Astronomy）</li>
-      <li><span class="tag astro">天文</span>三個沒有暗物質的幽靈星系，反而證明暗物質是「東西」（Quanta，進階）</li>
-    </ul>
-  </a>
-
-  <footer>
-    <p>原文只做短篇引用並附連結；圖片僅使用公有領域或創用 CC 授權的影像，授權資訊見各圖說。</p>
+  <footer class="site">
+    <p>原文只做短篇引用並附連結；圖片僅使用公有領域或創用 CC 授權的影像，授權資訊見各圖說。每一期也有自己的網址（如 <a href="002/">sci/002/</a>），可以直接分享。</p>
   </footer>
 </div>
+
+<script>
+(function(){
+  var links=[].slice.call(document.querySelectorAll('nav.switch a[data-n]'));
+  if(!links.length||!window.fetch||!window.DOMParser)return;
+  var issueBox=document.getElementById('issue'),list=document.getElementById('list'),status=document.getElementById('status');
+  var cache={},current=null,styleTag=null;
+  var latest=links[links.length-1].dataset.n;
+
+  function byN(n){for(var i=0;i<links.length;i++)if(links[i].dataset.n===n)return links[i];return null;}
+  function fromURL(){var m=location.search.match(/[?&]n=(\d{3})/);return m&&byN(m[1])?m[1]:latest;}
+
+  function load(n,push,hash){
+    var a=byN(n);if(!a)return;
+    status.hidden=false;issueBox.innerHTML='';list.hidden=true;
+    var p=cache[n]?Promise.resolve(cache[n]):fetch(n+'/index.html',{cache:'no-cache'}).then(function(r){if(!r.ok)throw new Error(r.status);return r.text();}).then(function(html){
+      var doc=new DOMParser().parseFromString(html,'text/html');
+      var wrap=doc.querySelector('.wrap');if(!wrap)throw new Error('no wrap');
+      // 圖片與相對連結改成以本頁為基準
+      [].forEach.call(wrap.querySelectorAll('img[src]'),function(img){var s=img.getAttribute('src');if(!/^(https?:|\/|data:)/.test(s))img.setAttribute('src',n+'/'+s);});
+      [].forEach.call(wrap.querySelectorAll('a[href]'),function(l){var h=l.getAttribute('href');if(/^(https?:|#|mailto:)/.test(h))return;if(h==='../'){l.setAttribute('href','./');return;}
+        var m=h.match(/^\.\.\/(\d{3})\/?$/);if(m){l.setAttribute('href','?n='+m[1]);l.dataset.n=m[1];return;}
+        if(!/^\//.test(h))l.setAttribute('href',n+'/'+h);});
+      var st=doc.querySelector('style');
+      cache[n]={html:wrap.outerHTML,css:st?st.textContent:'',title:doc.title};
+      return cache[n];
+    });
+    p.then(function(d){
+      if(styleTag)styleTag.remove();
+      styleTag=document.createElement('style');styleTag.textContent=d.css;document.head.appendChild(styleTag);
+      issueBox.innerHTML=d.html;status.hidden=true;current=n;
+      links.forEach(function(l){if(l.dataset.n===n)l.setAttribute('aria-current','page');else l.removeAttribute('aria-current');});
+      document.title=d.title||document.title;
+      if(push)history.pushState({n:n},'',(n===latest?location.pathname:'?n='+n)+(hash||''));
+      if(hash){var t=document.getElementById(hash.slice(1));if(t)t.scrollIntoView();}
+      else if(push)window.scrollTo(0,0);
+    }).catch(function(){
+      // 載入失敗就直接跳去該期的獨立頁
+      location.href=a.getAttribute('href');
+    });
+  }
+
+  document.addEventListener('click',function(e){
+    var l=e.target.closest&&e.target.closest('a[data-n]');
+    if(!l||e.metaKey||e.ctrlKey||e.shiftKey||e.button!==0)return;
+    e.preventDefault();
+    if(l.dataset.n===current){window.scrollTo({top:0,behavior:'smooth'});return;}
+    load(l.dataset.n,true);
+  });
+  window.addEventListener('popstate',function(){var n=fromURL();if(n!==current)load(n,false,location.hash);});
+
+  load(fromURL(),false,location.hash);
+})();
+</script>
 </body>
 </html>
