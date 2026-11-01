@@ -424,8 +424,8 @@ for (let i = 0; i < BOUND.length - 1; i++){
 }
 // 中山路側：留校門（z 69–83）
 // 商校街口到圖書館北端（z -31 ~ -2）臨中山路是民家，不設圍牆（老師 115/11/01 指示）
-// 圖書館前（老師 115/11/01 指示）：同款灰底座鐵欄杆；z 8–20 為入口階梯留的開口
-ironFence(-2, 8); ironFence(20, 26);
+// 圖書館前（老師 115/11/01 指示）：同款灰底座鐵欄杆，整段連續、不留磚牆
+ironFence(-2, 26);
 // 圖書館南端到校長宿舍（老師 115/11/01 指示）：同校長宿舍外的灰底座＋石柱＋黑色鐵欄杆；開口 z 65.5–84 為校門、z 84–89.5 為警衛室
 function ironFence(z0, z1){
   const PIL = lam(0x8f8d86), IRON = lam(0x2e3135), L = z1 - z0, zc = (z0 + z1) / 2;
@@ -571,12 +571,12 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
   const txt = textPlane(textTex('花蓮高商', { w: 512, h: 128, spacing: 1, color: '#e8c45c' }), 6, 1.5);
   txt.rotation.y = -Math.PI / 2; txt.position.set(WX - 1.85, H + .55, -6); g.add(txt);
   const em = new THREE.Mesh(new THREE.CircleGeometry(.45, 20), lam(0xf0ede6)); em.rotation.y = -Math.PI / 2; em.position.set(WX - 1.85, H + .55, -11); g.add(em);   // 校徽圓牌
-  // 入口門廊：z 2 為中心，一、二樓挑高；玻璃帷幕、兩根白柱撐出挑平板；紅磚平台高 1.2 m，兩側沿立面的階梯
+  // 入口門廊：z 2 為中心，一、二樓挑高；玻璃帷幕、兩根白柱撐出挑平板；灰色石材平台高 1.2 m，兩側沿立面的階梯
   const PH = 2 * FH, PZ = 2, STEP = lam(0xd9d4c8);
   box(.25, PH, 6, M.glass, WX - .12, 0, PZ, g);
   box(3.2, .5, 7, M.white, WX - 1.5, PH, PZ, g);
   [-2, 2].forEach(dz => { const c = new THREE.Mesh(new THREE.CylinderGeometry(.4, .4, PH, 12), M.white); c.position.set(WX - 2.5, PH / 2, PZ + dz); c.castShadow = true; g.add(c); });
-  box(3.4, 1.2, 9, lam(0x9e4f3f), WX - 1.7, 0, PZ, g); box(3.4, .05, 9, STEP, WX - 1.7, 1.2, PZ, g);
+  box(3.4, 1.2, 9, lam(0xb9b6ae), WX - 1.7, 0, PZ, g); box(3.4, .05, 9, STEP, WX - 1.7, 1.2, PZ, g);
   [-1, 1].forEach(s => { for (let k = 0; k < 4; k++) box(1.8, .3 * (k + 1), 1, STEP, WX - 2.2, 0, PZ + s * (8 - k), g); });
   box(.08, 1, 9, lam(0x8a8f93), WX - 3.35, 1.2, PZ, g);
   // 西南角塔樓：群組座標 x -13.5 ~ -6、z 5 ~ 13，往中山路與南側各突出 1 m、高出主體 3.5 m；兩個方塊＋圓柱拼出臨街的圓角
