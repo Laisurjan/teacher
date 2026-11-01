@@ -1028,7 +1028,7 @@ scene.traverse(m => { if (m.isMesh && m.castShadow){ const b = new THREE.Box3().
 const drawBefore = (() => { let n = 0; scene.traverse(m => { if (m.isMesh) n += Array.isArray(m.material) ? m.material.length : 1; }); return n; })();
 /* 開場「從地面逐棟長出來」：合併後無法個別移動物件，改在著色器裡處理。
    合併前替每個物件記下 grow＝(開始秒, 長高秒)；貼地鋪面為 -1 不參與。
-   GROW 是開場時鐘（秒）：未輪到的沉到地面下，輪到後由地面長到約 115% 再回彈到原高（長過頭的回彈讓眼睛抓到高度）；
+   GROW 是開場時鐘（秒）：未輪到的沉到地面下，輪到後由地面長到約 130% 再回彈到原高（長過頭的回彈讓眼睛抓到高度）；
    平時給大數＝全部長好。陰影用同一套深度材質一起長。
    節奏：七組主要建築依序各佔一拍（像鼓點），樹、圍牆、小設施最後一起快速冒出 */
 const GROW = { value: 1e3 }, BEAT = .26, MAJOR_DUR = .85, MINOR_DUR = .5;
@@ -1047,7 +1047,7 @@ function growInject(sh){
   sh.uniforms.uGrow = GROW;
   sh.vertexShader = 'attribute vec2 grow;\nuniform float uGrow;\n' + sh.vertexShader.replace('#include <project_vertex>', `
     if (grow.x >= 0.0){ float gk = clamp((uGrow - grow.x) / grow.y, 0.0, 1.0), u = gk - 1.0;
-      float e = 1.0 + 3.2 * u * u * u + 2.2 * u * u;
+      float e = 1.0 + 4.39 * u * u * u + 3.39 * u * u;   // easeOutBack，最高點約 130%
       transformed.y = gk > 0.0 ? transformed.y * e : -3.0; }
     #include <project_vertex>`);
 }
