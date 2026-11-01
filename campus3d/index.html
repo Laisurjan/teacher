@@ -423,10 +423,14 @@ for (let i = 0; i < BOUND.length - 1; i++){
   }
 }
 // 中山路側：留校門（z 69–83）
-box(.4, 2, 96.5, M.wallPink, -10, 0, 17.25);   // 校門北側到商校街（開口 z 65.5–84 為校門）
+box(.4, 2, 29, M.wallPink, -10, 0, -16.5);     // 商校街口到圖書館北端（z -31 ~ -2）
+// 圖書館前（老師 115/11/01 照片、2025 街景）：紅磚矮牆約 1.1 m、掛布條；z 8–20 為入口階梯留的開口
+box(.4, 1.1, 10, lam(0x9e4f3f), -10, 0, 3); box(.4, 1.1, 6, lam(0x9e4f3f), -10, 0, 23);
+box(.4, 2, 39.5, M.wallPink, -10, 0, 45.75);   // 圖書館南端到校門（開口 z 65.5–84 為校門）
 // 校門南側臨中山路：灰色水泥矮牆＋方柱，牆後樹籬（街景）
-box(.4, 1.1, 97.5, M.concrete, -10, 0, 138.25);   // 自警衛室南側起
-for (let z = 90; z <= 186; z += 4) box(.7, 1.6, .7, M.concrete, -10, 0, z);
+box(.4, 1.1, 16.5, M.concrete, -10, 0, 97.75);   // 自警衛室南側起到校長宿舍（z 89.5–106）
+box(.4, 1.1, 54, M.concrete, -10, 0, 160);        // 校長宿舍南側起（z 133–187）；宿舍段圍牆見「校長宿舍」
+for (let z = 90; z <= 186; z += 4) if (z < 106 || z > 133) box(.7, 1.6, .7, M.concrete, -10, 0, z);
 hedge(-9.1, 84, -9.1, 105);
 
 // 草地、鋪面
@@ -538,27 +542,54 @@ pavilion(45, 160, M.darkRoof, '涼亭');
 // ================= 建築 =================
 const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' };
 
-// --- 圖書資訊館：米色主體＋塔樓，中山路側咖啡色磁磚拱廊（花蓮高商四字）
+// --- 圖書資訊館（老師 115/11/01 中山路側照片、2025 街景「中山路校門」往北、g012、g046）：
+//   六層米色磁磚主體（頂樓挑高）；咖啡色磁磚拱廊在北端最上兩層、外挑，頂帶「花蓮高商」金字與校徽；
+//   中山路側一、二樓挑高入口門廊（兩根白柱、紅磚平台、沿立面的側向階梯）；西南角塔樓高出主體一層，臨街角落為圓弧玻璃磚，掛直書「圖書資訊館」
 (function(){
-  const g = group(5.5, 12);
-  building(g, { w: 27, d: 24, floors: 5, roof: 'gray', parapet: lam(0xd8c498),
+  const g = group(6.5, 12), H = 23, FH = H / 6, WX = -12.5;   // WX：西側（中山路）立面在群組座標的 x
+  building(g, { w: 25, d: 24, floors: 6, h: H, roof: 'gray', parapet: lam(0xd8c498),
     faces: { all: { wall: '#e3d0a2', win: 'glass', frame: '#ece3cc', pil: '#d4bf8d' } } });
-  // 拱廊：咖啡色框，五個拱，2F–4F
-  const sh = new THREE.Shape(); sh.moveTo(-11, 0); sh.lineTo(11, 0); sh.lineTo(11, 12); sh.lineTo(-11, 12); sh.lineTo(-11, 0);
+  // 拱廊：z -12 ~ -2（北端 10 m）、第五、六層、外挑 1.8 m；五個兩層高的拱形開口，五樓處有樓板與欄杆
+  const AB = 4 * FH, AH = H + 1.35 - AB;   // 拱廊底部高度、拱廊高度（蓋過女兒牆）
+  const sh = new THREE.Shape(); sh.moveTo(-12, 0); sh.lineTo(-2, 0); sh.lineTo(-2, AH); sh.lineTo(-12, AH); sh.lineTo(-12, 0);
   for (let i = 0; i < 5; i++){
-    const cx = -8.8 + i * 4.4, hw = 1.7, top = 8.6, hole = new THREE.Path();
-    hole.moveTo(cx - hw, .6); hole.lineTo(cx + hw, .6); hole.lineTo(cx + hw, top); hole.absarc(cx, top, hw, 0, Math.PI, false); hole.lineTo(cx - hw, .6);
+    const cx = -11 + i * 2, hw = .75, top = AH - 2.3, hole = new THREE.Path();
+    hole.moveTo(cx - hw, .5); hole.lineTo(cx + hw, .5); hole.lineTo(cx + hw, top); hole.absarc(cx, top, hw, 0, Math.PI, false); hole.lineTo(cx - hw, .5);
     sh.holes.push(hole);
   }
-  const arc = new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth: 1.6, bevelEnabled: false }), lam(0xb06f55));
-  arc.rotation.y = -Math.PI / 2; arc.position.set(-13.5 - 1.6 + 1.6, FLOOR, 0); arc.castShadow = true;
-  arc.position.x = -13.5 - .1; arc.rotation.y = Math.PI / 2; arc.position.x = -15.2; g.add(arc);
-  const txt = textPlane(textTex('花蓮高商', { w: 512, h: 128, spacing: 1, color: '#e8c45c' }), 18, 2);
-  txt.rotation.y = -Math.PI / 2; txt.position.set(-15.25, FLOOR + 10.9, 0); g.add(txt);
-  // 塔樓
-  const t = group(14, 3);
-  building(t, { w: 6.5, d: 7, floors: 7, roof: 'gray', parapet: lam(0xd8c498), faces: { all: { wall: '#dcc690', win: 'slot' } } });
-  addLabel('圖書資訊館', 5.5, 22, 12);
+  const arc = new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth: 1.8, bevelEnabled: false }), lam(0xb06f55));
+  arc.rotation.y = -Math.PI / 2; arc.position.set(WX, AB, 0); arc.castShadow = arc.receiveShadow = true; g.add(arc);   // 形狀 x → z、往 -x 擠出
+  box(1.6, .3, 10, M.concrete, WX - .9, 5 * FH - .3, -7, g);        // 五樓樓板
+  box(.08, 1, 10, lam(0x8a8f93), WX - 1.5, 5 * FH, -7, g);            // 五樓欄杆
+  const txt = textPlane(textTex('花蓮高商', { w: 512, h: 128, spacing: 1, color: '#e8c45c' }), 6, 1.5);
+  txt.rotation.y = -Math.PI / 2; txt.position.set(WX - 1.85, H + .55, -6); g.add(txt);
+  const em = new THREE.Mesh(new THREE.CircleGeometry(.45, 20), lam(0xf0ede6)); em.rotation.y = -Math.PI / 2; em.position.set(WX - 1.85, H + .55, -11); g.add(em);   // 校徽圓牌
+  // 入口門廊：z 2 為中心，一、二樓挑高；玻璃帷幕、兩根白柱撐出挑平板；紅磚平台高 1.2 m，兩側沿立面的階梯
+  const PH = 2 * FH, PZ = 2, STEP = lam(0xd9d4c8);
+  box(.25, PH, 6, M.glass, WX - .12, 0, PZ, g);
+  box(3.2, .5, 7, M.white, WX - 1.5, PH, PZ, g);
+  [-2, 2].forEach(dz => { const c = new THREE.Mesh(new THREE.CylinderGeometry(.4, .4, PH, 12), M.white); c.position.set(WX - 2.5, PH / 2, PZ + dz); c.castShadow = true; g.add(c); });
+  box(3.4, 1.2, 9, lam(0x9e4f3f), WX - 1.7, 0, PZ, g); box(3.4, .05, 9, STEP, WX - 1.7, 1.2, PZ, g);
+  [-1, 1].forEach(s => { for (let k = 0; k < 4; k++) box(1.8, .3 * (k + 1), 1, STEP, WX - 2.2, 0, PZ + s * (8 - k), g); });
+  box(.08, 1, 9, lam(0x8a8f93), WX - 3.35, 1.2, PZ, g);
+  // 西南角塔樓：群組座標 x -13.5 ~ -6、z 5 ~ 13，往中山路與南側各突出 1 m、高出主體 3.5 m；兩個方塊＋圓柱拼出臨街的圓角
+  const TH = H + 3.5, TO = { wall: '#dcc690', win: 'glass', frame: '#ece3cc' }, RG = M.roofGray, CAP = lam(0x8a7d6a);
+  const tA = new THREE.Mesh(new THREE.BoxGeometry(4.5, TH, 8), [facade(8, 7, TO), facade(8, 7, TO), RG, RG, facade(4.5, 7, TO), facade(4.5, 7, TO)]);
+  tA.position.set(-8.25, TH / 2, 9);
+  const tB = new THREE.Mesh(new THREE.BoxGeometry(3, TH, 4), [facade(4, 7, TO), facade(4, 7, TO), RG, RG, facade(3, 7, TO), facade(3, 7, TO)]);
+  tB.position.set(-12, TH / 2, 7);
+  const cyl = new THREE.Mesh(new THREE.CylinderGeometry(3, 3, TH, 20), [lam(0xcfd6d8), RG, RG]);
+  cyl.position.set(-10.5, TH / 2, 10);
+  [tA, tB, cyl].forEach(m => { m.castShadow = m.receiveShadow = true; g.add(m); });
+  const rs = new THREE.Shape(); rs.moveTo(-13.7, -4.8); rs.lineTo(-5.8, -4.8); rs.lineTo(-5.8, -13.2); rs.lineTo(-10.5, -13.2);
+  rs.absarc(-10.5, -10, 3.2, -Math.PI / 2, -Math.PI, true); rs.lineTo(-13.7, -4.8);
+  const slab = new THREE.Mesh(new THREE.ExtrudeGeometry(rs, { depth: .35, bevelEnabled: false }), CAP);
+  slab.rotation.x = -Math.PI / 2; slab.position.y = TH; slab.castShadow = true; g.add(slab);   // 深色屋頂板（形狀 y → -z）
+  const vt = canvasTex(128, 640, (c) => { c.fillStyle = '#f4f2ec'; c.fillRect(0, 0, 128, 640);
+    c.font = 'bold 84px "DFKai-SB","BiauKai","Kaiti TC","Noto Serif TC",serif'; c.fillStyle = '#2b2b2b'; c.textAlign = 'center'; c.textBaseline = 'middle';
+    [...'圖書資訊館'].forEach((ch, i) => c.fillText(ch, 64, 88 + i * 116)); });
+  const vs = textPlane(vt, 1.1, 5.5); vs.rotation.y = -Math.PI / 2; vs.position.set(WX - 1.06, 14.5, 6.5); g.add(vs);   // 直書招牌
+  addLabel('圖書資訊館', 6.5, H + 4, 12);
 })();
 
 // --- 行政教學大樓（前排）：3F 粉色磁磚、白色百葉窗；中央入口凸出量體；東側開放走廊
@@ -770,14 +801,24 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
 
 // --- 其他建築
 (function(){ // 校長宿舍：2F 住宅＋斜屋頂
-  // 依 2025 年 8 月街景：在南側停車場之後、自中山路後退，前有庭院與 1 層附屬小屋；
-  //   主屋 2 層淺灰白、灰色斜屋頂、山牆朝校門（北）
+  // 依 2025 年 8 月街景與老師 115/11/01 中山路側照片：在南側停車場之後、自中山路後退，前有庭院與 1 層附屬小屋；
+  //   主屋 2 層、上層淺灰色雨淋板、灰色斜屋頂、山牆朝中山路（西）；四周有圍牆
   rect(-9.6, 106, 14, 132, M.grass, .05);
   const g = group(8, 119);
-  building(g, { w: 11, d: 11, floors: 2, roof: 'gray', faces: { all: { wall: '#e8e8e3', win: 'glass', frame: '#f4f4f0' } } });
+  building(g, { w: 11, d: 11, floors: 2, roof: 'gray', faces: { all: { wall: '#d6dadb', win: 'louver', frame: '#f4f4f0' } } });
   const sh = new THREE.Shape(); sh.moveTo(-6.2, 0); sh.lineTo(6.2, 0); sh.lineTo(0, 2.8); sh.lineTo(-6.2, 0);
   const rf = new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth: 12, bevelEnabled: false }), lam(0x6f7579));
-  rf.position.set(0, 2 * FLOOR + .4, -6); rf.castShadow = true; g.add(rf);
+  rf.rotation.y = Math.PI / 2; rf.position.set(-6, 2 * FLOOR + .4, 0); rf.castShadow = true; g.add(rf);   // 沿 x 擠出，山牆朝西
+  // 圍牆（老師 115/11/01 照片）：北段石柱＋黑色鐵欄杆、牆後樹籬（z 106–118）；大門（z 118–122.5）；南段水泥實牆約 2.2 m、頂上刺鐵絲（z 122.5–133）
+  const PIL = lam(0x8f8d86), IRON = lam(0x2e3135);
+  for (let z = 106; z <= 118; z += 4) box(.6, 1.9, .6, PIL, -10, 0, z);
+  [.25, 1.55].forEach(y => box(.06, .06, 12, IRON, -10, y, 112));
+  for (let z = 106.5; z < 118; z += .4) box(.05, 1.5, .05, IRON, -10, .15, z);
+  hedge(-9.1, 106, -9.1, 118);
+  box(.6, 1.9, .6, PIL, -10, 0, 122.5); box(.12, 1.9, 3.8, IRON, -10, 0, 120.25);   // 大門柱與鐵門
+  box(.4, 2.2, 10.5, lam(0xa9aaa4), -10, 0, 127.75);
+  [2.3, 2.55].forEach(y => box(.05, .05, 10.5, lam(0x6f7276), -10, y, 127.75));       // 刺鐵絲
+  const CW = lam(0xb3b4ae); box(24, 2, .3, CW, 2, 0, 106); box(24, 2, .3, CW, 2, 0, 133); box(.3, 2, 27, CW, 14, 0, 119.5);   // 北、南、東三面水泥牆，圍成一圈
   // 附屬小屋：1 層、面中山路鐵捲門、紅褐色屋簷
   building(group(-3.5, 121), { w: 6, d: 8, floors: 1, h: 3, roof: 'gray', faces: { all: { wall: '#dcdcd6', win: 'glass' }, w: { wall: '#dcdcd6', win: 'shutter', bay: 3 } } });
   box(6.6, .35, 8.6, lam(0x8c4a3a), -3.5, 3, 121);
@@ -1035,7 +1076,7 @@ const drawBefore = (() => { let n = 0; scene.traverse(m => { if (m.isMesh) n += 
    節奏：七組主要建築依序各佔一拍（像鼓點），樹、圍牆、小設施最後一起快速冒出 */
 const GROW = { value: 1e3 }, BEAT = .26, MAJOR_DUR = .85, MINOR_DUR = .5;
 const BEATS = [   // [x0, z0, x1, z1]：區內高於 1 m 的物件跟這一拍一起長
-  [-9, -3, 21, 25],     // 圖書資訊館
+  [-10, -3, 21, 25],    // 圖書資訊館
   [12, 3, 31, 141],     // 行政教學大樓（前排）
   [31, 3, 70, 141],     // 後排教室＋連接棟、中央穿廊
   [78, 5, 124, 44],     // 人文館
@@ -1182,7 +1223,7 @@ intro = (() => {
   GR(circ(92, 38, 8), 2.0, .8, null); GR(RB(90.8, 46, 93.2, 72), 2.2, .6, '#e2b3a6');
   add(MAIN_ROAD, .1, { close: false, t0: 2.3, dur: .8 }); add(SMALL_PATH, .1, { close: false, t0: 2.5, dur: 1.0 });
   // 建築：底框 → 柱線 → 屋頂框；從校門依距離往校園深處長出來
-  [[R(5.5, 12, 27, 24), 18], [R(14, 3, 6.5, 7), 25.2], [RB(19, 5, 31, 139), 10.8], [R(16.5, 76, 5, 15), 11.8], [RB(54, 5, 69, 139), 10.8],
+  [[R(6.5, 12, 25, 24), 23], [R(-3.25, 21, 7.5, 8), 26.5], [RB(19, 5, 31, 139), 10.8], [R(16.5, 76, 5, 15), 11.8], [RB(54, 5, 69, 139), 10.8],
    [R(42.5, 6.5, 23, 7), 10.8], [R(42.5, 132.5, 23, 13), 10.8], [R(42.5, 76, 23, 9), 10.8], [R(100, 24, 46, 14, 33), 14.4],
    [RR(210, 116, 29, 52, 6, 24), 11], [R(88.5, 151, 13, 10), 18], [R(74, 147, 16, 10), 18], [R(99, 162, 10, 36), 18], [R(75, 166, 14, 16), 10.8],
    [RB(95, 140, 104, 147), 22.5, RB(95, 140, 99.8, 147)], [R(129, 126, 16, 9), 6.1], [R(8, 119, 11, 11), 10], [R(-3.5, 121, 6, 8), 3.35],
@@ -1196,7 +1237,7 @@ intro = (() => {
   });
   const roofs = S.filter(s => s.kind === 'roof').sort((a, b) => a.h - b.h), grounds = S.filter(s => s.fill && s.kind !== 'roof');
   // 安全地圖上的名稱（z：沿南北向的長樓，直書）
-  const LBL = [['圖書資訊館', 5.5, 18, 12], ['行政教學大樓', 25, 10.8, 40, 'z'], ['後排教室', 61.5, 10.8, 40, 'z'], ['中庭', 42.5, 0, 40], ['中庭', 42.5, 0, 104],
+  const LBL = [['圖書資訊館', 6.5, 23, 12], ['行政教學大樓', 25, 10.8, 40, 'z'], ['後排教室', 61.5, 10.8, 40, 'z'], ['中庭', 42.5, 0, 40], ['中庭', 42.5, 0, 104],
     ['人文館', 100, 14.4, 24], ['操場', 147, 0, 91.5, 'big'], ['活動中心', 210, 11, 116], ['資訊館', 88, 18, 158], ['司令台', 129, 6.1, 126],
     ['網球場', 126, 0, 158], ['籃球場', 153.5, 0, 153], ['排球場', 191, 0, 160], ['泗水園', 20, 0, 182], ['女生宿舍', 267.5, 14.4, 141],
     ['校門', -21, 0, 76, 'z'], ['中山路', -22, 0, 18, 'z'], ['商校街', 172, 0, 44], ['停車場', 32, 0, -7], ['腳踏車棚', 238, 2.75, 177]]
