@@ -888,7 +888,8 @@ rect(14, 0, 19, 24, M.brickPave, .05);
   const WEED = lam(0x6a9440);
   [[64.4, 152, 186], [94, 183.2, 106]].forEach(([a, b, c], k) => { for (let t = b; t < c; t += 1.7){ const w = new THREE.Mesh(new THREE.SphereGeometry(.9, 8, 6), WEED); w.scale.y = .6;
     if (k === 0) w.position.set(a + Math.sin(t) * .6, .35, t); else w.position.set(t, .35, a - 1.5 + Math.sin(t) * .4); scene.add(w); } });
-  const tank = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 2.6, 14), lam(0xd9b8a0)); tank.position.set(60, 4.3, 186); scene.add(tank);   // 牆外民宅頂上的水塔（照片 082311）
+  const tank = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 2.6, 14), lam(0xd9b8a0)); tank.position.set(88, 4.3, 185.5); scene.add(tank);   // 資訊館正後方、圍牆內的水塔（照片 082311；老師 115/11/02 確認）
+  [[87.3, 184.8], [88.7, 184.8], [87.3, 186.2], [88.7, 186.2]].forEach(([x, z]) => box(.1, 3, .1, lam(0x8a8f93), x, 0, z));
   addLabel('資訊館', 88, 24, 155);
 })();
 
