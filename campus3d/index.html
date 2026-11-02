@@ -530,7 +530,6 @@ const MAIN_ROAD = [[69, 73.5], [80, 74.5], [89, 78], [97, 84], [103, 90]];
   const hill = new THREE.Mesh(new THREE.SphereGeometry(1, 40, 16, 0, Math.PI * 2, 0, Math.PI / 2), M.grass);
   hill.scale.set(8, 1.1, 3); hill.position.set(158, 0, 56); hill.rotation.y = -THREE.MathUtils.degToRad(30); hill.receiveShadow = true; scene.add(hill);
 })();
-rect(41, 12, 43.5, 71.5, M.brickPave, .05); rect(41, 80.5, 43.5, 124, M.brickPave, .05);
 
 // ================= 操場 =================
 (function(){
@@ -787,12 +786,13 @@ rect(14, 0, 19, 24, M.brickPave, .05);
   [[38, 147], [50, 147]].forEach(([x, z]) => { box(.14, 4, .14, lam(0x5a5f63), x, 0, z); box(1.2, .08, .08, lam(0x5a5f63), x, 4, z);
     [-.6, .6].forEach(d => { const l = new THREE.Mesh(new THREE.SphereGeometry(.22, 8, 6), M.white); l.position.set(x + d, 3.85, z); scene.add(l); }); });
 })();
-// 中央穿廊：連接前後排，一樓挖空成通道（與兩排穿堂同一直線）
+// 中央穿廊：連接前後排（與兩排穿堂同一直線）。老師 115/11/02 說明：二樓是開放式走廊，兩側半身高矮牆，上有頂板；一樓挑空為通道
 (function(){
-  const g = group(42.5, 76); g.position.y = FLOOR;
-  building(g, { w: 23, d: 9, floors: 2, roof: 'gray', faces: { all: PINK } });
-  box(23, .35, 9, M.concrete, 42.5, FLOOR - .35, 76);
-  [31.6, 37.4, 42.5, 47.6, 53.4].forEach(x => { box(.6, FLOOR, .6, lam(0xe8ddd4), x, 0, 71.8); box(.6, FLOOR, .6, lam(0xe8ddd4), x, 0, 80.2); });
+  const PK = lam(0xe5ccbe), COL = lam(0xe8ddd4);
+  box(23, .35, 9, M.concrete, 42.5, FLOOR - .35, 76);                               // 二樓樓板
+  [71.65, 80.35].forEach(z => { box(23, 1.1, .3, PK, 42.5, FLOOR, z); box(23.2, .12, .45, M.concrete, 42.5, FLOOR + 1.1, z); });   // 半身矮牆＋壓頂
+  [31.6, 37.4, 42.5, 47.6, 53.4].forEach(x => { [71.8, 80.2].forEach(z => { box(.6, FLOOR, .6, COL, x, 0, z); box(.45, FLOOR - .3, .45, COL, x, FLOOR, z); }); });
+  box(23.4, .3, 9.6, M.concrete, 42.5, 2 * FLOOR - .3, 76);                         // 頂板
   rect(31, 71.5, 54, 80.5, M.stonePave, .06);
 })();
 
@@ -1296,8 +1296,6 @@ function nearRoad(x, z, d){ return MAIN_ROAD.some((a, i) => { if (i === MAIN_ROA
   return Math.hypot(x - a[0] - t * vx, z - a[1] - t * vz) < d; }); }
 for (let i = 0; i < 90; i++){ const x = 72 + rnd() * 30, z = 32 + rnd() * 92;
   if (x < 76 || z > 108 || Math.hypot(x - 92, z - 38) < 10 || (Math.abs(x - 92) < 3 && z > 44 && z < 74) || nearRoad(x, z, 4.5) || Math.abs(z - 76) < 7) continue; tree(x, z, .8 + rnd() * .6); }
-for (let i = 0; i < 8; i++) tree(33 + rnd() * 6, 14 + rnd() * 50, .8 + rnd() * .4);
-for (let i = 0; i < 6; i++) tree(46 + rnd() * 6, 82 + rnd() * 40, .8 + rnd() * .4);
 // 中庭原有木造涼亭已拆除：現在是穿堂（中央穿廊）南北兩側各一組深綠色鐵圓桌＋有椅背的個人鐵椅
 (function(){
   const IRON = lam(0x1f4a32);
@@ -1313,7 +1311,6 @@ for (let i = 0; i < 6; i++) tree(46 + rnd() * 6, 82 + rnd() * 40, .8 + rnd() * .
     }
   });
 })();
-hedge(40.5, 14, 40.5, 64); hedge(44, 14, 44, 64); hedge(40.5, 81, 40.5, 122); hedge(44, 81, 44, 122);
 for (let k = 0; k < 28; k++){ const a = k / 28 * Math.PI * 2; if (Math.abs(a - Math.PI / 2) < .25 || Math.abs(a - Math.PI * 1.5) < .25) continue;   // 圓形花園外圈樹籬（南北留出入口）
   box(1.6, .9, .8, lam(0x4d8a3f), 92 + Math.cos(a) * 8.6, 0, 38 + Math.sin(a) * 8.6).rotation.y = -a + Math.PI / 2; }
 hedge(90.2, 47, 90.2, 72); hedge(93.8, 47, 93.8, 72);
@@ -1642,7 +1639,7 @@ intro = (() => {
   add(MAIN_ROAD, .1, { close: false, t0: 2.3, dur: .8 }); add(SMALL_PATH, .1, { close: false, t0: 2.5, dur: 1.0 });
   // 建築：底框 → 柱線 → 屋頂框；從校門依距離往校園深處長出來
   [[RB(-6, 0, 14, 24), 23], [RB(19, 5, 31, 139), 10.8], [R(16.5, 76, 5, 15), 11.8], [RB(54, 5, 69, 139), 10.8],
-   [R(42.5, 6.5, 23, 7), 10.8], [R(42.5, 132.5, 23, 13), 10.8], [R(42.5, 76, 23, 9), 10.8], [R(100, 24, 46, 14, 33), 14.4],
+   [R(42.5, 6.5, 23, 7), 10.8], [R(42.5, 132.5, 23, 13), 10.8], [R(42.5, 76, 23, 9), 7.2], [R(100, 24, 46, 14, 33), 14.4],
    [RR(210, 116, 29, 52, 6, 24), 11], [R(88.5, 151, 13, 10), 18], [R(74, 147, 16, 10), 18], [R(99, 162, 10, 36), 18], [R(75, 166, 14, 16), 10.8],
    [RB(95, 140, 104, 147), 22.5, RB(95, 140, 99.8, 147)], [R(129, 126, 16, 9), 6.1], [R(8, 119, 11, 11), 10], [R(-3.5, 121, 6, 8), 3.35],
    [R(247.9, 120.8, 20, 25, 24), 14.4], [R(-6.5, -17, 7, 22), 7.6], [R(-7.5, 87.2, 5, 4), 3], [R(-9.35, 76, 12.1, 20), 6.65], [R(-7.2, 67.5, 5.5, 5), 3.2], [R(61.35, -2.55, 16, 5, 19.29), 2.75],
