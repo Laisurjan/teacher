@@ -457,10 +457,10 @@ function ironFence(z0, z1){
   for (let z = z0 + .4; z < z1; z += .4) box(.05, 1.15, .05, IRON, -10, .45, z);
 }
 ironFence(26, 65.5); ironFence(89.5, 106);
-// 圖書館前圍欄掛招生布條（照片 082624）：藍底、紅白、淺藍各色
-[[4, '#24407e'], [9.5, '#d84a5a'], [15, '#5a8fd8'], [20.5, '#24407e']].forEach(([z, c]) => {
-  const t = canvasTex(64, 16, (g) => { g.fillStyle = c; g.fillRect(0, 0, 64, 16); g.fillStyle = '#ffffffcc'; g.fillRect(6, 4, 30, 3); g.fillRect(6, 9, 20, 2); });
-  const b = textPlane(t, 5, 1.2); b.rotation.y = -Math.PI / 2; b.position.set(-10.35, 1, z); scene.add(b); });
+// 圖書館前圍欄沿整段掛滿招生布條（照片 082624、105541、105542）
+[['產學攜手・接軌未來', '#24407e'], ['日語開局・世界上線', '#d84a5a'], ['國貿專業・接軌全國', '#5a8fd8'], ['114學年 商道傳承', '#7a4fb0'], ['AI實力 輝映全國', '#d9a02a'], ['花蓮高商 招生中', '#3d8f6a']].forEach(([t, c], i) => {
+  const b = textPlane(textTex(t, { w: 512, h: 128, color: '#ffffff', bg: c, font: 'bold 54px "Noto Sans TC","Microsoft JhengHei",sans-serif' }), 4.4, 1.05);
+  b.rotation.y = -Math.PI / 2; b.position.set(-10.35, .95, .5 + i * 4.5); scene.add(b); });
 // 校長宿舍以南臨中山路：灰色水泥矮牆＋方柱，牆後樹籬（街景）
 box(.4, 1.1, 54, M.concrete, -10, 0, 160);        // 校長宿舍南側起（z 133–187）；宿舍段圍牆見「校長宿舍」
 for (let z = 134; z <= 186; z += 4) box(.7, 1.6, .7, M.concrete, -10, 0, z);
@@ -586,51 +586,62 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
 
 // --- 圖書資訊館（老師 115/11/01 中山路側照片、2025 街景「中山路校門」往北、g012、g046）：
 //   六層米色磁磚主體（頂樓挑高）；咖啡色磁磚拱廊在北端最上兩層、外挑，頂帶「花蓮高商」金字與校徽；
-//   中山路側一、二樓挑高入口門廊（兩根白柱、紅磚平台、沿立面的側向階梯）；中山路面南北兩端各一座磚紅外凸拱廊，夾著中間門廊（115/11/02 老師確認，原西南角塔樓移除）
+//   中山路面（老師 115/11/02 照片 105504、105541、105542）：五、六樓正中央一座磚紅外凸拱廊（六拱，頂上「花蓮高商」與校徽），正下方一、二樓挑高白色雙柱門廊；南端塔樓高出主體約一層
 (function(){
   const g = group(6.5, 12), H = 23, FH = H / 6, WX = -12.5;   // WX：西側（中山路）立面在群組座標的 x
   // 主體東緣退到 x 14，與行政大樓之間留 5 m 巷道（老師 115/11/02 照片 073916：巷道上方有兩層鋼構空橋）
   const gb = new THREE.Group(); gb.position.x = -2.5; g.add(gb);
   building(gb, { w: 20, d: 24, floors: 6, h: H, roof: 'gray', parapet: lam(0xd8c498),
     faces: { all: { wall: '#e3d0a2', win: 'glass', frame: '#ece3cc', pil: '#d4bf8d' } } });
-  // 磚紅外凸拱廊（老師 115/11/01 照片＋115/11/02 口頭確認）：中山路面南北兩端各一座，夾著中間的白色雙柱門廊；第五、六層、外挑 1.8 m，
-  //   兩層高的拱形開口，五樓處有樓板與欄杆。北座 z -12 ~ -2（五拱）、南座 z 6 ~ 12（三拱），白色門廊（z -1.5 ~ 5.5）夾在兩座中間
-  const AB = 4 * FH, AH = H + 1.35 - AB;   // 拱廊底部高度、拱廊高度（蓋過女兒牆）
-  [[-12, -2], [6, 12]].forEach(([z0, z1]) => {
-    const n = Math.round((z1 - z0) / 2), sh = new THREE.Shape(); sh.moveTo(z0, 0); sh.lineTo(z1, 0); sh.lineTo(z1, AH); sh.lineTo(z0, AH); sh.lineTo(z0, 0);
-    for (let i = 0; i < n; i++){
-      const cx = z0 + 1 + i * 2, hw = .75, top = AH - 2.3, hole = new THREE.Path();
-      hole.moveTo(cx - hw, .5); hole.lineTo(cx + hw, .5); hole.lineTo(cx + hw, top); hole.absarc(cx, top, hw, 0, Math.PI, false); hole.lineTo(cx - hw, .5);
-      sh.holes.push(hole);
-    }
-    const arc = new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth: 1.8, bevelEnabled: false }), lam(0xb06f55));
-    arc.rotation.y = -Math.PI / 2; arc.position.set(WX, AB, 0); arc.castShadow = arc.receiveShadow = true; g.add(arc);   // 形狀 x → z、往 -x 擠出
-    box(1.6, .3, z1 - z0, M.concrete, WX - .9, 5 * FH - .3, (z0 + z1) / 2, g);     // 五樓樓板
-    box(.08, 1, z1 - z0, lam(0x8a8f93), WX - 1.5, 5 * FH, (z0 + z1) / 2, g);         // 五樓欄杆
-  });
-  const txt = textPlane(textTex('花蓮高商', { w: 512, h: 128, spacing: 1, color: '#e8c45c' }), 6, 1.5);
-  txt.rotation.y = -Math.PI / 2; txt.position.set(WX - 1.85, H + .55, -6); g.add(txt);
-  const em = new THREE.Mesh(new THREE.CircleGeometry(.45, 20), lam(0xf0ede6)); em.rotation.y = -Math.PI / 2; em.position.set(WX - 1.85, H + .55, -11); g.add(em);   // 校徽圓牌
-  // 入口門廊：z 2 為中心，一、二樓挑高；玻璃帷幕、兩根白柱撐出挑平板；灰色石材平台高 1.2 m，兩側沿立面的階梯
-  const PH = 2 * FH, PZ = 2, STEP = lam(0xd9d4c8);
+  // 磚紅外凸拱廊：五、六樓、z -7 ~ 7 置中、外挑 1.8 m，六個兩層高拱形開口，五樓處樓板與欄杆（照片 105541）
+  const AB = 4 * FH, AH = H + 1.35 - AB, AZ0 = -7, AZ1 = 7, AN = 6, SP = (AZ1 - AZ0) / AN;
+  const sh = new THREE.Shape(); sh.moveTo(AZ0, 0); sh.lineTo(AZ1, 0); sh.lineTo(AZ1, AH); sh.lineTo(AZ0, AH); sh.lineTo(AZ0, 0);
+  for (let i = 0; i < AN; i++){
+    const cx = AZ0 + SP * (i + .5), hw = SP * .36, top = AH - 2.3, hole = new THREE.Path();
+    hole.moveTo(cx - hw, .5); hole.lineTo(cx + hw, .5); hole.lineTo(cx + hw, top); hole.absarc(cx, top, hw, 0, Math.PI, false); hole.lineTo(cx - hw, .5);
+    sh.holes.push(hole);
+  }
+  const arc = new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth: 1.8, bevelEnabled: false }), lam(0xc98a74));
+  arc.rotation.y = -Math.PI / 2; arc.position.set(WX, AB, 0); arc.castShadow = arc.receiveShadow = true; g.add(arc);   // 形狀 x → z、往 -x 擠出
+  box(1.6, .3, AZ1 - AZ0, M.concrete, WX - .9, 5 * FH - .3, 0, g);        // 五樓樓板
+  box(.08, 1, AZ1 - AZ0, lam(0x8a8f93), WX - 1.5, 5 * FH, 0, g);            // 五樓欄杆
+  const txt = textPlane(textTex('花蓮高商', { w: 512, h: 128, spacing: 1, color: '#c9a54a' }), 8, 1.3);
+  txt.rotation.y = -Math.PI / 2; txt.position.set(WX - 1.85, H + .55, .8); g.add(txt);
+  const em = new THREE.Mesh(new THREE.CircleGeometry(.45, 20), lam(0xd8d2c4)); em.rotation.y = -Math.PI / 2; em.position.set(WX - 1.85, H + .55, -5.4); g.add(em);   // 校徽圓牌
+  // 南端塔樓（照片 105504、082458）：z 7 ~ 12、高出主體約一層，頂緣弧形；南面一列小斜窗
+  const TW = new THREE.Group(); TW.position.set(-8.25, 0, 9.5); g.add(TW);
+  building(TW, { w: 8.5, d: 5, floors: 7, h: H + 3.5, roof: 'gray', parapet: lam(0xd8c498), faces: { all: { wall: '#e6d3a6', win: 'glass', frame: '#ece3cc', bay: 4 }, s: { wall: '#e6d3a6', win: 'slot', bay: 2.8 } } });
+  // 北段上方「花蓮高商進修部」巨幅直立看板（照片 105541）
+  const bb = textPlane(canvasTex(160, 256, (c) => { c.fillStyle = '#fbf7e8'; c.fillRect(0, 0, 160, 256); c.fillStyle = '#f2c230'; c.fillRect(0, 0, 160, 34); c.fillRect(0, 222, 160, 34);
+    c.fillStyle = '#1f4fa8'; c.font = 'bold 18px "Noto Sans TC","Microsoft JhengHei",sans-serif'; c.textAlign = 'center'; c.fillText('花蓮高商進修部', 80, 24);
+    c.fillStyle = '#c8322b'; c.fillText('(03)831-2222', 80, 246); c.fillStyle = '#1f4fa8'; ['商經科', '資處科', '商用資訊科', '銷售事務科'].forEach((t, i) => c.fillText('・' + t, 70, 70 + i * 26));
+    c.fillStyle = '#d98a8a'; c.fillRect(20, 180, 120, 30); }), 4.2, 6.6);
+  bb.rotation.y = -Math.PI / 2; bb.position.set(WX - .06, 15.5, -9.6); g.add(bb);
+  // 入口門廊：置中（z 0），一、二樓挑高；玻璃帷幕、兩根白柱撐出挑平板、二樓弧形白色陽台；灰色石材平台，兩側往中間收的階梯＋不鏽鋼扶手
+  const PH = 2 * FH, PZ = 0, STEP = lam(0xd9d4c8);
   box(.25, PH, 6, M.glass, WX - .12, 0, PZ, g);
   box(3.2, .5, 7, M.white, WX - 1.5, PH, PZ, g);
-  [-2, 2].forEach(dz => { const c = new THREE.Mesh(new THREE.CylinderGeometry(.4, .4, PH, 12), M.white); c.position.set(WX - 2.5, PH / 2, PZ + dz); c.castShadow = true; g.add(c); });
+  [-2.2, 2.2].forEach(dz => { const c = new THREE.Mesh(new THREE.CylinderGeometry(.45, .45, PH, 14), M.white); c.position.set(WX - 2.6, PH / 2, PZ + dz); c.castShadow = true; g.add(c); });
+  const bal = new THREE.Mesh(new THREE.CylinderGeometry(1.9, 1.9, 1.1, 16, 1, false, Math.PI, Math.PI), M.white); bal.position.set(WX - .1, FH + .55, PZ); g.add(bal);
   box(3.4, 1.2, 9, lam(0xb9b6ae), WX - 1.7, 0, PZ, g); box(3.4, .05, 9, STEP, WX - 1.7, 1.2, PZ, g);
-  [-1, 1].forEach(s => { for (let k = 0; k < 4; k++) box(1.8, .3 * (k + 1), 1, STEP, WX - 2.2, 0, PZ + s * (8 - k), g); });
+  // 門廊前兩段階梯由左右往中間爬上平台，斜向不鏽鋼扶手；平台前兩棵小樹（照片 105541、105542）
+  const SSR = lam(0xc9ced2);
+  [-1, 1].forEach(s => { for (let k = 0; k < 4; k++) box(1.8, .3 * (k + 1), 1, STEP, WX - 2.2, 0, PZ + s * (7.5 - k), g);
+    const r = new THREE.Mesh(new THREE.BoxGeometry(.06, .06, 4.4), SSR); r.position.set(WX - 3.1, 1.55, PZ + s * 6); r.rotation.x = s * .27; g.add(r);
+    [[PZ + s * 8, .3], [PZ + s * 4.5, 1.2]].forEach(([z, y]) => box(.05, .95, .05, SSR, WX - 3.1, y, z, g)); });
   box(.08, 1, 9, lam(0x8a8f93), WX - 3.35, 1.2, PZ, g);
-  // 老師 115/11/02 照片 082624：門廊前一座紅磚門框（兩柱＋橫楣），北柱頂上架大型電子看板，門框橫楣掛「花商起飛・國際啟航」布條
+  { const sv = seed; [-2.6, 2.6].forEach(dz => tree(6.5 + WX - 3.9, 12 + PZ + dz, .55)); seed = sv; }
+  // 一樓前左右兩段紅磚框架矮牆（照片 105541），左段掛「花商起飛・國際啟航」布條；最北端獨立的黑色電子看板
   const BRK = lam(0xa65e4c);
-  [-3.4, 3.4].forEach(dz => box(1, 3.4, 1, BRK, WX - 3.9, 0, PZ + dz, g)); box(1, .6, 7.8, BRK, WX - 3.9, 3.4, PZ, g);
-  box(.5, 2.6, 4, lam(0x1a1a1a), WX - 4.1, 4, PZ - 2.6, g);
-  const scr = textPlane(canvasTex(128, 96, (c) => { c.fillStyle = '#e9e3f2'; c.fillRect(0, 0, 128, 96); ['#4f8a3c', '#c84a3c', '#3d6fb5'].forEach((k, i) => { c.fillStyle = k; c.fillRect(8 + i * 40, 26, 32, 44); }); c.fillStyle = '#2f4f8a'; c.fillRect(40, 78, 48, 10); }), 3.6, 2.3);
-  scr.rotation.y = -Math.PI / 2; scr.position.set(WX - 4.37, 5.3, PZ - 2.6); g.add(scr);
-  const ban = textPlane(textTex('花商起飛・國際啟航', { w: 768, h: 128, color: '#ffffff', bg: '#5c8f5a', font: 'bold 64px "Noto Sans TC","Microsoft JhengHei",sans-serif' }), 5, 1.3);
-  ban.rotation.y = -Math.PI / 2; ban.position.set(WX - 4.42, 2.6, PZ); g.add(ban);
-  const vt = canvasTex(128, 640, (c) => { c.fillStyle = '#f4f2ec'; c.fillRect(0, 0, 128, 640);
-    c.font = 'bold 84px "DFKai-SB","BiauKai","Kaiti TC","Noto Serif TC",serif'; c.fillStyle = '#2b2b2b'; c.textAlign = 'center'; c.textBaseline = 'middle';
-    [...'圖書資訊館'].forEach((ch, i) => c.fillText(ch, 64, 88 + i * 116)); });
-  const vs = textPlane(vt, 1.1, 5.5); vs.rotation.y = -Math.PI / 2; vs.position.set(WX - .06, 10, 9.5); g.add(vs);   // 直書招牌（南座拱廊下方）
+  [[-12.5, -8.5], [8.5, 12.5]].forEach(([z0, z1]) => { const zc = (z0 + z1) / 2, L2 = z1 - z0;
+    box(.6, .5, L2, BRK, WX - 3.9, 2.6, zc, g); box(.6, .9, L2, BRK, WX - 3.9, 0, zc, g);
+    for (let z = z0; z <= z1 + .01; z += L2 / 2) box(.6, 3.1, .6, BRK, WX - 3.9, 0, z, g); });
+  const ban = textPlane(textTex('花商起飛・國際啟航', { w: 768, h: 128, color: '#ffffff', bg: '#5c8f5a', font: 'bold 64px "Noto Sans TC","Microsoft JhengHei",sans-serif' }), 5, 1.2);
+  ban.rotation.y = -Math.PI / 2; ban.position.set(WX - 4.22, 1.9, -10.5); g.add(ban);
+  [-14.5, -10.5].forEach(z => box(.25, 2.4, .25, lam(0x3a3a3a), WX - 2.6, 0, z, g));
+  box(.5, 2.8, 5, lam(0x1a1a1a), WX - 2.6, 2.4, -12.5, g);
+  const scr = textPlane(canvasTex(128, 80, (c) => { c.fillStyle = '#2a2f36'; c.fillRect(0, 0, 128, 80); }), 4.6, 2.5);
+  scr.rotation.y = -Math.PI / 2; scr.position.set(WX - 2.87, 3.8, -12.5); g.add(scr);
   // 南面（照片 073854 由南往西北拍；081127 由人文館往西看到圓弧轉角在東面南端）：東南角圓弧轉角＋灰色洗石子立面，直書「圖書資料館」；
   //   一樓玻璃門前四階＋不鏽鋼扶手；圓弧轉角上方另有高出一層的頂樓量體
   const GRAN = { wall: '#bdb8ae', win: 'glass', frame: '#d8d4cc' };
@@ -640,7 +651,7 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
   box(7, 4, 6, lam(0xe0cfa4), 2.5, H, 7.5, g); box(7.4, .3, 6.4, M.concrete, 2.5, H + 4, 7.5, g);   // 頂樓量體 cn.castShadow = cn.receiveShadow = true; g.add(cn);
   const nt = textPlane(textTex('圖書資料館', { w: 640, h: 128, spacing: 1, color: '#3d3a35' }), 5.5, 1.1);
   nt.rotation.z = -Math.PI / 2; nt.position.set(-4.2, 15, 12.65); g.add(nt);   // 直書
-  const STP = lam(0xb7aaa0), SSR = lam(0xc9ced2);
+  const STP = lam(0xb7aaa0);
   box(3, 2.6, .15, M.glass, 0, .6, 12.65, g);
   for (let k = 0; k < 4; k++) box(4.4, .15 * (k + 1), 2.6 - k * .6, STP, 0, 0, 12.6 + (2.6 - k * .6) / 2, g);
   box(.05, .9, 2.6, SSR, 2.3, .6, 13.9, g); box(.05, .05, 2.8, SSR, 2.3, 1.5, 13.9, g);
@@ -1083,8 +1094,18 @@ ironFence(-6, -2);
   box(.25, 1, .25, lam(0xe0b52c), 1.5, 0, -2.5, g);                    // 黃色柵欄柱
   const em = new THREE.Mesh(new THREE.CircleGeometry(.55, 24), lam(0x2a2a2a)); em.rotation.y = -Math.PI / 2; em.position.set(-.37, 5.1, 0); g.add(em);
   box(.3, 1.5, 7, METAL, 0, 0, 0, g); box(.3, 1.5, 5.5, METAL, 0, 0, -6.8, g);   // 伸縮門
-  building(group(-7.5, 87.2), { w: 5, d: 4, floors: 1, h: 3, roof: 'gray', faces: { all: { wall: '#e8e6e0', win: 'glass' }, n: { wall: '#e8e6e0', win: 'shutter', bay: 2.5 } } }); // 警衛室
-  box(1.2, .12, 1.8, lam(0x3f8f95), -4.4, 2.5, 86.6);                  // 門上綠色雨遮（照片 082547）
+  // 校門兩側（老師 115/11/02 照片 105821 由中山路看、082547 由校內看）：
+  //   北側：警衛室兼花蓮二信 ATM，白牆＋鐵捲門、門上綠色雨遮，臨中山路牆面貼滿招生海報、頂上招生看板
+  //   南側：「國立臺北商業大學」辦公室，綠色鐵捲門、桃紅色招牌，臨街牆面貼海報
+  building(group(-7.2, 67.5), { w: 5.5, d: 5, floors: 1, h: 3.2, roof: 'gray', faces: { all: { wall: '#ecebe6', win: 'glass' }, s: { wall: '#ecebe6', win: 'shutter', bay: 2.7 } } });
+  box(.12, .15, 1.8, lam(0x3f8f95), -10.4, 2.6, 69.2); box(1.2, .12, 1.8, lam(0x3f8f95), -10.9, 2.55, 69.2);   // ATM 門上綠色雨遮
+  const ad = (t, bg, w, h, x, y, z) => { const p = textPlane(textTex(t, { w: 512, h: 128, color: '#ffffff', bg, font: 'bold 56px "Noto Sans TC","Microsoft JhengHei",sans-serif' }), w, h); p.rotation.y = -Math.PI / 2; p.position.set(x, y, z); scene.add(p); };
+  ad('花蓮二信 ATM', '#2f6fb3', 1.8, .45, -10.03, 3.0, 69.2);
+  ad('應用英語・商業經營・資料處理', '#d9a02a', 3, 1.6, -10.02, 1.3, 66.6);
+  ad('國立花蓮高商（進修部）免試招生', '#3d7ab8', 5, 1.4, -10.05, 4.1, 67.5); [65.6, 69.4].forEach(z => box(.12, 1, .12, lam(0x8a8f93), -10.05, 3.2, z));
+  building(group(-7.5, 87.2), { w: 5, d: 4, floors: 1, h: 3, roof: 'gray', faces: { all: { wall: '#ecebe6', win: 'glass' }, w: { wall: '#ecebe6', win: 'shutter', bay: 2.5 } } });
+  [86, 88.4].forEach(z => box(.08, 2.6, 2.2, lam(0x3f8a5c), -10.06, 0, z));                // 綠色鐵捲門
+  ad('國立臺北商業大學', '#b8326a', 4, .55, -10.06, 2.75, 87.2);
   addLabel('校門', -12, 10, 76);
 })();
 // 後門、腳踏車棚
@@ -1511,7 +1532,7 @@ intro = (() => {
    [R(42.5, 6.5, 23, 7), 10.8], [R(42.5, 132.5, 23, 13), 10.8], [R(42.5, 76, 23, 9), 10.8], [R(100, 24, 46, 14, 33), 14.4],
    [RR(210, 116, 29, 52, 6, 24), 11], [R(88.5, 151, 13, 10), 18], [R(74, 147, 16, 10), 18], [R(99, 162, 10, 36), 18], [R(75, 166, 14, 16), 10.8],
    [RB(95, 140, 104, 147), 22.5, RB(95, 140, 99.8, 147)], [R(129, 126, 16, 9), 6.1], [R(8, 119, 11, 11), 10], [R(-3.5, 121, 6, 8), 3.35],
-   [R(247.9, 120.8, 20, 25, 24), 14.4], [R(-6.5, -17, 7, 22), 7.6], [R(-7.5, 87.2, 5, 4), 3], [R(-9.35, 76, 12.1, 20), 6.65], [R(61.35, -2.55, 16, 5, 19.29), 2.75],
+   [R(247.9, 120.8, 20, 25, 24), 14.4], [R(-6.5, -17, 7, 22), 7.6], [R(-7.5, 87.2, 5, 4), 3], [R(-9.35, 76, 12.1, 20), 6.65], [R(-7.2, 67.5, 5.5, 5), 3.2], [R(61.35, -2.55, 16, 5, 19.29), 2.75],
    [RB(222, 172.2, 254, 182.8), 2.75], [R(5, -24, 9, 7), .7]].forEach(([pts, h, roof]) => {
     const cx = pts.reduce((a, p) => a + p[0], 0) / pts.length, cz = pts.reduce((a, p) => a + p[1], 0) / pts.length;
     const t = .8 + Math.hypot(cx + 10, cz - 76) / 290 * 2.2;
