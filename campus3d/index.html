@@ -641,8 +641,9 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
   nb.position.set(-1, H / 2, 12.2); nb.castShadow = nb.receiveShadow = true; g.add(nb);
   const cn = new THREE.Mesh(new THREE.CylinderGeometry(3.6, 3.6, H, 20), lam(0xbdb8ae)); cn.position.set(4, H / 2, 8.5);
   box(7, 4, 6, lam(0xe0cfa4), 2.5, H, 7.5, g); box(7.4, .3, 6.4, M.concrete, 2.5, H + 4, 7.5, g);   // 頂樓量體 cn.castShadow = cn.receiveShadow = true; g.add(cn);
-  const nt = textPlane(textTex('圖書資料館', { w: 640, h: 128, spacing: 1, color: '#3d3a35' }), 5.5, 1.1);
-  nt.rotation.z = -Math.PI / 2; nt.position.set(-4.2, 15, 12.65); g.add(nt);   // 直書
+  const ntt = canvasTex(128, 640, (c) => { c.clearRect(0, 0, 128, 640); c.font = 'bold 92px "DFKai-SB","BiauKai","Kaiti TC","Noto Serif TC",serif';
+    c.fillStyle = '#3d3a35'; c.textAlign = 'center'; c.textBaseline = 'middle'; [...'圖書資料館'].forEach((ch, i) => c.fillText(ch, 64, 64 + i * 128)); });
+  const nt = textPlane(ntt, 1.1, 5.5); nt.position.set(-4.2, 15, 12.65); g.add(nt);   // 直書：一字一字由上往下（照片 073854、082458）
   const STP = lam(0xb7aaa0);
   box(3, 2.6, .15, M.glass, 0, .6, 12.65, g);
   for (let k = 0; k < 4; k++) box(4.4, .15 * (k + 1), 2.6 - k * .6, STP, 0, 0, 12.6 + (2.6 - k * .6) / 2, g);
