@@ -403,16 +403,29 @@ const muralTex = (() => { const t = canvasTex(256, 64, (c) => {
   c.fillStyle = '#3f8f4f'; for (let i = 0; i < 4; i++){ c.beginPath(); c.arc(30 + i * 64, 30, 14, 0, 7); c.fill(); c.fillRect(27 + i * 64, 40, 6, 24); }
   c.fillStyle = '#fff6'; for (let i = 0; i < 6; i++){ c.beginPath(); c.arc(20 + i * 45, 10, 8, 0, 7); c.fill(); } });
   t.wrapS = THREE.RepeatWrapping; return t; })();
-const WALL_STYLE = ['pink', 'pink', 'pink', 'pink', 'pink', 'pink', 'pink', 'rail', 'mural'];
+/* 商校街西段（停車場、回收站到人文館西端）：老師 115/11/02 照片 073948、080807、080840 為白底藍黑線條彩繪牆，上加鐵網 */
+const muralTex2 = (() => { const t = canvasTex(256, 64, (c) => {
+  c.fillStyle = '#e8ebec'; c.fillRect(0, 0, 256, 64);
+  const cols = ['#5b9bd0', '#2f3a44', '#8fc1e3', '#4f8a6c'];
+  for (let i = 0; i < 9; i++){ c.fillStyle = cols[i % 4]; c.beginPath(); c.ellipse(14 + i * 28, 34 + (i % 3 - 1) * 8, 12, 9, i, 0, 7); c.fill(); }
+  c.strokeStyle = '#2f3a44'; c.lineWidth = 2; c.beginPath(); for (let x = 0; x <= 256; x += 8) c.lineTo(x, 14 + Math.sin(x / 9) * 5); c.stroke(); });
+  t.wrapS = THREE.RepeatWrapping; return t; })();
+const WALL_STYLE = ['mural2', 'mural2', 'mural2', 'pink', 'pink', 'pink', 'pink', 'rail', 'mural'];
 for (let i = 0; i < BOUND.length - 1; i++){
   const [x0, z0] = BOUND[i], [x1, z1] = BOUND[i + 1], len = Math.hypot(x1 - x0, z1 - z0), st = WALL_STYLE[i];
   const g = group((x0 + x1) / 2, (z0 + z1) / 2, THREE.MathUtils.radToDeg(Math.atan2(z1 - z0, x1 - x0)));
-  if (st === 'rail'){
-    box(len, .7, .4, lam(0xbdb6aa), 0, 0, 0, g);
-    for (let t = -len / 2; t <= len / 2; t += 3) box(.45, 2, .45, lam(0xcfc8bb), t, 0, 0, g);
-    box(len, .08, .08, lam(0x8d8f8c), 0, 1.85, 0, g); box(len, .08, .08, lam(0x8d8f8c), 0, .9, 0, g);
-    for (let t = -len / 2; t <= len / 2; t += .5) box(.05, 1.1, .05, lam(0x8d8f8c), t, .75, 0, g);
+  if (st === 'rail'){   // 老師 115/11/02 照片：深色磚基座＋米色方柱＋咖啡色鐵欄杆，上加綠色鐵網
+    box(len, .7, .4, lam(0x5f4b40), 0, 0, 0, g);
+    for (let t = -len / 2; t <= len / 2; t += 3) box(.45, 2, .45, lam(0xcfc3ad), t, 0, 0, g);
+    box(len, .08, .08, lam(0x8a6f52), 0, 1.85, 0, g); box(len, .08, .08, lam(0x8a6f52), 0, .9, 0, g);
+    for (let t = -len / 2; t <= len / 2; t += .5) box(.05, 1.1, .05, lam(0x8a6f52), t, .75, 0, g);
     const f = new THREE.Mesh(new THREE.PlaneGeometry(len, 1.5), M.fence); f.position.y = 2.75; g.add(f);
+  } else if (st === 'mural2'){
+    const t = muralTex2.clone(); t.needsUpdate = true; t.repeat.set(len / 10, 1);
+    const m = new THREE.MeshLambertMaterial({ map: t });
+    box(len, 1.8, .4, [m, m, M.concrete, M.concrete, m, m], 0, 0, 0, g);
+    for (let k = -len / 2; k <= len / 2; k += 3) box(.12, 1.6, .12, lam(0x2e3135), k, 1.8, 0, g);
+    const f = new THREE.Mesh(new THREE.PlaneGeometry(len, 1.5), M.fence); f.position.y = 2.6; g.add(f);
   } else if (st === 'mural'){
     const t = muralTex.clone(); t.needsUpdate = true; t.repeat.set(len / 10, 1);
     const m = new THREE.MeshLambertMaterial({ map: t });
@@ -535,10 +548,14 @@ flat([[6, 152], [18, 149], [30, 153], [37, 160], [34, 170], [26, 176], [24, 168]
 [[6, 152], [18, 149], [30, 153], [37, 160], [34, 170], [26, 176], [16, 166], [10, 174], [4, 168], [3, 158]].forEach(([x, z]) => {
   const s = new THREE.Mesh(new THREE.DodecahedronGeometry(.8, 0), lam(0x9b9a92)); s.position.set(x, .3, z); s.scale.y = .6; scene.add(s); });
 addLabel('泗水園', 20, 3, 162);
+// 涼亭柱子：紅底白色鋸齒紋、黑邊（老師 115/11/02 照片 082219）
+const tribalPost = (() => { const t = canvasTex(32, 128, (c) => { c.fillStyle = '#b8282a'; c.fillRect(0, 0, 32, 128);
+  c.strokeStyle = '#1e1e1e'; c.lineWidth = 7; c.beginPath(); for (let y = 0; y <= 128; y += 16) c.lineTo(y % 32 ? 26 : 6, y); c.stroke();
+  c.strokeStyle = '#f4f2ec'; c.lineWidth = 3; c.stroke(); }); return new THREE.MeshLambertMaterial({ map: t }); })();
 function pavilion(x, z, roofMat, label){
   const g = group(x, z), r = 2.6;
   box(2 * r + 1.4, .45, 2 * r + 1.4, M.wood, 0, 0, 0, g);
-  for (let i = 0; i < 6; i++){ const a = i * Math.PI / 3; box(.25, 2.8, .25, M.wood, Math.cos(a) * r, .45, Math.sin(a) * r, g); }
+  for (let i = 0; i < 6; i++){ const a = i * Math.PI / 3; box(.35, 2.8, .35, tribalPost, Math.cos(a) * r, .45, Math.sin(a) * r, g); }
   for (let i = 0; i < 3; i++){ const a = i * Math.PI / 3 * 2 + .5; box(2.4, .45, .35, M.wood, Math.cos(a) * (r - .6), .7, Math.sin(a) * (r - .6), g); } // 長椅
   const roof = new THREE.Mesh(new THREE.ConeGeometry(r + 1.4, 2.2, 6), roofMat); roof.position.y = 4.35; roof.castShadow = true; g.add(roof);
   if (label) addLabel(label, x, 7.5, z);
@@ -554,7 +571,9 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
 //   中山路側一、二樓挑高入口門廊（兩根白柱、紅磚平台、沿立面的側向階梯）；西南角塔樓高出主體一層，臨街角落為圓弧玻璃磚，掛直書「圖書資訊館」
 (function(){
   const g = group(6.5, 12), H = 23, FH = H / 6, WX = -12.5;   // WX：西側（中山路）立面在群組座標的 x
-  building(g, { w: 25, d: 24, floors: 6, h: H, roof: 'gray', parapet: lam(0xd8c498),
+  // 主體東緣退到 x 14，與行政大樓之間留 5 m 巷道（老師 115/11/02 照片 073916：巷道上方有兩層鋼構空橋）
+  const gb = new THREE.Group(); gb.position.x = -2.5; g.add(gb);
+  building(gb, { w: 20, d: 24, floors: 6, h: H, roof: 'gray', parapet: lam(0xd8c498),
     faces: { all: { wall: '#e3d0a2', win: 'glass', frame: '#ece3cc', pil: '#d4bf8d' } } });
   // 拱廊：z -12 ~ -2（北端 10 m）、第五、六層、外挑 1.8 m；五個兩層高的拱形開口，五樓處有樓板與欄杆
   const AB = 4 * FH, AH = H + 1.35 - AB;   // 拱廊底部高度、拱廊高度（蓋過女兒牆）
@@ -597,6 +616,17 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
     [...'圖書資訊館'].forEach((ch, i) => c.fillText(ch, 64, 88 + i * 116)); });
   const vs = textPlane(vt, 1.1, 5.5); vs.rotation.y = -Math.PI / 2; vs.position.set(WX - 1.06, 14.5, 6.5); g.add(vs);   // 直書招牌
   addLabel('圖書資訊館', 6.5, H + 4, 12);
+})();
+// 圖書館與行政大樓之間的巷道（老師 115/11/02 照片 073916、073854）：紅磚鋪面，北段二、三樓各一座鋼構空橋（灰色鐵網側欄）
+rect(14, 0, 19, 24, M.brickPave, .05);
+(function(){
+  const STEEL = lam(0x3b3f44), MESH = new THREE.MeshLambertMaterial({ color: 0x6c7178, transparent: true, opacity: .55, side: THREE.DoubleSide });
+  [FLOOR, 2 * FLOOR].forEach(y => {
+    box(5, .35, 2.6, STEEL, 16.5, y - .35, 8);
+    box(5, .2, 2.6, STEEL, 16.5, y + 2.4, 8);
+    [6.75, 9.25].forEach(z => { const m = new THREE.Mesh(new THREE.PlaneGeometry(5, 2.4), MESH); m.position.set(16.5, y + 1.2, z); scene.add(m);
+      box(5, .12, .12, STEEL, 16.5, y + 1.1, z); });
+  });
 })();
 
 // --- 行政教學大樓（前排）：3F 粉色磁磚、白色百葉窗；中央入口凸出量體；東側開放走廊
@@ -641,11 +671,11 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
   addLabel('行政教學大樓（前排）', 25, 15, 100);
 })();
 
-// --- 後排教室：3F 灰白、面操場開放走廊
+// --- 後排教室：3F 灰白；開放走廊朝中庭（西）。面操場（東）是百葉窗＋冷氣外機，一樓沿牆藍綠色弧形雨遮，前排棕櫚（老師 115/11/02 照片 080940、081127、082214）
 (function(){
   const OPT = { w: 15, floors: 3, roof: 'solar',
-    corridor: { side: 'e', depth: 3, col: 0xeeece6, rail: 0xeeece6 },
-    faces: { all: { wall: '#e2e0d9', win: 'glass', frame: '#cfd3d0' }, e: { wall: '#d7d6cf', win: 'glass', ground: 'door' } } };
+    corridor: { side: 'w', depth: 3, col: 0xeeece6, rail: 0xeeece6 },
+    faces: { all: { wall: '#e2e0d9', win: 'glass', frame: '#cfd3d0' }, e: { wall: '#e4e1da', win: 'louver' }, w: { wall: '#d7d6cf', win: 'glass', ground: 'door' } } };
   building(group(61.5, 37), { ...OPT, d: 64, stairs: [[0, -12, 4, 5, 3]] });   // 北段 z 5–69
   building(group(61.5, 111), { ...OPT, d: 56, stairs: [[0, 12, 4, 5, 3]] });   // 南段 z 83–139
   // 中段一樓挖空成穿堂，與前排行政大樓穿堂對齊：從校門可一路看進操場
@@ -655,6 +685,13 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
   [[54.4, 69.6], [54.4, 82.4], [68.6, 69.6], [68.6, 82.4], [61.5, 69.6], [61.5, 82.4]].forEach(([x, z]) => box(.6, FLOOR, .6, lam(0xeeece6), x, 0, z));
   rect(54, 69, 69, 83, M.stonePave, .06);
   addLabel('後排教室', 61.5, 15, 60);
+  const CAN = lam(0x4f8f95), POST = lam(0xd9dcdc);
+  [[5, 69], [83, 139]].forEach(([z0, z1]) => {
+    box(2.4, .15, z1 - z0, CAN, 70.2, 2.9, (z0 + z1) / 2);
+    for (let z = z0 + .5; z <= z1; z += 4) box(.12, 2.9, .12, POST, 71.3, 0, z);
+    rect(69, z0, 71.5, z1, lam(0xcfccc4), .05);
+  });
+  const sv = seed; [[10, 66], [86, 136]].forEach(([z0, z1]) => { for (let z = z0; z <= z1; z += 6) palm(73.5, z, 9); }); seed = sv;
 })();
 // 連接棟
 [[42.5, 6.5, 23, 7], [42.5, 132.5, 23, 13]].forEach(([x, z, w, d]) => {
@@ -702,9 +739,9 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
   [[-17, -14], [-17, -6], [-17, 6], [-17, 14]].forEach(([x, z]) => { const p = new THREE.Vector3(x, 0, z).applyAxisAngle(new THREE.Vector3(0, 1, 0), g.rotation.y); conifer(210 + p.x, 116 + p.z); });
 })();
 
-// --- 資訊館：咖啡色磁磚 5F。正面朝北側草地（從草地看：左邊楔形塔、中間內凹入口、右翼前凸，有頂走廊通往後排教室）；大階梯升上 1.45 m 平台
+// --- 資訊館：鮭魚粉色磁磚 5F（老師 115/11/02 照片 081820、081940；2021 年 g059 為夕陽照，看起來偏咖啡色）。正面朝北側草地（從草地看：左邊楔形塔、中間內凹入口、右翼前凸，有頂走廊通往後排教室）；大階梯升上 1.45 m 平台
 (function(){
-  const BR = { wall: '#b98468', band: '#a46c53', win: 'louver' }, PAR = lam(0xa97a60), TILE = lam(0xb5795d);
+  const BR = { wall: '#d9a395', band: '#c98d7e', win: 'louver' }, PAR = lam(0xcf9a8b), TILE = lam(0xd6a092);
   building(group(88.5, 151), { w: 13, d: 10, floors: 5, roof: 'solar', parapet: PAR, faces: { all: BR } });   // 入口段（內凹）
   building(group(74, 147), { w: 16, d: 10, floors: 5, roof: 'solar', parapet: PAR, faces: { all: BR } });     // 右翼（前凸）
   building(group(99, 162), { w: 10, d: 36, floors: 5, roof: 'solar', parapet: PAR, faces: { all: BR } });     // 左翼（往後）
@@ -712,7 +749,7 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
   // 楔形塔：正面輪廓底寬上窄（外側斜），正面兩道細長窗＋頂部小方窗
   const sh = new THREE.Shape(); sh.moveTo(0, 0); sh.lineTo(9, 0); sh.lineTo(4.8, 22.5); sh.lineTo(0, 22.5); sh.lineTo(0, 0);
   const tt = canvasTex(256, 512, (c) => {
-    c.fillStyle = '#b5795d'; c.fillRect(0, 0, 256, 512);
+    c.fillStyle = '#d6a092'; c.fillRect(0, 0, 256, 512);
     c.strokeStyle = 'rgba(90,50,35,.35)'; c.lineWidth = 1; for (let y = 0; y < 512; y += 23){ c.beginPath(); c.moveTo(0, y); c.lineTo(256, y); c.stroke(); }
     c.fillStyle = '#2f2c2a'; c.fillRect(44, 92, 12, 300); c.fillRect(94, 92, 12, 300);   // 兩道細長窗
     c.fillRect(43, 52, 14, 14); c.fillRect(93, 52, 14, 14);                              // 頂部小方窗
@@ -729,7 +766,7 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
     box(x1 - x0, h, 140 - z0, STEP, (x0 + x1) / 2, 0, (z0 + 140) / 2);
   }
   // 入口：雨遮帶＋「資訊館」（照片由右往左書寫）＋三樘門
-  box(13, 1.7, 2.4, lam(0xbd8a70), 88.5, 3.5, 144.9);
+  box(13, 1.7, 2.4, lam(0xd8a495), 88.5, 3.5, 144.9);
   const sign = textPlane(textTex('館訊資', { w: 512, h: 128, spacing: 1, color: '#d9b44f' }), 7, 1.2);
   sign.rotation.y = Math.PI; sign.position.set(88.5, 4.35, 143.68); scene.add(sign);
   [84.5, 88.5, 92.5].forEach(x => box(2.2, 2.5, .2, lam(0x4a3a30), x, PH, 145.95));
@@ -829,8 +866,23 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
   box(6.6, .35, 8.6, lam(0x8c4a3a), -3.5, 3, 121);
   addLabel('校長宿舍', 8, 12, 119);
 })();
-building(group(267.5, 141), { w: 25, d: 22, floors: 4, roof: 'gray', faces: { all: { wall: '#eadfcb', win: 'glass', band: '#cdbb9d' } }, stairs: [[0, 0, 4, 5, 3]] });
-addLabel('女生宿舍', 267.5, 19, 141);
+// 女生宿舍（老師 115/11/02 照片 081404、081441、081617）：4F 紅色梁柱框架＋米色牆、白色百葉窗；西北角白色樓梯塔高出一層；
+//   四周米色實牆（約 1.6 m，有通風格柵）上加綠色環形欄杆，與活動中心之間隔一條柏油巷
+(function(){
+  const RED = lam(0xc4503c), H = 4 * FLOOR;
+  building(group(267.5, 141), { w: 25, d: 22, floors: 4, roof: 'gray', parapet: RED, faces: { all: { wall: '#efe3c4', win: 'louver', band: '#c4503c', bay: 3.6 } } });
+  for (let x = 255; x <= 280.01; x += 25 / 7) [129.8, 152.2].forEach(z => box(.6, H + .3, .5, RED, x, 0, z));
+  for (let z = 130; z <= 152.01; z += 22 / 6) [254.8, 280.2].forEach(x => box(.5, H + .3, .6, RED, x, 0, z));
+  box(5, H + 3.6, 5, M.white, 256, 0, 131.5);                              // 白色樓梯塔
+  const CW = lam(0xe9e2cf), GR = lam(0x4f8f5a);
+  [[251, 126, 282, 126], [251, 156, 282, 156], [251, 126, 251, 156]].forEach(([x0, z0, x1, z1]) => {
+    const w = Math.abs(x1 - x0) || .35, d = Math.abs(z1 - z0) || .35, cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
+    box(w, 1.6, d, CW, cx, 0, cz); box(w, .06, d, GR, cx, 2.3, cz);
+  });
+  building(group(253.5, 153), { w: 4, d: 4, floors: 1, h: 2.6, roof: 'gray', faces: { all: { wall: '#ece6d6', win: 'door' } } });   // 門口小屋（照片 081522）
+  box(5, .15, 5, lam(0x6f7579), 253.5, 2.6, 153);
+  addLabel('女生宿舍', 267.5, 19, 141);
+})();
 building(group(-6.5, -16), { w: 5, d: 27, floors: 2, roof: 'gray', faces: { all: { wall: '#f0eee8', win: 'glass' } } });
 addLabel('民舍', -6.5, 10, -16);
 
@@ -851,12 +903,23 @@ addLabel('民舍', -6.5, 10, -16);
   addLabel('校門', -12, 10, 76);
 })();
 // 後門、腳踏車棚
-[[205, 186.5], [216, 187.5]].forEach(([x, z]) => box(1.2, 3, 1.2, M.white, x, 0, z));
+// 後門（老師 115/11/02 照片 081604、081613、081704）：米褐色方磚柱＋咖啡色鐵柵推拉門
+(function(){ const PIL = lam(0xbfa98a), BRN = lam(0x8a6a4a);
+  [[205, 186.5], [216, 187.5]].forEach(([x, z]) => box(1.4, 2.6, 1.4, PIL, x, 0, z));
+  const g = group(210.5, 187, THREE.MathUtils.radToDeg(Math.atan2(1, 11)));
+  [.25, 1.75].forEach(y => box(9.6, .12, .12, BRN, 0, y, 0, g));
+  for (let x = -4.7; x <= 4.7; x += .3) box(.07, 1.6, .07, BRN, x, .2, 0, g);
+  box(9.6, .2, .3, lam(0x6b5345), 0, 0, 0, g);
+})();
 addLabel('後門', 211, 5, 187);
-[[230, 174.5, 16], [245.5, 174.5, 13], [230, 180.5, 16], [245.5, 180.5, 13]].forEach(([x, z, w]) => {
-  box(w, .25, 4.6, lam(0xe9ebe8), x, 2.5, z);
-  [-w / 2 + .5, 0, w / 2 - .5].forEach(dx => box(.15, 2.5, .15, M.roofGray, x + dx, 0, z));
-});
+// 腳踏車棚（老師 115/11/02 照片 081718～081722）：鍍鋅鋼架、灰綠色浪板單斜屋頂，棚下停機車
+(function(){ const ROOF = lam(0x9aa38f), STL = lam(0xa9adb0), MOTO = [0x2b2d30, 0x4a4f55, 0xd8d8d6];
+  [[230, 174.5, 16], [245.5, 174.5, 13], [230, 180.5, 16], [245.5, 180.5, 13]].forEach(([x, z, w], i) => {
+    const r = new THREE.Mesh(new THREE.BoxGeometry(w + .6, .12, 5.2), ROOF); r.position.set(x, 2.6, z); r.rotation.x = .12; r.castShadow = r.receiveShadow = true; scene.add(r);
+    [-w / 2 + .3, -w / 6, w / 6, w / 2 - .3].forEach(dx => { box(.15, 2.85, .15, STL, x + dx, 0, z - 2.2); box(.15, 2.3, .15, STL, x + dx, 0, z + 2.2); });
+    for (let k = 0; k < Math.floor(w / 2.2); k++) if ((k + i) % 3) box(.6, 1, 1.8, lam(MOTO[(k + i) % 3]), x - w / 2 + 1.2 + k * 2.2, 0, z);
+  });
+})();
 addLabel('腳踏車棚', 237, 6, 177);
 // --- 人文館到活動中心的小路（360 照校內06～08：草地上紅磚窄路、沿線大樹、活動中心端為碎石板廣場）
 const SMALL_PATH = [[122, 40], [145, 46], [170, 55], [186, 68], [194, 80]];
@@ -899,11 +962,29 @@ const SMALL_PATH = [[122, 40], [145, 46], [170, 55], [186, 68], [194, 80]];
     scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(74.8, .07, z), new THREE.Vector3(131.5, .07, z)]), M.line)); }
   scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(74.8, .07, 112.5), new THREE.Vector3(74.8, .07, 120)]), M.line));
   // ③ 直道南側（司令台兩邊）：兩邊壓石頭的淺灰水泥窄路（g041），東段一路接到活動中心門前
-  path([[80, 123.2], [116, 123.2]], 1.4, CON); path([[142, 123.2], [185, 123.2]], 1.4, CON);
-  for (let x = 80.5; x < 185; x += 1.6) if (x < 116 || x > 142) [122.2, 124.2].forEach(z => { const r = new THREE.Mesh(new THREE.DodecahedronGeometry(.28), M.concrete); r.position.set(x + (z > 123 ? .8 : 0), .12, z); r.scale.y = .6; scene.add(r); });
+  path([[80, 123.2], [104, 123.2]], 1.4, CON); path([[142, 123.2], [185, 123.2]], 1.4, CON);
+  for (let x = 80.5; x < 185; x += 1.6) if (x < 103 || x > 142) [122.2, 124.2].forEach(z => { const r = new THREE.Mesh(new THREE.DodecahedronGeometry(.28), M.concrete); r.position.set(x + (z > 123 ? .8 : 0), .12, z); r.scale.y = .6; scene.add(r); });
   // ④ 司令台周圍與西側往資訊館的棋盤格紅磚帶（g041、g065、360 照校內03）
   rect(117, 120.5, 141, 133, M.brickPave, .06);
   rect(113, 129, 120, 142, M.brickPave, .06);
+  // ⑥ 司令台西側無障礙坡道（老師 115/11/02 照片 081931、082105；拍攝時施工中，依老師指示以完工樣貌建模、不放施工材料）：
+  //    兩段折返坡道（約 1/13）：下段沿 z 127.3 由東往西升到 0.9 m 中間平台，上段沿 z 124.4 往東升到 1.8 m 接司令台西側上台平台；
+  //    清水模實心坡體＋不鏽鋼扶手，下段外側一排大石頭（榕樹下）
+  const RAMP = lam(0xc9c8c2), SS = lam(0xc9ced2);
+  function ramp(xa, ha, xb, hb, zc, w){
+    const s = new THREE.Shape(); s.moveTo(xa, 0); s.lineTo(xb, 0); s.lineTo(xb, hb + .01); s.lineTo(xa, ha + .01); s.lineTo(xa, 0);
+    const m = new THREE.Mesh(new THREE.ExtrudeGeometry(s, { depth: w, bevelEnabled: false }), RAMP); m.position.z = zc - w / 2; m.castShadow = m.receiveShadow = true; scene.add(m);
+    const L = Math.hypot(xb - xa, hb - ha), ang = Math.atan2(hb - ha, xb - xa), n = Math.max(1, Math.round(L / 1.5));
+    [zc - w / 2 + .05, zc + w / 2 - .05].forEach(z => {
+      const r = new THREE.Mesh(new THREE.BoxGeometry(L, .06, .06), SS); r.position.set((xa + xb) / 2, (ha + hb) / 2 + .85, z); r.rotation.z = ang; scene.add(r);
+      for (let k = 0; k <= n; k++) box(.05, .85, .05, SS, xa + (xb - xa) * k / n, ha + (hb - ha) * k / n, z); });
+  }
+  ramp(118, 0, 106.5, .9, 127.3, 1.5);
+  box(2, .9, 5, RAMP, 105.5, 0, 125.85);                           // 中間平台
+  box(11.5, .9, 1.4, RAMP, 112.25, 0, 125.85);                     // 兩段之間的實心坡體
+  ramp(106.5, .9, 118, 1.8, 124.4, 1.5);
+  for (let x = 106; x < 118; x += 1.3){ const r = new THREE.Mesh(new THREE.DodecahedronGeometry(.45), lam(0xa9a79f)); r.position.set(x, .25, 128.7); r.scale.y = .7; scene.add(r); }
+  addLabel('無障礙坡道', 111, 3.5, 126);
   addLabel('水泥路', 98, 2.5, 133);
   // ⑤ 司令台往東到活動中心（Google 衛星圖、360 照校內01/09）：跑道外側是草地＋一排大樹，球場邊一道矮樹籬；
   //    南直道往東延伸一小段紅色跑道到活動中心西南角；水泥只在活動中心西面門前（早年灰綠 PU，現已改水泥）
@@ -965,9 +1046,28 @@ const SMALL_PATH = [[122, 40], [145, 46], [170, 55], [186, 68], [194, 80]];
 rect(10, -14, 55, 0, lam(0x8a8c8e), .04);
 for (let x = 13; x < 54; x += 2.6) scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x, .07, -6), new THREE.Vector3(x, .07, 0)]), M.line));
 addLabel('停車場', 38, 2, -5);
-box(6, 1.2, 11, M.concrete, 3.5, 0, -16); for (let k = 0; k < 4; k++) box(.5, .3 * (k + 1), 3.2, M.roofGray, -1.75 + k * .5, 0, -16);   // 後方階梯
-addLabel('原舞台', 3.5, 4, -16);
-(function(){ const g = group(75, 9, 33); box(7, 2.6, 4, lam(0x4f7f5a), 0, 0, 0, g); box(7.6, .25, 4.6, M.roofGray, 0, 2.6, 0, g); addLabel('回收站', 75, 5, 9); })();
+// 原舞台（老師 115/11/02 照片 073948）：兩棵大榕樹下的深色木平台（兩階），台上鐵桌椅，後方深色木隔屏與木箱
+(function(){ const WD = lam(0x3b3634), SC = lam(0x2f2b29), IRON = lam(0x2a2c2e), sv = seed;
+  box(9, .35, 8, WD, 3.5, 0, -16); box(7, .35, 6, WD, 3.5, .35, -16);
+  box(.25, 2.2, 10, SC, -1.4, 0, -16); box(3.5, 1, 1.4, SC, 0, 0, -22.5);
+  [[2.5, -17.5], [4.8, -14.5]].forEach(([x, z]) => {
+    const t = new THREE.Mesh(new THREE.CylinderGeometry(.5, .5, .05, 16), IRON); t.position.set(x, 1.45, z); scene.add(t);
+    box(.08, .75, .08, IRON, x, .7, z); [[-.9, 0], [.9, 0], [0, .9]].forEach(([dx, dz]) => box(.45, .9, .45, IRON, x + dx, .7, z + dz)); });
+  tree(1, -20.5, 2); tree(6, -11.5, 2.1); seed = sv;
+  addLabel('原舞台', 3.5, 4, -16);
+})();
+// 回收站與機車棚（老師 115/11/02 照片 080807）：沿商校街彩繪牆一排綠色垃圾子車、牆邊大樹；內側平行一座灰色金屬屋頂機車棚（位置依照片推估）
+(function(){ const A = 19.29, sv = seed;
+  const b = group(64, -8.9, A); for (let k = 0; k < 8; k++) box(1.1, 1.15, 1.1, lam(0x2f6b3e), -5 + k * 1.4, 0, 0, b);
+  const c = group(61.35, -2.55, A), ROOF = lam(0x8d9296), STL = lam(0xa9adb0);
+  const r = new THREE.Mesh(new THREE.BoxGeometry(16.4, .12, 5.4), ROOF); r.position.y = 2.7; r.rotation.x = -.1; r.castShadow = r.receiveShadow = true; c.add(r);
+  for (let x = -8; x <= 8; x += 4) [-2.3, 2.3].forEach(z => box(.15, z < 0 ? 2.45 : 2.95, .15, STL, x, 0, z, c));
+  for (let k = 0; k < 7; k++) box(.6, 1, 1.8, lam(k % 2 ? 0x4a4f55 : 0xd8d8d6), -7 + k * 2.3, 0, 0, c);
+  tree(57, -11, 1.4); tree(69, -7, 1.5); seed = sv;
+  addLabel('回收站', 64, 4, -8.5); addLabel('機車棚', 61.35, 5, -2.55);
+})();
+// 人文館西端臨商校街的深灰鐵門（照片 080840）
+(function(){ const g = group(80, -4.3, 19.29); box(4.2, 2, .15, lam(0x2e3135), 0, 0, 0, g); })();
 
 // ================= 植栽 =================
 (function(){ const W = lam(0xf0efe9), G = lam(0x4f8a3c);
@@ -980,7 +1080,7 @@ function nearRoad(x, z, d){ return MAIN_ROAD.some((a, i) => { if (i === MAIN_ROA
   const vx = b[0] - a[0], vz = b[1] - a[1], t = Math.max(0, Math.min(1, ((x - a[0]) * vx + (z - a[1]) * vz) / (vx * vx + vz * vz)));
   return Math.hypot(x - a[0] - t * vx, z - a[1] - t * vz) < d; }); }
 for (let i = 0; i < 90; i++){ const x = 72 + rnd() * 30, z = 32 + rnd() * 92;
-  if (z > 108 || Math.hypot(x - 92, z - 38) < 10 || (Math.abs(x - 92) < 3 && z > 44 && z < 74) || nearRoad(x, z, 4.5) || Math.abs(z - 76) < 7) continue; tree(x, z, .8 + rnd() * .6); }
+  if (x < 76 || z > 108 || Math.hypot(x - 92, z - 38) < 10 || (Math.abs(x - 92) < 3 && z > 44 && z < 74) || nearRoad(x, z, 4.5) || Math.abs(z - 76) < 7) continue; tree(x, z, .8 + rnd() * .6); }
 for (let i = 0; i < 8; i++) tree(33 + rnd() * 6, 14 + rnd() * 50, .8 + rnd() * .4);
 for (let i = 0; i < 6; i++) tree(46 + rnd() * 6, 82 + rnd() * 40, .8 + rnd() * .4);
 // 中庭原有木造涼亭已拆除：現在是穿堂（中央穿廊）南北兩側各一組深綠色鐵圓桌＋有椅背的個人鐵椅
@@ -1228,12 +1328,12 @@ intro = (() => {
   GR(circ(92, 38, 8), 2.0, .8, null); GR(RB(90.8, 46, 93.2, 72), 2.2, .6, '#e2b3a6');
   add(MAIN_ROAD, .1, { close: false, t0: 2.3, dur: .8 }); add(SMALL_PATH, .1, { close: false, t0: 2.5, dur: 1.0 });
   // 建築：底框 → 柱線 → 屋頂框；從校門依距離往校園深處長出來
-  [[R(6.5, 12, 25, 24), 23], [R(-3.25, 21, 7.5, 8), 26.5], [RB(19, 5, 31, 139), 10.8], [R(16.5, 76, 5, 15), 11.8], [RB(54, 5, 69, 139), 10.8],
+  [[RB(-6, 0, 14, 24), 23], [R(-3.25, 21, 7.5, 8), 26.5], [RB(19, 5, 31, 139), 10.8], [R(16.5, 76, 5, 15), 11.8], [RB(54, 5, 69, 139), 10.8],
    [R(42.5, 6.5, 23, 7), 10.8], [R(42.5, 132.5, 23, 13), 10.8], [R(42.5, 76, 23, 9), 10.8], [R(100, 24, 46, 14, 33), 14.4],
    [RR(210, 116, 29, 52, 6, 24), 11], [R(88.5, 151, 13, 10), 18], [R(74, 147, 16, 10), 18], [R(99, 162, 10, 36), 18], [R(75, 166, 14, 16), 10.8],
    [RB(95, 140, 104, 147), 22.5, RB(95, 140, 99.8, 147)], [R(129, 126, 16, 9), 6.1], [R(8, 119, 11, 11), 10], [R(-3.5, 121, 6, 8), 3.35],
-   [R(267.5, 141, 25, 22), 14.4], [R(-6.5, -16, 5, 27), 7.2], [R(-7.5, 87.2, 5, 4), 3], [R(-12.35, 76, 6.3, 20), 6.65], [R(75, 9, 7, 4, 33), 2.85],
-   [RB(222, 172.2, 254, 182.8), 2.75], [R(3.5, -16, 6, 11), 1.2]].forEach(([pts, h, roof]) => {
+   [R(267.5, 141, 25, 22), 14.4], [R(-6.5, -16, 5, 27), 7.2], [R(-7.5, 87.2, 5, 4), 3], [R(-12.35, 76, 6.3, 20), 6.65], [R(61.35, -2.55, 16, 5, 19.29), 2.75],
+   [RB(222, 172.2, 254, 182.8), 2.75], [R(3.5, -16, 9, 8), .7]].forEach(([pts, h, roof]) => {
     const cx = pts.reduce((a, p) => a + p[0], 0) / pts.length, cz = pts.reduce((a, p) => a + p[1], 0) / pts.length;
     const t = .8 + Math.hypot(cx + 10, cz - 76) / 290 * 2.2;
     add(pts, 0, { kind: 'base', t0: t, dur: .6 });
