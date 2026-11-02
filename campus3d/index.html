@@ -594,9 +594,9 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
   building(gb, { w: 20, d: 24, floors: 6, h: H, roof: 'gray', parapet: lam(0xd8c498),
     faces: { all: { wall: '#e3d0a2', win: 'glass', frame: '#ece3cc', pil: '#d4bf8d' } } });
   // 磚紅外凸拱廊（老師 115/11/01 照片＋115/11/02 口頭確認）：中山路面南北兩端各一座，夾著中間的白色雙柱門廊；第五、六層、外挑 1.8 m，
-  //   兩層高的拱形開口，五樓處有樓板與欄杆。北座 z -12 ~ -2（五拱）、南座 z 4 ~ 12（四拱）
+  //   兩層高的拱形開口，五樓處有樓板與欄杆。北座 z -12 ~ -2（五拱）、南座 z 6 ~ 12（三拱），白色門廊（z -1.5 ~ 5.5）夾在兩座中間
   const AB = 4 * FH, AH = H + 1.35 - AB;   // 拱廊底部高度、拱廊高度（蓋過女兒牆）
-  [[-12, -2], [4, 12]].forEach(([z0, z1]) => {
+  [[-12, -2], [6, 12]].forEach(([z0, z1]) => {
     const n = Math.round((z1 - z0) / 2), sh = new THREE.Shape(); sh.moveTo(z0, 0); sh.lineTo(z1, 0); sh.lineTo(z1, AH); sh.lineTo(z0, AH); sh.lineTo(z0, 0);
     for (let i = 0; i < n; i++){
       const cx = z0 + 1 + i * 2, hw = .75, top = AH - 2.3, hole = new THREE.Path();
