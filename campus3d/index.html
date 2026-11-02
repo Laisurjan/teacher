@@ -39,6 +39,20 @@ header h1{margin:0;font-size:17px;font-weight:800;background:var(--panel);paddin
 #info p{margin:0;color:var(--sub);font-size:15px;line-height:1.6}
 #info .x{position:absolute;right:8px;top:6px;border:0;background:none;font-size:22px;color:var(--sub);padding:4px 8px}
 #hint{position:absolute;right:12px;top:58px;background:var(--panel);padding:6px 10px;border-radius:8px;font-size:13px;color:var(--sub)}
+/* 街景小人：拖到地面（或點一下再點地面）進入第一人稱視角 */
+#peg{position:absolute;right:14px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:12;width:54px;height:54px;border-radius:50%;
+  background:var(--panel);border:2px solid var(--line);box-shadow:0 2px 10px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;
+  touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+#peg svg{width:34px;height:34px;pointer-events:none}
+#peg.armed{border-color:#f6b400;box-shadow:0 0 0 4px rgba(246,180,0,.45)}
+#peg.drag{cursor:grabbing;transition:none;opacity:.95}
+#walkUI{position:absolute;left:12px;top:58px;z-index:12;display:none;gap:8px;align-items:center;flex-wrap:wrap;max-width:calc(100% - 24px)}
+#walkUI button{padding:9px 14px;border:0;border-radius:10px;background:#f6b400;color:#2a1d00;font:inherit;font-size:14px;font-weight:800;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+#walkUI span{background:var(--panel);padding:6px 10px;border-radius:8px;font-size:13px;color:var(--sub)}
+.walking #walkUI{display:flex} .walking #hint{display:none}
+#toast{position:absolute;left:50%;top:110px;transform:translateX(-50%);z-index:20;background:var(--panel);color:var(--ink);padding:8px 14px;border-radius:10px;
+  font-size:14px;box-shadow:0 2px 10px rgba(0,0,0,.2);pointer-events:none;opacity:0;transition:opacity .4s;max-width:calc(100% - 32px);text-align:center}
+.introOn #peg{opacity:0;pointer-events:none}
 #load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--sub);pointer-events:none}
 .lbl{font-size:12px;font-weight:800;color:#1d2a33;background:rgba(255,255,255,.88);padding:2px 6px;border-radius:6px;
   white-space:nowrap;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,.2)}
@@ -130,6 +144,9 @@ header,.bar,#hint{transition:opacity .9s ease}
 </script>
 <header><h1>國立花蓮高商・3D 校園模型</h1></header>
 <div id="hint">單指旋轉・雙指縮放／平移</div>
+<div id="peg" title="把小人拖到地面上，用街景視角看校園" aria-label="街景小人"><svg viewBox="0 0 24 24"><circle cx="12" cy="4.6" r="3.2" fill="#f6b400" stroke="#8a5a00" stroke-width="1"/><path d="M8.2 9.2h7.6l1.4 6.4-2.4.5-.9-3.6v9.3h-2.4v-5.6h-.9v5.6H8.2v-9.3l-.9 3.6-2.4-.5z" fill="#f6b400" stroke="#8a5a00" stroke-width="1" stroke-linejoin="round"/></svg></div>
+<div id="walkUI"><button id="bWalkExit">✕ 離開街景</button><span id="walkTip">拖曳環顧・點地面前進・電腦可用方向鍵／WASD</span></div>
+<div id="toast"></div>
 <div id="info"><button class="x" aria-label="關閉">×</button><h2></h2><p></p></div>
 <div class="bar">
   <button id="bReset">預設視角</button>
@@ -1336,24 +1353,115 @@ PTS.forEach(([n, lv, title, desc, x, z]) => {
 });
 let fly = null;
 function flyTo(x, z){
+  if (WALK.on){ walkTo(x + 3, z + 3); return; }   // 街景模式：點安全點位就走過去
   const to = new THREE.Vector3(x, 0, z), off = new THREE.Vector3().subVectors(camera.position, controls.target).setLength(70);
   off.y = Math.max(off.y, 35);
   fly = { t: 0, ft: controls.target.clone(), fp: camera.position.clone(), tt: to, tp: to.clone().add(off) };
 }
 
 // ================= 介面 =================
-document.getElementById('bReset').onclick = () => { fly = null; viewDefault(); };
-document.getElementById('bTop').onclick = () => { fly = null; viewTop(); };
+document.getElementById('bReset').onclick = () => { exitWalk(); fly = null; viewDefault(); };
+document.getElementById('bTop').onclick = () => { exitWalk(); fly = null; viewTop(); };
 const tog = (id, cls) => { const b = document.getElementById(id); b.onclick = () => { b.classList.toggle('on'); app.classList.toggle(cls); }; };
 tog('bLbl', 'hideLbl'); tog('bPin', 'hidePin');
 const hintLater = () => setTimeout(() => document.getElementById('hint').style.display = 'none', 6000);
 if (!document.documentElement.classList.contains('introOn')) hintLater();
 ['gesturestart', 'gesturechange'].forEach(ev => document.addEventListener(ev, e => e.preventDefault()));
 document.addEventListener('touchmove', e => { if (e.touches.length > 1 || e.target.closest('#app')) e.preventDefault(); }, { passive: false });
+/* ================= 街景小人（第一人稱視角） =================
+   把右下角小人拖到地面（或點小人再點地面）→ 站在該點、眼高 1.6 m。拖曳環顧、點地面走過去、方向鍵／WASD 走動、滾輪縮放視角；
+   不能走進建築（用合併前收集的建築外框 occBoxes 擋住）。離開時回到原本的鳥瞰視角。 */
+const WALK = { on: false, yaw: 0, pitch: 0, pos: new THREE.Vector3(), save: null, anim: null, keys: new Set(), fov: 70, last: 0 };
+const EYE = 1.6, walkRC = new THREE.Raycaster(), GPLANE = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+const pegEl = document.getElementById('peg'), toastEl = document.getElementById('toast');
+let toastT = 0;
+function toast(t){ toastEl.textContent = t; toastEl.style.opacity = 1; clearTimeout(toastT); toastT = setTimeout(() => toastEl.style.opacity = 0, 2200); }
+function groundAt(cx, cy){
+  const r = renderer.domElement.getBoundingClientRect();
+  walkRC.setFromCamera(new THREE.Vector2((cx - r.left) / r.width * 2 - 1, -(cy - r.top) / r.height * 2 + 1), camera);
+  return walkRC.ray.intersectPlane(GPLANE, new THREE.Vector3());
+}
+function blocked(x, z){
+  if (x < -30 || x > 300 || z < -60 || z > 215) return true;
+  return typeof occBoxes !== 'undefined' && occBoxes.some(b => b.min.y < EYE && x > b.min.x - .3 && x < b.max.x + .3 && z > b.min.z - .3 && z < b.max.z + .3);
+}
+function walkDir(){ return new THREE.Vector3(Math.sin(WALK.yaw) * Math.cos(WALK.pitch), Math.sin(WALK.pitch), Math.cos(WALK.yaw) * Math.cos(WALK.pitch)); }
+function enterWalk(p){
+  if (blocked(p.x, p.z)){ toast('這裡是建築物，請把小人放在地面或道路上'); return; }
+  fly = null; info.style.display = 'none';
+  if (!WALK.on){
+    WALK.save = { p: camera.position.clone(), t: controls.target.clone() };
+    const d = new THREE.Vector3().subVectors(controls.target, camera.position); WALK.yaw = Math.atan2(d.x, d.z);
+    WALK.pos.copy(camera.position); WALK.pitch = -.5;
+    WALK.on = true; controls.enabled = false; document.body.classList.add('walking');
+    camera.near = .1; camera.fov = WALK.fov; camera.updateProjectionMatrix();
+  }
+  WALK.anim = { t: 0, dur: WALK.pos.distanceTo(p) > 30 ? .9 : .45, from: WALK.pos.clone(), to: new THREE.Vector3(p.x, EYE, p.z), p0: WALK.pitch };
+}
+function exitWalk(){
+  if (!WALK.on) return;
+  WALK.on = false; WALK.anim = null; WALK.keys.clear(); document.body.classList.remove('walking');
+  camera.near = 1; resize();
+  if (WALK.save){ camera.position.copy(WALK.save.p); controls.target.copy(WALK.save.t); }
+  controls.enabled = true; controls.update();
+}
+function walkTo(x, z){
+  const d = Math.hypot(x - WALK.pos.x, z - WALK.pos.z);
+  if (d > 80){ toast('太遠了，請點近一點的地面，或重新拖放小人'); return; }
+  // 沿路檢查：碰到建築就停在建築前
+  let tx = WALK.pos.x, tz = WALK.pos.z; const n = Math.ceil(d / .5);
+  for (let i = 1; i <= n; i++){ const x1 = WALK.pos.x + (x - WALK.pos.x) * i / n, z1 = WALK.pos.z + (z - WALK.pos.z) * i / n; if (blocked(x1, z1)) break; tx = x1; tz = z1; }
+  if (Math.hypot(tx - WALK.pos.x, tz - WALK.pos.z) < .2){ toast('前面是建築物'); return; }
+  WALK.anim = { t: 0, dur: Math.min(1.6, .25 + d / 14), from: WALK.pos.clone(), to: new THREE.Vector3(tx, EYE, tz), p0: WALK.pitch, keepPitch: true };
+}
+function walkTick(){
+  const now = performance.now(), dt = Math.min(.05, (now - (WALK.last || now)) / 1000); WALK.last = now;
+  if (WALK.anim){ const a = WALK.anim; a.t = Math.min(1, a.t + dt / a.dur); const k = 1 - Math.pow(1 - a.t, 3);
+    WALK.pos.lerpVectors(a.from, a.to, k); if (!a.keepPitch) WALK.pitch = a.p0 * (1 - k); if (a.t >= 1) WALK.anim = null; }
+  const K = WALK.keys, fwd = (K.has('w') || K.has('arrowup') ? 1 : 0) - (K.has('s') || K.has('arrowdown') ? 1 : 0), side = (K.has('d') ? 1 : 0) - (K.has('a') ? 1 : 0);
+  WALK.yaw += ((K.has('arrowleft') || K.has('q') ? 1 : 0) - (K.has('arrowright') || K.has('e') ? 1 : 0)) * 1.6 * dt;
+  if ((fwd || side) && !WALK.anim){ const sp = (K.has('shift') ? 9 : 4) * dt, sy = Math.sin(WALK.yaw), cy = Math.cos(WALK.yaw);
+    const nx = WALK.pos.x + (sy * fwd - cy * side) * sp, nz = WALK.pos.z + (cy * fwd + sy * side) * sp;
+    if (!blocked(nx, WALK.pos.z)) WALK.pos.x = nx; if (!blocked(WALK.pos.x, nz)) WALK.pos.z = nz; }
+  camera.position.copy(WALK.pos); camera.lookAt(WALK.pos.clone().add(walkDir()));
+}
+// 街景模式的拖曳／點擊（鳥瞰模式時交給 OrbitControls）
+(function(){
+  const el = renderer.domElement; let down = null;
+  el.addEventListener('pointerdown', e => { if (!WALK.on && !pegEl.classList.contains('armed')) return;
+    down = { x: e.clientX, y: e.clientY, yaw: WALK.yaw, pitch: WALK.pitch, t: performance.now(), id: e.pointerId, moved: false }; });
+  el.addEventListener('pointermove', e => { if (!down || e.pointerId !== down.id) return;
+    const dx = e.clientX - down.x, dy = e.clientY - down.y; if (Math.hypot(dx, dy) > 6) down.moved = true;
+    if (WALK.on && down.moved){ WALK.yaw = down.yaw + dx * .005; WALK.pitch = Math.max(-1.3, Math.min(1.3, down.pitch + dy * .005)); } });
+  el.addEventListener('pointerup', e => { if (!down || e.pointerId !== down.id) return; const d = down; down = null;
+    if (d.moved || performance.now() - d.t > 600) return;
+    const g = groundAt(e.clientX, e.clientY); if (!g) return;
+    if (pegEl.classList.contains('armed')){ pegEl.classList.remove('armed'); enterWalk(g); }
+    else if (WALK.on) walkTo(g.x, g.z); });
+  el.addEventListener('pointercancel', () => down = null);
+  el.addEventListener('wheel', e => { if (!WALK.on) return; e.preventDefault(); WALK.fov = Math.max(30, Math.min(85, WALK.fov + e.deltaY * .03)); camera.fov = WALK.fov; camera.updateProjectionMatrix(); }, { passive: false });
+  addEventListener('keydown', e => { if (!WALK.on) return; const k = e.key.toLowerCase();
+    if (k === 'escape'){ exitWalk(); return; }
+    if (['w', 'a', 's', 'd', 'q', 'e', 'shift', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(k)){ WALK.keys.add(k); e.preventDefault(); } });
+  addEventListener('keyup', e => WALK.keys.delete(e.key.toLowerCase()));
+  addEventListener('blur', () => WALK.keys.clear());
+  // 小人：拖曳到地面放下；只點一下則進入「請點地面」狀態
+  let pd = null;
+  pegEl.addEventListener('pointerdown', e => { e.preventDefault(); pegEl.setPointerCapture(e.pointerId); pd = { x: e.clientX, y: e.clientY, moved: false }; });
+  pegEl.addEventListener('pointermove', e => { if (!pd) return; const dx = e.clientX - pd.x, dy = e.clientY - pd.y;
+    if (Math.hypot(dx, dy) > 6){ pd.moved = true; pegEl.classList.add('drag'); pegEl.classList.remove('armed'); pegEl.style.transform = `translate(${dx}px, ${dy - 30}px) scale(1.15)`; } });
+  const drop = e => { if (!pd) return; const d = pd; pd = null; pegEl.classList.remove('drag'); pegEl.style.transform = '';
+    if (!d.moved){ pegEl.classList.toggle('armed'); if (pegEl.classList.contains('armed')) toast('請點一下要站的地面'); return; }
+    const under = document.elementFromPoint(e.clientX, e.clientY);
+    if (under && under.closest('.bar, header, #walkUI')) return;
+    const g = groundAt(e.clientX, e.clientY - 30); if (g) enterWalk(g); };
+  pegEl.addEventListener('pointerup', drop); pegEl.addEventListener('pointercancel', () => { pd = null; pegEl.classList.remove('drag'); pegEl.style.transform = ''; });
+  document.getElementById('bWalkExit').onclick = exitWalk;
+})();
 function resize(){
   const vv = window.visualViewport, w = vv ? vv.width : innerWidth, h = vv ? vv.height : innerHeight;
   renderer.setSize(w, h); labelRenderer.setSize(w, h);
-  camera.aspect = w / h; camera.fov = w < h ? 60 : 45; camera.updateProjectionMatrix();
+  camera.aspect = w / h; camera.fov = WALK.on ? WALK.fov : (w < h ? 60 : 45); camera.updateProjectionMatrix();
   if (intro) intro.resize(w, h);
 }
 let intro = null;   // 開場動畫（下方建立）
@@ -1788,13 +1896,13 @@ renderer.setAnimationLoop(() => {
     if (!first) intro.tick(performance.now());   // 第一幀先把著色器編譯好，開場才開始計時，動畫不會一開始就卡
     if (fly){ fly.t = Math.min(1, fly.t + .035); const k = 1 - Math.pow(1 - fly.t, 3);
       controls.target.lerpVectors(fly.ft, fly.tt, k); camera.position.lerpVectors(fly.fp, fly.tp, k); if (fly.t >= 1) fly = null; }
-    if (!intro.drive) controls.update();
+    if (WALK.on) walkTick(); else if (!intro.drive) controls.update();
     if (first) intro.prewarm();
     if (first || !intro.cover){ renderer.render(scene, camera); labelRenderer.render(scene, camera); }   // 開場線條／地圖蓋滿畫面時不畫 3D
     if (first){ first = false; const l = document.getElementById('load'); if (l) l.remove(); window.__stage = '完成';
       try { sessionStorage.setItem('campus3d-q', QL); } catch (er) {}
       document.querySelector('header').insertAdjacentHTML('beforeend', `<span style="background:var(--panel);padding:6px 10px;border-radius:8px;font-size:12px;color:var(--sub);pointer-events:auto">畫質：${QNAME[QL]}</span><button id="bIntro">▶ 開場動畫</button>`);
-      document.getElementById('bIntro').onclick = () => intro.start();
+      document.getElementById('bIntro').onclick = () => { exitWalk(); intro.start(); };
       try { if (sessionStorage.getItem('campus3d-lost') === 'new'){ sessionStorage.setItem('campus3d-lost', 'shown');
         const n = document.createElement('div'); n.textContent = `手機繪圖記憶體不足，已自動降為「${QNAME[QL]}」畫質`;
         n.style.cssText = 'position:absolute;left:50%;top:64px;transform:translateX(-50%);z-index:20;background:var(--panel);color:var(--ink);padding:8px 14px;border-radius:10px;font-size:14px;box-shadow:0 2px 10px rgba(0,0,0,.2);transition:opacity .6s;max-width:calc(100% - 32px);text-align:center';
