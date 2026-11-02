@@ -1374,6 +1374,12 @@ document.addEventListener('touchmove', e => { if (e.touches.length > 1 || e.targ
 const WALK = { on: false, yaw: 0, pitch: 0, pos: new THREE.Vector3(), save: null, anim: null, keys: new Set(), fov: 70, last: 0 };
 const EYE = 1.6, walkRC = new THREE.Raycaster(), GPLANE = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 const pegEl = document.getElementById('peg'), toastEl = document.getElementById('toast');
+// 街景天空：等距柱狀貼圖當背景，會跟著視角轉；上半天藍漸層到地平線淡藍，下半灰綠地面色。霧也改淡藍，遠方地面與天空才分得開
+const SKY = (() => { const c = document.createElement('canvas'); c.width = 64; c.height = 256; const g = c.getContext('2d');
+  const gr = g.createLinearGradient(0, 0, 0, 128); gr.addColorStop(0, '#3f8fdc'); gr.addColorStop(.6, '#7db8ec'); gr.addColorStop(1, '#d6ecfa');
+  g.fillStyle = gr; g.fillRect(0, 0, 64, 128); g.fillStyle = '#a4ab9f'; g.fillRect(0, 128, 64, 128);
+  const t = new THREE.CanvasTexture(c); t.mapping = THREE.EquirectangularReflectionMapping; t.colorSpace = THREE.SRGBColorSpace; return t; })();
+const SKY_FOG = new THREE.Color('#d6ecfa');
 let toastT = 0;
 function toast(t){ toastEl.textContent = t; toastEl.style.opacity = 1; clearTimeout(toastT); toastT = setTimeout(() => toastEl.style.opacity = 0, 2200); }
 function groundAt(cx, cy){
@@ -1395,6 +1401,7 @@ function enterWalk(p){
     WALK.pos.copy(camera.position); WALK.pitch = -.5;
     WALK.on = true; controls.enabled = false; document.body.classList.add('walking');
     camera.near = .1; camera.fov = WALK.fov; camera.updateProjectionMatrix();
+    scene.background = SKY; scene.fog.color.copy(SKY_FOG); scene.fog.near = 150; scene.fog.far = 700;
   }
   WALK.anim = { t: 0, dur: WALK.pos.distanceTo(p) > 30 ? .9 : .45, from: WALK.pos.clone(), to: new THREE.Vector3(p.x, EYE, p.z), p0: WALK.pitch };
 }
@@ -1402,6 +1409,7 @@ function exitWalk(){
   if (!WALK.on) return;
   WALK.on = false; WALK.anim = null; WALK.keys.clear(); document.body.classList.remove('walking');
   camera.near = 1; resize();
+  scene.background = BG; scene.fog.color.copy(BG); scene.fog.near = 450; scene.fog.far = 900;
   if (WALK.save){ camera.position.copy(WALK.save.p); controls.target.copy(WALK.save.t); }
   controls.enabled = true; controls.update();
 }
