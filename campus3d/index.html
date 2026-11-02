@@ -611,12 +611,6 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
   // 南端塔樓（照片 105504、082458）：z 7 ~ 12、高出主體約一層，頂緣弧形；南面一列小斜窗
   const TW = new THREE.Group(); TW.position.set(-8.25, 0, 9.5); g.add(TW);
   building(TW, { w: 8.5, d: 5, floors: 7, h: H + 3.5, roof: 'gray', parapet: lam(0xd8c498), faces: { all: { wall: '#e6d3a6', win: 'glass', frame: '#ece3cc', bay: 4 }, s: { wall: '#e6d3a6', win: 'slot', bay: 2.8 } } });
-  // 北段上方「花蓮高商進修部」巨幅直立看板（照片 105541）
-  const bb = textPlane(canvasTex(160, 256, (c) => { c.fillStyle = '#fbf7e8'; c.fillRect(0, 0, 160, 256); c.fillStyle = '#f2c230'; c.fillRect(0, 0, 160, 34); c.fillRect(0, 222, 160, 34);
-    c.fillStyle = '#1f4fa8'; c.font = 'bold 18px "Noto Sans TC","Microsoft JhengHei",sans-serif'; c.textAlign = 'center'; c.fillText('花蓮高商進修部', 80, 24);
-    c.fillStyle = '#c8322b'; c.fillText('(03)831-2222', 80, 246); c.fillStyle = '#1f4fa8'; ['商經科', '資處科', '商用資訊科', '銷售事務科'].forEach((t, i) => c.fillText('・' + t, 70, 70 + i * 26));
-    c.fillStyle = '#d98a8a'; c.fillRect(20, 180, 120, 30); }), 4.2, 6.6);
-  bb.rotation.y = -Math.PI / 2; bb.position.set(WX - .06, 15.5, -9.6); g.add(bb);
   // 入口門廊：置中（z 0），一、二樓挑高；玻璃帷幕、兩根白柱撐出挑平板、二樓弧形白色陽台；灰色石材平台，兩側往中間收的階梯＋不鏽鋼扶手
   const PH = 2 * FH, PZ = 0, STEP = lam(0xd9d4c8);
   box(.25, PH, 6, M.glass, WX - .12, 0, PZ, g);
@@ -631,17 +625,15 @@ const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' }
     [[PZ + s * 8, .3], [PZ + s * 4.5, 1.2]].forEach(([z, y]) => box(.05, .95, .05, SSR, WX - 3.1, y, z, g)); });
   box(.08, 1, 9, lam(0x8a8f93), WX - 3.35, 1.2, PZ, g);
   { const sv = seed; [-2.6, 2.6].forEach(dz => tree(6.5 + WX - 3.9, 12 + PZ + dz, .55)); seed = sv; }
-  // 一樓前左右兩段紅磚框架矮牆（照片 105541），左段掛「花商起飛・國際啟航」布條；最北端獨立的黑色電子看板
+  // 一樓前左右兩段紅磚框架矮牆（照片 105541）；最北端獨立的大型黑色電子看板，架高在約 4～8 m
   const BRK = lam(0xa65e4c);
   [[-12.5, -8.5], [8.5, 12.5]].forEach(([z0, z1]) => { const zc = (z0 + z1) / 2, L2 = z1 - z0;
     box(.6, .5, L2, BRK, WX - 3.9, 2.6, zc, g); box(.6, .9, L2, BRK, WX - 3.9, 0, zc, g);
     for (let z = z0; z <= z1 + .01; z += L2 / 2) box(.6, 3.1, .6, BRK, WX - 3.9, 0, z, g); });
-  const ban = textPlane(textTex('花商起飛・國際啟航', { w: 768, h: 128, color: '#ffffff', bg: '#5c8f5a', font: 'bold 64px "Noto Sans TC","Microsoft JhengHei",sans-serif' }), 5, 1.2);
-  ban.rotation.y = -Math.PI / 2; ban.position.set(WX - 4.22, 1.9, -10.5); g.add(ban);
-  [-14.5, -10.5].forEach(z => box(.25, 2.4, .25, lam(0x3a3a3a), WX - 2.6, 0, z, g));
-  box(.5, 2.8, 5, lam(0x1a1a1a), WX - 2.6, 2.4, -12.5, g);
-  const scr = textPlane(canvasTex(128, 80, (c) => { c.fillStyle = '#2a2f36'; c.fillRect(0, 0, 128, 80); }), 4.6, 2.5);
-  scr.rotation.y = -Math.PI / 2; scr.position.set(WX - 2.87, 3.8, -12.5); g.add(scr);
+  [-15, -10].forEach(z => box(.3, 4.2, .3, lam(0x3a3a3a), WX - 2.6, 0, z, g));
+  box(.5, 4, 6.6, lam(0x1a1a1a), WX - 2.6, 4.2, -12.5, g);
+  const scr = textPlane(canvasTex(128, 80, (c) => { c.fillStyle = '#2a2f36'; c.fillRect(0, 0, 128, 80); }), 6.2, 3.6);
+  scr.rotation.y = -Math.PI / 2; scr.position.set(WX - 2.87, 6.2, -12.5); g.add(scr);
   // 南面（照片 073854 由南往西北拍；081127 由人文館往西看到圓弧轉角在東面南端）：東南角圓弧轉角＋灰色洗石子立面，直書「圖書資料館」；
   //   一樓玻璃門前四階＋不鏽鋼扶手；圓弧轉角上方另有高出一層的頂樓量體
   const GRAN = { wall: '#bdb8ae', win: 'glass', frame: '#d8d4cc' };
@@ -1101,7 +1093,6 @@ ironFence(-6, -2);
   box(.12, .15, 1.8, lam(0x3f8f95), -10.4, 2.6, 69.2); box(1.2, .12, 1.8, lam(0x3f8f95), -10.9, 2.55, 69.2);   // ATM 門上綠色雨遮
   const ad = (t, bg, w, h, x, y, z) => { const p = textPlane(textTex(t, { w: 512, h: 128, color: '#ffffff', bg, font: 'bold 56px "Noto Sans TC","Microsoft JhengHei",sans-serif' }), w, h); p.rotation.y = -Math.PI / 2; p.position.set(x, y, z); scene.add(p); };
   ad('花蓮二信 ATM', '#2f6fb3', 1.8, .45, -10.03, 3.0, 69.2);
-  ad('應用英語・商業經營・資料處理', '#d9a02a', 3, 1.6, -10.02, 1.3, 66.6);
   ad('國立花蓮高商（進修部）免試招生', '#3d7ab8', 5, 1.4, -10.05, 4.1, 67.5); [65.6, 69.4].forEach(z => box(.12, 1, .12, lam(0x8a8f93), -10.05, 3.2, z));
   building(group(-7.5, 87.2), { w: 5, d: 4, floors: 1, h: 3, roof: 'gray', faces: { all: { wall: '#ecebe6', win: 'glass' }, w: { wall: '#ecebe6', win: 'shutter', bay: 2.5 } } });
   [86, 88.4].forEach(z => box(.08, 2.6, 2.2, lam(0x3f8a5c), -10.06, 0, z));                // 綠色鐵捲門
