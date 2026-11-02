@@ -1296,6 +1296,30 @@ function nearRoad(x, z, d){ return MAIN_ROAD.some((a, i) => { if (i === MAIN_ROA
   return Math.hypot(x - a[0] - t * vx, z - a[1] - t * vz) < d; }); }
 for (let i = 0; i < 90; i++){ const x = 72 + rnd() * 30, z = 32 + rnd() * 92;
   if (x < 76 || z > 108 || Math.hypot(x - 92, z - 38) < 10 || (Math.abs(x - 92) < 3 && z > 44 && z < 74) || nearRoad(x, z, 4.5) || Math.abs(z - 76) < 7) continue; tree(x, z, .8 + rnd() * .6); }
+// 中庭圓柏（老師 115/11/02 補傳照片）：草地上不規則散種十幾棵扭幹圓柏，樹幹粗、往不同方向傾斜，深綠色尖塔狀團簇樹冠，高約 6～8 m
+//   用獨立亂數，不影響其他區域樹的位置；避開鐵桌椅與電梯塔
+(function(){
+  let sd = 20251102; const r = () => (sd = (sd * 16807) % 2147483647) / 2147483647;
+  const TR = lam(0x5a4636), C1 = lam(0x2f5d32), C2 = lam(0x3b6e3a), cone = new THREE.ConeGeometry(1, 2.2, 7), trunk = new THREE.CylinderGeometry(.18, .3, 1, 6);
+  function juniper(x, z, s){
+    const g = group(x, z, r() * 360), lean = (r() - .5) * .5, H = 2.2 * s;
+    const t = new THREE.Mesh(trunk, TR); t.scale.set(s, H, s); t.position.set(Math.sin(lean) * H / 2, H / 2, 0); t.rotation.z = -lean; t.castShadow = true; g.add(t);
+    const tx = Math.sin(lean) * H;
+    for (let k = 0; k < 5; k++){ const c = new THREE.Mesh(leafGeo, r() < .5 ? C1 : C2), sc = (1.2 + r() * .8) * s;   // 蓬鬆團簇
+      c.scale.set(sc, sc * .9, sc); c.position.set(tx + (r() - .5) * 2.8 * s, H + (.8 + r() * 2.2) * s, (r() - .5) * 2.8 * s); c.castShadow = true; g.add(c); }
+    for (let k = 0; k < 3; k++){ const c = new THREE.Mesh(cone, C1), sc = (.55 + r() * .35) * s;                       // 頂上幾個小尖
+      c.scale.set(sc, sc * 1.3, sc); c.position.set(tx + (r() - .5) * 1.8 * s, H + (3 + r() * 1.2) * s, (r() - .5) * 1.8 * s); c.castShadow = true; g.add(c); }
+  }
+  const P = [];
+  [[32.5, 13, 52.5, 69.5], [32.5, 82.5, 52.5, 124]].forEach(([x0, z0, x1, z1]) => {
+    for (let n = 0, tries = 0; n < 13 && tries < 400; tries++){
+      const x = x0 + r() * (x1 - x0), z = z0 + r() * (z1 - z0);
+      if (Math.hypot(x - 39, z - 65.5) < 3.2 || Math.hypot(x - 36.5, z - 85.5) < 3.2 || (x < 37 && z > 64 && z < 73)) continue;
+      if (P.some(([px, pz]) => Math.hypot(px - x, pz - z) < 4.6)) continue;
+      P.push([x, z]); n++; juniper(x, z, .9 + r() * .35);
+    }
+  });
+})();
 // 中庭原有木造涼亭已拆除：現在是穿堂（中央穿廊）南北兩側各一組深綠色鐵圓桌＋有椅背的個人鐵椅
 (function(){
   const IRON = lam(0x1f4a32);
