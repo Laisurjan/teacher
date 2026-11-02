@@ -1088,7 +1088,7 @@ ironFence(-6, -2);
   box(.3, 1.5, 7, METAL, 0, 0, 0, g); box(.3, 1.5, 5.5, METAL, 0, 0, -6.8, g);   // 伸縮門
   // 校門兩側（老師 115/11/02 照片 105821 由中山路看、082547 由校內看）：
   //   北側：警衛室兼花蓮二信 ATM，白牆＋鐵捲門、門上綠色雨遮，臨中山路牆面貼滿招生海報、頂上招生看板
-  //   南側：「國立臺北商業大學」辦公室，綠色鐵捲門、桃紅色招牌，臨街牆面貼海報
+  //   南側：「國立臺北商業大學」辦公室，綠色鐵捲門（招牌依老師指示不放）
   building(group(-7.2, 67.5), { w: 5.5, d: 5, floors: 1, h: 3.2, roof: 'gray', faces: { all: { wall: '#ecebe6', win: 'glass' }, s: { wall: '#ecebe6', win: 'shutter', bay: 2.7 } } });
   box(.12, .15, 1.8, lam(0x3f8f95), -10.4, 2.6, 69.2); box(1.2, .12, 1.8, lam(0x3f8f95), -10.9, 2.55, 69.2);   // ATM 門上綠色雨遮
   const ad = (t, bg, w, h, x, y, z) => { const p = textPlane(textTex(t, { w: 512, h: 128, color: '#ffffff', bg, font: 'bold 56px "Noto Sans TC","Microsoft JhengHei",sans-serif' }), w, h); p.rotation.y = -Math.PI / 2; p.position.set(x, y, z); scene.add(p); };
@@ -1096,7 +1096,6 @@ ironFence(-6, -2);
   ad('國立花蓮高商（進修部）免試招生', '#3d7ab8', 5, 1.4, -10.05, 4.1, 67.5); [65.6, 69.4].forEach(z => box(.12, 1, .12, lam(0x8a8f93), -10.05, 3.2, z));
   building(group(-7.5, 87.2), { w: 5, d: 4, floors: 1, h: 3, roof: 'gray', faces: { all: { wall: '#ecebe6', win: 'glass' }, w: { wall: '#ecebe6', win: 'shutter', bay: 2.5 } } });
   [86, 88.4].forEach(z => box(.08, 2.6, 2.2, lam(0x3f8a5c), -10.06, 0, z));                // 綠色鐵捲門
-  ad('國立臺北商業大學', '#b8326a', 4, .55, -10.06, 2.75, 87.2);
   addLabel('校門', -12, 10, 76);
 })();
 // 後門、腳踏車棚
