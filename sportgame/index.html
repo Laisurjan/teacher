@@ -1,0 +1,727 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>趣味進場示意</title>
+<style>
+:root{--bg:#111418;--fg:#f1f3f5;--mut:#adb5bd;--acc:#ffd43b;--btn:#2b3036}
+*{box-sizing:border-box}
+html,body{position:fixed;inset:0;overflow:hidden}   /* 整頁不捲動，依視窗縮放 */
+body{margin:0;background:var(--bg);color:var(--fg);font:600 16px/1.5 "Microsoft JhengHei","Noto Sans TC",sans-serif}
+#wrap{height:100%;display:flex;flex-direction:column;padding:10px 16px;gap:8px}
+#stage{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center}
+canvas{max-width:100%;max-height:100%;width:auto;height:auto;display:block;border-radius:8px;background:#000;touch-action:manipulation}
+#ctl{flex:0 0 auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center}
+button,select{font:inherit;color:var(--fg);background:var(--btn);border:1px solid #495057;border-radius:6px;padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--acc)}
+#bar{flex:1 1 260px;accent-color:var(--acc)}
+#tm{font-variant-numeric:tabular-nums;min-width:96px;text-align:center}
+#names{display:none;position:fixed;left:50%;bottom:70px;transform:translateX(-50%);width:min(920px,calc(100% - 32px));max-height:calc(100% - 100px);overflow:auto;background:#1b1f24;border:1px solid #495057;border-radius:10px;padding:12px;box-shadow:0 8px 30px rgba(0,0,0,.6);z-index:5}
+#names.on{display:block}
+#names .g{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}
+#names label{display:flex;gap:6px;align-items:center}
+#names small{color:var(--mut);font-size:13px;margin-left:2px}
+#names input.boy{flex:none;width:18px;height:18px;margin:0 0 0 4px;accent-color:#1971c2}
+#names input{flex:1;min-width:0;font:inherit;padding:4px 6px;border-radius:4px;border:1px solid #495057;background:#0d0f12;color:var(--fg)}
+#names p{color:var(--mut);margin:6px 0 10px;font-size:14px}
+#editp{display:none;position:fixed;right:16px;bottom:70px;width:min(460px,calc(100% - 32px));background:#1b1f24;border:1px solid #495057;border-radius:10px;padding:12px;box-shadow:0 8px 30px rgba(0,0,0,.6);z-index:6}
+#editp.on{display:block}
+#editp p{color:var(--mut);margin:8px 0;font-size:14px}
+#editp .seg,#editp .btns{display:flex;flex-wrap:wrap;gap:6px}
+#editp .seg button.cur{background:#ffd43b;color:#212529;border-color:#ffd43b}
+#emsg{color:var(--acc)!important}
+body.render #ctl,body.render #names,body.render #editp{display:none}
+body.render #wrap{padding:0}
+body.render canvas{border-radius:0}
+</style>
+</head>
+<body>
+<div id="wrap">
+<div id="stage"><canvas id="cv" width="1920" height="1080"></canvas></div>
+<div id="ctl">
+  <button id="play">▶ 播放</button>
+  <button id="prev" title="上一步">⏮</button>
+  <button id="next" title="下一步">⏭</button>
+  <input id="bar" type="range" min="0" max="118" step="0.05" value="0">
+  <span id="tm">0:00</span>
+  <select id="spd" title="速度"><option value="1">1 倍速</option><option value="0.75">0.75 倍速</option><option value="0.5">0.5 倍速</option></select>
+  <select id="me" title="看自己的位置"><option value="-1">看自己的位置…</option></select>
+  <button id="mute" title="只關口令聲，音樂照常（鍵盤 M）">🔊 口令聲：開</button>
+  <button id="ebtn">✏️ 調整隊形</button>
+  <button id="nbtn">名單</button>
+</div>
+<div id="names">
+  <p>依座號填入名字、勾選男生後按「儲存」（男生在大橢圓會排到前排），只存在這台裝置的瀏覽器，不會上傳。要做成有名字的 MP4，請把同樣的名單照順序（班牌、班旗、導師、口號，再依座號 1、3、4、8、9…13、15、16）一行一個存成 names.txt 再跑 build.py。</p>
+  <div class="g" id="ng"></div>
+  <div style="margin-top:10px;display:flex;gap:8px"><button id="nsave">儲存</button><button id="nclear">清除</button><button id="nclose">關閉</button></div>
+</div>
+</div>
+<div id="editp">
+  <div class="seg"><button data-f="col">起始隊形</button><button data-f="A">兩個小圓</button><button data-f="B">大橢圓</button></div>
+  <p>直接拖曳畫面上的圓圈。改動自動存在這台裝置；要讓學生打開也是這個樣子，請按「下載設定檔」並把檔案交給 Claude。紅圈＝超出跑道、橘圈＝兩人靠太近。</p>
+  <div class="btns"><button id="ereset">這個隊形恢復自動排</button><button id="edl">下載設定檔</button><button id="eload">載入設定檔</button><button id="edone">完成</button></div>
+  <input type="file" id="efile" accept=".json,application/json" hidden>
+  <p id="emsg"></p>
+</div>
+<video id="dv" src="assets/dance.mp4" muted playsinline preload="auto" style="display:none"></video>
+<audio id="au" src="assets/music.m4a" preload="auto"></audio>   <!-- 音樂軌（主時鐘） -->
+<audio id="vo" src="assets/voice.m4a" preload="auto"></audio>   <!-- 口令軌（可靜音） -->
+<script>
+"use strict";
+/* ============ 時間軸（唯一來源；build.py 讀這裡產生語音與 MP4） ============ */
+const B = 0.5;                 // 一拍 0.5 秒（每分鐘 120 步）
+const T = {
+  mark1: 5.0,                  // 開始原地踏步
+  go1: 18.5, stop1: 46.0,      // 起步走 → 立定（動令「定」45.0 左腳，46.0 停下＝全班對準司令台中央）
+  rtHead: 33.0, ftHead: 43.0,  // 向右看（班牌到右側標兵）／向前看（立定前兩步）
+  turnR: 48.6,                 // 向右轉
+  spread: [52.8, 57.2],          // 散開：往回跑到司令台正前方的兩個小圓
+  m1: 58.0,                    // 音樂開始（原影片 0 秒）
+  gap: [58.0 + 14.833, 58.0 + 17.667],  // 原影片黑畫面＝跑位成大圓
+  mEnd: 58.0 + 28.033,         // 音樂結束
+  gather: [90, 94.5],            // 回原隊形
+  turnL: 96.1,                 // 向左轉
+  mark2: 99.5,                 // 撤場踏步節奏起點（＝起步走動令）
+  go2: 100.0,                  // 起步走離場（照試錄：向左轉後直接起步走）
+  end: 113
+};
+// 拍子：原地踏步時、行進中都數（行進中「一」踩在左腳＝整數秒）
+const COUNT_BLOCKS = [{t: T.mark1, reps: 3}, {t: 19.0, reps: 3, march: true}, {t: 34.0, reps: 2, march: true}, {t: 100.5, reps: 2, march: true, exit: true}];
+const COUNT_OFF = [0, 1.0, 2.0, 2.5, 3.0];      // 一(左)．一(左)．一(左)二(右)一(左)．（8 拍）
+const COUNT_SAY = ["一", "一", "一", "二", "一"];
+const COUNT_SHOW = ["1", "1", "1", "2", "1"];
+
+// 畫面上的步驟（say＝口號同學要喊的話，會產生語音）
+// 口令＝預令(pre)＋動令(exe)：預令拉長、停頓、動令短促有力；行進間動令落在左腳（整數秒）
+// t＝預令開始（畫面切換）；x＝動令時間
+const STEPS = [
+  {t: 0,      no: "①", title: "集合隊形",         desc: "班牌→班旗→導師→口號 站跑道中線；同學分兩排站第 3、4 道"},
+  {t: 2.6,    x: 4.5,  no: "①", title: "原地踏步——走",  pre: "原地踏步", exe: "走", desc: "全體原地踏步，左腳先"},
+  {t: T.mark1,no: "①", title: "1 1 121 ×3",       desc: "口號同學喊拍子，「一」都踩在左腳", count: 0},
+  {t: 16.6,   x: 18.0, no: "①", title: "起步——走",      pre: "起步", exe: "走", desc: "動令落左腳，沿跑道向右前進"},
+  {t: 31.6,   x: 33.0, no: "①", title: "向右——看",      pre: "向右", exe: "看", desc: "班牌到右側標兵：頭轉向司令台，旗牌轉向司令台；繼續數拍子"},
+  {t: 41.5,   x: 43.0, no: "①", title: "向前——看",      pre: "向前", exe: "看", desc: "全班快到司令台中央：頭轉回正前方，旗牌復位"},
+  {t: 44.0,   x: 45.0, no: "①", title: "立——定",        pre: "立", exe: "定", desc: "動令落左腳，再兩步停下：全班中間對準司令台中央"},
+  {t: 47.2,   x: 48.6, no: "①", title: "向右——轉",      pre: "向右", exe: "轉", desc: "全體轉身，面向司令台"},
+  {t: 50.0,   x: 52.4, no: "①", title: "呈表演隊形，散開", pre: "呈表演隊形", exe: "散開", desc: "跑到自己在小圓的位置；班旗、班牌放跑道外側"},
+  {t: T.m1,   no: "②", title: "表演①：兩個小圓",   desc: "左圓 8 人、右圓 7 人，跟著音樂跳", perf: 1},
+  {t: T.gap[0],no:"②", title: "跑位：圍成大橢圓",   desc: "音樂空檔，跑到大橢圓的位置（不進草地）", perf: 2},
+  {t: T.gap[1],no:"②", title: "表演②：一個大橢圓", desc: "15 人在跑道上圍成大橢圓，導師在最前面正中間", perf: 3},
+  {t: 87.2,   x: 89.5, no: "③", title: "呈原來隊形，集合", pre: "呈原來隊形", exe: "集合", desc: "回到進場時的位置，拿回班旗、班牌"},
+  {t: 94.7,   x: 96.1, no: "③", title: "向左——轉",      pre: "向左", exe: "轉", desc: "全體轉回前進方向"},
+  {t: 98.3,   x: 99.5,  no: "③", title: "起步——走",     pre: "起步", exe: "走", desc: "向右走離司令台，邊走邊數拍子"},
+  {t: 108.5,  no: "③", title: "離場完成",           desc: ""}
+];
+const PHASE = {"①": "進場", "②": "表演", "③": "撤場"};
+
+// 語音提示清單（給 build.py）
+const CUES = [];
+STEPS.forEach(s => { if (s.pre) { CUES.push({t: s.t, say: s.pre, kind: "pre", until: s.x}); CUES.push({t: s.x, say: s.exe, kind: "exe"}); } });
+COUNT_BLOCKS.forEach(b => { for (let r = 0; r < b.reps; r++) COUNT_OFF.forEach((o, k) => CUES.push({t: b.t + r * 4 + o, say: COUNT_SAY[k], kind: "count"})); });
+CUES.sort((a, b) => a.t - b.t);
+
+/* ============ 場地（公尺；x 向東＝前進方向，y 向南＝司令台方向） ============ */
+const LW = 1.22, LANES = 6, CL = 3 * LW;          // 中線＝第 3、4 道交界
+// 行進速度 1.55 m/s（每分鐘 120 步）。向前看動令 38.0 秒時班牌到左側標兵＝全班中間過司令台中間
+// 標兵（照片量測）：右側標兵在司令台中線西 13 m（跑道開始轉彎處），左側標兵在東 16 m
+const MARK_R = -13, MARK_L = 16;
+// 班牌 33.0 秒到右側標兵；46.0 秒停下時班牌在中線東 5.4 m（隊伍長 10.8 m 的一半）＝全班中間對準司令台中央
+const XS = 5.4, V_MARCH = (XS - MARK_R) / 12.5, X0 = MARK_R - V_MARCH * 14.25;
+const STAGE = {x0: -6.5, x1: 6.5, y0: 9.6, y1: 14.5};   // 司令台寬約 13 m（照片量測）
+const MARKERS = [{x: MARK_R, y: LANES * LW + 0.7, label: "右側標兵"}, {x: MARK_L, y: LANES * LW + 0.7, label: "左側標兵"}];   // 以司令台的左右命名
+
+/* ============ 人員（14 位同學＋導師） ============ */
+const PEOPLE = [];
+// 座號：班牌 2 號、班旗 6 號、口號 5 號；導師沒有座號
+const ROLE_SEAT = {牌: 2, 旗: 6, 令: 5};
+[["牌", "班牌", "#e8590c"], ["旗", "班旗", "#e03131"], ["師", "導師", "#7048e8"], ["令", "口號", "#2b8a3e"]]
+  .forEach((r, i) => PEOPLE.push({mark: r[0], label: r[1], color: r[2], seat: ROLE_SEAT[r[0]] || 0, dx: -i * 1.2, y: CL}));
+// 其他同學依座號由前往後排兩排：第 1、3、5…個在北側（第 3 道），第 2、4…個在南側（第 4 道）
+const WITHDRAWN = [7, 14];   // 休學
+const OTHER_SEATS = [...Array(16)].map((_, k) => k + 1).filter(n => !Object.values(ROLE_SEAT).includes(n) && !WITHDRAWN.includes(n));   // 1,3,4,8,9,10,11,12,13,15,16
+OTHER_SEATS.forEach((seat, k) => {
+  const row = Math.floor(k / 2), north = k % 2 === 0;
+  PEOPLE.push({mark: String(seat), label: seat + "號", color: "#1971c2", seat, dx: -4.8 - row * 1.2, y: north ? CL - LW / 2 : CL + LW / 2});
+});
+const N = PEOPLE.length;
+let NAMES = Array(N).fill("");
+
+/* ============ 隊形 ============ */
+const colAt = (i, L) => ({x: L + PEOPLE[i].dx, y: PEOPLE[i].y});
+let COL_S = PEOPLE.map((_, i) => colAt(i, XS));
+function ring(cx, cy, rx, n, ry = rx, a0 = -Math.PI / 2) {   // 沿周長等距放 n 人（橢圓也等距）；第 0 點在角度 a0
+  const M = 720, pts = [], len = [0];
+  for (let k = 0; k <= M; k++) { const a = a0 + k * 2 * Math.PI / M; pts.push({x: cx + rx * Math.cos(a), y: cy + ry * Math.sin(a)});
+    if (k) len.push(len[k - 1] + Math.hypot(pts[k].x - pts[k - 1].x, pts[k].y - pts[k - 1].y)); }
+  const L = len[M], out = []; let j = 0;
+  for (let i = 0; i < n; i++) { const want = i * L / n; while (len[j + 1] < want) j++; out.push(pts[j]); }
+  return out;
+}
+function assign(from, to, fixed = {}) {      // 交換法求最短總移動距離，減少交叉；fixed＝{人: 指定位置}
+  const taken = new Set(Object.values(fixed)), free = to.map((_, j) => j).filter(j => !taken.has(j));
+  const p = from.map((_, i) => i in fixed ? fixed[i] : free.shift()), d = (i, j) => (from[i].x - to[j].x) ** 2 + (from[i].y - to[j].y) ** 2;
+  for (let again = true; again;) { again = false;
+    for (let i = 0; i < N; i++) for (let j = i + 1; j < N; j++) if (!(i in fixed) && !(j in fixed))
+      if (d(i, p[j]) + d(j, p[i]) < d(i, p[i]) + d(j, p[j]) - 1e-9) { [p[i], p[j]] = [p[j], p[i]]; again = true; } }
+  return from.map((_, i) => to[p[i]]);
+}
+const CY_PERF = CL;   // 表演隊形以跑道中線為中心，全部在跑道內（不進草地）
+// 老師拖曳調整過的隊形（null＝自動排）。col：起始隊形（相對班牌的 dx、y）；A：兩個小圓；B：大橢圓
+// 老師 115/11/04 調好的隊形（下載設定檔「趣味進場_隊形設定.json」）；改了再下載新的設定檔交給 Claude 替換
+const LAYOUT_DEFAULT = {"version":1,"col":{"班牌":{"dx":0,"y":3.66},"班旗":{"dx":-1.2,"y":3.66},"導師":{"dx":-2.4,"y":3.66},"口號":{"dx":-3.6,"y":3.66},"1號":{"dx":-4.8,"y":3.05},"3號":{"dx":-4.8,"y":4.27},"4號":{"dx":-6.02,"y":4.3},"8號":{"dx":-6.02,"y":3.1},"9號":{"dx":-7.2,"y":3.05},"10號":{"dx":-7.2,"y":4.27},"11號":{"dx":-8.4,"y":3.05},"12號":{"dx":-8.4,"y":4.27},"13號":{"dx":-9.6,"y":3.05},"15號":{"dx":-9.6,"y":4.27},"16號":{"dx":-10.8,"y":3.05}},"B":{"班牌":{"x":3.71,"y":6.14},"班旗":{"x":2,"y":6.7},"導師":{"x":0,"y":6.82},"口號":{"x":5.3,"y":5.5},"1號":{"x":-2.2,"y":6.8},"3號":{"x":5.97,"y":3.33},"4號":{"x":4.79,"y":1.76},"8號":{"x":-3.9,"y":6.2},"9號":{"x":-5.32,"y":5.12},"10號":{"x":1.02,"y":0.55},"11號":{"x":2.98,"y":0.92},"12號":{"x":-5.96,"y":3.32},"13號":{"x":-0.99,"y":0.54},"15號":{"x":-4.78,"y":1.75},"16號":{"x":-2.95,"y":0.91}}};
+let LAYOUT = {col: null, A: null, B: null};
+const BASE_COL = PEOPLE.map(P => ({dx: P.dx, y: P.y}));
+let FORM_A = assign(COL_S, ring(-3.7, CY_PERF, 2.15, 8).concat(ring(3.7, CY_PERF, 1.95, 7)));
+// 大圓→橢圓：上下各離跑道邊緣 0.5 公尺（人的圓心），左右拉長維持約 2 公尺間距
+// 大橢圓：導師（第 2 號）固定在最前面正中間＝最靠司令台那一點；
+// 班牌(0)、班旗(1)、口號(3)、男生 站前排（離司令台最近的位置），其他人站後排
+// 男生（座號）。「名單」可改，改過的存在該裝置
+const BOY_SEATS = [1, 2, 5, 6, 8, 9];   // 2、5、6 號是班牌、口號、班旗（本來就站前排）
+const DEFAULT_BOYS = PEOPLE.map((P, i) => i).filter(i => i >= 4 && BOY_SEATS.includes(PEOPLE[i].seat));
+let BOYS = new Set(DEFAULT_BOYS);
+function matchGroup(ppl, slots, from, pts) {   // 小組內用交換法求最短移動距離
+  const s = slots.slice();
+  const c = (a, b) => (from[a].x - pts[b].x) ** 2 + (from[a].y - pts[b].y) ** 2;
+  for (let again = true; again;) { again = false;
+    for (let i = 0; i < ppl.length; i++) for (let j = i + 1; j < ppl.length; j++)
+      if (c(ppl[i], s[j]) + c(ppl[j], s[i]) < c(ppl[i], s[i]) + c(ppl[j], s[j]) - 1e-9) { [s[i], s[j]] = [s[j], s[i]]; again = true; } }
+  const m = {}; ppl.forEach((q, i) => m[q] = s[i]); return m;
+}
+let FORM_B, FRONT_N = 0, FRONT_GAP = 0;
+function buildFormB() {
+  // 橢圓周長取樣：s＝從最靠司令台的正中間（導師）沿周長量的距離，正＝往東（畫面右）、負＝往西
+  const RX = 6.0, RY = CL - 0.5, M = 1440, cum = [0], P0 = [];
+  for (let k = 0; k <= M; k++) { const a = Math.PI / 2 - k * 2 * Math.PI / M; P0.push({x: RX * Math.cos(a), y: CY_PERF + RY * Math.sin(a)});
+    if (k) cum.push(cum[k - 1] + Math.hypot(P0[k].x - P0[k - 1].x, P0[k].y - P0[k - 1].y)); }
+  const L = cum[M], at = s => { s = ((s % L) + L) % L; let j = 0; while (cum[j + 1] < s) j++; return P0[j]; };
+  const quarter = L / 4;   // 前半圈的一半＝導師到跑道中線
+  const front = [0, 1, 3, ...[...BOYS].sort((a, b) => a - b)];   // 班牌、班旗、口號、男生
+  const rest = PEOPLE.map((_, i) => i).filter(i => i !== 2 && !front.includes(i));
+  // 前排：從導師往兩側等距排（右邊先多一個），間距最多 1.9 m、最少要排得進前半圈
+  const nR = Math.ceil(front.length / 2), nL = front.length - nR, d = Math.min(1.9, quarter / Math.max(nR, 1));
+  const fSlots = [...Array(nR)].map((_, k) => at(-(k + 1) * d)).concat([...Array(nL)].map((_, k) => at((k + 1) * d)));
+  // 後排：平均分散在剩下的後半圈
+  const sR = -nR * d, sL = nL * d, span = L - (sL - sR);
+  const bSlots = rest.map((_, k) => at(sL + span * (k + 1) / (rest.length + 1)));
+  const pts = [at(0), ...fSlots, ...bSlots];
+  const fi = fSlots.map((_, k) => k + 1), bi = bSlots.map((_, k) => k + 1 + fSlots.length);
+  const m = {2: 0, ...matchGroup(front, fi, FORM_A, pts), ...matchGroup(rest, bi, FORM_A, pts)};
+  FORM_B = PEOPLE.map((_, i) => pts[m[i]]);
+  FRONT_N = front.length + 1; FRONT_GAP = d;
+  if (LAYOUT.B) FORM_B = LAYOUT.B.map(q => ({...q}));   // 老師調整過就用調整的
+}
+buildFormB();
+const DROP = [{x: 9.0, y: 8.6}, {x: 7.6, y: 8.6}];   // 表演時班牌、班旗暫放處
+
+/* ============ 動作計算 ============ */
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const ease = u => { u = clamp(u, 0, 1); return u < .5 ? 4 * u * u * u : 1 - (-2 * u + 2) ** 3 / 2; };
+// 跑位用：頭尾各 20% 加減速、中間等速（避免中段衝太快）
+const glide = u => { u = clamp(u, 0, 1); const r = .2, v = 1 / (1 - r);
+  return u < r ? .5 * v * u * u / r : u < 1 - r ? .5 * v * r + v * (u - r) : 1 - .5 * v * (1 - u) ** 2 / r; };
+const lerp = (a, b, u) => ({x: a.x + (b.x - a.x) * u, y: a.y + (b.y - a.y) * u});
+function trap(tau, Tt, ta, td, D) {
+  const v = D / (Tt - (ta + td) / 2);
+  if (tau <= 0) return 0; if (tau >= Tt) return D;
+  if (tau < ta) return .5 * v / ta * tau * tau;
+  if (tau < Tt - td) return .5 * v * ta + v * (tau - ta);
+  const r = Tt - tau; return D - .5 * v / td * r * r;
+}
+function leaderX(t) {
+  if (t < T.go1) return X0;
+  if (t < T.stop1) return X0 + trap(t - T.go1, T.stop1 - T.go1, .5, 1, XS - X0);
+  if (t < T.go2) return XS;
+  const v = 1.54, tau = t - T.go2; return XS + (tau < .5 ? v * tau * tau : .25 * v + v * (tau - .5));
+}
+function pos(i, t) {
+  if (t < T.spread[0]) return colAt(i, leaderX(t));
+  if (t < T.spread[1]) return lerp(COL_S[i], FORM_A[i], glide((t - T.spread[0]) / (T.spread[1] - T.spread[0])));
+  if (t < T.gap[0]) return FORM_A[i];
+  if (t < T.gap[1]) return lerp(FORM_A[i], FORM_B[i], glide((t - T.gap[0]) / (T.gap[1] - T.gap[0])));
+  if (t < T.gather[0]) return FORM_B[i];
+  if (t < T.gather[1]) return lerp(FORM_B[i], COL_S[i], glide((t - T.gather[0]) / (T.gather[1] - T.gather[0])));
+  return colAt(i, leaderX(t));
+}
+function facing(t) {
+  const q = Math.PI / 2;
+  if (t < T.turnR) return 0;
+  if (t < T.turnR + .4) return q * ease((t - T.turnR) / .4);
+  if (t < T.turnL) return q;
+  if (t < T.turnL + .4) return q * (1 - ease((t - T.turnL) / .4));
+  return 0;
+}
+function headTurn(t) {
+  const q = Math.PI / 2;
+  if (t < T.rtHead || t > T.ftHead + .3) return 0;
+  if (t < T.rtHead + .3) return q * ease((t - T.rtHead) / .3);
+  if (t < T.ftHead) return q;
+  return q * (1 - ease((t - T.ftHead) / .3));
+}
+function stepping(t) {          // 回傳 0..1 的踏步彈跳量
+  let s0 = null;
+  if (t >= T.mark1 && t < T.stop1) s0 = T.mark1;
+  else if (t >= T.mark2 && t < T.end - 4) s0 = T.mark2;
+  if (s0 === null) return 0;
+  return 1 - (((t - s0) / B) % 1);
+}
+function propPos(k, t) {
+  const hold = pos(k, t);
+  if (t < T.spread[0] || t >= T.gather[1]) return hold;
+  if (t < T.spread[1]) return lerp(COL_S[k], DROP[k], glide((t - T.spread[0]) / (T.spread[1] - T.spread[0])));
+  if (t < T.gather[0]) return DROP[k];
+  return lerp(DROP[k], COL_S[k], glide((t - T.gather[0]) / (T.gather[1] - T.gather[0])));
+}
+let PATHS;
+function buildPaths() { PATHS = PEOPLE.map((_, i) => { const a = []; for (let t = 0; t <= T.end; t += .25) a.push(pos(i, t)); return a; }); }
+function assignVia(from, pts, next) {   // 兩個小圓自動排、大橢圓老師排好時：同時讓「隊伍→小圓」「小圓→大橢圓」兩段都短
+  const p = from.map((_, i) => i), d2 = (u, v) => (u.x - v.x) ** 2 + (u.y - v.y) ** 2;
+  const c = (i, j) => d2(from[i], pts[j]) + d2(pts[j], next[i]);
+  for (let again = true; again;) { again = false;
+    for (let i = 0; i < N; i++) for (let j = i + 1; j < N; j++)
+      if (c(i, p[j]) + c(j, p[i]) < c(i, p[i]) + c(j, p[j]) - 1e-9) { [p[i], p[j]] = [p[j], p[i]]; again = true; } }
+  return from.map((_, i) => pts[p[i]]);
+}
+function rebuildForms() {   // 起始隊形 → 兩個小圓 → 大橢圓 → 路線，依序重算
+  PEOPLE.forEach((P, i) => { const c = LAYOUT.col ? LAYOUT.col[i] : BASE_COL[i]; P.dx = c.dx; P.y = c.y; });
+  COL_S = PEOPLE.map((_, i) => colAt(i, XS));
+  const aPts = ring(-3.7, CY_PERF, 2.15, 8).concat(ring(3.7, CY_PERF, 1.95, 7));
+  FORM_A = LAYOUT.A ? LAYOUT.A.map(q => ({...q})) : LAYOUT.B ? assignVia(COL_S, aPts, LAYOUT.B) : assign(COL_S, aPts);
+  buildFormB(); buildPaths();
+}
+// 設定檔用「座號／職務」當鍵，人員順序以後改了也對得上
+const pkey = i => i < 4 ? PEOPLE[i].label : PEOPLE[i].seat + "號";
+function layoutToJSON() {
+  const o = {說明: "趣味進場隊形設定（起始隊形 dx＝相對班牌的前後公尺、y＝離跑道內緣公尺；表演隊形 x＝離司令台中線公尺、y＝離跑道內緣公尺）", version: 1};
+  for (const f of ["col", "A", "B"]) if (LAYOUT[f]) { o[f] = {}; LAYOUT[f].forEach((q, i) => o[f][pkey(i)] = Object.fromEntries(Object.entries(q).map(([k, v]) => [k, +v.toFixed(2)]))); }
+  return o;
+}
+function layoutFromJSON(o) {
+  const L = {col: null, A: null, B: null};
+  for (const f of ["col", "A", "B"]) if (o && o[f]) { const arr = PEOPLE.map((_, i) => o[f][pkey(i)]); if (arr.every(Boolean)) L[f] = arr.map(q => ({...q})); }
+  return L;
+}
+if (LAYOUT_DEFAULT) { LAYOUT = layoutFromJSON(LAYOUT_DEFAULT); rebuildForms(); }
+buildPaths();
+
+/* ============ 繪圖 ============ */
+const cv = document.getElementById("cv"), ctx = cv.getContext("2d");
+const W = 1920, H = 1080, FW = 1240, S = 45, CYV = 2.6;
+const FONT = '"Microsoft JhengHei","Noto Sans TC",sans-serif';
+let SEL = -1, cam = 0;
+const VBOX = {x: FW + 152, y: 300, w: 376, h: 600};   // 舞蹈影片位置（build.py 用同一組座標）
+
+const sx = x => FW / 2 + (x - cam) * S, sy = y => H / 2 + (y - CYV) * S;
+function txt(s, x, y, size, color, align = "center", halo = null, weight = 700) {
+  ctx.font = `${weight} ${size}px ${FONT}`; ctx.textAlign = align; ctx.textBaseline = "middle";
+  if (halo) { ctx.lineWidth = Math.max(3, size / 5); ctx.strokeStyle = halo; ctx.lineJoin = "round"; ctx.strokeText(s, x, y); }
+  ctx.fillStyle = color; ctx.fillText(s, x, y);
+}
+function rr(x, y, w, h, r) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); }
+
+function drawField(t) {
+  ctx.save(); ctx.beginPath(); ctx.rect(0, 0, FW, H); ctx.clip();
+  ctx.fillStyle = "#3a8f4a"; ctx.fillRect(0, 0, FW, sy(0));                    // 操場草地
+  ctx.fillStyle = "#8a9a8c"; ctx.fillRect(0, sy(LANES * LW), FW, H);            // 跑道外側
+  ctx.fillStyle = "#b9563b"; ctx.fillRect(0, sy(0), FW, LANES * LW * S);        // 跑道
+  for (let k = 0; k <= LANES; k++) {
+    ctx.strokeStyle = "rgba(255,255,255,.75)"; ctx.lineWidth = 2; ctx.setLineDash([]);
+    if (k === 3) { ctx.strokeStyle = "#ffe066"; ctx.lineWidth = 3; ctx.setLineDash([18, 12]); }
+    ctx.beginPath(); ctx.moveTo(0, sy(k * LW)); ctx.lineTo(FW, sy(k * LW)); ctx.stroke();
+  }
+  ctx.setLineDash([]);
+  for (let k = 1; k <= LANES; k++) for (let x = Math.floor((cam - 20) / 10) * 10; x < cam + 20; x += 10)
+    txt(String(k), sx(x) + 8, sy((k - .5) * LW), 13, "rgba(255,255,255,.45)", "left");
+  txt("中線", 12, sy(CL) - 12, 16, "#ffe066", "left", "rgba(0,0,0,.5)");
+  // 起點
+  const sxC = X0 - 5.4;
+  ctx.strokeStyle = "rgba(255,255,255,.85)"; ctx.lineWidth = 3; ctx.setLineDash([10, 8]);
+  ctx.beginPath(); ctx.ellipse(sx(sxC), sy(CL), 8 * S, 3.4 * S, 0, 0, 7); ctx.stroke(); ctx.setLineDash([]);
+  txt("起點", sx(sxC), sy(LANES * LW + 1.2), 28, "#fff", "center", "rgba(0,0,0,.55)");
+  // 司令台
+  ctx.fillStyle = "#ced4da"; rr(sx(STAGE.x0), sy(STAGE.y0), (STAGE.x1 - STAGE.x0) * S, (STAGE.y1 - STAGE.y0) * S, 8); ctx.fill();
+  ctx.strokeStyle = "#495057"; ctx.lineWidth = 3; ctx.stroke();
+  txt("司令台", sx(0), sy((STAGE.y0 + STAGE.y1) / 2), 34, "#212529");
+  const rt = STEPS.find(s => s.title === "向右——看"), fw = STEPS.find(s => s.title === "向前——看");
+  ctx.setLineDash([10, 8]); ctx.lineWidth = 4;
+  if (t >= rt.t - 3 && t < rt.x + 1.5) {   // 向右看：班牌到右側標兵
+    ctx.strokeStyle = "#ffd43b"; ctx.beginPath(); ctx.moveTo(sx(MARK_R), sy(-0.4)); ctx.lineTo(sx(MARK_R), sy(LANES * LW + 0.7)); ctx.stroke();
+    txt("班牌到這裡喊向右看", sx(MARK_R), sy(LANES * LW + 0.7) + 52, 22, "#ffd43b", "center", "rgba(0,0,0,.7)");
+  }
+  if (t >= fw.t && t < T.stop1 + 2) {   // 立定：全班中間對準司令台中央
+    ctx.strokeStyle = "#fff"; ctx.beginPath(); ctx.moveTo(sx(0), sy(-0.4)); ctx.lineTo(sx(0), sy(STAGE.y0)); ctx.stroke();
+    txt("全班中間對準司令台中央立定", sx(0), sy(STAGE.y0) - 18, 22, "#fff", "center", "rgba(0,0,0,.7)");
+  }
+  ctx.setLineDash([]);
+  for (const m of MARKERS) {   // 標兵
+    const x = sx(m.x), y = sy(m.y);
+    ctx.fillStyle = "#212529"; ctx.beginPath(); ctx.arc(x, y, 13, 0, 7); ctx.fill();
+    ctx.strokeStyle = "#ffd43b"; ctx.lineWidth = 3; ctx.stroke(); txt("兵", x, y + 1, 14, "#ffd43b");
+    txt(m.label, x, y + 26, 15, "#fff", "center", "rgba(0,0,0,.6)");
+  }
+  txt("前進方向 ➜", sx(cam) + FW / 2 - 24, sy(-1.2), 24, "#fff", "right", "rgba(0,0,0,.5)");
+  // 班旗、班牌
+  drawSign(propPos(0, t), t >= T.spread[1] && t < T.gather[0]);   // 0＝班牌（最前）
+  drawFlag(propPos(1, t), t >= T.spread[1] && t < T.gather[0]);   // 1＝班旗
+  // 選取者的路線
+  if (SEL >= 0) {
+    ctx.strokeStyle = "rgba(255,212,59,.75)"; ctx.lineWidth = 4; ctx.setLineDash([8, 8]);
+    ctx.beginPath(); PATHS[SEL].forEach((p, k) => k ? ctx.lineTo(sx(p.x), sy(p.y)) : ctx.moveTo(sx(p.x), sy(p.y))); ctx.stroke(); ctx.setLineDash([]);
+  }
+  // 人
+  const f = facing(t), h = headTurn(t), bob = stepping(t);
+  const top = i => i === SEL || (EDIT.on && i === EDIT.drag);   // 選取中、拖曳中的畫在最上層
+  const order = [...Array(N).keys()].sort((a, b) => top(a) - top(b));
+  for (const i of order) drawPerson(i, pos(i, t), f, h, bob);
+  drawCaption(t);
+  ctx.restore();
+}
+
+/* ---- 草地上的口令字幕（短影音風格：逐字跳出、白字粗黑邊、動令重擊放大＋震動） ---- */
+const CAP = {x: () => FW / 2 + 40, y: 285, maxW: 1060};
+const back = u => { const c1 = 1.70158, c3 = c1 + 1; u = clamp(u, 0, 1); return 1 + c3 * (u - 1) ** 3 + c1 * (u - 1) ** 2; };
+function capText(s, x, y, size, fill, sc = 1, rot = 0) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(sc, sc);
+  ctx.font = `900 ${size}px ${FONT}`; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.lineJoin = "round";
+  ctx.lineWidth = size * .2; ctx.strokeStyle = "rgba(0,0,0,.35)"; ctx.strokeText(s, size * .05, size * .07);   // 影子
+  ctx.lineWidth = size * .17; ctx.strokeStyle = "#111"; ctx.strokeText(s, 0, 0);
+  ctx.fillStyle = fill; ctx.fillText(s, 0, 0); ctx.restore();
+}
+function tag(s, x, y, color = "#fff") {
+  ctx.font = `800 26px ${FONT}`; const w = ctx.measureText(s).width + 32;
+  ctx.fillStyle = "rgba(0,0,0,.55)"; rr(x - w / 2, y - 21, w, 42, 21); ctx.fill(); txt(s, x, y, 26, color, "center", null, 800);
+}
+function drawCaption(t) {
+  if (EDIT.on) return;   // 調整隊形時不顯示口令字幕
+  const st = STEPS[curStep(t)], cx = CAP.x(), cy = CAP.y;
+  const blk = COUNT_BLOCKS.find(b => t >= b.t && t < b.t + b.reps * 4);
+  const cs = blk && st.t <= blk.t ? countState(t) : null;   // 拍子數到一半、新口令開始了 → 新口令優先
+  if (cs) {   // 1 1 121：每拍跳出一個字，當拍的字黃色放大
+    const size = 120, gap = size * .95, xs = [-2.3, -1.15, .3, 1.25, 2.2].map(k => cx + k * gap);
+    const o = t - blk.t - cs.rep * 4;
+    COUNT_SHOW.forEach((c, i) => {
+      const dt = o - COUNT_OFF[i]; if (dt < 0) return;
+      const cur = i === cs.hi;
+      capText(c, xs[i], cy - (cur ? 10 * (1 - clamp(dt / .2, 0, 1)) : 0), size, cur ? "#ffd43b" : "#fff", back(dt / .22) * (cur ? 1.15 : 1));
+    });
+    tag(`第 ${cs.rep + 1}／${cs.reps} 次`, cx, cy + 105);
+    return;
+  }
+  if (st.pre) {
+    if (t > st.x + 2.5) return;   // 喊完 2.5 秒後就收掉，不會在拍子之間又冒出舊口令
+    const pre = [...st.pre], exe = st.exe + "！", size0 = 112;
+    ctx.font = `900 ${size0}px ${FONT}`;
+    const wPre = ctx.measureText(st.pre).width, wExe = ctx.measureText(exe).width, dashW0 = size0 * 1.1;
+    const size = Math.min(size0, size0 * CAP.maxW / (wPre + dashW0 + wExe)), k = size / size0;
+    const we = wExe * k, dash = dashW0 * k, x0 = cx - (wPre * k + dash + we) / 2;
+    let shake = 0; if (t >= st.x && t < st.x + .3) shake = Math.sin((t - st.x) * 90) * 9 * (1 - (t - st.x) / .3);
+    ctx.save(); ctx.translate(shake, 0);
+    let xx = x0;   // 預令：逐字跳出
+    pre.forEach((c, i) => {
+      ctx.font = `900 ${size}px ${FONT}`; const cw = ctx.measureText(c).width, dt = t - st.t - i * .09;
+      if (dt > 0) capText(c, xx + cw / 2, cy - 14 * Math.max(0, 1 - dt / .18), size, "#fff", back(dt / .25));
+      xx += cw;
+    });
+    // 拉長的「——」：預令講完後一路長到動令
+    const d0 = st.t + pre.length * .09 + .15, grow = clamp((t - d0) / Math.max(.3, st.x - d0 - .1), 0, 1);
+    if (grow > 0) { const h = size * .16;
+      ctx.fillStyle = "#111"; rr(xx + 8, cy - h / 2 - 5, (dash - 16) * grow + 10, h + 10, h); ctx.fill();
+      ctx.fillStyle = "#fff"; rr(xx + 13, cy - h / 2, (dash - 16) * grow, h, h / 2); ctx.fill(); }
+    if (t >= st.x) {   // 動令：重擊放大
+      const dt = t - st.x, ex = xx + dash + we / 2;
+      if (dt < .35) { ctx.fillStyle = `rgba(255,212,59,${.6 * (1 - dt / .35)})`; ctx.beginPath(); ctx.arc(ex, cy, size * (.7 + dt * 3), 0, 7); ctx.fill(); }
+      capText(exe, ex, cy, size, "#ffd43b", dt < .14 ? 2.3 - 1.3 * ease(dt / .14) : 1 + .06 * Math.max(0, 1 - (dt - .14) / .2), -.06);
+    }
+    ctx.restore();
+    tag(t < st.x ? "預令（拉長）" : "動令（短促有力）", cx, cy + 100, t < st.x ? "#fff" : "#ffd43b");
+    return;
+  }
+  // 一般步驟：色塊標題跳出
+  const dt = t - st.t, sc = back(dt / .3), size = st.title.length > 8 ? 70 : 84;
+  ctx.save(); ctx.translate(cx, cy); ctx.scale(sc, sc); ctx.rotate(-.025);
+  ctx.font = `900 ${size}px ${FONT}`; const w = ctx.measureText(st.title).width + size * .8, h = size * 1.45;
+  ctx.fillStyle = "rgba(0,0,0,.3)"; rr(-w / 2 + 8, -h / 2 + 10, w, h, 18); ctx.fill();
+  ctx.fillStyle = st.perf ? "#e64980" : "#1c7ed6"; rr(-w / 2, -h / 2, w, h, 18); ctx.fill();
+  ctx.restore();
+  capText(st.title, cx, cy, size, "#fff", sc, -.025);
+}
+function drawFlag(p, down) {
+  const x = sx(p.x) + (down ? 0 : 14), y = sy(p.y) - (down ? 0 : 14);
+  ctx.strokeStyle = "#343a40"; ctx.lineWidth = 3; ctx.beginPath();
+  if (down) { ctx.moveTo(x - 22, y); ctx.lineTo(x + 22, y); } else { ctx.moveTo(x, y); ctx.lineTo(x, y - 40); }
+  ctx.stroke(); ctx.fillStyle = "#e03131"; ctx.beginPath();
+  if (down) { ctx.moveTo(x + 22, y); ctx.lineTo(x + 2, y - 2); ctx.lineTo(x + 12, y - 18); }
+  else { ctx.moveTo(x, y - 40); ctx.lineTo(x + 26, y - 31); ctx.lineTo(x, y - 22); }
+  ctx.fill();
+  if (down) txt("班旗", x, y + 16, 14, "#fff", "center", "rgba(0,0,0,.6)");
+}
+function drawSign(p, down) {
+  const x = sx(p.x) + (down ? 0 : 14), y = sy(p.y) - (down ? 0 : 14);
+  if (!down) { ctx.strokeStyle = "#343a40"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y - 24); ctx.stroke(); }
+  ctx.fillStyle = "#fff4e6"; rr(x - 18, (down ? y - 10 : y - 42), 36, 20, 3); ctx.fill(); ctx.strokeStyle = "#e8590c"; ctx.lineWidth = 2; ctx.stroke();
+  txt("班", x, down ? y : y - 32, 13, "#e8590c");
+  if (down) txt("班牌", x, y + 20, 14, "#fff", "center", "rgba(0,0,0,.6)");
+}
+const BOY_C = "#1971c2", GIRL_C = "#d6336c";
+function personColor(i) { return i < 4 || !BOYS.size ? PEOPLE[i].color : BOYS.has(i) ? BOY_C : GIRL_C; }
+function drawPerson(i, p, f, h, bob) {
+  const P = PEOPLE[i], x = sx(p.x), y = sy(p.y), r = 19 * (1 + .08 * bob), sel = i === SEL;
+  if (sel) { ctx.fillStyle = "rgba(255,212,59,.35)"; ctx.beginPath(); ctx.arc(x, y, r + 16, 0, 7); ctx.fill(); }
+  if (h) {   // 視線
+    ctx.strokeStyle = "#ffe066"; ctx.lineWidth = 3; ctx.setLineDash([5, 4]);
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + Math.cos(f + h) * 38, y + Math.sin(f + h) * 38); ctx.stroke(); ctx.setLineDash([]);
+  }
+  // 面向（鼻尖三角）
+  ctx.fillStyle = "#fff"; ctx.beginPath();
+  ctx.moveTo(x + Math.cos(f) * (r + 9), y + Math.sin(f) * (r + 9));
+  ctx.lineTo(x + Math.cos(f + 2.3) * (r - 2), y + Math.sin(f + 2.3) * (r - 2));
+  ctx.lineTo(x + Math.cos(f - 2.3) * (r - 2), y + Math.sin(f - 2.3) * (r - 2)); ctx.fill();
+  ctx.fillStyle = personColor(i); ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill();
+  ctx.strokeStyle = sel ? "#ffd43b" : "#fff"; ctx.lineWidth = sel ? 5 : 3; ctx.stroke();
+  txt(P.mark, x, y + 1, 19, "#fff");
+  const nm = (i < 4 && P.seat ? P.seat + "號" : "") + (NAMES[i] ? (i < 4 && P.seat ? " " : "") + NAMES[i] : "");
+  if (nm) { const up = p.y < CL - .1; txt(nm, x, up ? y - r - 13 : y + r + 15, 16, "#fff", "center", "rgba(0,0,0,.8)"); }
+}
+
+function drawMinimap(t) {
+  const x0 = 18, y0 = 18, w = 300, h = 186, k = 1.2, ox = x0 + 72, oy = y0 + 128, OVC = MARK_R + 42;   // OVC＝橢圓跑道中心
+  ctx.fillStyle = "rgba(20,24,28,.82)"; rr(x0, y0, w, h, 10); ctx.fill();
+  const R = 36.5, X = 42, Lw = LANES * LW;
+  const oval = (rad) => { ctx.beginPath(); ctx.moveTo(ox + (OVC - X) * k, oy - R * k - rad * k);
+    ctx.arc(ox + (OVC + X) * k, oy - R * k, rad * k, -Math.PI / 2, Math.PI / 2); ctx.arc(ox + (OVC - X) * k, oy - R * k, rad * k, Math.PI / 2, Math.PI * 1.5); ctx.closePath(); };
+  oval(R + Lw); ctx.fillStyle = "#b9563b"; ctx.fill();
+  oval(R); ctx.fillStyle = "#3a8f4a"; ctx.fill();
+  ctx.fillStyle = "#b9563b"; ctx.fillRect(ox + (X0 - 14) * k, oy, (OVC - X - X0 + 14) * k, Lw * k);   // 西邊直道延伸（起點）
+  for (const m of MARKERS) { ctx.fillStyle = "#fff"; ctx.fillRect(ox + m.x * k - 2, oy + m.y * k - 2, 4, 4); }
+  ctx.fillStyle = "#ced4da"; ctx.fillRect(ox + STAGE.x0 * k, oy + STAGE.y0 * k, (STAGE.x1 - STAGE.x0) * k, (STAGE.y1 - STAGE.y0) * k);
+  txt("司令台", ox, oy + 30, 13, "#fff");
+  ctx.strokeStyle = "#fff"; ctx.setLineDash([3, 3]); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.ellipse(ox + (X0 - 5.4) * k, oy + CL * k, 9 * k, 5 * k, 0, 0, 7); ctx.stroke(); ctx.setLineDash([]);
+  txt("起點", ox + (X0 - 5.4) * k, oy + 22, 12, "#fff");
+  txt("操場", ox + OVC * k, oy - 36, 14, "rgba(255,255,255,.7)");
+  // 可視範圍
+  ctx.strokeStyle = "#ffd43b"; ctx.lineWidth = 2;
+  ctx.strokeRect(ox + (cam - FW / 2 / S) * k, oy + (CYV - H / 2 / S) * k, FW / S * k, H / S * k);
+  for (let i = 0; i < N; i++) { const p = pos(i, t); ctx.fillStyle = i === SEL ? "#ffd43b" : "#fff"; ctx.beginPath(); ctx.arc(ox + p.x * k, oy + p.y * k, i === SEL ? 3 : 1.6, 0, 7); ctx.fill(); }
+  txt("全場位置", x0 + 12, y0 + 16, 14, "#adb5bd", "left");
+}
+
+function curStep(t) { let k = 0; STEPS.forEach((s, i) => { if (t >= s.t) k = i; }); return k; }
+function countState(t) {
+  for (const b of COUNT_BLOCKS) {
+    if (t >= b.t && t < b.t + b.reps * 4) { const rel = t - b.t, rep = Math.floor(rel / 4), o = rel - rep * 4;
+      let hi = -1; COUNT_OFF.forEach((c, k) => { if (o >= c && o < c + .45) hi = k; }); return {rep, reps: b.reps, hi}; }
+  }
+  return null;
+}
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
+
+function drawPanel(t, opt) {
+  const X = FW, PW = W - FW;
+  ctx.fillStyle = "#16191d"; ctx.fillRect(X, 0, PW, H);
+  const k = curStep(t), st = STEPS[k], perf = t >= T.m1 && t < T.mEnd;
+  // 階段
+  txt(`${st.no} ${PHASE[st.no]}`, X + 40, 52, 30, "#adb5bd", "left");
+  txt(fmt(t), W - 40, 52, 26, "#868e96", "right");
+  // 目前步驟（大字口令改在左邊草地上）
+  txt(st.title, X + PW / 2, 130, st.title.length > 9 ? 40 : 46, "#ffd43b");
+  txt(st.desc, X + PW / 2, 196, 24, "#dee2e6");
+  const cs = null;
+  // 表演：影片框；其他：步驟清單
+  if (perf) {
+    const v = VBOX;
+    ctx.fillStyle = "#000"; ctx.fillRect(v.x, v.y, v.w, v.h);
+    const inGap = t >= T.gap[0] && t < T.gap[1];
+    if (inGap) { txt("跑位！", v.x + v.w / 2, v.y + v.h / 2 - 30, 64, "#ffd43b"); txt("圍成大橢圓", v.x + v.w / 2, v.y + v.h / 2 + 40, 32, "#fff"); }
+    else if (opt.video) opt.video(v);
+    ctx.strokeStyle = "#ffd43b"; ctx.lineWidth = 4; ctx.strokeRect(v.x - 2, v.y - 2, v.w + 4, v.h + 4);
+    const left = (inGap ? T.gap[1] : t < T.gap[0] ? T.gap[0] : T.mEnd) - t;
+    txt(inGap ? `${left.toFixed(1)} 秒後開始第二段` : `這段還有 ${Math.ceil(left)} 秒`, X + PW / 2, v.y + v.h + 40, 26, "#adb5bd");
+  } else {
+    const y0 = cs ? 440 : 300, rowH = 62, from = clamp(k - 2, 0, STEPS.length - 8);
+    for (let j = 0; j < 8 && from + j < STEPS.length; j++) {
+      const i = from + j, s = STEPS[i], cur = i === k, done = i < k, y = y0 + j * rowH;
+      if (y > 960) break;
+      if (cur) { ctx.fillStyle = "#2b3036"; rr(X + 30, y - 26, PW - 60, 52, 10); ctx.fill(); }
+      txt(fmt(s.t), X + 50, y, 20, done ? "#495057" : "#868e96", "left");
+      txt(s.title, X + 130, y, 28, cur ? "#ffd43b" : done ? "#5c636a" : "#ced4da", "left");
+      if (s.pre) txt("喊", W - 56, y, 18, cur ? "#ffd43b" : "#5c636a", "right");
+    }
+  }
+  // 圖例
+  const lg = [["牌", "#e8590c", "班牌"], ["旗", "#e03131", "班旗"], ["師", "#7048e8", "導師"], ["令", "#2b8a3e", "口號"]]
+    .concat(BOYS.size ? [["1", BOY_C, "男生"], ["2", GIRL_C, "女生"]] : [["1", "#1971c2", "同學"]]);
+  const gapL = lg.length > 5 ? 104 : 120;
+  lg.forEach((l, i) => { const x = X + 50 + i * gapL, y = 1000;
+    ctx.fillStyle = l[1]; ctx.beginPath(); ctx.arc(x, y, 15, 0, 7); ctx.fill(); txt(l[0], x, y + 1, 15, "#fff"); txt(l[2], x + 22, y, 18, "#adb5bd", "left"); });
+  // 進度條
+  ctx.fillStyle = "#2b3036"; ctx.fillRect(X, H - 8, PW, 8);
+  ctx.fillStyle = "#ffd43b"; ctx.fillRect(X, H - 8, PW * clamp(t / T.end, 0, 1), 8);
+}
+
+const EDIT = {on: false, f: "B", t: 0, cam: 0, drag: -1};
+const EDIT_NAME = {col: "起始隊形", A: "兩個小圓", B: "大橢圓"};
+function editIssues(t) {   // 超出跑道、兩人太近
+  const P = PEOPLE.map((_, i) => pos(i, t)), out = new Set(), near = new Set();
+  if (EDIT.f !== "col") P.forEach((p, i) => { if (p.y - .42 < 0 || p.y + .42 > LANES * LW) out.add(i); });
+  for (let i = 0; i < N; i++) for (let j = i + 1; j < N; j++) if (Math.hypot(P[i].x - P[j].x, P[i].y - P[j].y) < .8) { near.add(i); near.add(j); }
+  return {P, out, near};
+}
+function drawEditOverlay(t) {
+  const {P, out, near} = editIssues(t);
+  ctx.save(); ctx.beginPath(); ctx.rect(0, 0, FW, H); ctx.clip();
+  P.forEach((p, i) => { if (!out.has(i) && !near.has(i)) return;
+    ctx.strokeStyle = out.has(i) ? "#ff3b3b" : "#ff922b"; ctx.lineWidth = 5; ctx.setLineDash([6, 4]);
+    ctx.beginPath(); ctx.arc(sx(p.x), sy(p.y), 30, 0, 7); ctx.stroke(); ctx.setLineDash([]); });
+  if (EDIT.drag >= 0) { const p = P[EDIT.drag]; txt(`離司令台中線 ${p.x >= 0 ? "東" : "西"} ${Math.abs(p.x).toFixed(1)} m・第 ${Math.min(LANES, Math.max(1, Math.ceil(p.y / LW)))} 道`, sx(p.x), sy(p.y) - 44, 18, "#fff", "center", "rgba(0,0,0,.8)"); }
+  const msg = `✏️ 調整中：${EDIT_NAME[EDIT.f]}　拖曳圓圈移動` + (out.size ? `　⚠ ${out.size} 人超出跑道` : "") + (near.size ? `　⚠ ${near.size} 人靠太近` : "");
+  ctx.font = `800 26px ${FONT}`; const w = ctx.measureText(msg).width + 40;
+  ctx.fillStyle = "rgba(0,0,0,.75)"; rr(FW / 2 - w / 2, 216, w, 50, 25); ctx.fill(); txt(msg, FW / 2, 241, 26, out.size || near.size ? "#ffd43b" : "#fff", "center", null, 800);
+  ctx.restore();
+}
+function render(t, opt = {}) {
+  let cx = 0; for (let i = 0; i < N; i++) cx += pos(i, t).x; cam = Math.min(cx / N, 4);
+  if (EDIT.on) cam = EDIT.cam;
+  ctx.clearRect(0, 0, W, H);
+  drawField(t); if (EDIT.on) drawEditOverlay(t); drawMinimap(t); drawPanel(t, opt);
+}
+window.renderFrame = (t) => render(t, {});
+window.setNames = (a) => { NAMES = PEOPLE.map((_, i) => a[i] || ""); };
+window.TL = {CUES, T, VBOX, END: T.end, STEPS, COUNT_BLOCKS};
+
+/* ============ 互動 ============ */
+const Q = new URLSearchParams(location.search);
+if (Q.has("render")) document.body.classList.add("render");
+try { const s = JSON.parse(localStorage.getItem("sportgame-names3") || "null"); if (Array.isArray(s)) setNames(s); } catch (e) {}
+const au = document.getElementById("au"), vo = document.getElementById("vo"), dv = document.getElementById("dv");
+const bar = document.getElementById("bar"), tm = document.getElementById("tm"), playB = document.getElementById("play");
+const meSel = document.getElementById("me");
+bar.max = T.end;
+let clock = {t: 0, playing: false, last: 0, rate: 1}, audioOK = true;
+au.addEventListener("error", () => audioOK = false);
+function now() { return audioOK ? au.currentTime : clock.t; }
+function seek(t) { t = clamp(t, 0, T.end); if (audioOK) { au.currentTime = t; vo.currentTime = t; } clock.t = t; }
+function setPlay(on) {
+  clock.playing = on; clock.last = performance.now();
+  if (audioOK) { if (on) { vo.currentTime = au.currentTime; au.play().catch(() => { audioOK = false; }); vo.play().catch(() => {}); } else { au.pause(); vo.pause(); } }
+  playB.textContent = on ? "⏸ 暫停" : "▶ 播放";
+}
+playB.onclick = () => setPlay(!clock.playing);
+bar.oninput = () => seek(+bar.value);
+document.getElementById("spd").onchange = e => { clock.rate = +e.target.value; au.playbackRate = vo.playbackRate = clock.rate; };
+// 口令靜音：只關口令軌，音樂照常
+const muteB = document.getElementById("mute");
+function setMute(m) { vo.muted = m; muteB.textContent = m ? "🔇 口令聲：關" : "🔊 口令聲：開"; muteB.style.borderColor = m ? "#ff6b6b" : ""; try { localStorage.setItem("sportgame-mute", m ? "1" : "0"); } catch (e) {} }
+muteB.onclick = () => setMute(!vo.muted);
+try { setMute(localStorage.getItem("sportgame-mute") === "1"); } catch (e) {}
+document.getElementById("prev").onclick = () => { const k = curStep(now() - .5); seek(STEPS[k].t); };
+document.getElementById("next").onclick = () => { const k = curStep(now()); if (k + 1 < STEPS.length) seek(STEPS[k + 1].t); };
+cv.onclick = () => { if (!EDIT.on) setPlay(!clock.playing); };
+// 調整隊形
+const editp = document.getElementById("editp"), emsg = document.getElementById("emsg");
+const EDIT_T = () => ({col: 0.5, A: T.m1 + 1, B: T.gap[1] + 1})[EDIT.f];
+try { const raw = localStorage.getItem("sportgame-layout"); if (raw) { LAYOUT = layoutFromJSON(JSON.parse(raw)); rebuildForms(); } } catch (e) {}
+function saveLayout() { try { localStorage.setItem("sportgame-layout", JSON.stringify(layoutToJSON())); } catch (e) {} }
+function chooseForm(f) {
+  EDIT.f = f; EDIT.t = EDIT_T();
+  let cx = 0; for (let i = 0; i < N; i++) cx += pos(i, EDIT.t).x; EDIT.cam = Math.min(cx / N, 4);
+  editp.querySelectorAll(".seg button").forEach(b => b.classList.toggle("cur", b.dataset.f === f));
+  emsg.textContent = LAYOUT[f] ? `「${EDIT_NAME[f]}」是你調整過的版本` : `「${EDIT_NAME[f]}」目前是自動排的`;
+}
+function setEdit(on) {
+  EDIT.on = on; editp.classList.toggle("on", on); cv.style.touchAction = on ? "none" : "";
+  document.getElementById("ebtn").style.borderColor = on ? "#ffd43b" : "";
+  if (on) { setPlay(false); chooseForm(EDIT.f); } else seek(EDIT.t);
+}
+document.getElementById("ebtn").onclick = () => setEdit(!EDIT.on);
+document.getElementById("edone").onclick = () => setEdit(false);
+editp.querySelectorAll(".seg button").forEach(b => b.onclick = () => chooseForm(b.dataset.f));
+document.getElementById("ereset").onclick = () => { LAYOUT[EDIT.f] = null; rebuildForms(); saveLayout(); chooseForm(EDIT.f); };
+document.getElementById("edl").onclick = () => {
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(layoutToJSON(), null, 1)], {type: "application/json"}));
+  a.download = "趣味進場_隊形設定.json"; document.body.appendChild(a); a.click(); a.remove();
+  emsg.textContent = "已下載「趣味進場_隊形設定.json」（在下載資料夾），請交給 Claude 寫進網頁";
+};
+document.getElementById("eload").onclick = () => document.getElementById("efile").click();
+document.getElementById("efile").onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try { LAYOUT = layoutFromJSON(JSON.parse(await f.text())); rebuildForms(); saveLayout(); chooseForm(EDIT.f); emsg.textContent = "已載入設定檔"; }
+  catch (err) { emsg.textContent = "設定檔讀不懂：" + err.message; }
+  e.target.value = "";
+};
+function canvasWorld(ev) {
+  const r = cv.getBoundingClientRect(), px = (ev.clientX - r.left) * W / r.width, py = (ev.clientY - r.top) * H / r.height;
+  return {px, py, x: cam + (px - FW / 2) / S, y: CYV + (py - H / 2) / S};
+}
+cv.addEventListener("pointerdown", ev => {
+  if (!EDIT.on) return;
+  const w = canvasWorld(ev); if (w.px > FW) return;
+  let best = -1, bd = 1e9;
+  PEOPLE.forEach((_, i) => { const p = pos(i, EDIT.t), d = Math.hypot(sx(p.x) - w.px, sy(p.y) - w.py); if (d < bd) { bd = d; best = i; } });
+  if (bd > 34) return;
+  EDIT.drag = best; cv.setPointerCapture(ev.pointerId); ev.preventDefault();
+});
+cv.addEventListener("pointermove", ev => {
+  if (!EDIT.on || EDIT.drag < 0) return;
+  const w = canvasWorld(ev), i = EDIT.drag, x = Math.round(w.x * 10) / 10, y = Math.round(clamp(w.y, -3, LANES * LW + 3) * 10) / 10;
+  if (EDIT.f === "col") { LAYOUT.col = LAYOUT.col || PEOPLE.map(P => ({dx: P.dx, y: P.y})); LAYOUT.col[i] = {dx: +(x - leaderX(EDIT.t)).toFixed(2), y}; }
+  else { LAYOUT[EDIT.f] = LAYOUT[EDIT.f] || (EDIT.f === "A" ? FORM_A : FORM_B).map(q => ({x: q.x, y: q.y})); LAYOUT[EDIT.f][i] = {x, y}; }
+  rebuildForms();
+});
+const endDrag = () => { if (EDIT.drag >= 0) { EDIT.drag = -1; saveLayout(); chooseForm(EDIT.f); } };
+cv.addEventListener("pointerup", endDrag); cv.addEventListener("pointercancel", endDrag);
+window.EDITAPI = {setEdit, chooseForm, layoutToJSON};
+document.addEventListener("keydown", e => { if (e.target.tagName === "INPUT") return; if (e.key === " ") { e.preventDefault(); setPlay(!clock.playing); } if (e.key === "m" || e.key === "M") setMute(!vo.muted); });
+function fillMe() {
+  meSel.length = 1;
+  PEOPLE.forEach((P, i) => { const o = document.createElement("option"); o.value = i; o.textContent = (P.seat ? P.seat + "號 " : "") + (i < 4 ? P.label : "") + (NAMES[i] ? " " + NAMES[i] : ""); meSel.appendChild(o); });
+  meSel.value = SEL;
+}
+meSel.onchange = () => SEL = +meSel.value;
+if (Q.has("me")) SEL = clamp(+Q.get("me"), -1, N - 1);
+// 名單
+const ng = document.getElementById("ng");
+try { const raw = localStorage.getItem("sportgame-boys3"); const b = raw === null ? null : JSON.parse(raw); if (Array.isArray(b)) setBoys(b); } catch (e) {}   // 沒存過就用預設
+function setBoys(a) { BOYS = new Set(a.filter(i => i >= 4 && i < N)); buildFormB(); buildPaths(); }
+window.setBoys = setBoys;
+PEOPLE.forEach((P, i) => {
+  const l = document.createElement("label"); l.innerHTML = `<span style="color:${P.color}">●</span>${i < 4 ? P.label + (P.seat ? `<small>${P.seat}號</small>` : "") : P.label}`;
+  const inp = document.createElement("input"); inp.maxLength = 6; inp.value = NAMES[i]; inp.className = "nm"; l.appendChild(inp);
+  if (i >= 4) { const cb = document.createElement("input"); cb.type = "checkbox"; cb.className = "boy"; cb.dataset.i = i; cb.checked = BOYS.has(i); cb.title = "男生";
+    const t = document.createElement("span"); t.textContent = "男"; t.style.fontSize = "14px"; l.appendChild(cb); l.appendChild(t); }
+  ng.appendChild(l);
+});
+document.getElementById("nclose").onclick = () => document.getElementById("names").classList.remove("on");
+document.getElementById("nbtn").onclick = () => document.getElementById("names").classList.toggle("on");
+document.getElementById("nsave").onclick = () => {
+  const a = [...ng.querySelectorAll("input.nm")].map(x => x.value.trim()); setNames(a);
+  const b = [...ng.querySelectorAll("input.boy")].filter(x => x.checked).map(x => +x.dataset.i); setBoys(b);
+  try { localStorage.setItem("sportgame-names3", JSON.stringify(a)); localStorage.setItem("sportgame-boys3", JSON.stringify(b)); } catch (e) {} fillMe();
+};
+document.getElementById("nclear").onclick = () => { ng.querySelectorAll("input.nm").forEach(x => x.value = ""); ng.querySelectorAll("input.boy").forEach(x => x.checked = false); document.getElementById("nsave").onclick(); };
+fillMe();
+
+function videoDraw(v) {
+  const want = now() - T.m1;
+  if (Math.abs(dv.currentTime - want) > .25) dv.currentTime = want;
+  if (clock.playing && dv.paused) dv.play().catch(() => {});
+  if (!clock.playing && !dv.paused) dv.pause();
+  dv.playbackRate = clock.rate;
+  if (dv.readyState >= 2) ctx.drawImage(dv, v.x, v.y, v.w, v.h);
+}
+function loop(ts) {
+  if (!audioOK && clock.playing) { clock.t += (ts - clock.last) / 1000 * clock.rate; }
+  clock.last = ts;
+  let t = EDIT.on ? EDIT.t : now();
+  if (audioOK && clock.playing && Math.abs(vo.currentTime - au.currentTime) > .08) vo.currentTime = au.currentTime;   // 口令軌跟音樂軌對齊
+  if (t >= T.end) { setPlay(false); t = T.end; }
+  if (document.activeElement !== bar) bar.value = t;
+  tm.textContent = `${fmt(t)} / ${fmt(T.end)}`;
+  render(t, {video: videoDraw});
+  if (!(t >= T.m1 && t < T.mEnd) && !dv.paused) dv.pause();
+  requestAnimationFrame(loop);
+}
+if (!Q.has("render")) requestAnimationFrame(loop); else render(0);
+</script>
+</body>
+</html>
