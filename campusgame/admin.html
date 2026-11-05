@@ -45,6 +45,9 @@ td button{min-height:30px;padding:3px 9px;font-size:13px}
 .groups{display:flex;flex-wrap:wrap;gap:6px}
 .groups span{background:var(--bg);border-radius:8px;padding:5px 9px;font-size:13px}
 #gate{max-width:520px;margin:60px auto;text-align:center}
+#moodMap{width:100%;max-width:720px;aspect-ratio:330/275;border:1px solid var(--line);border-radius:10px;background:#f4f6f2;display:block}
+.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:13px;margin:6px 0}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:4px;vertical-align:-1px}
 .hidden{display:none!important}
 </style>
 </head>
@@ -78,7 +81,8 @@ td button{min-height:30px;padding:3px 9px;font-size:13px}
       <h2 id="dTitle"></h2>
       <div class="row">
         <label>預算 <input id="iBudget" type="number" min="100" max="9999" step="50" style="width:90px"> 點</label>
-        <label>階段 <select id="iPhase"><option value="build">改造（建造）</option><option value="explore">探勘（M6 尚未開放）</option><option value="show">展示（M7 尚未開放）</option></select></label>
+        <label>階段 <select id="iPhase"><option value="build">改造（建造）</option><option value="explore">探勘（放心情釘）</option><option value="show">展示（M7 尚未開放）</option></select></label>
+        <label><input id="iMoodOpen" type="checkbox"> 開放全班心情熱區給學生看</label>
         <button id="bSave">儲存設定</button>
       </div>
       <div id="setMsg" class="msg"></div>
@@ -102,6 +106,12 @@ td button{min-height:30px;padding:3px 9px;font-size:13px}
 
       <h3>各組進度</h3>
       <div class="row"><button id="bWorks">重新整理</button><span id="works" class="muted"></span></div>
+
+      <h3>全班心情釘（探勘）</h3>
+      <div class="row"><button id="bMood">重新整理</button><span id="moodStat" class="muted"></span></div>
+      <div class="legend" id="moodLegend"></div>
+      <canvas id="moodMap" width="660" height="550"></canvas>
+      <p class="muted">紅圈數字是學校安全地圖的 8 個危險點。學生端要等你勾選「開放全班心情熱區」並儲存後才看得到彙整；學生的安心分也會改用全班「怕／暗／想躲」的位置計算。</p>
 
       <h3>刪除這個班級</h3>
       <p class="muted">會刪掉班級、名單與各組作品，無法復原。</p>
@@ -171,10 +181,10 @@ async function pickClass(id){
   $('classes').querySelectorAll('li').forEach((li) => li.classList.toggle('on', li.dataset.id === id));
   $('detail').classList.remove('hidden'); $('pick').classList.add('hidden');
   $('dTitle').textContent = `${CUR.data.year} 學年 ${CUR.data.name}`;
-  $('iBudget').value = CUR.data.budget || 1000; $('iPhase').value = CUR.data.phase || 'build'; $('iSize').value = CUR.data.groupSize || 4;
+  $('iBudget').value = CUR.data.budget || 1000; $('iPhase').value = CUR.data.phase || 'build'; $('iSize').value = CUR.data.groupSize || 4; $('iMoodOpen').checked = !!CUR.data.moodOpen;
   $('tImport').value = ''; $('prev').textContent = ''; $('bImport').disabled = true; PREVIEW = null;
   ['setMsg', 'groupMsg', 'delMsg'].forEach((m) => say(m, '')); $('works').textContent = '';
-  await loadRoster();
+  await loadRoster(); loadMoods();
 }
 async function loadRoster(){
   try { ROSTER = (await C.query('cgRoster', 'classId', CUR.id)).map((r) => ({ email: r.id, ...r.data })).sort((a, b) => a.seat - b.seat || a.email.localeCompare(b.email)); }
@@ -197,8 +207,9 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 
 // ---------- 設定 ----------
 $('bSave').onclick = async () => {
-  const budget = Math.max(100, Math.min(9999, Math.round(+$('iBudget').value || 1000))), phase = $('iPhase').value;
-  try { await C.patch('cgClasses/' + CUR.id, { budget, phase }, ['budget', 'phase']); CUR.data.budget = budget; CUR.data.phase = phase; say('setMsg', '已儲存。', 'ok'); }
+  const budget = Math.max(100, Math.min(9999, Math.round(+$('iBudget').value || 1000))), phase = $('iPhase').value, moodOpen = $('iMoodOpen').checked;
+  try { await C.patch('cgClasses/' + CUR.id, { budget, phase, moodOpen }, ['budget', 'phase', 'moodOpen']); Object.assign(CUR.data, { budget, phase, moodOpen });
+    say('setMsg', '已儲存。學生端約 30 秒內會更新' + (phase === 'explore' ? '（工具列出現「心情釘」）' : '') + '。', 'ok'); }
   catch (e){ say('setMsg', '儲存失敗：' + e.message, 'err'); }
 };
 
@@ -290,11 +301,33 @@ $('bDel').onclick = async () => {
   b.disabled = true;
   try {
     const k = Math.max(CUR.data.groups || 0, ...ROSTER.map((r) => r.g || 0));
-    await C.commit([...ROSTER.map((r) => ({ path: 'cgRoster/' + r.email, del: true })), ...Array.from({ length: k }, (_, i) => ({ path: 'cgWorks/' + C.workId(CUR.id, i + 1), del: true })), { path: 'cgClasses/' + CUR.id, del: true }]);
+    const moods = await C.query('cgMoods', 'classId', CUR.id).catch(() => []);
+    await C.commit([...moods.map((m) => ({ path: 'cgMoods/' + m.id, del: true })), ...ROSTER.map((r) => ({ path: 'cgRoster/' + r.email, del: true })), ...Array.from({ length: k }, (_, i) => ({ path: 'cgWorks/' + C.workId(CUR.id, i + 1), del: true })), { path: 'cgClasses/' + CUR.id, del: true }]);
     say('delMsg', '已刪除。', 'ok'); CUR = null; $('detail').classList.add('hidden'); $('pick').classList.remove('hidden'); await loadClasses();
   } catch (e){ say('delMsg', '刪除失敗：' + e.message, 'err'); }
   b.disabled = false; b.classList.remove('arm'); b.textContent = '刪除班級';
 };
+
+// ---------- 全班心情釘地圖（校界與危險點座標抄自 index.html 的 BOUND、PTS） ----------
+const BOUND = [[-10, -31], [10, -28], [50, -15], [90, -1], [245, 98], [282, 124], [282, 156], [258, 187], [219.6, 187.4], [214, 187.5], [112, 188.5], [60, 189], [-10, 187]];
+const PTS = [[1, '泗水園', 20, 160], [2, '資訊館後方', 86, 182], [3, '活動中心後及側邊', 230, 100], [4, '學生腳踏車車棚', 240, 184], [5, '停車場原舞台後方階梯', 0, -24], [6, '人文館東側', 124, 42], [7, '圖書館一樓後方階梯', 8, -1], [8, '校園後門', 211, 173]];
+$('moodLegend').innerHTML = C.MOODS.map(([, e, n, c]) => `<span><i style="background:${c}"></i>${e} ${n}</span>`).join('');
+$('bMood').onclick = () => loadMoods();
+async function loadMoods(){
+  const cv = $('moodMap'), x = cv.getContext('2d'), X = (v) => (v + 30) * 2, Z = (v) => (v + 60) * 2;
+  let docs = []; try { docs = await C.query('cgMoods', 'classId', CUR.id); } catch (e){ $('moodStat').textContent = '讀取失敗：' + e.message; return; }
+  const pins = docs.flatMap((d) => Object.values(d.data.pins || {}));
+  x.clearRect(0, 0, cv.width, cv.height); x.fillStyle = '#e6eadf'; x.beginPath(); BOUND.forEach(([a, b], i) => i ? x.lineTo(X(a), Z(b)) : x.moveTo(X(a), Z(b))); x.closePath(); x.fill();
+  x.strokeStyle = '#8a9a7a'; x.lineWidth = 2; x.stroke();
+  for (const p of pins){ const c = (C.MOODS.find((m) => m[0] === p.m) || C.MOODS[0])[3], g = x.createRadialGradient(X(p.x), Z(p.z), 0, X(p.x), Z(p.z), 26);
+    g.addColorStop(0, c + 'aa'); g.addColorStop(1, c + '00'); x.fillStyle = g; x.fillRect(X(p.x) - 26, Z(p.z) - 26, 52, 52); }
+  x.font = '18px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  for (const p of pins) x.fillText((C.MOODS.find((m) => m[0] === p.m) || C.MOODS[0])[1], X(p.x), Z(p.z));
+  x.font = 'bold 13px sans-serif';
+  for (const [n, t, a, b] of PTS){ x.beginPath(); x.arc(X(a), Z(b), 10, 0, 7); x.fillStyle = '#fff'; x.fill(); x.strokeStyle = '#d7263d'; x.lineWidth = 3; x.stroke(); x.fillStyle = '#d7263d'; x.fillText(n, X(a), Z(b) + 1); }
+  const by = {}; pins.forEach((p) => by[p.m] = (by[p.m] || 0) + 1);
+  $('moodStat').textContent = pins.length ? `${docs.length} 位同學放了 ${pins.length} 支：` + C.MOODS.map(([k, e, n]) => `${e}${n} ${by[k] || 0}`).join('、') : '還沒有人放心情釘。';
+}
 
 boot();
 window.__admin = { get CLASSES(){ return CLASSES; }, get ROSTER(){ return ROSTER; }, plan };   // 測試用

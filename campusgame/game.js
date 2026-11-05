@@ -2,6 +2,7 @@
 // M3：拆除原有物件（樹、棕櫚、樹籬、路燈、中庭桌椅）、可放在資訊館平台與司令台台面
 // M4：磁磚拖曳連鋪、校園評價星等、套組觸發、圖層（危險點、暗區、照明、求助）、顧問提示
 // M5：學校 Google 帳號登入，依名單進入自己那一組，作品存在 Firestore cgWorks（每 5 秒同步同組隊友）
+// M6：探勘階段放心情釘（怕／吵／暗／想待／想躲，每種 3 支），老師開放後看全班熱區；安心分改以全班「怕／暗／想躲」為需求點
 // 由 index.html 在「同材質合併」之後載入，學生物件掛在 studentRoot，每種「物件＋顏色」一組 InstancedMesh，不參與合併。
 // 規格：C:\1031hlbhschool\校園改造遊戲規格書.md §4.2–4.6、§10
 import * as THREE from '../campus3d/lib/three.module.js';
@@ -9,6 +10,7 @@ import { CATS, ITEMS, PALETTE, BY_ID, bake, build, variants } from './items.js';
 import { REMOVE } from './items-data.js';
 import { score, isLight, isHelp, inPoly as inP, K as SK } from './score.js';
 import * as CL from './cloud.js';
+import { CSS2DObject } from '../campus3d/lib/CSS2DRenderer.js';
 
 let BUDGET = 1000, SAVE_KEY = 'campusgame-work-v1';   // 登入班級後改用班級預算與該組的存檔鍵
 const MAX_ITEMS = 300, MAX_TILES = 400, GRID = .5, UNDO_MAX = 50;
@@ -114,6 +116,15 @@ const CSS = `
 #gLogin.in{background:#e8f5e9;color:#1b5e20}
 #gLogin i{display:inline-block;width:8px;height:8px;border-radius:50%;background:#2ecc71;margin-left:6px;vertical-align:middle}
 #gLogin i.busy{background:#f2c230} #gLogin i.err{background:#e53935}
+#gMood{position:absolute;z-index:13;background:var(--panel);border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.25);padding:8px;display:none;gap:6px;flex-wrap:wrap;max-width:min(420px,calc(100% - 16px))}
+#gMood.show{display:flex}
+#gMood button{font:inherit;font-size:14px;font-weight:800;padding:8px 10px;border-radius:10px;border:2px solid var(--line);background:var(--btn);color:var(--ink);cursor:pointer;min-width:74px}
+#gMood button.on{border-color:var(--accent);box-shadow:0 0 0 3px rgba(31,111,235,.25)}
+#gMood button small{display:block;font-size:11px;color:var(--sub)}
+#gMood p{flex-basis:100%;margin:2px 4px 0;font-size:12px;color:var(--sub);font-weight:700}
+.mpin{font-size:20px;line-height:1;background:#fff;border:3px solid;border-radius:50% 50% 50% 0;transform:rotate(-45deg);width:30px;height:30px;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 6px rgba(0,0,0,.35);pointer-events:none;margin-top:-30px}
+.mpin span{transform:rotate(45deg)}
 `;
 
 export function init(G){
@@ -325,7 +336,7 @@ export function init(G){
   }
 
   const tools = document.createElement('div'); tools.id = 'gTools';
-  tools.innerHTML = `<button data-t="cat" class="on">型錄</button><button data-t="layer">圖層</button><button data-t="demo" class="demo" title="點一下物件就移走（自己放的或原有的樹、樹籬、路燈、中庭桌椅）">移除</button><button data-t="rot">旋轉</button><button data-t="grid" class="on">格線</button>
+  tools.innerHTML = `<button data-t="cat" class="on">型錄</button><button data-t="mood" style="display:none">心情釘</button><button data-t="layer">圖層</button><button data-t="demo" class="demo" title="點一下物件就移走（自己放的或原有的樹、樹籬、路燈、中庭桌椅）">移除</button><button data-t="rot">旋轉</button><button data-t="grid" class="on">格線</button>
     <button data-t="undo">↶ 復原</button><button data-t="redo">↷ 重做</button><button data-t="done">完成</button><button data-t="snd" class="on">音效</button><button data-t="reset" class="reset">全部重置</button>`;
   body.appendChild(tools);
   const tb = {}; tools.querySelectorAll('button').forEach((b) => tb[b.dataset.t] = b);
@@ -334,7 +345,7 @@ export function init(G){
   tb.demo.onclick = () => setDemolish(TOOL !== 'demolish');
   tb.grid.onclick = () => { SNAP = !SNAP; tb.grid.classList.toggle('on', SNAP); toast(SNAP ? '對齊 0.5 m 格線' : '自由放置（不對齊格線）'); };
   tb.undo.onclick = undo; tb.redo.onclick = redo;
-  tb.done.onclick = () => { endPlace(); deselect(); setDemolish(false); };
+  tb.done.onclick = () => { endPlace(); deselect(); setDemolish(false); if (TOOL === 'mood') setMood(null); };
   tb.snd.onclick = () => { SOUND = !SOUND; tb.snd.classList.toggle('on', SOUND); };
   tb.reset.onclick = () => askReset();
 
@@ -382,7 +393,7 @@ export function init(G){
     else if (a === 'copy'){ startPlace(it.id, it.v || 0, it.rot); }
     else if (a === 'del'){ const u = sel; deselect(); commit([{ u, a: { ...it }, b: null }]); toast('已收回（可按「復原」拿回來）'); }
   }
-  function select(u){ if (TOOL === 'place') endPlace(); setDemolish(false); sel = u; TOOL = 'idle'; status(''); showSel(); }
+  function select(u){ if (TOOL === 'place') endPlace(); setDemolish(false); if (TOOL === 'mood') setMood(null); sel = u; TOOL = 'idle'; status(''); showSel(); }
   function deselect(){ sel = null; if (TOOL === 'moveTo') TOOL = 'idle'; status(''); showSel(); }
   function rotate(){
     if (TOOL === 'place' && PL){ PL.rot = (PL.rot + 45) % 360; if (ghost) ghost.rotation.y = PL.rot * D2R; ghostAt(PL.x, PL.z); return; }
@@ -404,7 +415,7 @@ export function init(G){
     startPlace(id, 0, 0);
   }
   function startPlace(id, v, rot){
-    deselect(); endPlace(); setDemolish(false); PL = { id, v, rot: rot || 0, x: null, y: 0, z: null }; TOOL = 'place';
+    deselect(); endPlace(); setDemolish(false); if (TOOL === 'mood') setMood(null); PL = { id, v, rot: rot || 0, x: null, y: 0, z: null }; TOOL = 'place';
     ghost = ghostOf(id, v); ghost.rotation.y = PL.rot * D2R; ghost.visible = false; fx.add(ghost);
     gridEl.querySelectorAll('.gc').forEach((c) => c.classList.toggle('on', c.dataset.id === id));
     status(isTile(id) ? `鋪「${BY_ID[id].name}」：點一格鋪一格、按住拖曳連續鋪・在同款磁磚上按住拖曳＝擦掉・要轉視角先按「完成」或用兩指`
@@ -442,7 +453,7 @@ export function init(G){
     if (!ON || WALK.on || e.target !== canvas || (e.button !== undefined && e.button > 0)) return;
     if (ptrs.size > 1){ clearTimeout(lp); down = null; if (drag) endDrag(false); if (paint) endPaint(); return; }
     if (TOOL === 'place' && PL && isTile(PL.id)){ startPaint(e); e.stopPropagation(); e.preventDefault(); return; }
-    const u = TOOL === 'place' || TOOL === 'demolish' ? null : pick(e.clientX, e.clientY);
+    const u = TOOL === 'place' || TOOL === 'demolish' || TOOL === 'mood' ? null : pick(e.clientX, e.clientY);
     if (u && u === sel){ startDrag(u, e.pointerId, e.clientX, e.clientY); e.stopPropagation(); e.preventDefault(); return; }
     down = { x: e.clientX, y: e.clientY, t: performance.now(), id: e.pointerId, u, moved: false };
     clearTimeout(lp);
@@ -506,6 +517,7 @@ export function init(G){
       TOOL = 'idle'; status(''); commit([{ u: sel, a: { ...it }, b: { ...it, x, y: g.y, z } }]); bounce(sel); return;
     }
     if (TOOL === 'demolish'){ demolishAt(cx, cy); return; }
+    if (TOOL === 'mood'){ moodAt(cx, cy); return; }
     if (u) select(u); else if (sel) deselect();
   }
   addEventListener('keydown', (e) => {
@@ -513,7 +525,7 @@ export function init(G){
     const k = e.key.toLowerCase(), mod = e.ctrlKey || e.metaKey;
     if (mod && k === 'z'){ e.preventDefault(); e.shiftKey ? redo() : undo(); }
     else if (mod && k === 'y'){ e.preventDefault(); redo(); }
-    else if (k === 'escape'){ if (cf.classList.contains('show')){ cf.classList.remove('show'); return; } endPlace(); deselect(); setDemolish(false); }
+    else if (k === 'escape'){ if (cf.classList.contains('show')){ cf.classList.remove('show'); return; } endPlace(); deselect(); setDemolish(false); if (TOOL === 'mood') setMood(null); }
     else if (k === 'r') rotate();
     else if ((k === 'delete' || k === 'backspace') && sel){ e.preventDefault(); selAct('del'); }
   });
@@ -529,7 +541,7 @@ export function init(G){
   function hoverRm(r){ hov.visible = !!r; if (r) hov.box.copy(r.box); }
   function setDemolish(on){
     if (on === (TOOL === 'demolish')) return;
-    if (on){ endPlace(); sel = null; showSel(); TOOL = 'demolish'; status('移除：點一下要移走的物件（自己放的，或頭上有紅點的原有樹、樹籬、路燈、中庭桌椅）・可復原・按「完成」結束'); }
+    if (on){ endPlace(); if (TOOL === 'mood') setMood(null); sel = null; showSel(); TOOL = 'demolish'; status('移除：點一下要移走的物件（自己放的，或頭上有紅點的原有樹、樹籬、路燈、中庭桌椅）・可復原・按「完成」結束'); }
     else { TOOL = 'idle'; status(''); hoverRm(null); }
     body.classList.toggle('demolish', on); tb.demo.classList.toggle('on', on); marks.visible = on;
   }
@@ -564,7 +576,7 @@ export function init(G){
   let SC = null, prevSets = null;
   function rescore(){
     const L = Object.values(S.items).filter((o) => BY_ID[o.id]);
-    SC = score(L, PTS, DARK);
+    SC = score(L, PTS, DARK, MD.open ? MD.need : []);
     starEl.innerHTML = '★'.repeat(SC.stars) + '<span style="color:var(--line)">' + '★'.repeat(5 - SC.stars) + `</span><small>${Math.round(SC.total)} 分</small>`;
     const keys = SC.sets.map((t) => t.id + t.k);
     if (prevSets){ SC.sets.filter((t) => !prevSets.includes(t.id + t.k)).forEach((t) =>
@@ -580,6 +592,7 @@ export function init(G){
     sc.innerHTML = `<h3>校園評價 ${'★'.repeat(SC.stars)}${'☆'.repeat(5 - SC.stars)} ${Math.round(SC.total)} 分<button aria-label="關閉">×</button></h3>`
       + bar('安全', SC.safe, '#e53935') + bar('安心', SC.calm, '#1f6feb') + bar('美化', SC.beauty, '#2e9d5a')
       + `<div style="color:var(--sub);font-size:12px;margin-top:2px">總分＝安全 ${SK.W.safe * 100}%＋安心 ${SK.W.calm * 100}%＋美化 ${SK.W.beauty * 100}%（暫定，待學習單）${SC.conc ? '・美化集中在一處，打 7 折' : ''}</div>`
+      + (SC.need ? `<div style="color:#1f6feb;font-size:12px;margin-top:4px;font-weight:800">安心分以全班心情釘「怕／暗／想躲」${SC.need.length} 處為需求點（每處 15 m 內）</div>` : '')
       + `<h4>8 個危險點（綠＝安全、安心都過半）</h4><ul>${SC.pts.map(pt).join('')}</ul>`
       + `<h4>暗區照明</h4><ul>${SC.dark.map((d) => `<li class="${d.f >= .5 ? 'ok' : 'no'}">${d.name}：照亮 ${Math.round(d.f * 100)}%</li>`).join('')}</ul>`
       + `<h4>套組加成</h4>${SC.sets.length ? `<ul>${SC.sets.map((t) => `<li class="ok">${t.name}（${t.kinds} 種${t.k > 1 ? '，加倍' : ''}）</li>`).join('')}</ul>` : '<div style="color:var(--sub)">還沒有觸發（同一套組 8 m 內擺 3 種）</div>'}`;
@@ -587,7 +600,7 @@ export function init(G){
   }
 
   // ---------- 圖層（模擬城市的資料圖層） ----------
-  const LY = { pts: true, dark: true, light: false, help: false };
+  const LY = { pts: true, dark: true, light: false, help: false, mood: false };
   const lay = new THREE.Group(); lay.name = 'layers'; scene.add(lay);
   const flatMat = (c, o) => new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: o, depthWrite: false });
   const darkMeshes = DARK.map((d) => { const sh = new THREE.Shape(d.poly.map(([x, z]) => new THREE.Vector2(x, -z)));
@@ -607,12 +620,13 @@ export function init(G){
         const r = BY_ID[o.id].r; im.setMatrixAt(n++, M4.compose(V.set(o.x, (o.y || 0) + .1 + n * .0004, o.z), Q.identity(), SC3.set(r, 1, r))); }
       im.count = n; im.instanceMatrix.needsUpdate = true; };
     fill(lightDiscs, isLight, LY.light); fill(helpDiscs, isHelp, LY.help);
+    if (typeof heat !== 'undefined'){ heat.visible = LY.mood && MD.open; }
   }
   const SC3 = new THREE.Vector3();
   const lyEl = document.createElement('div'); lyEl.id = 'gLayers'; body.appendChild(lyEl);
   lyEl.innerHTML = [['pts', '危險點（紅→綠＝處理程度）', '#e53935'], ['dark', '暗區（被燈照到會變亮）', '#1a237e'], ['light', '照明覆蓋', '#ffc928'], ['help', '求助與監看覆蓋', '#2ecc71']]
     .map(([k, t, c]) => `<label><input type="checkbox" data-k="${k}"${LY[k] ? ' checked' : ''}><i style="background:${c}"></i>${t}</label>`).join('')
-    + '<label class="off"><input type="checkbox" disabled><i style="background:#9b5de5"></i>心情熱區（探勘後開放）</label>';
+    + '<label class="off" id="lyMood"><input type="checkbox" data-k="mood" disabled><i style="background:#9b5de5"></i><span>心情熱區（老師開放後才看得到）</span></label>';
   lyEl.querySelectorAll('input[data-k]').forEach((c) => c.onchange = () => { LY[c.dataset.k] = c.checked; if (c.dataset.k === 'pts') G.app && G.app.classList.toggle('hidePin', !c.checked); drawLayers(); });
   lyEl.addEventListener('pointerdown', (e) => e.stopPropagation());
   function toggleLayers(){ const r = tb.layer.getBoundingClientRect(); lyEl.style.left = Math.max(8, r.left) + 'px'; lyEl.style.bottom = (innerHeight - r.top + 8) + 'px'; lyEl.classList.toggle('show'); tb.layer.classList.toggle('on', lyEl.classList.contains('show')); }
@@ -676,7 +690,7 @@ export function init(G){
       if (d) applyRemote(d); else { CS.synced = { items: {}, removed: {} }; schedulePush(0); }
       hud(); rescore(); loginLabel();
       if (fresh) toast('老師示範模式：不限預算、自動存到你的帳號，不影響任何班級');
-      clearInterval(CS.poll); CS.poll = setInterval(poll, 5000); return;
+      clearInterval(CS.poll); CS.poll = setInterval(poll, 5000); moodInit(); return;
     }
     let r, c, d;
     try { r = await CL.getDoc('cgRoster/' + m.email); }
@@ -696,6 +710,8 @@ export function init(G){
     }
     hud(); rescore(); loginLabel();
     clearInterval(CS.poll); CS.poll = setInterval(poll, 5000);
+    moodInit();
+    if (CS.cls.phase === 'explore' && fresh) setTimeout(() => tip('現在是探勘階段：按工具列「心情釘」，走到有感覺的地方釘下去（怕、吵、暗、想待、想躲）', '老師'), 1500);
   }
   function diff(){
     const a = CS.synced, mask = [], data = { items: {}, removed: {} };
@@ -734,6 +750,113 @@ export function init(G){
     try { const d = await CL.getDoc('cgWorks/' + CS.w); if (d && d.updateTime !== CS.ut && !CS.busy && !drag && !paint && !diff().mask.length) applyRemote(d); } catch (e) {}
   }
   (async () => { let on = CL.MOCK; try { on = on || localStorage.getItem('campusgame-login') === '1'; } catch (e) {} if (on && await CL.restore()) join(false); else loginLabel(); })();
+
+  // ---------- 心情釘（M6，規格書 §7.1） ----------
+  const MD = { id: '', pins: {}, all: [], need: [], open: false, allowed: false, sel: null, t: 0, busy: false };
+  const MI = Object.fromEntries(CL.MOODS.map((m) => [m[0], m]));
+  const moodEl = document.createElement('div'); moodEl.id = 'gMood'; body.appendChild(moodEl);
+  moodEl.addEventListener('pointerdown', (e) => e.stopPropagation());
+  const pinRoot = new THREE.Group(); pinRoot.name = 'moodPins'; scene.add(pinRoot);
+  const cnt = (m) => Object.values(MD.pins).filter((p) => p.m === m).length;
+  function renderMoodBar(){
+    moodEl.innerHTML = CL.MOODS.map(([k, e, n]) => `<button data-m="${k}" class="${MD.sel === k ? 'on' : ''}">${e} ${n}<small>${cnt(k)}／3</small></button>`).join('')
+      + `<p>${WALK.on ? '點一下就釘在腳下；' : '選一種，再點地面釘下去；'}點自己的釘子可以拔掉。每種最多 3 支。</p>`;
+    moodEl.querySelectorAll('button').forEach((b) => b.onclick = () => {
+      const m = b.dataset.m;
+      if (WALK.on){ addPin(m, WALK.pos.x, WALK.pos.z); return; }
+      setMood(MD.sel === m ? null : m);
+    });
+  }
+  function setMood(m){
+    MD.sel = m;
+    if (m){ endPlace(); deselect(); setDemolish(false); TOOL = 'mood'; status(`心情釘「${MI[m][1]} ${MI[m][2]}」：點地面釘下去（還能放 ${3 - cnt(m)} 支）・點自己的釘子可拔掉`); }
+    else if (TOOL === 'mood'){ TOOL = 'idle'; status(''); }
+    renderMoodBar();
+  }
+  tb.mood.onclick = () => {
+    const show = !moodEl.classList.contains('show');
+    if (show){ const r = tb.mood.getBoundingClientRect(); moodEl.style.left = Math.max(8, Math.min(innerWidth - 430, r.left - 120)) + 'px'; moodEl.style.bottom = (innerHeight - r.top + 8) + 'px'; renderMoodBar(); }
+    else setMood(null);
+    moodEl.classList.toggle('show', show); tb.mood.classList.toggle('on', show);
+  };
+  function addPin(m, x, z){
+    if (cnt(m) >= 3){ toast(`「${MI[m][2]}」已經放了 3 支，先拔掉一支再放`); return; }
+    const id = 'p' + Date.now().toString(36) + Math.floor(Math.random() * 1e3).toString(36);
+    MD.pins[id] = { m, x: Math.round(x * 10) / 10, z: Math.round(z * 10) / 10, t: Date.now() };
+    pop(); moodChanged(); toast(`釘下「${MI[m][1]} ${MI[m][2]}」`);
+    if (cnt(m) >= 3 && TOOL === 'mood') setMood(null);
+  }
+  function moodAt(cx, cy){
+    const g = ground(cx, cy); if (!g) return;
+    const near = Object.entries(MD.pins).find(([, p]) => Math.hypot(p.x - g.x, p.z - g.z) < 1.5);
+    if (near){ delete MD.pins[near[0]]; moodChanged(); toast('拔掉了一支心情釘'); return; }
+    if (MD.sel) addPin(MD.sel, g.x, g.z);
+  }
+  function drawPins(){
+    [...pinRoot.children].forEach((o) => pinRoot.remove(o));
+    for (const p of Object.values(MD.pins)){ const [, e, , c] = MI[p.m] || MI.fear; const d = document.createElement('div'); d.className = 'mpin'; d.style.borderColor = c; d.innerHTML = `<span>${e}</span>`;
+      const o = new CSS2DObject(d); o.position.set(p.x, .2, p.z); pinRoot.add(o); }
+    pinRoot.visible = MD.allowed || LY.mood;
+  }
+  function moodChanged(){
+    drawPins(); renderMoodBar(); mergeAll(); rescore();
+    try { localStorage.setItem('campusgame-mood-' + MD.id, JSON.stringify(MD.pins)); } catch (e) {}
+    clearTimeout(MD.t); MD.t = setTimeout(pushMood, 400);
+  }
+  async function pushMood(){
+    if (!MD.id) return; if (MD.busy){ MD.t = setTimeout(pushMood, 600); return; }
+    MD.busy = true;
+    try { await CL.patch('cgMoods/' + MD.id, { pins: MD.pins, classId: CS.cls.id, g: CS.g }, ['pins', 'classId', 'g']); }
+    catch (e){ toast('心情釘存檔失敗：' + e.message); }
+    MD.busy = false;
+  }
+  // 全班熱區：每支釘子在地面畫一團模糊色塊（2 px／公尺，涵蓋 x −30～300、z −60～215）
+  const HX0 = -30, HZ0 = -60, HW = 330, HD = 275, hcv = document.createElement('canvas'); hcv.width = HW * 2; hcv.height = HD * 2;
+  const htex = new THREE.CanvasTexture(hcv); htex.colorSpace = THREE.SRGBColorSpace;
+  const heatGeo = new THREE.PlaneGeometry(HW, HD); heatGeo.rotateX(-Math.PI / 2);
+  const heat = new THREE.Mesh(heatGeo, new THREE.MeshBasicMaterial({ map: htex, transparent: true, depthWrite: false }));
+  heat.position.set(HX0 + HW / 2, .15, HZ0 + HD / 2); heat.renderOrder = 3; heat.visible = false; lay.add(heat);
+  function drawHeat(){
+    const x = hcv.getContext('2d'); x.clearRect(0, 0, hcv.width, hcv.height); x.globalCompositeOperation = 'source-over';
+    for (const p of MD.all){ const c = (MI[p.m] || MI.fear)[3], cx = (p.x - HX0) * 2, cy = (p.z - HZ0) * 2, R = 24;
+      const g = x.createRadialGradient(cx, cy, 0, cx, cy, R); g.addColorStop(0, c + 'aa'); g.addColorStop(1, c + '00'); x.fillStyle = g; x.fillRect(cx - R, cy - R, R * 2, R * 2); }
+    htex.needsUpdate = true;
+  }
+  let otherPins = [];
+  function mergeAll(){
+    MD.all = otherPins.concat(Object.values(MD.pins));
+    MD.need = MD.all.filter((p) => CL.NEED_MOODS.includes(p.m)).map((p) => ({ x: p.x, z: p.z }));
+    if (MD.open) drawHeat();
+  }
+  async function loadAll(){
+    if (!CS.cls || CS.demo){ otherPins = []; mergeAll(); return; }
+    try { const docs = await CL.query('cgMoods', 'classId', CS.cls.id);
+      otherPins = docs.filter((d) => d.id !== MD.id).flatMap((d) => Object.values(d.data.pins || {})); }
+    catch (e) {}
+    mergeAll(); rescore();
+  }
+  function applyClass(c){   // 班級設定：階段、熱區是否開放、預算
+    CS.cls = { ...CS.cls, ...c };
+    MD.allowed = CS.demo || c.phase === 'explore'; MD.open = CS.demo || !!c.moodOpen;
+    tb.mood.style.display = MD.allowed ? '' : 'none'; if (!MD.allowed){ moodEl.classList.remove('show'); tb.mood.classList.remove('on'); if (TOOL === 'mood') setMood(null); }
+    const lm = document.getElementById('lyMood'); lm.classList.toggle('off', !MD.open); lm.querySelector('input').disabled = !MD.open;
+    lm.querySelector('span').textContent = MD.open ? '全班心情熱區' : '心情熱區（老師開放後才看得到）';
+    if (!MD.open){ LY.mood = false; lm.querySelector('input').checked = false; }
+    if (!CS.demo && c.budget) BUDGET = c.budget;
+    drawPins(); hud();
+  }
+  async function moodInit(){
+    const m = CL.me(); if (!m || !CS.cls) return;
+    MD.id = CL.moodId(CS.cls.id, m.uid);
+    try { const d = await CL.getDoc('cgMoods/' + MD.id); MD.pins = d ? d.data.pins || {} : {}; }
+    catch (e){ try { MD.pins = JSON.parse(localStorage.getItem('campusgame-mood-' + MD.id) || '{}'); } catch (er) {} }
+    applyClass(CS.cls); await loadAll(); drawPins();
+    clearInterval(MD.poll); MD.poll = setInterval(async () => {   // 每 30 秒看老師有沒有改階段／開放熱區，並更新全班心情釘
+      if (document.visibilityState !== 'visible') return;
+      if (!CS.demo){ try { const c = await CL.getDoc('cgClasses/' + CS.cls.id); if (c) applyClass(c.data); } catch (e) {} }
+      if (MD.open) loadAll();
+    }, 30000);
+  }
 
   // 建造／瀏覽切換
   function setOn(v){
@@ -794,5 +917,5 @@ export function init(G){
   const k = Object.keys(S.removed).length;
   if (n || k) toast(`已載入上次的改造：${n} 件物件${k ? `、移除 ${k} 件原有物件` : ""}`);
   rescore();
-  window.__gameState = { S, RM, SURF, CS, join, askReset, doReset, get SC(){ return SC; }, tip, LY, drawLayers, tryPlace, check, select, undo, redo, startPlace, endPlace, setDemolish, pickRm, ground, get sel(){ return sel; }, get TOOL(){ return TOOL; } };   // 測試用
+  window.__gameState = { S, RM, SURF, CS, MD, join, addPin, setMood, askReset, doReset, get SC(){ return SC; }, tip, LY, drawLayers, tryPlace, check, select, undo, redo, startPlace, endPlace, setDemolish, pickRm, ground, get sel(){ return sel; }, get TOOL(){ return TOOL; } };   // 測試用
 }

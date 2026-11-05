@@ -13,6 +13,10 @@ export const DEPTS = [
   ['英', 'eng', { 1: '甲', 2: '甲乙', 3: '甲乙' }], ['日', 'jpn', { 1: '甲' }], ['多', 'mmd', { 1: '甲', 2: '甲', 3: '甲' }], ['貿', 'trd', { 1: '甲' }]
 ];
 export const GRADE = ['', '一', '二', '三'];
+// 心情釘（M6，規格書 §7.1）：[代碼, 圖示, 名稱, 顏色]；怕、暗、想躲是安心分的需求點
+export const MOODS = [['fear', '😨', '怕', '#e53935'], ['noise', '🔊', '吵', '#fb8c00'], ['dark', '🌑', '暗', '#3949ab'], ['stay', '😌', '想待', '#43a047'], ['hide', '🙈', '想躲', '#8e24aa']];
+export const NEED_MOODS = ['fear', 'dark', 'hide'];
+export const moodId = (cid, uid) => `${cid}_${uid}`;
 export const schoolYear = (d = new Date()) => d.getFullYear() - 1911 - (d.getMonth() < 7 ? 1 : 0);   // 8 月起算新學年
 export const classId = (year, dept, grade, cls) => `${year}-${DEPTS.find((x) => x[0] === dept)[1]}-${grade}${cls === '甲' ? 'a' : 'b'}`;
 export const workId = (cid, g) => `${cid}_g${g}`;
@@ -40,7 +44,10 @@ export async function login(){
   user = (await A.signInWithPopup(auth, p)).user; return me();
 }
 export async function logout(){ if (MOCK){ localStorage.removeItem('cg-mock-user'); user = null; return; } if (auth) await A.signOut(auth); user = null; }
-export function me(){ if (!user || !user.email) return null; const email = user.email.toLowerCase(); return { email, admin: ADMINS.includes(email) }; }
+export function me(){ if (!user || !user.email) return null; const email = user.email.toLowerCase();
+  // uid：Firebase 給的不透明代號（模擬時用電子郵件算一個），心情釘用它當文件 id，彙整時看不出是誰
+  const uid = user.uid || 'm' + [...email].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7).toString(36);
+  return { email, uid, admin: ADMINS.includes(email) }; }
 export const loginError = (e) => e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request' ? '登入視窗被關掉了'
   : e.code === 'auth/popup-blocked' ? '瀏覽器擋住了登入視窗，請允許彈出視窗再按一次' : e.code === 'auth/unauthorized-domain' ? '這個網址還沒加入 Firebase 的授權網域'
   : e.code === 'auth/network-request-failed' ? '網路連不上' : (e.message || String(e));

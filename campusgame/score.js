@@ -1,5 +1,6 @@
 // 校園改造遊戲 校園評價計分（M4，115/11/05；規格書 §8，權重與常數皆暫定，待學習單）
-// 純計算，不碰畫面：score(items, PTS, DARK) → { safe, calm, beauty, total, stars, pts, sets, dark }
+// 純計算，不碰畫面：score(items, PTS, DARK, NEED) → { safe, calm, beauty, total, stars, pts, sets, dark, need }
+// NEED：全班心情釘「怕／暗／想躲」的位置（M6）；≥ 3 支時安心分改以它們為需求點，否則用 8 個危險點
 import { BY_ID, SETS } from './items.js';
 
 export const K = {
@@ -48,7 +49,7 @@ export function findSets(list){
   return out;
 }
 
-export function score(items, PTS, DARK){
+export function score(items, PTS, DARK, NEED = []){
   const L = items.map((o) => ({ ...o, it: BY_ID[o.id], tile: BY_ID[o.id].tags.includes('tile') }));
   const sets = findSets(L.filter((o) => !o.tile));
   const pts = PTS.map(([n, lv, title, , x, z]) => ({ n, lv, title, x, z, safe: 0, calm: 0, by: [] }));
@@ -66,7 +67,12 @@ export function score(items, PTS, DARK){
     return { name: d.name, f: S.length ? lit / S.length : 0 }; });
   const clamp = (v) => Math.max(0, Math.min(K.PER, v));
   const safe = Math.min(100, pts.reduce((s, p) => s + clamp(p.safe), 0) + dark.reduce((s, d) => s + K.DARK_BONUS * Math.min(1, d.f / .5), 0));
-  const calm = Math.min(100, pts.reduce((s, p) => s + clamp(p.calm), 0));
+  let calm = Math.min(100, pts.reduce((s, p) => s + clamp(p.calm), 0)), need = null;
+  if (NEED.length >= 3){   // 心情需求點：每點 15 m 內的安心值（兩難物件負值只在自己半徑內），各點達 12.5 為滿，取平均
+    need = NEED.map((q) => { let c = 0; for (const o of L){ const v = o.it.calm; if (!v) continue; const R = v < 0 && o.it.r ? o.it.r : K.CALM_R; if (dist(q, o) <= R) c += v * (o.tile ? K.TILE_K : 1); }
+      for (const st of sets) if (dist(q, st) <= K.CALM_R) c += st.calm; return { ...q, calm: c }; });
+    calm = 100 * need.reduce((s, q) => s + clamp(q.calm), 0) / (need.length * K.PER);
+  }
   // 美化：加總後看分布，集中一處打折
   let b = 0; const cells = new Map();
   for (const o of L){ const v = o.it.beauty * (o.tile ? K.TILE_K : 1); if (!v) continue; b += v;
@@ -76,5 +82,5 @@ export function score(items, PTS, DARK){
   const beauty = Math.min(100, Math.max(0, b) * (conc ? K.CONC : 1) * 100 / K.BEAUTY_FULL);
   const total = K.W.safe * safe + K.W.calm * calm + K.W.beauty * beauty;
   const stars = (K.STARS.find(([t]) => total >= t) || [0, 1])[1];
-  return { safe, calm, beauty, total, stars, pts, sets, dark, conc };
+  return { safe, calm, beauty, total, stars, pts, sets, dark, conc, need };
 }
