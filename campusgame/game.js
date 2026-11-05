@@ -3,6 +3,7 @@
 // M4：磁磚拖曳連鋪、校園評價星等、套組觸發、圖層（危險點、暗區、照明、求助）、顧問提示
 // M5：學校 Google 帳號登入，依名單進入自己那一組，作品存在 Firestore cgWorks（每 5 秒同步同組隊友）
 // M6：探勘階段放心情釘（怕／吵／暗／想待／想躲，每種 3 支），老師開放後看全班熱區；安心分改以全班「怕／暗／想躲」為需求點
+// M7：方案面板（改造理念、提案海報 PNG）；展示階段看別組方案（唯讀）並投「我願意在這裡待」
 // 由 index.html 在「同材質合併」之後載入，學生物件掛在 studentRoot，每種「物件＋顏色」一組 InstancedMesh，不參與合併。
 // 規格：C:\1031hlbhschool\校園改造遊戲規格書.md §4.2–4.6、§10
 import * as THREE from '../campus3d/lib/three.module.js';
@@ -125,6 +126,26 @@ const CSS = `
 .mpin{font-size:20px;line-height:1;background:#fff;border:3px solid;border-radius:50% 50% 50% 0;transform:rotate(-45deg);width:30px;height:30px;display:flex;align-items:center;justify-content:center;
   box-shadow:0 2px 6px rgba(0,0,0,.35);pointer-events:none;margin-top:-30px}
 .mpin span{transform:rotate(45deg)}
+#gPlanBtn{background:var(--panel);border:0;padding:6px 10px;border-radius:8px;font:inherit;font-size:13px;font-weight:800;pointer-events:auto;cursor:pointer;color:var(--ink)}
+#gPlans{position:absolute;left:12px;top:60px;z-index:13;width:min(340px,calc(100% - 24px));max-height:calc(100% - 140px);overflow-y:auto;background:var(--panel);
+  border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,.25);padding:12px 14px;display:none;font-size:13px}
+#gPlans.show{display:block}
+#gPlans h3{margin:0 0 8px;font-size:16px;font-weight:900;display:flex;justify-content:space-between;align-items:center}
+#gPlans h3 button{border:0;background:none;font-size:20px;color:var(--sub);cursor:pointer;padding:0 4px}
+#gPlans h4{margin:12px 0 6px;font-size:13px;font-weight:900;color:var(--sub)}
+#gPlans textarea{width:100%;box-sizing:border-box;min-height:60px;font:inherit;font-size:14px;font-weight:700;padding:8px;border:1px solid var(--line);border-radius:9px;background:var(--btn);color:var(--ink);resize:vertical}
+#gPlans .pb{display:block;width:100%;margin:6px 0;font:inherit;font-size:14px;font-weight:800;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--btn);color:var(--ink);cursor:pointer;text-align:left}
+#gPlans .pb.me{border-color:var(--accent)} #gPlans .pb.on{background:var(--accent);color:#fff}
+#gPlans .pb small{float:right;color:inherit;opacity:.8}
+#gPlans .go{background:var(--accent);color:#fff;border-color:transparent;text-align:center}
+#gView{position:absolute;left:50%;top:62px;transform:translateX(-50%);z-index:14;background:#37474f;color:#fff;border-radius:12px;padding:8px 10px;display:none;gap:8px;align-items:center;
+  box-shadow:0 4px 14px rgba(0,0,0,.3);font-size:14px;font-weight:800;flex-wrap:wrap;justify-content:center;max-width:calc(100% - 24px)}
+.viewing #gView{display:flex}
+#gView button{font:inherit;font-size:14px;font-weight:800;padding:7px 12px;border-radius:9px;border:0;cursor:pointer}
+#gView .vote{background:#ffca28;color:#3d2c00} #gView .vote.on{background:#43a047;color:#fff} #gView .home{background:#fff;color:#37474f}
+#gFrameV{position:absolute;inset:0;border:6px solid #90a4ae;z-index:9;pointer-events:none;display:none}
+.viewing #gFrameV{display:block}
+.viewing #gCat,.viewing #gTools,.viewing #gSel,.viewing #gStat{display:none!important}
 `;
 
 export function init(G){
@@ -450,7 +471,7 @@ export function init(G){
   }
   app.addEventListener('pointerdown', (e) => {
     ptrs.add(e.pointerId);
-    if (!ON || WALK.on || e.target !== canvas || (e.button !== undefined && e.button > 0)) return;
+    if (!ON || WALK.on || SH.view || e.target !== canvas || (e.button !== undefined && e.button > 0)) return;
     if (ptrs.size > 1){ clearTimeout(lp); down = null; if (drag) endDrag(false); if (paint) endPaint(); return; }
     if (TOOL === 'place' && PL && isTile(PL.id)){ startPaint(e); e.stopPropagation(); e.preventDefault(); return; }
     const u = TOOL === 'place' || TOOL === 'demolish' || TOOL === 'mood' ? null : pick(e.clientX, e.clientY);
@@ -521,7 +542,7 @@ export function init(G){
     if (u) select(u); else if (sel) deselect();
   }
   addEventListener('keydown', (e) => {
-    if (!ON || WALK.on || e.target.closest && e.target.closest('input')) return;
+    if (!ON || WALK.on || SH.view || e.target.closest && (e.target.closest('input') || e.target.closest('textarea'))) return;
     const k = e.key.toLowerCase(), mod = e.ctrlKey || e.metaKey;
     if (mod && k === 'z'){ e.preventDefault(); e.shiftKey ? redo() : undo(); }
     else if (mod && k === 'y'){ e.preventDefault(); redo(); }
@@ -723,7 +744,7 @@ export function init(G){
   }
   function schedulePush(ms = 400){ clearTimeout(CS.t); CS.t = setTimeout(push, ms); }
   async function push(){
-    if (!CS.w) return; if (CS.busy){ schedulePush(600); return; }
+    if (!CS.w) return; if (CS.busy || SH.view){ schedulePush(1500); return; }
     const { mask, data } = diff(); if (!mask.length){ loginLabel(''); return; }
     CS.busy = true; loginLabel('busy');
     const sent = { items: deep(S.items), removed: { ...S.removed } };
@@ -742,11 +763,12 @@ export function init(G){
       if (JSON.stringify(S.items[u] || null) !== JSON.stringify(it)) apply(u, it); }
     for (const id of new Set([...Object.keys(S.removed), ...Object.keys(removed)])) if (!!S.removed[id] !== !!removed[id] && RMI.has(id)) setRm(id, !!removed[id]);
     CS.synced = { items: deep(S.items), removed: { ...S.removed } }; CS.ut = d.updateTime;
+    if (typeof d.data.theme === 'string' && document.activeElement !== themeEl){ CS.theme = d.data.theme; themeEl.value = CS.theme; }
     if (sel && !S.items[sel]) deselect();
     save(); hud(); showSel(); rescore();
   }
   async function poll(){
-    if (!CS.w || CS.busy || drag || paint || document.visibilityState !== 'visible' || diff().mask.length) return;
+    if (!CS.w || CS.busy || SH.view || drag || paint || document.visibilityState !== 'visible' || diff().mask.length) return;
     try { const d = await CL.getDoc('cgWorks/' + CS.w); if (d && d.updateTime !== CS.ut && !CS.busy && !drag && !paint && !diff().mask.length) applyRemote(d); } catch (e) {}
   }
   (async () => { let on = CL.MOCK; try { on = on || localStorage.getItem('campusgame-login') === '1'; } catch (e) {} if (on && await CL.restore()) join(false); else loginLabel(); })();
@@ -843,7 +865,7 @@ export function init(G){
     lm.querySelector('span').textContent = MD.open ? '全班心情熱區' : '心情熱區（老師開放後才看得到）';
     if (!MD.open){ LY.mood = false; lm.querySelector('input').checked = false; }
     if (!CS.demo && c.budget) BUDGET = c.budget;
-    drawPins(); hud();
+    drawPins(); hud(); plansClass();
   }
   async function moodInit(){
     const m = CL.me(); if (!m || !CS.cls) return;
@@ -856,6 +878,126 @@ export function init(G){
       if (!CS.demo){ try { const c = await CL.getDoc('cgClasses/' + CS.cls.id); if (c) applyClass(c.data); } catch (e) {} }
       if (MD.open) loadAll();
     }, 30000);
+  }
+
+  // ---------- 方案面板（M7）：改造理念、提案海報、展示階段看別組與投票 ----------
+  const SH = { view: 0, stash: null, votes: {}, vid: '' };
+  header.insertAdjacentHTML('beforeend', '<button id="gPlanBtn" title="改造理念、提案海報；展示階段可以看別組方案並投票">📋 方案</button>');
+  const planBtn = document.getElementById('gPlanBtn'), plans = document.createElement('div'); plans.id = 'gPlans'; body.appendChild(plans);
+  plans.innerHTML = `<h3>方案與提案<button aria-label="關閉">×</button></h3>
+    <h4>我們的改造理念（一句話，60 字內）</h4><textarea maxlength="60" placeholder="例如：讓資訊館後方晚上也有人敢走"></textarea>
+    <button class="pb go" data-a="poster">📥 下載提案海報（PNG）</button><div class="list"></div>`;
+  const themeEl = plans.querySelector('textarea'), listEl = plans.querySelector('.list');
+  plans.querySelector('h3 button').onclick = () => plans.classList.remove('show');
+  plans.addEventListener('pointerdown', (e) => e.stopPropagation());
+  planBtn.onclick = () => { plans.classList.toggle('show'); if (plans.classList.contains('show')){ sc.classList.remove('show'); renderPlans(); } };
+  plans.querySelector('[data-a="poster"]').onclick = () => poster();
+  let themeT = 0; CS.theme = '';
+  themeEl.addEventListener('input', () => { clearTimeout(themeT); themeT = setTimeout(saveTheme, 800); });
+  themeEl.addEventListener('blur', () => { clearTimeout(themeT); saveTheme(); });
+  async function saveTheme(){
+    const t = themeEl.value.trim().slice(0, 60); if (!CS.w || SH.view || t === CS.theme) return; CS.theme = t;
+    try { await CL.patch('cgWorks/' + CS.w, { theme: t, classId: CS.cls.id, g: CS.g }, ['theme', 'classId', 'g']); toast('改造理念已儲存'); } catch (e){ toast('儲存失敗：' + e.message); }
+  }
+  const showPhase = () => CS.cls && !CS.demo && CS.cls.phase === 'show';
+  function plansClass(){
+
+    if (!showPhase() && SH.view) backHome();
+    if (showPhase() && !SH.vid){ const m = CL.me(); SH.vid = CL.voteId(CS.cls.id, m.uid); CL.getDoc('cgVotes/' + SH.vid).then((d) => { SH.votes = d && d.data.v || {}; renderPlans(); }).catch(() => {}); }
+    if (plans.classList.contains('show')) renderPlans();
+  }
+  function renderPlans(){
+    themeEl.disabled = !!SH.view || !CS.w; if (document.activeElement !== themeEl) themeEl.value = CS.theme || '';
+    if (!showPhase()){ listEl.innerHTML = CS.cls && !CS.demo ? '<p style="color:var(--sub)">老師把階段切到「展示」後，這裡會列出全班各組的方案，可以走進去看、投票。</p>' : ''; return; }
+    const k = CS.cls.groups || 0, V = CS.cls.votesShown && CS.cls.votes || null;
+    listEl.innerHTML = `<h4>全班方案（點一下走進去看${V ? '・已公布票數' : '・每組可投一票，不能投自己組'}）</h4>` + Array.from({ length: k }, (_, i) => i + 1).map((g) =>
+      `<button class="pb${g === CS.g ? ' me' : ''}${(SH.view || CS.g) === g ? ' on' : ''}" data-g="${g}">第 ${g} 組${g === CS.g ? '（我們）' : ''}<small>${V ? `👍 ${V['g' + g] || 0}` : SH.votes['g' + g] ? '已投 👍' : ''}</small></button>`).join('');
+    listEl.querySelectorAll('.pb[data-g]').forEach((b) => b.onclick = () => viewGroup(+b.dataset.g));
+  }
+  function setState(d){
+    const items = d.items || {}, removed = d.removed || {};
+    for (const u of new Set([...Object.keys(S.items), ...Object.keys(items)])){
+      const it = items[u] && BY_ID[items[u].id] && !BY_ID[items[u].id].tags.includes('hidden') ? { id: items[u].id, x: +items[u].x, y: +items[u].y || 0, z: +items[u].z, rot: +items[u].rot || 0, v: +items[u].v || 0 } : null;
+      if (JSON.stringify(S.items[u] || null) !== JSON.stringify(it)) apply(u, it); }
+    for (const id of new Set([...Object.keys(S.removed), ...Object.keys(removed)])) if (!!S.removed[id] !== !!removed[id] && RMI.has(id)) setRm(id, !!removed[id]);
+    hud(); rescore();
+  }
+  const viewEl = document.createElement('div'); viewEl.id = 'gView'; body.appendChild(viewEl);
+  const frameV = document.createElement('div'); frameV.id = 'gFrameV'; body.appendChild(frameV);
+  viewEl.addEventListener('pointerdown', (e) => e.stopPropagation());
+  let viewTheme = '';
+  async function viewGroup(g){
+    if (g === CS.g){ backHome(); return; }
+    let d; try { d = await CL.getDoc('cgWorks/' + CL.workId(CS.cls.id, g)); } catch (e){ toast('讀取失敗：' + e.message); return; }
+    if (!SH.view){ endPlace(); deselect(); setDemolish(false); if (TOOL === 'mood') setMood(null); SH.stash = { items: deep(S.items), removed: { ...S.removed } }; }
+    SH.view = g; viewTheme = d && d.data.theme || ''; setState(d ? d.data : {}); body.classList.add('viewing'); renderView(); renderPlans();
+    toast(`走進第 ${g} 組的方案（唯讀）`);
+  }
+  function backHome(){
+    if (!SH.view) return; const st = SH.stash; SH.view = 0; SH.stash = null; body.classList.remove('viewing');
+    setState(st || {}); renderPlans(); if (CS.w) schedulePush(300); toast('回到我們組');
+  }
+  function renderView(){
+    const g = SH.view, on = !!SH.votes['g' + g];
+    viewEl.innerHTML = `👀 第 ${g} 組的方案${viewTheme ? `：「${viewTheme.replace(/[<>&]/g, '')}」` : ''}・唯讀 <button class="vote${on ? ' on' : ''}">${on ? '✔ 已投「我願意在這裡待」' : '👍 我願意在這裡待'}</button><button class="home">回我們組</button>`;
+    viewEl.querySelector('.home').onclick = backHome;
+    viewEl.querySelector('.vote').onclick = () => vote(g);
+  }
+  async function vote(g){
+    const k = 'g' + g, had = !!SH.votes[k]; if (had) delete SH.votes[k]; else SH.votes[k] = true; renderView();
+    try { await CL.patch('cgVotes/' + SH.vid, { classId: CS.cls.id, g: CS.g, v: SH.votes }, ['classId', 'g', 'v']); toast(had ? '收回了這一票' : `投給第 ${g} 組：我願意在這裡待`); }
+    catch (e){ if (had) SH.votes[k] = true; else delete SH.votes[k]; renderView(); toast('投票失敗：' + e.message); }
+    renderPlans();
+  }
+
+  // 提案海報：1080×1920 PNG，俯視圖＋3 個代表視角＋分數＋物件清單＋改造理念（2D canvas 合成）
+  async function poster(){
+    const W = 1080, H = 1920, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const x = cv.getContext('2d');
+    const F = (w, s) => `${w} ${s}px "Noto Sans TC","Microsoft JhengHei","PingFang TC",sans-serif`;
+    const g = SH.view || CS.g, title = CS.cls ? (CS.demo ? '老師示範' : `${CS.cls.year} 學年 ${CS.cls.name}・第 ${g} 組`) : '我的方案', theme = SH.view ? viewTheme : (themeEl.value.trim() || CS.theme || '');
+    toast('海報產生中…');
+    // 3D 截圖：暫時改畫布大小與相機，畫完立刻複製，再還原
+    const sv = { p: camera.position.clone(), t: controls.target.clone(), fov: camera.fov, asp: camera.aspect, size: renderer.getSize(new THREE.Vector2()), pr: renderer.getPixelRatio(), fx: fx.visible, lay: lay.visible };
+    fx.visible = false; lay.visible = false; scene.fog.near = 5000; scene.fog.far = 9000;
+    const snapAt = (pos, tgt, w, h, fov) => { renderer.setPixelRatio(1); renderer.setSize(w, h, false); camera.aspect = w / h; camera.fov = fov; camera.position.set(...pos); camera.lookAt(...tgt); camera.updateProjectionMatrix();
+      renderer.render(scene, camera); const c = document.createElement('canvas'); c.width = w; c.height = h; c.getContext('2d').drawImage(renderer.domElement, 0, 0); return c; };
+    const top = snapAt([128, 330, 92], [128, 0, 80], 1000, 760, 45);
+    // 代表視角：分數貢獻最大、彼此相距 25 m 以上的三件
+    const L = Object.values(S.items).filter((o) => !isTile(o.id)).map((o) => ({ ...o, w: Math.abs(BY_ID[o.id].safe) + Math.abs(BY_ID[o.id].calm) + Math.abs(BY_ID[o.id].beauty) + BY_ID[o.id].cost / 100 })).sort((a, b) => b.w - a.w);
+    const pick = []; for (const o of L){ if (pick.every((q) => Math.hypot(q.x - o.x, q.z - o.z) > 25)) pick.push(o); if (pick.length === 3) break; }
+    // 相機試 8 個方向，挑不在建築裡、視線不被建築擋住的
+    const camFor = (o) => { const tg = new THREE.Vector3(o.x, (o.y || 0) + 1, o.z), R = new THREE.Ray(), hv = new THREE.Vector3();
+      const blk = occBoxes.filter((b) => !b.off).concat(RM.filter((r) => !r.off).map((r) => r.box));   // 建築＋原有的樹、路燈
+      const pole = PTS.map(([, , , , px, pz]) => new THREE.Box3(new THREE.Vector3(px - .4, 0, pz - .4), new THREE.Vector3(px + .4, 9, pz + .4)));   // 危險點的標竿
+      for (let k = 0; k < 16; k++){ const a = .65 + k * Math.PI / 8, dd = k < 8 ? 10 : 7, cp = new THREE.Vector3(o.x + Math.sin(a) * dd, (o.y || 0) + 5, o.z + Math.cos(a) * dd), d = tg.clone().sub(cp), L = d.length();
+        R.set(cp, d.normalize()); if (!blk.concat(pole).some((b) => b.containsPoint(cp) || (R.intersectBox(b, hv) && hv.distanceTo(cp) < L - 1.2))) return [cp.x, cp.y, cp.z]; }
+      return [o.x + 6, (o.y || 0) + 12, o.z + 8]; };
+    const views = pick.map((o) => ({ c: snapAt(camFor(o), [o.x, (o.y || 0) + 1, o.z], 330, 300, 50), n: BY_ID[o.id].name }));
+    renderer.setPixelRatio(sv.pr); renderer.setSize(sv.size.x, sv.size.y, false); camera.fov = sv.fov; camera.aspect = sv.asp; camera.position.copy(sv.p); controls.target.copy(sv.t); camera.updateProjectionMatrix(); controls.update();
+    fx.visible = sv.fx; lay.visible = sv.lay; scene.fog.near = 450; scene.fog.far = 900;
+    // 版面
+    x.fillStyle = '#f4f1ea'; x.fillRect(0, 0, W, H);
+    x.fillStyle = '#1f6feb'; x.fillRect(0, 0, W, 210);
+    x.fillStyle = '#fff'; x.font = F(900, 40); x.fillText('花蓮高商 校園改造提案', 40, 72); x.font = F(800, 34); x.fillText(title, 40, 128);
+    x.font = F(800, 26); x.fillStyle = '#d6e6ff'; x.fillText(SC ? `校園評價 ${'★'.repeat(SC.stars)}${'☆'.repeat(5 - SC.stars)}　${Math.round(SC.total)} 分` : '', 40, 180);
+    x.fillStyle = '#1d2a33'; x.font = F(900, 34); const wrap = (t, x0, y0, maxW, lh) => { let line = '', y = y0; for (const ch of t){ if (x.measureText(line + ch).width > maxW){ x.fillText(line, x0, y); line = ch; y += lh; } else line += ch; } if (line) x.fillText(line, x0, y); return y; };
+    const ty = wrap(theme ? `「${theme}」` : '（還沒寫改造理念）', 40, 270, W - 80, 46);
+    const y1 = ty + 30; x.drawImage(top, 40, y1, 1000, 760); x.strokeStyle = '#1d2a33'; x.lineWidth = 3; x.strokeRect(40, y1, 1000, 760);
+    let y2 = y1 + 790; x.font = F(800, 22); x.fillStyle = '#4b5b66';
+    views.forEach((v, i) => { const vx = 40 + i * 340; x.drawImage(v.c, vx, y2, 320, 290); x.strokeRect(vx, y2, 320, 290); x.fillText(v.n, vx + 4, y2 + 318); });
+    if (!views.length){ x.fillText('（放上物件後會自動挑代表視角）', 40, y2 + 40); }
+    let y3 = y2 + (views.length ? 360 : 80);
+    if (SC){ [['安全', SC.safe, '#e53935'], ['安心', SC.calm, '#1f6feb'], ['美化', SC.beauty, '#2e9d5a']].forEach(([k, v, c], i) => { const yy = y3 + i * 44;
+      x.fillStyle = '#1d2a33'; x.font = F(900, 26); x.fillText(k, 40, yy + 24); x.fillStyle = '#dde3e8'; x.fillRect(120, yy + 4, 760, 26); x.fillStyle = c; x.fillRect(120, yy + 4, 7.6 * Math.max(0, Math.min(100, v)), 26);
+      x.fillStyle = '#1d2a33'; x.fillText(Math.round(v), 900, yy + 26); }); y3 += 150; }
+    const cnt = {}; Object.values(S.items).forEach((o) => { const n = BY_ID[o.id].name; cnt[n] = (cnt[n] || 0) + 1; });
+    const rows = Object.entries(cnt).sort((a, b) => b[1] - a[1]), nr = Object.keys(S.removed).length;
+    x.fillStyle = '#1d2a33'; x.font = F(900, 28); x.fillText(`擺放 ${Object.keys(S.items).length} 件${nr ? `・移除原有物件 ${nr} 件` : ''}・花費 ${spent()} 點`, 40, y3); y3 += 44;
+    x.font = F(700, 24); rows.slice(0, Math.max(0, Math.floor((H - 70 - y3) / 34)) * 2).forEach(([n, c], i) => x.fillText(`${n} × ${c}`, 40 + (i % 2) * 520, y3 + Math.floor(i / 2) * 34));
+    x.fillStyle = '#8a97a0'; x.font = F(700, 20); x.fillText(`${CL.schoolYear()} 學年・花蓮高商 校園改造遊戲`, 40, H - 30);
+    const blob = await new Promise((r) => cv.toBlob(r, 'image/png')), a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = `${title.replace(/[\s/：・]/g, '')}_提案海報.png`; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 4000);
+    toast('提案海報已下載'); window.__posterCanvas = cv;
   }
 
   // 建造／瀏覽切換
@@ -917,5 +1059,5 @@ export function init(G){
   const k = Object.keys(S.removed).length;
   if (n || k) toast(`已載入上次的改造：${n} 件物件${k ? `、移除 ${k} 件原有物件` : ""}`);
   rescore();
-  window.__gameState = { S, RM, SURF, CS, MD, join, addPin, setMood, askReset, doReset, get SC(){ return SC; }, tip, LY, drawLayers, tryPlace, check, select, undo, redo, startPlace, endPlace, setDemolish, pickRm, ground, get sel(){ return sel; }, get TOOL(){ return TOOL; } };   // 測試用
+  window.__gameState = { S, RM, SURF, CS, MD, SH, join, addPin, setMood, viewGroup, backHome, vote, poster, askReset, doReset, get SC(){ return SC; }, tip, LY, drawLayers, tryPlace, check, select, undo, redo, startPlace, endPlace, setDemolish, pickRm, ground, get sel(){ return sel; }, get TOOL(){ return TOOL; } };   // 測試用
 }

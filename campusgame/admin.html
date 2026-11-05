@@ -81,7 +81,7 @@ td button{min-height:30px;padding:3px 9px;font-size:13px}
       <h2 id="dTitle"></h2>
       <div class="row">
         <label>預算 <input id="iBudget" type="number" min="100" max="9999" step="50" style="width:90px"> 點</label>
-        <label>階段 <select id="iPhase"><option value="build">改造（建造）</option><option value="explore">探勘（放心情釘）</option><option value="show">展示（M7 尚未開放）</option></select></label>
+        <label>階段 <select id="iPhase"><option value="build">改造（建造）</option><option value="explore">探勘（放心情釘）</option><option value="show">展示（看各組、投票）</option></select></label>
         <label><input id="iMoodOpen" type="checkbox"> 開放全班心情熱區給學生看</label>
         <button id="bSave">儲存設定</button>
       </div>
@@ -112,6 +112,11 @@ td button{min-height:30px;padding:3px 9px;font-size:13px}
       <div class="legend" id="moodLegend"></div>
       <canvas id="moodMap" width="660" height="550"></canvas>
       <p class="muted">紅圈數字是學校安全地圖的 8 個危險點。學生端要等你勾選「開放全班心情熱區」並儲存後才看得到彙整；學生的安心分也會改用全班「怕／暗／想躲」的位置計算。</p>
+
+      <h3>展示投票（「我願意在這裡待」，每人每組一票、不能投自己組）</h3>
+      <div class="row"><button id="bVotes">重新整理票數</button><button id="bPub" class="pri">公布結果給學生看</button><button id="bUnpub">收回公布</button></div>
+      <div id="votes" class="muted" style="margin-top:6px"></div>
+      <div id="voteMsg" class="msg"></div>
 
       <h3>刪除這個班級</h3>
       <p class="muted">會刪掉班級、名單與各組作品，無法復原。</p>
@@ -184,7 +189,7 @@ async function pickClass(id){
   $('iBudget').value = CUR.data.budget || 1000; $('iPhase').value = CUR.data.phase || 'build'; $('iSize').value = CUR.data.groupSize || 4; $('iMoodOpen').checked = !!CUR.data.moodOpen;
   $('tImport').value = ''; $('prev').textContent = ''; $('bImport').disabled = true; PREVIEW = null;
   ['setMsg', 'groupMsg', 'delMsg'].forEach((m) => say(m, '')); $('works').textContent = '';
-  await loadRoster(); loadMoods();
+  await loadRoster(); loadMoods(); loadVotes(); say('voteMsg', '');
 }
 async function loadRoster(){
   try { ROSTER = (await C.query('cgRoster', 'classId', CUR.id)).map((r) => ({ email: r.id, ...r.data })).sort((a, b) => a.seat - b.seat || a.email.localeCompare(b.email)); }
@@ -290,8 +295,8 @@ $('bWorks').onclick = async () => {
   $('works').textContent = '讀取中…';
   const out = [];
   for (let g = 1; g <= k; g++){ try { const d = await C.getDoc('cgWorks/' + C.workId(CUR.id, g)); const it = d ? Object.keys(d.data.items || {}).length : 0, rm = d ? Object.keys(d.data.removed || {}).length : 0;
-    out.push(`第 ${g} 組：${it} 件${rm ? `、移除 ${rm}` : ''}`); } catch (e){ out.push(`第 ${g} 組：讀取失敗`); } }
-  $('works').textContent = out.join('｜');
+    out.push(`第 ${g} 組：${it} 件${rm ? `、移除 ${rm}` : ''}${d && d.data.theme ? `「${esc(d.data.theme)}」` : ''}`); } catch (e){ out.push(`第 ${g} 組：讀取失敗`); } }
+  $('works').innerHTML = out.join('<br>');
 };
 
 // ---------- 刪除班級（按兩次） ----------
@@ -301,8 +306,8 @@ $('bDel').onclick = async () => {
   b.disabled = true;
   try {
     const k = Math.max(CUR.data.groups || 0, ...ROSTER.map((r) => r.g || 0));
-    const moods = await C.query('cgMoods', 'classId', CUR.id).catch(() => []);
-    await C.commit([...moods.map((m) => ({ path: 'cgMoods/' + m.id, del: true })), ...ROSTER.map((r) => ({ path: 'cgRoster/' + r.email, del: true })), ...Array.from({ length: k }, (_, i) => ({ path: 'cgWorks/' + C.workId(CUR.id, i + 1), del: true })), { path: 'cgClasses/' + CUR.id, del: true }]);
+    const moods = await C.query('cgMoods', 'classId', CUR.id).catch(() => []), votes = await C.query('cgVotes', 'classId', CUR.id).catch(() => []);
+    await C.commit([...moods.map((m) => ({ path: 'cgMoods/' + m.id, del: true })), ...votes.map((m) => ({ path: 'cgVotes/' + m.id, del: true })), ...ROSTER.map((r) => ({ path: 'cgRoster/' + r.email, del: true })), ...Array.from({ length: k }, (_, i) => ({ path: 'cgWorks/' + C.workId(CUR.id, i + 1), del: true })), { path: 'cgClasses/' + CUR.id, del: true }]);
     say('delMsg', '已刪除。', 'ok'); CUR = null; $('detail').classList.add('hidden'); $('pick').classList.remove('hidden'); await loadClasses();
   } catch (e){ say('delMsg', '刪除失敗：' + e.message, 'err'); }
   b.disabled = false; b.classList.remove('arm'); b.textContent = '刪除班級';
@@ -328,6 +333,19 @@ async function loadMoods(){
   const by = {}; pins.forEach((p) => by[p.m] = (by[p.m] || 0) + 1);
   $('moodStat').textContent = pins.length ? `${docs.length} 位同學放了 ${pins.length} 支：` + C.MOODS.map(([k, e, n]) => `${e}${n} ${by[k] || 0}`).join('、') : '還沒有人放心情釘。';
 }
+
+// ---------- 展示投票（M7）：票只有管理者讀得到；按「公布」才把各組票數寫進班級文件給學生看 ----------
+let TALLY = {};
+async function loadVotes(){
+  let docs = []; try { docs = await C.query('cgVotes', 'classId', CUR.id); } catch (e){ say('voteMsg', '讀取失敗：' + e.message, 'err'); return; }
+  TALLY = {}; let voters = 0;
+  docs.forEach((d) => { const ks = Object.keys(d.data.v || {}).filter((k) => d.data.v[k]); if (ks.length) voters++; ks.forEach((k) => TALLY[k] = (TALLY[k] || 0) + 1); });
+  const k = CUR.data.groups || 0;
+  $('votes').innerHTML = `${voters} 位同學投了票${CUR.data.votesShown ? '・<b>已公布</b>' : '・尚未公布（學生看不到票數）'}<br>` + Array.from({ length: k }, (_, i) => `第 ${i + 1} 組：👍 ${TALLY['g' + (i + 1)] || 0}`).join('｜');
+}
+$('bVotes').onclick = loadVotes;
+$('bPub').onclick = async () => { await loadVotes(); try { await C.patch('cgClasses/' + CUR.id, { votes: TALLY, votesShown: true }, ['votes', 'votesShown']); CUR.data.votes = TALLY; CUR.data.votesShown = true; await loadVotes(); say('voteMsg', '已公布，學生端約 30 秒內看得到各組票數。', 'ok'); } catch (e){ say('voteMsg', '公布失敗：' + e.message, 'err'); } };
+$('bUnpub').onclick = async () => { try { await C.patch('cgClasses/' + CUR.id, { votesShown: false }, ['votesShown']); CUR.data.votesShown = false; await loadVotes(); say('voteMsg', '已收回公布。', 'ok'); } catch (e){ say('voteMsg', '收回失敗：' + e.message, 'err'); } };
 
 boot();
 window.__admin = { get CLASSES(){ return CLASSES; }, get ROSTER(){ return ROSTER; }, plan };   // 測試用

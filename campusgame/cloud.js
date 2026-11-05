@@ -17,6 +17,7 @@ export const GRADE = ['', '一', '二', '三'];
 export const MOODS = [['fear', '😨', '怕', '#e53935'], ['noise', '🔊', '吵', '#fb8c00'], ['dark', '🌑', '暗', '#3949ab'], ['stay', '😌', '想待', '#43a047'], ['hide', '🙈', '想躲', '#8e24aa']];
 export const NEED_MOODS = ['fear', 'dark', 'hide'];
 export const moodId = (cid, uid) => `${cid}_${uid}`;
+export const voteId = (cid, uid) => `${cid}_${uid}`;   // 展示投票（M7）：cgVotes/{班級 id}_{登入 uid}，v＝{ g3: true }
 export const schoolYear = (d = new Date()) => d.getFullYear() - 1911 - (d.getMonth() < 7 ? 1 : 0);   // 8 月起算新學年
 export const classId = (year, dept, grade, cls) => `${year}-${DEPTS.find((x) => x[0] === dept)[1]}-${grade}${cls === '甲' ? 'a' : 'b'}`;
 export const workId = (cid, g) => `${cid}_g${g}`;
