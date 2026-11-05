@@ -7,6 +7,7 @@ import { CATS, ITEMS, PALETTE, BY_ID, bake, build, variants } from './items.js';
 const BUDGET = 1000, MAX_ITEMS = 300, MAX_TILES = 400, GRID = .5, UNDO_MAX = 50, SAVE_KEY = 'campusgame-work-v1';
 const D2R = Math.PI / 180;
 const isTile = (id) => BY_ID[id].tags.includes('tile');
+const OPEN = ITEMS.filter((it) => !it.tags.includes('hidden'));   // 文化審查未過的物件先不開放（規格書 §6.2 K 類）
 const keyOf = (it) => it.id + '#' + (it.v || 0);
 const fxText = (it) => [['安全', it.safe], ['安心', it.calm], ['美化', it.beauty]].filter(([, v]) => v).map(([k, v]) => `${k}${v > 0 ? '+' : ''}${v}`).join(' ');
 
@@ -153,7 +154,7 @@ export function init(G){
   function save(){ try { localStorage.setItem(SAVE_KEY, JSON.stringify({ v: 1, t: Date.now(), items: S.items })); } catch (e) {} }
   function load(){
     try { const d = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); if (!d || !d.items) return 0;
-      let n = 0; for (const [u, it] of Object.entries(d.items)) if (BY_ID[it.id]){ S.items[u] = { id: it.id, x: +it.x, z: +it.z, rot: +it.rot || 0, v: +it.v || 0 }; n++; }
+      let n = 0; for (const [u, it] of Object.entries(d.items)) if (BY_ID[it.id] && !BY_ID[it.id].tags.includes('hidden')){ S.items[u] = { id: it.id, x: +it.x, z: +it.z, rot: +it.rot || 0, v: +it.v || 0 }; n++; }
       new Set(Object.values(S.items).map(keyOf)).forEach(refresh); return n;
     } catch (e){ return 0; }
   }
@@ -225,7 +226,7 @@ export function init(G){
   function renderCat(){
     const q = qEl.value.trim();
     tabsEl.querySelectorAll('button').forEach((b) => b.classList.toggle('on', !q && b.dataset.k === CAT));
-    const list = q ? ITEMS.filter((it) => it.name.includes(q) || it.note.includes(q)) : ITEMS.filter((it) => it.cat === CAT);
+    const list = q ? OPEN.filter((it) => it.name.includes(q) || it.note.includes(q)) : OPEN.filter((it) => it.cat === CAT);
     gridEl.innerHTML = list.length ? '' : '<p style="grid-column:1/-1;color:var(--sub);font-size:13px;padding:8px">找不到這個物件</p>';
     for (const it of list){
       const d = document.createElement('div'); d.className = 'gc' + (PL && PL.id === it.id ? ' on' : ''); d.dataset.id = it.id;

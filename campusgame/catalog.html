@@ -78,7 +78,9 @@ body.shot #grid{padding-top:8px}
 import * as THREE from '../campus3d/lib/three.module.js';
 import { OrbitControls } from '../campus3d/lib/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from '../campus3d/lib/CSS2DRenderer.js';
-import { CATS, ITEMS, PALETTE, SETS, build, bake, triCount, MISSING, variants, setsOf } from './items.js';
+import { CATS, ITEMS as ALL, PALETTE, SETS, build, bake, triCount, MISSING, variants, setsOf } from './items.js';
+// 文化審查未過的物件（tags 含 hidden）預設不顯示；網址加 &review=1 給審查者看
+const ITEMS = new URLSearchParams(location.search).get('review') === '1' ? ALL : ALL.filter((it) => !it.tags.includes('hidden'));
 
 const Q = new URLSearchParams(location.search), SHOT = Q.get('shot') === '1';
 if (SHOT) document.body.classList.add('shot');
@@ -245,7 +247,7 @@ function sync(){
   if (MODE === 'card') renderGrid(); else if (MODE === 'color') renderColor(); else if (MODE === 'sets') renderSets(); else layoutReal();
   const n = ITEMS.filter((it) => CAT === 'all' || it.cat === CAT).length, over = ITEMS.filter((it) => STATS[it.id].tris > 400).length;
   document.getElementById('sum').textContent = `${n} 項｜全部 ${ITEMS.length} 項｜可改色 ${ITEMS.filter((it) => it.rc).length}｜套組 ${SETS.length}｜超過 400 三角形 ${over} 項` + (MISSING.length ? `｜缺模型 ${MISSING.length}` : '');
-  history.replaceState(null, '', `?cat=${CAT}${MODE !== 'card' ? '&mode=' + MODE : ''}${SHOT ? '&shot=1' : ''}`);
+  history.replaceState(null, '', `?cat=${CAT}${MODE !== 'card' ? '&mode=' + MODE : ''}${SHOT ? '&shot=1' : ''}${ITEMS === ALL ? '&review=1' : ''}`);
   scrollTo(0, 0);
 }
 makeThumbs(); sync();
