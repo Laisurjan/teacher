@@ -1595,6 +1595,11 @@ for (const { mt, cast, recv, list } of buckets.values()){
 }
 console.log(`[合併] 物件 ${olds.length} 個、繪製 ${drawBefore} 次 → ${buckets.size} 次`);
 
+/* ================= 校園改造遊戲：建造模式（game.js，M2） =================
+   學生擺放的物件在合併段之後才建立，不參與同材質合併；繪圖迴圈每幀呼叫 window.__gameTick() */
+window.__game = { scene, camera, controls, renderer, occBoxes, BOUND, QL, MOBILE, WALK, toast, groundAt, exitWalk };
+import('./game.js').then((m) => m.init(window.__game)).catch((e) => { console.error(e); toast('建造模式載入失敗：' + e.message); });
+
 /* ================= 開場動畫：線條勾勒 → 校園安全地圖 → 3D =================
    線條與 3D 模型用同一組座標、同一種相機投影，所以三段能精準對位：
    ① 深色藍圖上，從校門一路往校園深處畫出地面與每棟樓的立體線框，相機由斜角轉到正上方
@@ -1927,6 +1932,7 @@ renderer.setAnimationLoop(() => {
       controls.target.lerpVectors(fly.ft, fly.tt, k); camera.position.lerpVectors(fly.fp, fly.tp, k); if (fly.t >= 1) fly = null; }
     if (WALK.on) walkTick(); else if (!intro.drive) controls.update();
     if (first) intro.prewarm();
+    if (window.__gameTick) window.__gameTick();   // 建造模式：彈跳動畫、選取浮鈕、型錄縮圖（縮圖借畫布一角，要在主畫面前畫）
     if (first || !intro.cover){ renderer.render(scene, camera); labelRenderer.render(scene, camera); }   // 開場線條／地圖蓋滿畫面時不畫 3D
     if (first){ first = false; const l = document.getElementById('load'); if (l) l.remove(); window.__stage = '完成';
       try { sessionStorage.setItem('campusgame-q', QL); } catch (er) {}
