@@ -135,7 +135,7 @@ $('bOut').onclick = async () => { await C.logout(); ME = null; CUR = null; rende
 
 // ---------- 建立班級：科、年級、班連動，只列出實際存在的班 ----------
 const y0 = C.schoolYear();
-[y0 + 1, y0, y0 - 1].forEach((y) => $('sYear').add(new Option(`${y} 學年`, y, false, y === y0)));
+$('sYear').add(new Option(`${y0} 學年`, y0, false, true)); $('sYear').disabled = true;   // 只建本學年的班（老師 115/11/05 要求拿掉前後學年）
 C.DEPTS.forEach(([d]) => $('sDept').add(new Option(d + '科', d)));
 function fillGrade(){
   const dept = C.DEPTS.find((x) => x[0] === $('sDept').value), keep = $('sGrade').value; $('sGrade').innerHTML = '';
