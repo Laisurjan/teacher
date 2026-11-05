@@ -1,14 +1,17 @@
 // 校園改造遊戲 建造模式（M2、M3，115/11/05）：型錄面板、放置、選取、移動、旋轉、複製、收回、改色、復原／重做、本機存檔；
 // M3：拆除原有物件（樹、棕櫚、樹籬、路燈、中庭桌椅）、可放在資訊館平台與司令台台面
 // M4：磁磚拖曳連鋪、校園評價星等、套組觸發、圖層（危險點、暗區、照明、求助）、顧問提示
+// M5：學校 Google 帳號登入，依名單進入自己那一組，作品存在 Firestore cgWorks（每 5 秒同步同組隊友）
 // 由 index.html 在「同材質合併」之後載入，學生物件掛在 studentRoot，每種「物件＋顏色」一組 InstancedMesh，不參與合併。
 // 規格：C:\1031hlbhschool\校園改造遊戲規格書.md §4.2–4.6、§10
 import * as THREE from '../campus3d/lib/three.module.js';
 import { CATS, ITEMS, PALETTE, BY_ID, bake, build, variants } from './items.js';
 import { REMOVE } from './items-data.js';
 import { score, isLight, isHelp, inPoly as inP, K as SK } from './score.js';
+import * as CL from './cloud.js';
 
-const BUDGET = 1000, MAX_ITEMS = 300, MAX_TILES = 400, GRID = .5, UNDO_MAX = 50, SAVE_KEY = 'campusgame-work-v1';
+let BUDGET = 1000, SAVE_KEY = 'campusgame-work-v1';   // 登入班級後改用班級預算與該組的存檔鍵
+const MAX_ITEMS = 300, MAX_TILES = 400, GRID = .5, UNDO_MAX = 50;
 const D2R = Math.PI / 180;
 const isTile = (id) => BY_ID[id].tags.includes('tile');
 const OPEN = ITEMS.filter((it) => !it.tags.includes('hidden'));   // 文化審查未過的物件先不開放（規格書 §6.2 K 類）
@@ -107,6 +110,10 @@ const CSS = `
 .building #gTip{right:326px}
 @media (orientation:portrait){ .building #gTip{right:12px;bottom:calc(36vh + 68px + env(safe-area-inset-bottom))} }
 .building.catHide #gTip{right:12px}
+#gLogin{background:var(--panel);border:0;padding:6px 10px;border-radius:8px;font:inherit;font-size:13px;font-weight:800;pointer-events:auto;cursor:pointer;color:var(--ink)}
+#gLogin.in{background:#e8f5e9;color:#1b5e20}
+#gLogin i{display:inline-block;width:8px;height:8px;border-radius:50%;background:#2ecc71;margin-left:6px;vertical-align:middle}
+#gLogin i.busy{background:#f2c230} #gLogin i.err{background:#e53935}
 `;
 
 export function init(G){
@@ -214,7 +221,7 @@ export function init(G){
   function redo(){ const ops = REDO.pop(); if (!ops){ toast('沒有可以重做的動作'); return; }
     ops.forEach((o) => doOp(o, o.b)); UNDO.push(ops); if (sel && !S.items[sel]) deselect(); changed(); }
   let saveT = 0;
-  function changed(){ clearTimeout(saveT); saveT = setTimeout(save, 300); hud(); showSel(); rescore(); }
+  function changed(){ clearTimeout(saveT); saveT = setTimeout(save, 300); hud(); showSel(); rescore(); if (CS.w) schedulePush(); }
   function save(){ try { localStorage.setItem(SAVE_KEY, JSON.stringify({ v: 1, t: Date.now(), items: S.items, removed: S.removed })); } catch (e) {} }
   function load(){
     try { const d = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); if (!d || !d.items) return 0;
@@ -638,6 +645,87 @@ export function init(G){
     }
   }
 
+  // ---------- 雲端（M5）：學校 Google 帳號登入 → 名單找到班級組別 → 作品存 cgWorks，每 5 秒同步隊友 ----------
+  const CS = { w: '', cls: null, g: 0, synced: { items: {}, removed: {} }, ut: '', busy: false, t: 0 };
+  header.insertAdjacentHTML('beforeend', '<button id="gLogin" title="用學校 Google 帳號登入，作品會存到雲端、和同組同學一起編輯">登入</button>');
+  const loginEl = document.getElementById('gLogin');
+  const deep = (o) => JSON.parse(JSON.stringify(o));
+  function loginLabel(stat = ''){
+    const m = CL.me();
+    if (!m){ loginEl.textContent = '登入'; loginEl.className = ''; return; }
+    loginEl.className = 'in';
+    loginEl.innerHTML = (CS.cls ? `${CS.cls.name}・第 ${CS.g} 組` : m.admin ? '管理者' : '未加入班級') + (CS.w ? `<i class="${stat}" title="${stat === 'busy' ? '同步中' : stat === 'err' ? '同步失敗，稍後重試' : '已同步'}"></i>` : '');
+  }
+  loginEl.onclick = async () => {
+    const m = CL.me();
+    if (!m){
+      try { await CL.login(); try { localStorage.setItem('campusgame-login', '1'); } catch (e) {} await join(true); }
+      catch (e){ toast('登入失敗：' + CL.loginError(e)); }
+      return;
+    }
+    dialog(m.email, CS.cls ? `你在 ${CS.cls.year} 學年 ${CS.cls.name} 第 ${CS.g} 組，作品自動存到雲端。` : m.admin ? '管理者帳號：班級、名單、分組請到後台設定。' : '這個帳號還不在任何班級名單裡，作品只存在這台裝置。',
+      [['關閉'], ...(m.admin ? [['開啟後台', '', () => open('./admin.html' + (CL.MOCK ? '?cgmock=1' : ''), '_blank')]] : []), ['登出', 'go', async () => { await CL.logout(); try { localStorage.removeItem('campusgame-login'); } catch (e) {} location.reload(); }]]);
+  };
+  async function join(fresh){
+    const m = CL.me(); loginLabel(); if (!m) return;
+    if (m.admin){ if (fresh) toast('管理者已登入：班級與名單請到後台設定'); return; }
+    let r, c, d;
+    try { r = await CL.getDoc('cgRoster/' + m.email); }
+    catch (e){ toast('讀取名單失敗：' + e.message); return; }
+    if (!r || !r.data.w){ toast(r ? '老師還沒幫你分組，作品先存在這台裝置' : `${m.email} 不在任何班級名單裡，作品只存在這台裝置`); return; }
+    try { c = await CL.getDoc('cgClasses/' + r.data.classId); d = await CL.getDoc('cgWorks/' + r.data.w); }
+    catch (e){ toast('讀取雲端資料失敗：' + e.message); return; }
+    if (!c){ toast('找不到你的班級（可能已被刪除）'); return; }
+    CS.cls = { id: c.id, ...c.data }; CS.g = r.data.g; CS.w = r.data.w; BUDGET = c.data.budget || 1000; SAVE_KEY = 'campusgame-work-' + CS.w;
+    endPlace(); deselect(); UNDO.length = 0; REDO.length = 0;
+    if (d){ applyRemote(d); toast(`歡迎！${CS.cls.name} 第 ${CS.g} 組：已載入全組的作品`); }
+    else {   // 這組雲端還是空的：把這台裝置目前的作品當作起點送上去
+      CS.synced = { items: {}, removed: {} };
+      const n = Object.keys(S.items).length + Object.keys(S.removed).length;
+      toast(`歡迎！${CS.cls.name} 第 ${CS.g} 組${n ? '：這台裝置的作品已送到雲端，成為全組的起點' : ''}`);
+      schedulePush(0);
+    }
+    hud(); rescore(); loginLabel();
+    clearInterval(CS.poll); CS.poll = setInterval(poll, 5000);
+  }
+  function diff(){
+    const a = CS.synced, mask = [], data = { items: {}, removed: {} };
+    for (const u of new Set([...Object.keys(a.items), ...Object.keys(S.items)])){
+      if (JSON.stringify(a.items[u]) !== JSON.stringify(S.items[u])){ mask.push('items.' + u); if (S.items[u]) data.items[u] = S.items[u]; } }
+    for (const id of new Set([...Object.keys(a.removed), ...Object.keys(S.removed)])){
+      if (!!a.removed[id] !== !!S.removed[id]){ mask.push('removed.' + id); if (S.removed[id]) data.removed[id] = true; } }
+    return { mask, data };
+  }
+  function schedulePush(ms = 400){ clearTimeout(CS.t); CS.t = setTimeout(push, ms); }
+  async function push(){
+    if (!CS.w) return; if (CS.busy){ schedulePush(600); return; }
+    const { mask, data } = diff(); if (!mask.length){ loginLabel(''); return; }
+    CS.busy = true; loginLabel('busy');
+    const sent = { items: deep(S.items), removed: { ...S.removed } };
+    try {
+      const ut = await CL.patch('cgWorks/' + CS.w, { ...data, classId: CS.cls.id, g: CS.g }, [...mask, 'classId', 'g']);
+      // 只有送出的欄位算同步了：以送出當下的狀態為準
+      for (const p of mask){ const [k, id] = p.split('.'); if (sent[k][id] === undefined) delete CS.synced[k][id]; else CS.synced[k][id] = deep(sent[k][id]); }
+      CS.ut = ut || CS.ut; CS.busy = false; loginLabel('');
+      if (diff().mask.length) schedulePush();
+    } catch (e){ CS.busy = false; loginLabel('err'); if (e.status === 401 || e.status === 403) toast('雲端存檔被拒絕（可能登入過期），請重新登入'); schedulePush(5000); }
+  }
+  function applyRemote(d){
+    const items = d.data.items || {}, removed = d.data.removed || {};
+    for (const u of new Set([...Object.keys(S.items), ...Object.keys(items)])){
+      const it = items[u] && BY_ID[items[u].id] && !BY_ID[items[u].id].tags.includes('hidden') ? { id: items[u].id, x: +items[u].x, y: +items[u].y || 0, z: +items[u].z, rot: +items[u].rot || 0, v: +items[u].v || 0 } : null;
+      if (JSON.stringify(S.items[u] || null) !== JSON.stringify(it)) apply(u, it); }
+    for (const id of new Set([...Object.keys(S.removed), ...Object.keys(removed)])) if (!!S.removed[id] !== !!removed[id] && RMI.has(id)) setRm(id, !!removed[id]);
+    CS.synced = { items: deep(S.items), removed: { ...S.removed } }; CS.ut = d.updateTime;
+    if (sel && !S.items[sel]) deselect();
+    save(); hud(); showSel(); rescore();
+  }
+  async function poll(){
+    if (!CS.w || CS.busy || drag || paint || document.visibilityState !== 'visible' || diff().mask.length) return;
+    try { const d = await CL.getDoc('cgWorks/' + CS.w); if (d && d.updateTime !== CS.ut && !CS.busy && !drag && !paint && !diff().mask.length) applyRemote(d); } catch (e) {}
+  }
+  (async () => { let on = CL.MOCK; try { on = on || localStorage.getItem('campusgame-login') === '1'; } catch (e) {} if (on && await CL.restore()) join(false); else loginLabel(); })();
+
   // 建造／瀏覽切換
   function setOn(v){
     ON = v; body.classList.toggle('building', ON); bBuild.classList.toggle('off', !ON); bBuild.textContent = ON ? '🛠 建造中' : '🛠 建造';
@@ -697,5 +785,5 @@ export function init(G){
   const k = Object.keys(S.removed).length;
   if (n || k) toast(`已載入上次的改造：${n} 件物件${k ? `、移除 ${k} 件原有物件` : ""}`);
   rescore();
-  window.__gameState = { S, RM, SURF, askReset, doReset, get SC(){ return SC; }, tip, LY, drawLayers, tryPlace, check, select, undo, redo, startPlace, endPlace, setDemolish, pickRm, ground, get sel(){ return sel; }, get TOOL(){ return TOOL; } };   // 測試用
+  window.__gameState = { S, RM, SURF, CS, join, askReset, doReset, get SC(){ return SC; }, tip, LY, drawLayers, tryPlace, check, select, undo, redo, startPlace, endPlace, setDemolish, pickRm, ground, get sel(){ return sel; }, get TOOL(){ return TOOL; } };   // 測試用
 }
