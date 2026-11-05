@@ -3,6 +3,8 @@
 // fp：占地 [寬(x), 深(z)] 公尺；h：高度公尺；tags：dilemma＝兩難型、tile＝地板磁磚、culture＝待文化審查；rc：可改色
 // PALETTE：改色調色盤（規格書 §6.3）；SETS：套組加成，同組 r 公尺內湊滿 need 種成員觸發（§6.4）
 export const PALETTE = [["原色", null], ["白", "#f2f0ea"], ["炭黑", "#3b3d40"], ["原木", "#a8763e"], ["胡桃", "#6b4423"], ["天藍", "#6fa8dc"], ["珊瑚", "#f08a7a"], ["薄荷", "#8fd3b6"], ["芥末", "#e0b84a"], ["薰衣草", "#b39ddb"]];
+// REMOVE：拆除原有物件的成本（規格書 §4.4）
+export const REMOVE = {"tree": {"name": "樹（含龍柏）", "cost": 0}, "palm": {"name": "棕櫚", "cost": 0}, "hedge": {"name": "樹籬", "cost": 0}, "lamp": {"name": "路燈", "cost": 0}, "table": {"name": "中庭鐵桌椅（一組）", "cost": 0}};
 export const SETS = [
   {"id":"buddy","name":"陪伴角","members":["buddy_bench","talk_corner","mood_meter","thanks_tree","wish_rack","mailbox","message_board","peace_stones"],"need":3,"r":8,"safe":0,"calm":5,"beauty":0},
   {"id":"coast","name":"海岸漂流","members":["driftwood_bench","driftwood_art","dolphin_statue","marble_rock","pond"],"need":3,"r":8,"safe":0,"calm":0,"beauty":4},

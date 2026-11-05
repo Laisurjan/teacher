@@ -1,8 +1,10 @@
-// 校園改造遊戲 建造模式（M2，115/11/05）：型錄面板、放置、選取、移動、旋轉、複製、收回、改色、復原／重做、本機存檔
+// 校園改造遊戲 建造模式（M2、M3，115/11/05）：型錄面板、放置、選取、移動、旋轉、複製、收回、改色、復原／重做、本機存檔；
+// M3：拆除原有物件（樹、棕櫚、樹籬、路燈、中庭桌椅）、可放在資訊館平台與司令台台面
 // 由 index.html 在「同材質合併」之後載入，學生物件掛在 studentRoot，每種「物件＋顏色」一組 InstancedMesh，不參與合併。
 // 規格：C:\1031hlbhschool\校園改造遊戲規格書.md §4.2–4.6、§10
 import * as THREE from '../campus3d/lib/three.module.js';
 import { CATS, ITEMS, PALETTE, BY_ID, bake, build, variants } from './items.js';
+import { REMOVE } from './items-data.js';
 
 const BUDGET = 1000, MAX_ITEMS = 300, MAX_TILES = 400, GRID = .5, UNDO_MAX = 50, SAVE_KEY = 'campusgame-work-v1';
 const D2R = Math.PI / 180;
@@ -63,16 +65,32 @@ const CSS = `
   .building.catHide #peg{bottom:calc(76px + env(safe-area-inset-bottom))}
 }
 .building.catHide #peg{right:14px}
+#gFrame{position:absolute;inset:0;border:5px solid #e53935;z-index:9;pointer-events:none;display:none}
+.demolish #gFrame{display:block}
+#gTools button.demo.on{background:#e53935}
+#gTools button.reset{color:#c62828}
+#gConfirm{position:absolute;inset:0;z-index:40;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:16px}
+#gConfirm.show{display:flex}
+#gConfirm .box{background:var(--panel);color:var(--ink);border-radius:14px;padding:18px 20px;max-width:420px;width:100%;box-shadow:0 8px 30px rgba(0,0,0,.35)}
+#gConfirm h3{margin:0 0 8px;font-size:18px;font-weight:900}
+#gConfirm p{margin:0 0 14px;font-size:15px;line-height:1.6;color:var(--sub);font-weight:700}
+#gConfirm .row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+#gConfirm button{font:inherit;font-size:15px;font-weight:800;padding:10px 16px;border-radius:10px;border:1px solid var(--line);background:var(--btn);color:var(--ink);cursor:pointer}
+#gConfirm button.go{background:#e53935;color:#fff;border-color:transparent}
 `;
 
 export function init(G){
-  const { scene, camera, controls, renderer, occBoxes, BOUND, QL, WALK, toast, groundAt } = G;
+  const { scene, camera, controls, renderer, occBoxes, BOUND, QL, WALK, toast, groundAt, RM = [], rmSet = () => {}, SURF = [] } = G;
   const app = renderer.domElement.parentElement, body = document.body;
   const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
+  // 整頁不該捲動（iPad 叫出鍵盤或程式捲動卡片時可能被推上去）：一捲就歸零
+  const unscroll = () => { const e = document.scrollingElement || document.documentElement; if (e.scrollTop || e.scrollLeft){ e.scrollTop = 0; e.scrollLeft = 0; } if (document.body.scrollTop) document.body.scrollTop = 0; };
+  addEventListener('scroll', unscroll, true); if (window.visualViewport) visualViewport.addEventListener('resize', () => setTimeout(unscroll, 50));
 
   // ---------- 狀態 ----------
-  const S = { items: {} };   // uid → { id, x, z, rot（度）, v（調色盤序號） }
-  let ON = true, TOOL = 'idle', PL = null, sel = null, SNAP = true, SOUND = true;   // TOOL：idle／place／moveTo
+  const S = { items: {}, removed: {} };   // items：uid → { id, x, y（所在表面高度）, z, rot（度）, v（調色盤序號） }；removed：拆掉的原有物件 id
+  const RMI = new Map(RM.map((r) => [r.id, r]));
+  let ON = true, TOOL = 'idle', PL = null, sel = null, SNAP = true, SOUND = true;   // TOOL：idle／place／moveTo／demolish
   const UNDO = [], REDO = [];
   const root = new THREE.Group(); root.name = 'studentRoot'; scene.add(root);
   const fx = new THREE.Group(); fx.name = 'buildFx'; scene.add(fx);   // 幽靈、占地框、描邊（不能被點選）
@@ -94,7 +112,7 @@ export function init(G){
       m.castShadow = p.cast && QL === 0; m.receiveShadow = QL === 0; m.count = 0; m.userData.b = b; root.add(m); return m; });
     b.cap = cap;
   }
-  const yOf = (it) => isTile(it.id) ? .05 : 0;
+  const yOf = (it) => (it.y || 0) + (isTile(it.id) ? .05 : 0);
   function matOf(u, it){
     const t = ANIM.get(u), k = t === undefined ? 1 : 1 + .12 * Math.sin(Math.PI * Math.min(1, (performance.now() - t) / 160));
     return M4.compose(V.set(it.x, yOf(it), it.z), Q.setFromAxisAngle(YAX, it.rot * D2R), SC.set(k, k, k));
@@ -122,21 +140,33 @@ export function init(G){
     }
     return true;
   }
-  const solid = occBoxes.filter((b) => b.min.y < 1 && b.max.y > .3);   // 貼地的建築、樹幹、燈桿
-  function check(id, x, z, rot, ignore){
+  const rectPoly = (q) => [[q.x0, q.z0], [q.x1, q.z0], [q.x1, q.z1], [q.x0, q.z1]];
+  // 原有可拆物件的占地：樹與棕櫚只算樹幹附近，其他用整個外框
+  RM.forEach((r) => { const c = r.box.getCenter(new THREE.Vector3()), k = r.kind === 'tree' || r.kind === 'palm' ? .5 : 0;
+    r.foot = k ? [c.x - k, c.z - k, c.x + k, c.z + k] : [r.box.min.x, r.box.min.z, r.box.max.x, r.box.max.z]; });
+  const rmName = (k) => ((REMOVE[k] && REMOVE[k].name) || '物件').replace(/（.*）/, '');
+  function check(id, x, z, rot, ignore, y = 0){
     const C4 = corners(id, x, z, rot, .02);
     if (!C4.every(([a, b]) => inPoly(a, b))) return '超出校園範圍';
+    if (y > 0){
+      const q = SURF.find((o) => Math.abs(o.y - y) < .01);
+      if (!q || !C4.every(([a, b]) => a > q.x0 && a < q.x1 && b > q.z0 && b < q.z1)) return `要整個放在${q ? q.name : '台'}上`;
+      if (BY_ID[id].h > q.clear) return `太高了，${q.name}上放不下`;
+    } else if (SURF.some((q) => overlap(C4, rectPoly(q)))) return '壓到平台或司令台的邊了，請放到台上或台下空地';
     const xs = C4.map((c) => c[0]), zs = C4.map((c) => c[1]), x0 = Math.min(...xs), x1 = Math.max(...xs), z0 = Math.min(...zs), z1 = Math.max(...zs);
-    if (solid.some((b) => b.max.x > x0 && b.min.x < x1 && b.max.z > z0 && b.min.z < z1)) return '這裡有建築或原有設施擋住';
+    if (occBoxes.some((b) => !b.off && b.min.y < y + 1 && b.max.y > y + .3 && b.max.x > x0 && b.min.x < x1 && b.max.z > z0 && b.min.z < z1)) return '這裡有建築或原有設施擋住';
+    if (!isTile(id) && y === 0){ const r = RM.find((o) => !o.off && o.foot[2] > x0 && o.foot[0] < x1 && o.foot[3] > z0 && o.foot[1] < z1);
+      if (r) return `這裡有原本的${rmName(r.kind)}（可以用「移除」移走）`; }
     const t = isTile(id);
     for (const [u, it] of Object.entries(S.items)){
-      if (u === ignore || isTile(it.id) !== t) continue;
+      if (u === ignore || isTile(it.id) !== t || Math.abs((it.y || 0) - y) > .5) continue;
       if (Math.abs(it.x - x) > 6 || Math.abs(it.z - z) > 6) continue;
       if (overlap(C4, corners(it.id, it.x, it.z, it.rot, .02))) return t ? '這格已經鋪過磁磚' : '和其他物件重疊';
     }
     return '';
   }
-  const spent = () => Object.values(S.items).reduce((s, it) => s + BY_ID[it.id].cost, 0);
+  const spent = () => Object.values(S.items).reduce((s, it) => s + BY_ID[it.id].cost, 0)
+    + Object.keys(S.removed).reduce((s, id) => s + ((RMI.get(id) && REMOVE[RMI.get(id).kind] || {}).cost || 0), 0);
   const snap = (v) => SNAP ? Math.round(v / GRID) * GRID : Math.round(v * 20) / 20;
 
   // ---------- 動作、復原、存檔 ----------
@@ -144,17 +174,21 @@ export function init(G){
     const old = S.items[u]; if (b) S.items[u] = { ...b }; else delete S.items[u];
     const ks = new Set(); if (old) ks.add(keyOf(old)); if (b) ks.add(keyOf(b)); ks.forEach(refresh);
   }
-  function commit(ops){ ops.forEach((o) => apply(o.u, o.b)); UNDO.push(ops); if (UNDO.length > UNDO_MAX) UNDO.shift(); REDO.length = 0; changed(); }
+  let rmDirty = true;
+  function setRm(id, on){ const r = RMI.get(id); if (!r) return; if (on) S.removed[id] = true; else delete S.removed[id]; rmSet(r, !!on); rmDirty = true; }
+  const doOp = (o, v) => o.r ? setRm(o.r, v) : apply(o.u, v);   // 物件操作 {u,a,b}；拆除 {r,a,b}
+  function commit(ops){ ops.forEach((o) => doOp(o, o.b)); UNDO.push(ops); if (UNDO.length > UNDO_MAX) UNDO.shift(); REDO.length = 0; changed(); }
   function undo(){ const ops = UNDO.pop(); if (!ops){ toast('沒有可以復原的動作'); return; }
-    ops.slice().reverse().forEach((o) => apply(o.u, o.a)); REDO.push(ops); if (sel && !S.items[sel]) deselect(); changed(); }
+    ops.slice().reverse().forEach((o) => doOp(o, o.a)); REDO.push(ops); if (sel && !S.items[sel]) deselect(); changed(); }
   function redo(){ const ops = REDO.pop(); if (!ops){ toast('沒有可以重做的動作'); return; }
-    ops.forEach((o) => apply(o.u, o.b)); UNDO.push(ops); if (sel && !S.items[sel]) deselect(); changed(); }
+    ops.forEach((o) => doOp(o, o.b)); UNDO.push(ops); if (sel && !S.items[sel]) deselect(); changed(); }
   let saveT = 0;
   function changed(){ clearTimeout(saveT); saveT = setTimeout(save, 300); hud(); showSel(); }
-  function save(){ try { localStorage.setItem(SAVE_KEY, JSON.stringify({ v: 1, t: Date.now(), items: S.items })); } catch (e) {} }
+  function save(){ try { localStorage.setItem(SAVE_KEY, JSON.stringify({ v: 1, t: Date.now(), items: S.items, removed: S.removed })); } catch (e) {} }
   function load(){
     try { const d = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); if (!d || !d.items) return 0;
-      let n = 0; for (const [u, it] of Object.entries(d.items)) if (BY_ID[it.id] && !BY_ID[it.id].tags.includes('hidden')){ S.items[u] = { id: it.id, x: +it.x, z: +it.z, rot: +it.rot || 0, v: +it.v || 0 }; n++; }
+      let n = 0; for (const [u, it] of Object.entries(d.items)) if (BY_ID[it.id] && !BY_ID[it.id].tags.includes('hidden')){ S.items[u] = { id: it.id, x: +it.x, y: +it.y || 0, z: +it.z, rot: +it.rot || 0, v: +it.v || 0 }; n++; }
+      for (const id of Object.keys(d.removed || {})) if (RMI.has(id)) setRm(id, true);
       new Set(Object.values(S.items).map(keyOf)).forEach(refresh); return n;
     } catch (e){ return 0; }
   }
@@ -164,12 +198,12 @@ export function init(G){
     o.connect(g).connect(actx.destination); o.start(t); o.stop(t + .13); } catch (e) {} }
   const bounce = (u) => { ANIM.set(u, performance.now()); pop(); };
 
-  function tryPlace(id, v, x, z, rot){
+  function tryPlace(id, v, x, z, rot, y = 0){
     const it = BY_ID[id], all = Object.values(S.items), tiles = all.filter((o) => isTile(o.id)).length;
     if (isTile(id) ? tiles >= MAX_TILES : all.length - tiles >= MAX_ITEMS){ toast(isTile(id) ? `磁磚最多 ${MAX_TILES} 格` : `物件最多 ${MAX_ITEMS} 件`); return false; }
     const left = BUDGET - spent(); if (it.cost > left){ toast(`預算不夠：${it.name}要 ${it.cost} 點，只剩 ${left} 點`); return false; }
-    const why = check(id, x, z, rot); if (why){ toast(why); return false; }
-    const u = newUid(); commit([{ u, a: null, b: { id, x, z, rot, v } }]); bounce(u); return u;
+    const why = check(id, x, z, rot, null, y); if (why){ toast(why); return false; }
+    const u = newUid(); commit([{ u, a: null, b: { id, x, y, z, rot, v } }]); bounce(u); return u;
   }
 
   // ---------- 幽靈、占地框、描邊 ----------
@@ -182,8 +216,8 @@ export function init(G){
       if (!m){ m = o.material.clone(); m.transparent = true; m.opacity = .55; m.depthWrite = false; GM.set(o.material.uuid, m); } o.material = m; o.castShadow = false; });
     return g;
   }
-  function showFp(id, x, z, rot, color){
-    const [w, d] = BY_ID[id].fp; fp.scale.set(w, d, 1); fp.position.set(x, isTile(id) ? .1 : .06, z); fp.rotation.z = rot * D2R;
+  function showFp(id, x, z, rot, color, y = 0){
+    const [w, d] = BY_ID[id].fp; fp.scale.set(w, d, 1); fp.position.set(x, (y || 0) + (isTile(id) ? .1 : .06), z); fp.rotation.z = rot * D2R;
     fpMat.color.setHex(color); fp.visible = true;
   }
   const OUT = new THREE.MeshBasicMaterial({ color: 0x1f6feb, side: THREE.BackSide });
@@ -197,14 +231,22 @@ export function init(G){
 
   // ---------- 拾取 ----------
   const rc = new THREE.Raycaster(), NDC = new THREE.Vector2();
+  function ray(cx, cy){ const r = renderer.domElement.getBoundingClientRect(); NDC.set((cx - r.left) / r.width * 2 - 1, -(cy - r.top) / r.height * 2 + 1); rc.setFromCamera(NDC, camera); return rc.ray; }
+  // 指到的可放表面：平台、司令台台面優先（離鏡頭近者），否則地面
+  function ground(cx, cy){
+    const o = ray(cx, cy).origin, d = rc.ray.direction; let best = null, bt = Infinity;
+    for (const q of SURF){ if (Math.abs(d.y) < 1e-6) continue; const t = (q.y - o.y) / d.y; if (t <= 0 || t >= bt) continue;
+      const x = o.x + d.x * t, z = o.z + d.z * t; if (x > q.x0 && x < q.x1 && z > q.z0 && z < q.z1){ bt = t; best = { x, z, y: q.y }; } }
+    if (best) return best;
+    const g = groundAt(cx, cy); return g ? { x: g.x, z: g.z, y: 0 } : null;
+  }
   function pick(cx, cy){
-    const r = renderer.domElement.getBoundingClientRect(); NDC.set((cx - r.left) / r.width * 2 - 1, -(cy - r.top) / r.height * 2 + 1);
-    rc.setFromCamera(NDC, camera);
+    ray(cx, cy);
     const hits = rc.intersectObjects(root.children, false);
     for (const h of hits) if (h.instanceId !== undefined){ const u = h.object.userData.b.uids[h.instanceId]; if (u && S.items[u]) return u; }
-    const g = groundAt(cx, cy); if (!g) return null;   // 退而求其次：點在占地範圍內（磁磚、矮物件）
+    const g = ground(cx, cy); if (!g) return null;   // 退而求其次：點在占地範圍內（磁磚、矮物件）
     let best = null, bd = Infinity;
-    for (const [u, it] of Object.entries(S.items)){ if (Math.abs(it.x - g.x) > 4 || Math.abs(it.z - g.z) > 4) continue;
+    for (const [u, it] of Object.entries(S.items)){ if (Math.abs(it.x - g.x) > 4 || Math.abs(it.z - g.z) > 4 || Math.abs((it.y || 0) - g.y) > .5) continue;
       const P = corners(it.id, it.x, it.z, it.rot); if (!overlap(P, [[g.x - .05, g.z - .05], [g.x + .05, g.z - .05], [g.x + .05, g.z + .05], [g.x - .05, g.z + .05]])) continue;
       const d = Math.hypot(it.x - g.x, it.z - g.z) + (isTile(it.id) ? 10 : 0); if (d < bd){ bd = d; best = u; } }
     return best;
@@ -214,7 +256,7 @@ export function init(G){
   const header = document.querySelector('header'), h1 = header.querySelector('h1');
   header.insertAdjacentHTML('beforeend', '<button id="bBuild">🛠 建造中</button><span id="gHud"></span>');
   const hudEl = document.getElementById('gHud'), bBuild = document.getElementById('bBuild');
-  function hud(){ const n = Object.keys(S.items).length, s = spent(); hudEl.textContent = `花費 ${s}／${BUDGET} 點・${n} 件`; hudEl.style.color = s > BUDGET * .9 ? '#c62828' : ''; tb.undo.disabled = !UNDO.length; tb.redo.disabled = !REDO.length; }
+  function hud(){ const n = Object.keys(S.items).length, s = spent(), k = Object.keys(S.removed).length; hudEl.textContent = `花費 ${s}／${BUDGET} 點・${n} 件${k ? `・拆 ${k}` : ''}`; hudEl.style.color = s > BUDGET * .9 ? '#c62828' : ''; tb.undo.disabled = !UNDO.length; tb.redo.disabled = !REDO.length; }
 
   const cat = document.createElement('div'); cat.id = 'gCat';
   cat.innerHTML = `<div class="top"><input type="search" placeholder="搜尋物件，例如：長凳、燈" aria-label="搜尋物件"></div><div class="tabs"></div><div class="grid"></div>`;
@@ -239,16 +281,40 @@ export function init(G){
   }
 
   const tools = document.createElement('div'); tools.id = 'gTools';
-  tools.innerHTML = `<button data-t="cat" class="on">型錄</button><button data-t="rot">旋轉</button><button data-t="grid" class="on">格線</button>
-    <button data-t="undo">↶ 復原</button><button data-t="redo">↷ 重做</button><button data-t="done">完成</button><button data-t="snd" class="on">音效</button>`;
+  tools.innerHTML = `<button data-t="cat" class="on">型錄</button><button data-t="demo" class="demo" title="點一下物件就移走（自己放的或原有的樹、樹籬、路燈、中庭桌椅）">移除</button><button data-t="rot">旋轉</button><button data-t="grid" class="on">格線</button>
+    <button data-t="undo">↶ 復原</button><button data-t="redo">↷ 重做</button><button data-t="done">完成</button><button data-t="snd" class="on">音效</button><button data-t="reset" class="reset">全部重置</button>`;
   body.appendChild(tools);
   const tb = {}; tools.querySelectorAll('button').forEach((b) => tb[b.dataset.t] = b);
   tb.cat.onclick = () => { body.classList.toggle('catHide'); tb.cat.classList.toggle('on', !body.classList.contains('catHide')); };
   tb.rot.onclick = () => rotate();
+  tb.demo.onclick = () => setDemolish(TOOL !== 'demolish');
   tb.grid.onclick = () => { SNAP = !SNAP; tb.grid.classList.toggle('on', SNAP); toast(SNAP ? '對齊 0.5 m 格線' : '自由放置（不對齊格線）'); };
   tb.undo.onclick = undo; tb.redo.onclick = redo;
-  tb.done.onclick = () => { endPlace(); deselect(); };
+  tb.done.onclick = () => { endPlace(); deselect(); setDemolish(false); };
   tb.snd.onclick = () => { SOUND = !SOUND; tb.snd.classList.toggle('on', SOUND); };
+  tb.reset.onclick = () => askReset();
+
+  // 全部重置：兩次確認；整批進復原堆疊，誤按還能「復原」拿回來
+  const cf = document.createElement('div'); cf.id = 'gConfirm'; cf.innerHTML = '<div class="box" role="dialog" aria-modal="true"><h3></h3><p></p><div class="row"></div></div>'; body.appendChild(cf);
+  cf.addEventListener('pointerdown', (e) => { if (e.target === cf) cf.classList.remove('show'); });
+  function dialog(title, msg, btns){
+    cf.querySelector('h3').textContent = title; cf.querySelector('p').textContent = msg;
+    const row = cf.querySelector('.row'); row.innerHTML = '';
+    btns.forEach(([t, cls, fn]) => { const b = document.createElement('button'); b.textContent = t; if (cls) b.className = cls; b.onclick = () => { cf.classList.remove('show'); if (fn) fn(); }; row.appendChild(b); });
+    cf.classList.add('show');
+  }
+  function askReset(){
+    const n = Object.keys(S.items).length, k = Object.keys(S.removed).length;
+    if (!n && !k){ toast('現在沒有東西可以重置'); return; }
+    dialog('全部重置？', `會收回你放的 ${n} 件物件${k ? `，並把拆掉的 ${k} 件原有物件放回去` : ''}，校園回到一開始的樣子。`, [['取消'], ['下一步', 'go', () =>
+      dialog('再確認一次', '真的要全部重置嗎？（重置後如果反悔，可以馬上按「復原」拿回來）', [['不要了'], ['確定全部重置', 'go', doReset]])]]);
+  }
+  function doReset(){
+    endPlace(); deselect(); setDemolish(false);
+    const ops = Object.entries(S.items).map(([u, it]) => ({ u, a: { ...it }, b: null }))
+      .concat(Object.keys(S.removed).map((r) => ({ r, a: true, b: false })));
+    if (ops.length){ commit(ops); toast('已全部重置（反悔可按「復原」）'); }
+  }
   const stat = document.createElement('div'); stat.id = 'gStat'; body.appendChild(stat);
   function status(t){ stat.textContent = t || ''; stat.classList.toggle('show', !!t); }
 
@@ -263,7 +329,7 @@ export function init(G){
       + (vs.length > 1 ? `<div class="sw">${vs.map((v) => `<i data-v="${v}" title="${PALETTE[v][0]}" class="${(it.v || 0) === v ? 'on' : ''}" style="background:${PALETTE[v][1] || 'conic-gradient(#e63946,#f4a261,#2a9d8f,#457b9d,#e63946)'}"></i>`).join('')}</div>` : '');
     pop2.querySelectorAll('button').forEach((b) => b.onclick = () => selAct(b.dataset.a));
     pop2.querySelectorAll('.sw i').forEach((i) => i.onclick = () => { const a = S.items[sel], v = +i.dataset.v; if (!a || (a.v || 0) === v) return; commit([{ u: sel, a: { ...a }, b: { ...a, v } }]); bounce(sel); });
-    showFp(it.id, it.x, it.z, it.rot, 0x1f6feb); pop2.style.display = 'block';
+    showFp(it.id, it.x, it.z, it.rot, 0x1f6feb, it.y || 0); pop2.style.display = 'block';
   }
   function selAct(a){
     const it = S.items[sel]; if (!it) return;
@@ -272,12 +338,12 @@ export function init(G){
     else if (a === 'copy'){ startPlace(it.id, it.v || 0, it.rot); }
     else if (a === 'del'){ const u = sel; deselect(); commit([{ u, a: { ...it }, b: null }]); toast('已收回（可按「復原」拿回來）'); }
   }
-  function select(u){ if (TOOL === 'place') endPlace(); sel = u; TOOL = 'idle'; status(''); showSel(); }
+  function select(u){ if (TOOL === 'place') endPlace(); setDemolish(false); sel = u; TOOL = 'idle'; status(''); showSel(); }
   function deselect(){ sel = null; if (TOOL === 'moveTo') TOOL = 'idle'; status(''); showSel(); }
   function rotate(){
     if (TOOL === 'place' && PL){ PL.rot = (PL.rot + 45) % 360; if (ghost) ghost.rotation.y = PL.rot * D2R; ghostAt(PL.x, PL.z); return; }
     const it = sel && S.items[sel]; if (!it){ toast('先點一下要旋轉的物件'); return; }
-    const rot = (it.rot + 45) % 360, why = check(it.id, it.x, it.z, rot, sel);
+    const rot = (it.rot + 45) % 360, why = check(it.id, it.x, it.z, rot, sel, it.y || 0);
     if (why){ toast('轉不過去：' + why); return; }
     commit([{ u: sel, a: { ...it }, b: { ...it, rot } }]);
   }
@@ -294,30 +360,30 @@ export function init(G){
     startPlace(id, 0, 0);
   }
   function startPlace(id, v, rot){
-    deselect(); endPlace(); PL = { id, v, rot: rot || 0, x: null, z: null }; TOOL = 'place';
+    deselect(); endPlace(); setDemolish(false); PL = { id, v, rot: rot || 0, x: null, y: 0, z: null }; TOOL = 'place';
     ghost = ghostOf(id, v); ghost.rotation.y = PL.rot * D2R; ghost.visible = false; fx.add(ghost);
     gridEl.querySelectorAll('.gc').forEach((c) => c.classList.toggle('on', c.dataset.id === id));
     status(`放置「${BY_ID[id].name}」：點地面放下（可連續放）・「旋轉」或 R 鍵轉向・「完成」結束`);
-    const r = renderer.domElement.getBoundingClientRect(), g = groundAt(r.left + r.width * .45, r.top + r.height * .55);   // 先放在畫面中央預覽
-    if (g) ghostAt(snap(g.x), snap(g.z));
+    const r = renderer.domElement.getBoundingClientRect(), g = ground(r.left + r.width * .45, r.top + r.height * .55);   // 先放在畫面中央預覽
+    if (g) ghostAt(snap(g.x), snap(g.z), g.y);
   }
   function endPlace(){
     if (ghost){ fx.remove(ghost); ghost = null; }
     PL = null; if (TOOL === 'place') TOOL = 'idle'; fp.visible = false; status('');
     gridEl.querySelectorAll('.gc.on').forEach((c) => c.classList.remove('on'));
   }
-  function ghostAt(x, z){
-    if (!PL || x === null) return; PL.x = x; PL.z = z;
-    ghost.visible = true; ghost.position.set(x, isTile(PL.id) ? .05 : 0, z);
-    showFp(PL.id, x, z, PL.rot, check(PL.id, x, z, PL.rot) ? 0xe53935 : 0x2ecc71);
+  function ghostAt(x, z, y = PL ? PL.y : 0){
+    if (!PL || x === null) return; PL.x = x; PL.z = z; PL.y = y;
+    ghost.visible = true; ghost.position.set(x, y + (isTile(PL.id) ? .05 : 0), z);
+    showFp(PL.id, x, z, PL.rot, check(PL.id, x, z, PL.rot, null, y) ? 0xe53935 : 0x2ecc71, y);
   }
 
   // ---------- 指標：點、長按、拖曳 ----------
   let down = null, drag = null, lp = 0; const ptrs = new Set();
   const canvas = renderer.domElement;
   function startDrag(u, pid, cx, cy){
-    const it = S.items[u], g = groundAt(cx, cy);
-    drag = { u, pid, a: { ...it }, off: g ? [it.x - g.x, it.z - g.z] : [0, 0], why: '', moved: false };
+    const it = S.items[u], g = ground(cx, cy);
+    drag = { u, pid, a: { ...it }, off: g && Math.abs(g.y - (it.y || 0)) < .5 ? [it.x - g.x, it.z - g.z] : [0, 0], why: '', moved: false };
     controls.enabled = false; if (sel !== u) select(u);
   }
   function endDrag(ok){
@@ -330,7 +396,7 @@ export function init(G){
     ptrs.add(e.pointerId);
     if (!ON || WALK.on || e.target !== canvas || (e.button !== undefined && e.button > 0)) return;
     if (ptrs.size > 1){ clearTimeout(lp); down = null; if (drag) endDrag(false); return; }
-    const u = TOOL === 'place' ? null : pick(e.clientX, e.clientY);
+    const u = TOOL === 'place' || TOOL === 'demolish' ? null : pick(e.clientX, e.clientY);
     if (u && u === sel){ startDrag(u, e.pointerId, e.clientX, e.clientY); e.stopPropagation(); e.preventDefault(); return; }
     down = { x: e.clientX, y: e.clientY, t: performance.now(), id: e.pointerId, u, moved: false };
     clearTimeout(lp);
@@ -338,15 +404,16 @@ export function init(G){
   }, true);
   addEventListener('pointermove', (e) => {
     if (drag && e.pointerId === drag.pid){
-      const g = groundAt(e.clientX, e.clientY); if (!g) return;
-      const it = S.items[drag.u], x = snap(g.x + drag.off[0]), z = snap(g.z + drag.off[1]);
-      if (x === it.x && z === it.z) return;
-      drag.moved = true; drag.why = check(it.id, x, z, it.rot, drag.u);
-      apply(drag.u, { ...it, x, z }); drawOutline(); showFp(it.id, x, z, it.rot, drag.why ? 0xe53935 : 0x1f6feb); return;
+      const g = ground(e.clientX, e.clientY); if (!g) return;
+      const it = S.items[drag.u], x = snap(g.x + drag.off[0]), z = snap(g.z + drag.off[1]), y = g.y;
+      if (x === it.x && z === it.z && y === (it.y || 0)) return;
+      drag.moved = true; drag.why = check(it.id, x, z, it.rot, drag.u, y);
+      apply(drag.u, { ...it, x, y, z }); drawOutline(); showFp(it.id, x, z, it.rot, drag.why ? 0xe53935 : 0x1f6feb, y); return;
     }
     if (down && e.pointerId === down.id && Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6){ down.moved = true; clearTimeout(lp); }
     if (ON && TOOL === 'place' && e.pointerType === 'mouse' && !WALK.on && e.target === canvas && !down){
-      const g = groundAt(e.clientX, e.clientY); if (g) ghostAt(snap(g.x), snap(g.z)); }
+      const g = ground(e.clientX, e.clientY); if (g) ghostAt(snap(g.x), snap(g.z), g.y); }
+    if (ON && TOOL === 'demolish' && e.pointerType === 'mouse' && !WALK.on && e.target === canvas && !down) hoverRm(pickRm(e.clientX, e.clientY));
   });
   addEventListener('pointerup', (e) => {
     ptrs.delete(e.pointerId); clearTimeout(lp);
@@ -359,15 +426,16 @@ export function init(G){
   addEventListener('pointercancel', (e) => { ptrs.delete(e.pointerId); clearTimeout(lp); down = null; if (drag && e.pointerId === drag.pid) endDrag(false); });
   function tap(cx, cy, u){
     if (TOOL === 'place' && PL){
-      const g = groundAt(cx, cy); if (!g) return; const x = snap(g.x), z = snap(g.z);
-      ghostAt(x, z); tryPlace(PL.id, PL.v, x, z, PL.rot); ghostAt(x, z); return;
+      const g = ground(cx, cy); if (!g) return; const x = snap(g.x), z = snap(g.z);
+      ghostAt(x, z, g.y); tryPlace(PL.id, PL.v, x, z, PL.rot, g.y); ghostAt(x, z, g.y); return;
     }
     if (TOOL === 'moveTo' && sel){
-      const g = groundAt(cx, cy), it = S.items[sel]; if (!g || !it) return;
-      const x = snap(g.x), z = snap(g.z), why = check(it.id, x, z, it.rot, sel);
+      const g = ground(cx, cy), it = S.items[sel]; if (!g || !it) return;
+      const x = snap(g.x), z = snap(g.z), why = check(it.id, x, z, it.rot, sel, g.y);
       if (why){ toast(why); return; }
-      TOOL = 'idle'; status(''); commit([{ u: sel, a: { ...it }, b: { ...it, x, z } }]); bounce(sel); return;
+      TOOL = 'idle'; status(''); commit([{ u: sel, a: { ...it }, b: { ...it, x, y: g.y, z } }]); bounce(sel); return;
     }
+    if (TOOL === 'demolish'){ demolishAt(cx, cy); return; }
     if (u) select(u); else if (sel) deselect();
   }
   addEventListener('keydown', (e) => {
@@ -375,15 +443,53 @@ export function init(G){
     const k = e.key.toLowerCase(), mod = e.ctrlKey || e.metaKey;
     if (mod && k === 'z'){ e.preventDefault(); e.shiftKey ? redo() : undo(); }
     else if (mod && k === 'y'){ e.preventDefault(); redo(); }
-    else if (k === 'escape'){ endPlace(); deselect(); }
+    else if (k === 'escape'){ if (cf.classList.contains('show')){ cf.classList.remove('show'); return; } endPlace(); deselect(); setDemolish(false); }
     else if (k === 'r') rotate();
     else if ((k === 'delete' || k === 'backspace') && sel){ e.preventDefault(); selAct('del'); }
   });
 
+  // ---------- 拆除原有物件（M3，模擬人生的鐵鎚） ----------
+  const frame = document.createElement('div'); frame.id = 'gFrame'; body.appendChild(frame);
+  const markGeo = new THREE.BufferGeometry(), markPos = new Float32Array(RM.length * 3);
+  markGeo.setAttribute('position', new THREE.BufferAttribute(markPos, 3));
+  const marks = new THREE.Points(markGeo, new THREE.PointsMaterial({ color: 0xe53935, size: 11, sizeAttenuation: false }));
+  marks.visible = false; marks.frustumCulled = false; fx.add(marks);
+  function updMarks(){ RM.forEach((r, i) => { const c = r.box.getCenter(V); markPos.set([c.x, r.off ? -999 : r.box.max.y + .6, c.z], i * 3); }); markGeo.attributes.position.needsUpdate = true; rmDirty = false; }
+  const hov = new THREE.Box3Helper(new THREE.Box3(), 0xe53935); hov.visible = false; fx.add(hov);
+  function hoverRm(r){ hov.visible = !!r; if (r) hov.box.copy(r.box); }
+  function setDemolish(on){
+    if (on === (TOOL === 'demolish')) return;
+    if (on){ endPlace(); sel = null; showSel(); TOOL = 'demolish'; status('移除：點一下要移走的物件（自己放的，或頭上有紅點的原有樹、樹籬、路燈、中庭桌椅）・可復原・按「完成」結束'); }
+    else { TOOL = 'idle'; status(''); hoverRm(null); }
+    body.classList.toggle('demolish', on); tb.demo.classList.toggle('on', on); marks.visible = on;
+  }
+  const HV = new THREE.Vector3();
+  function pickRm(cx, cy){
+    const R0 = ray(cx, cy); let best = null, bd = Infinity;
+    for (const r of RM){ if (r.off) continue; const h = R0.intersectBox(r.box, HV); if (!h) continue; const d = h.distanceTo(R0.origin); if (d < bd){ bd = d; best = r; } }
+    if (!best) return null;
+    for (const b of occBoxes){ if (b.off || b.rm && b.rm.userData.rm) continue; const h = R0.intersectBox(b, HV); if (h && h.distanceTo(R0.origin) < bd - .5) return null; }   // 被建築擋住
+    return best;
+  }
+  function demolishAt(cx, cy){
+    const u = pick(cx, cy);
+    if (u){ const it = S.items[u]; commit([{ u, a: { ...it }, b: null }]); toast(`移除了：${BY_ID[it.id].name}（可復原）`); return; }
+    const r = pickRm(cx, cy);
+    if (r){ const cost = (REMOVE[r.kind] || {}).cost || 0, left = BUDGET - spent();
+      if (cost > left){ toast(`預算不夠：移除${rmName(r.kind)}要 ${cost} 點`); return; }
+      commit([{ r: r.id, a: false, b: true }]); hoverRm(null); pop(); toast(`移除了原有的${rmName(r.kind)}${cost ? `（${cost} 點）` : ''}・可按「復原」`); return; }
+    ray(cx, cy);   // 只在點擊時對整個場景打一次射線：打到地面以上的東西＝建築、圍牆等拆不掉的
+    const hit = rc.intersectObjects(scene.children.filter((o) => o.isMesh), false).find((h) => h.point.y > .3);
+    if (hit){
+      canvas.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-7px)' }, { transform: 'translateX(7px)' }, { transform: 'translateX(-4px)' }, { transform: 'translateX(0)' }], { duration: 320 });
+      toast('這個不能移除（建築、圍牆、道路）'); }
+    else toast('這裡沒有可以移除的東西');
+  }
+
   // 建造／瀏覽切換
   function setOn(v){
     ON = v; body.classList.toggle('building', ON); bBuild.classList.toggle('off', !ON); bBuild.textContent = ON ? '🛠 建造中' : '🛠 建造';
-    if (!ON){ endPlace(); deselect(); }
+    if (!ON){ endPlace(); deselect(); setDemolish(false); }
   }
   bBuild.onclick = () => setOn(!ON);
 
@@ -429,12 +535,14 @@ export function init(G){
       if (SP.z < 1){ pop2.style.display = 'block'; pop2.style.left = Math.max(110, Math.min(r.width - 110, (SP.x + 1) / 2 * r.width + r.left)) + 'px'; pop2.style.top = Math.max(90, (1 - SP.y) / 2 * r.height + r.top) + 'px'; }
       else pop2.style.display = 'none';
     } else if (pop2.style.display !== 'none') pop2.style.display = 'none';
+    if (rmDirty && marks.visible) updMarks();
     fx.visible = !WALK.on;
   };
 
   // ---------- 開始 ----------
   if (h1) h1.textContent = '花蓮高商・校園改造';
   const n = load(); renderCat(); setOn(true); hud();
-  if (n) toast(`已載入上次的改造：${n} 件`);
-  window.__gameState = { S, tryPlace, check, select, undo, redo, startPlace, endPlace, get sel(){ return sel; }, get TOOL(){ return TOOL; } };   // 測試用
+  const k = Object.keys(S.removed).length;
+  if (n || k) toast(`已載入上次的改造：${n} 件物件${k ? `、移除 ${k} 件原有物件` : ""}`);
+  window.__gameState = { S, RM, SURF, askReset, doReset, tryPlace, check, select, undo, redo, startPlace, endPlace, setDemolish, pickRm, ground, get sel(){ return sel; }, get TOOL(){ return TOOL; } };   // 測試用
 }

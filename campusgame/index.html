@@ -377,7 +377,7 @@ function building(g, o){
 let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
 const leafGeo = new THREE.IcosahedronGeometry(1, 1), trunkGeo = new THREE.CylinderGeometry(.22, .32, 1, 6);
 function tree(x, z, s = 1){
-  const g = group(x, z);
+  const g = group(x, z); g.userData.rm = 'tree';   // 遊戲頁：可拆（M3）
   const t = new THREE.Mesh(trunkGeo, M.trunk); t.scale.set(s, 3 * s, s); t.position.y = 1.5 * s; g.add(t);
   for (let k = 0; k < 3; k++){
     const c = new THREE.Mesh(leafGeo, rnd() < .5 ? M.leaf : M.leaf2);
@@ -387,7 +387,7 @@ function tree(x, z, s = 1){
 }
 const leafBlade = new THREE.PlaneGeometry(.9, 3.6); leafBlade.translate(0, 1.8, 0);
 function palm(x, z, h = 12){
-  const g = group(x, z, rnd() * 360);
+  const g = group(x, z, rnd() * 360); g.userData.rm = 'palm';
   const t = new THREE.Mesh(new THREE.CylinderGeometry(.22, .32, h, 7), lam(0x9b9183)); t.position.y = h / 2; t.castShadow = true; g.add(t);
   const crown = new THREE.Mesh(new THREE.CylinderGeometry(.3, .3, 1.2, 7), lam(0x6e8f4a)); crown.position.y = h + .2; g.add(crown);
   for (let k = 0; k < 9; k++){
@@ -396,10 +396,10 @@ function palm(x, z, h = 12){
   }
 }
 function conifer(x, z){ // 活動中心前的龍柏
-  const g = group(x, z);
+  const g = group(x, z); g.userData.rm = 'tree';
   const c = new THREE.Mesh(new THREE.ConeGeometry(1.4, 6, 8), lam(0x2f5d32)); c.position.y = 3.3; c.castShadow = true; g.add(c);
 }
-function hedge(x0, z0, x1, z1){ box(Math.abs(x1 - x0) || .8, .9, Math.abs(z1 - z0) || .8, lam(0x4d8a3f), (x0 + x1) / 2, 0, (z0 + z1) / 2); }
+function hedge(x0, z0, x1, z1){ const m = box(Math.abs(x1 - x0) || .8, .9, Math.abs(z1 - z0) || .8, lam(0x4d8a3f), (x0 + x1) / 2, 0, (z0 + z1) / 2); m.userData.rm = 'hedge'; return m; }
 
 // ================= 地面、道路、圍牆 =================
 const BOUND = [[-10, -31], [10, -28], [50, -15], [90, -1], [245, 98], [282, 124], [282, 156], [258, 187], [219.6, 187.4], [214, 187.5], [112, 188.5], [60, 189], [-10, 187]];
@@ -595,7 +595,7 @@ function pavilion(x, z, roofMat, label){
   if (label) addLabel(label, x, 7.5, z);
 }
 pavilion(45, 160, M.darkRoof);
-[[40, 152], [50, 168], [8, 182]].forEach(([x, z]) => { box(.15, 3.6, .15, lam(0x5a5f63), x, 0, z); box(.5, .5, .5, M.white, x, 3.6, z); }); // 路燈
+[[40, 152], [50, 168], [8, 182]].forEach(([x, z]) => { const g = group(x, z); g.userData.rm = 'lamp'; box(.15, 3.6, .15, lam(0x5a5f63), 0, 0, 0, g); box(.5, .5, .5, M.white, 0, 3.6, 0, g); }); // 路燈
 
 // ================= 建築 =================
 const PINK = { wall: '#e5ccbe', band: '#b8796a', win: 'louver', pil: '#d5b8aa' };
@@ -1323,12 +1323,13 @@ for (let i = 0; i < 90; i++){ const x = 72 + rnd() * 30, z = 32 + rnd() * 92;
 // 中庭原有木造涼亭已拆除：現在是穿堂（中央穿廊）南北兩側各一組深綠色鐵圓桌＋有椅背的個人鐵椅
 (function(){
   const IRON = lam(0x1f4a32);
-  [[39, 65.5], [36.5, 85.5]].forEach(([cx, cz]) => {   // 北組讓出電梯塔位置
-    const top = new THREE.Mesh(new THREE.CylinderGeometry(.6, .6, .05, 20), IRON); top.position.set(cx, .75, cz); top.castShadow = true; scene.add(top);
-    const leg = new THREE.Mesh(new THREE.CylinderGeometry(.05, .05, .75, 8), IRON); leg.position.set(cx, .375, cz); scene.add(leg);
-    const foot = new THREE.Mesh(new THREE.CylinderGeometry(.3, .3, .04, 12), IRON); foot.position.set(cx, .02, cz); scene.add(foot);
+  [[39, 65.5], [36.5, 85.5]].forEach(([cx, cz], si) => {   // 北組讓出電梯塔位置
+    const rk = (o) => { o.userData.rm = 'table'; o.userData.rmKey = 'table' + si; return o; };   // 遊戲頁：一組桌椅一起拆
+    const top = rk(new THREE.Mesh(new THREE.CylinderGeometry(.6, .6, .05, 20), IRON)); top.position.set(cx, .75, cz); top.castShadow = true; scene.add(top);
+    const leg = rk(new THREE.Mesh(new THREE.CylinderGeometry(.05, .05, .75, 8), IRON)); leg.position.set(cx, .375, cz); scene.add(leg);
+    const foot = rk(new THREE.Mesh(new THREE.CylinderGeometry(.3, .3, .04, 12), IRON)); foot.position.set(cx, .02, cz); scene.add(foot);
     for (let k = 0; k < 4; k++){
-      const a = k * Math.PI / 2 + Math.PI / 4, g = group(cx + Math.cos(a) * 1.05, cz + Math.sin(a) * 1.05, THREE.MathUtils.radToDeg(a) + 90);
+      const a = k * Math.PI / 2 + Math.PI / 4, g = rk(group(cx + Math.cos(a) * 1.05, cz + Math.sin(a) * 1.05, THREE.MathUtils.radToDeg(a) + 90));
       box(.45, .04, .45, IRON, 0, .45, 0, g);                                   // 座面
       box(.45, .5, .04, IRON, 0, .47, -.21, g);                                 // 椅背在遠離圓桌的一側（朝外）
       [[-.2, -.2], [.2, -.2], [-.2, .2], [.2, .2]].forEach(([dx, dz]) => box(.03, .45, .03, IRON, dx, 0, dz, g));
@@ -1336,7 +1337,7 @@ for (let i = 0; i < 90; i++){ const x = 72 + rnd() * 30, z = 32 + rnd() * 92;
   });
 })();
 for (let k = 0; k < 28; k++){ const a = k / 28 * Math.PI * 2; if (Math.abs(a - Math.PI / 2) < .25 || Math.abs(a - Math.PI * 1.5) < .25) continue;   // 圓形花園外圈樹籬（南北留出入口）
-  box(1.6, .9, .8, lam(0x4d8a3f), 92 + Math.cos(a) * 8.6, 0, 38 + Math.sin(a) * 8.6).rotation.y = -a + Math.PI / 2; }
+  const h = box(1.6, .9, .8, lam(0x4d8a3f), 92 + Math.cos(a) * 8.6, 0, 38 + Math.sin(a) * 8.6); h.rotation.y = -a + Math.PI / 2; h.userData.rm = 'hedge'; }
 hedge(90.2, 47, 90.2, 72); hedge(93.8, 47, 93.8, 72);
 for (let i = 0; i < 12; i++) tree(2 + rnd() * 55, 178 + rnd() * 6, .9);
 for (let i = 0; i < 18; i++){ const x = 105 + i * 5; if (x > 117 && x < 141) continue; tree(x, 131 - (i % 2), .8); }   // 司令台背後不種
@@ -1410,7 +1411,7 @@ function groundAt(cx, cy){
 }
 function blocked(x, z){
   if (x < -30 || x > 300 || z < -60 || z > 215) return true;
-  return typeof occBoxes !== 'undefined' && occBoxes.some(b => b.min.y < EYE && x > b.min.x - .3 && x < b.max.x + .3 && z > b.min.z - .3 && z < b.max.z + .3);
+  return typeof occBoxes !== 'undefined' && occBoxes.some(b => !b.off && b.min.y < EYE && x > b.min.x - .3 && x < b.max.x + .3 && z > b.min.z - .3 && z < b.max.z + .3);
 }
 function walkDir(){ return new THREE.Vector3(Math.sin(WALK.yaw) * Math.cos(WALK.pitch), Math.sin(WALK.pitch), Math.cos(WALK.yaw) * Math.cos(WALK.pitch)); }
 function enterWalk(p){
@@ -1502,7 +1503,31 @@ window.setView = (px, py, pz, tx, ty, tz) => { fly = null; camera.position.set(p
 // 標籤遮擋：先記下每棟建築的外框（合併前），放大近看時被擋住的名稱自動隱藏
 scene.updateMatrixWorld(true);
 const occBoxes = [];
-scene.traverse(m => { if (m.isMesh && m.castShadow){ const b = new THREE.Box3().setFromObject(m); if (b.max.y - b.min.y > 3) occBoxes.push(b); } });
+const rootOf = (m) => { let r = m; while (r.parent && r.parent !== scene) r = r.parent; return r; };
+scene.traverse(m => { if (m.isMesh && m.castShadow){ const b = new THREE.Box3().setFromObject(m); if (b.max.y - b.min.y > 3){ b.rm = rootOf(m); occBoxes.push(b); } } });
+/* 遊戲頁（M3）：可拆物件。合併時記下每個可拆物件在合併網格裡的頂點範圍，拆除＝把那段頂點的 grow.x 改成極大值，
+   長高著色器就會把它壓到地面下（不必拆開合併、不增加繪圖次數，陰影一起消失）；復原時改回原值。
+   b.off＝被拆掉的物件外框，街景小人、標籤遮擋、擺放判定都略過 */
+const RM = [], rmByRoot = new Map(), rmCount = {};
+scene.traverse(m => {
+  if (!m.isMesh) return; const r = rootOf(m), k = r.userData.rm || m.userData.rm; if (!k) return;
+  const key = r.userData.rmKey || m.userData.rmKey || r;
+  let rec = rmByRoot.get(key);
+  if (!rec){ rmCount[k] = (rmCount[k] || 0) + 1; rec = { id: typeof key === 'string' ? key : k + rmCount[k], kind: k, box: new THREE.Box3(), segs: [], occ: [], off: false }; rmByRoot.set(key, rec); RM.push(rec); }
+  rec.box.expandByObject(m); m.userData.rmRec = rec;
+});
+occBoxes.forEach(b => { const rec = b.rm && (rmByRoot.get(b.rm.userData.rmKey) || rmByRoot.get(b.rm)); if (rec) rec.occ.push(b); });
+function rmSet(rec, hide){
+  for (const sg of rec.segs){ const a = sg.mesh.geometry.attributes.grow;
+    for (let i = sg.start; i < sg.start + sg.count; i++) a.array[i * 2] = hide ? 1e6 : sg.g0;
+    a.needsUpdate = true; }
+  rec.occ.forEach(b => b.off = hide); rec.off = hide;
+}
+// 學生可以放東西的高台表面（M3）：資訊館入口平台（PH 1.45 m）、司令台台面（台基 1.8 m，扣掉後牆與兩端側牆）
+const SURF = [
+  { name: '資訊館平台', y: 1.45, x0: 79.2, x1: 96.8, z0: 140.2, z1: 145.8, clear: 3 },
+  { name: '司令台', y: 1.8, x0: 121.9, x1: 136.1, z0: 121.7, z1: 129.9, clear: 2.8 }
+];
 
 /* ================= 同材質合併 =================
    原本約兩三千個物件、每個各畫一次；手機繪圖晶片負擔太重。
@@ -1581,23 +1606,28 @@ scene.traverse(m => {
   for (const [pg, mt0] of parts){
     if (!pg.attributes.position.count) continue;
     const mt = canonical(mt0), key = mt.uuid + (m.castShadow ? 'C' : '') + (m.receiveShadow ? 'R' : '');
-    if (!buckets.has(key)) buckets.set(key, { mt, cast: m.castShadow, recv: m.receiveShadow, list: [] });
-    buckets.get(key).list.push(pg);
+    if (!buckets.has(key)) buckets.set(key, { mt, cast: m.castShadow, recv: m.receiveShadow, list: [], n: 0 });
+    const bk = buckets.get(key), cnt = pg.attributes.position.count;
+    if (m.userData.rmRec) m.userData.rmRec.segs.push({ bk, start: bk.n, count: cnt, g0: gv[0] });   // 可拆物件：記下在合併網格裡的位置
+    bk.list.push(pg); bk.n += cnt;
   }
 });
 olds.forEach(m => m.parent.remove(m));
-for (const { mt, cast, recv, list } of buckets.values()){
+for (const bk of buckets.values()){
+  const { mt, cast, recv, list } = bk;
   mt.onBeforeCompile = growInject;
-  const merged = new THREE.Mesh(mergeGeometries(list, false), mt);
+  const merged = bk.mesh = new THREE.Mesh(mergeGeometries(list, false), mt);
   if (cast) merged.customDepthMaterial = growDepth;
   merged.castShadow = cast; merged.receiveShadow = recv; merged.matrixAutoUpdate = false;
   scene.add(merged);
 }
 console.log(`[合併] 物件 ${olds.length} 個、繪製 ${drawBefore} 次 → ${buckets.size} 次`);
+RM.forEach(rec => rec.segs.forEach(sg => { sg.mesh = sg.bk.mesh; delete sg.bk; }));
+console.log(`[可拆] ${RM.length} 件：` + Object.entries(rmCount).map(([k, n]) => k + ' ' + n).join('、'));
 
 /* ================= 校園改造遊戲：建造模式（game.js，M2） =================
    學生擺放的物件在合併段之後才建立，不參與同材質合併；繪圖迴圈每幀呼叫 window.__gameTick() */
-window.__game = { scene, camera, controls, renderer, occBoxes, BOUND, QL, MOBILE, WALK, toast, groundAt, exitWalk };
+window.__game = { scene, camera, controls, renderer, occBoxes, BOUND, QL, MOBILE, WALK, toast, groundAt, exitWalk, RM, rmSet, SURF };
 import('./game.js').then((m) => m.init(window.__game)).catch((e) => { console.error(e); toast('建造模式載入失敗：' + e.message); });
 
 /* ================= 開場動畫：線條勾勒 → 校園安全地圖 → 3D =================
@@ -1894,7 +1924,7 @@ function updateLabels(){
   labels.forEach(o => {
     o.getWorldPosition(tmp); const dist = tmp.distanceTo(camera.position);
     ray.set(camera.position, tmp.clone().sub(camera.position).normalize());
-    const blocked = occBoxes.some(b => !b.containsPoint(tmp) && ray.intersectBox(b, hit) && hit.distanceTo(camera.position) < dist - 3);
+    const blocked = occBoxes.some(b => !b.off && !b.containsPoint(tmp) && ray.intersectBox(b, hit) && hit.distanceTo(camera.position) < dist - 3);
     o.element.style.visibility = blocked ? 'hidden' : 'visible';
   });
 }
