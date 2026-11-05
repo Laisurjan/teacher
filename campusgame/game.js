@@ -300,7 +300,7 @@ export function init(G){
   const header = document.querySelector('header'), h1 = header.querySelector('h1');
   header.insertAdjacentHTML('beforeend', '<button id="bBuild">🛠 建造中</button><span id="gHud"></span>');
   const hudEl = document.getElementById('gHud'), bBuild = document.getElementById('bBuild');
-  function hud(){ const n = Object.keys(S.items).length, s = spent(), k = Object.keys(S.removed).length; hudEl.textContent = `花費 ${s}／${BUDGET} 點・${n} 件${k ? `・拆 ${k}` : ''}`; hudEl.style.color = s > BUDGET * .9 ? '#c62828' : ''; tb.undo.disabled = !UNDO.length; tb.redo.disabled = !REDO.length; }
+  function hud(){ const n = Object.keys(S.items).length, s = spent(), k = Object.keys(S.removed).length; hudEl.textContent = `花費 ${s}${BUDGET >= 99999 ? ' 點（示範不限）' : `／${BUDGET} 點`}・${n} 件${k ? `・拆 ${k}` : ''}`; hudEl.style.color = s > BUDGET * .9 ? '#c62828' : ''; tb.undo.disabled = !UNDO.length; tb.redo.disabled = !REDO.length; }
 
   const cat = document.createElement('div'); cat.id = 'gCat';
   cat.innerHTML = `<div class="top"><input type="search" placeholder="搜尋物件，例如：長凳、燈" aria-label="搜尋物件"></div><div class="tabs"></div><div class="grid"></div>`;
@@ -654,7 +654,7 @@ export function init(G){
     const m = CL.me();
     if (!m){ loginEl.textContent = '登入'; loginEl.className = ''; return; }
     loginEl.className = 'in';
-    loginEl.innerHTML = (CS.cls ? `${CS.cls.name}・第 ${CS.g} 組` : m.admin ? '管理者' : '未加入班級') + (CS.w ? `<i class="${stat}" title="${stat === 'busy' ? '同步中' : stat === 'err' ? '同步失敗，稍後重試' : '已同步'}"></i>` : '');
+    loginEl.innerHTML = (CS.demo ? '👩‍🏫 示範模式' : CS.cls ? `${CS.cls.name}・第 ${CS.g} 組` : m.admin ? '管理者' : '未加入班級') + (CS.w ? `<i class="${stat}" title="${stat === 'busy' ? '同步中' : stat === 'err' ? '同步失敗，稍後重試' : '已同步'}"></i>` : '');
   }
   loginEl.onclick = async () => {
     const m = CL.me();
@@ -663,12 +663,21 @@ export function init(G){
       catch (e){ toast('登入失敗：' + CL.loginError(e)); }
       return;
     }
-    dialog(m.email, CS.cls ? `你在 ${CS.cls.year} 學年 ${CS.cls.name} 第 ${CS.g} 組，作品自動存到雲端。` : m.admin ? '管理者帳號：班級、名單、分組請到後台設定。' : '這個帳號還不在任何班級名單裡，作品只存在這台裝置。',
+    dialog(m.email, CS.demo ? '示範模式：不限預算，作品存在你自己的帳號（換裝置登入還在），不影響任何班級。要清空示範內容請按工具列「全部重置」。' : CS.cls ? `你在 ${CS.cls.year} 學年 ${CS.cls.name} 第 ${CS.g} 組，作品自動存到雲端。` : m.admin ? '管理者帳號：班級、名單、分組請到後台設定。' : '這個帳號還不在任何班級名單裡，作品只存在這台裝置。',
       [['關閉'], ...(m.admin ? [['開啟後台', '', () => open('./admin.html' + (CL.MOCK ? '?cgmock=1' : ''), '_blank')]] : []), ['登出', 'go', async () => { await CL.logout(); try { localStorage.removeItem('campusgame-login'); } catch (e) {} location.reload(); }]]);
   };
   async function join(fresh){
     const m = CL.me(); loginLabel(); if (!m) return;
-    if (m.admin){ if (fresh) toast('管理者已登入：班級與名單請到後台設定'); return; }
+    if (m.admin){   // 老師：示範模式（老師 115/11/05 要求）——不限預算，作品存在 cgWorks/demo_<帳號>，不屬於任何班級
+      let d; try { d = await CL.getDoc('cgWorks/demo_' + m.email.split('@')[0].replace(/[^a-z0-9]/g, '')); } catch (e){ toast('讀取示範作品失敗：' + e.message); }
+      CS.demo = true; CS.cls = { id: 'demo', name: '示範模式', year: CL.schoolYear() }; CS.g = 0; CS.w = 'demo_' + m.email.split('@')[0].replace(/[^a-z0-9]/g, '');
+      BUDGET = 99999; SAVE_KEY = 'campusgame-work-' + CS.w;
+      endPlace(); deselect(); UNDO.length = 0; REDO.length = 0;
+      if (d) applyRemote(d); else { CS.synced = { items: {}, removed: {} }; schedulePush(0); }
+      hud(); rescore(); loginLabel();
+      if (fresh) toast('老師示範模式：不限預算、自動存到你的帳號，不影響任何班級');
+      clearInterval(CS.poll); CS.poll = setInterval(poll, 5000); return;
+    }
     let r, c, d;
     try { r = await CL.getDoc('cgRoster/' + m.email); }
     catch (e){ toast('讀取名單失敗：' + e.message); return; }
