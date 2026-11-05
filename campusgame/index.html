@@ -121,13 +121,13 @@ header,.bar,#hint{transition:opacity .9s ease}
 </div>
 <div id="load">模型載入中…</div>
 <script>
-/* 開場動畫：第一次造訪一定播放；看過之後才出現「跳過」，勾了「下次直接進入 3D」就不再自動播放。
-   網址 ?intro=1 強制播放、?intro=0 不播放（測試用） */
+/* 開場動畫（遊戲頁）：預設不播放，直接進入 3D；只有網址 ?intro=1 或右上「▶ 開場動畫」才播。
+   原始動畫頁 campus3d 的「第一次必播」邏輯在此停用，以免佔用 iPad 記憶體 */
 (function(){
   var r = document.documentElement, q = new URLSearchParams(location.search).get('intro'), seen = false, skip = false;
   try { seen = localStorage.getItem('campusgame-introSeen') === '1'; skip = localStorage.getItem('campusgame-skipIntro') === '1'; } catch (e) {}
   var lost = false; try { lost = !!sessionStorage.getItem('campusgame-lost'); } catch (e) {}   // 本次瀏覽曾因記憶體不足降階重載
-  if (q === '1' || (q !== '0' && !lost && !(seen && skip))) r.classList.add('introOn');
+  if (q === '1') r.classList.add('introOn');   // 遊戲頁：只在明確要求時播放（seen／skip／lost 保留給重播按鈕用）
   if (seen) r.classList.add('introSeen');
 })();
 (function(){
