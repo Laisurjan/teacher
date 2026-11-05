@@ -1,10 +1,12 @@
 // 校園改造遊戲 建造模式（M2、M3，115/11/05）：型錄面板、放置、選取、移動、旋轉、複製、收回、改色、復原／重做、本機存檔；
 // M3：拆除原有物件（樹、棕櫚、樹籬、路燈、中庭桌椅）、可放在資訊館平台與司令台台面
+// M4：磁磚拖曳連鋪、校園評價星等、套組觸發、圖層（危險點、暗區、照明、求助）、顧問提示
 // 由 index.html 在「同材質合併」之後載入，學生物件掛在 studentRoot，每種「物件＋顏色」一組 InstancedMesh，不參與合併。
 // 規格：C:\1031hlbhschool\校園改造遊戲規格書.md §4.2–4.6、§10
 import * as THREE from '../campus3d/lib/three.module.js';
 import { CATS, ITEMS, PALETTE, BY_ID, bake, build, variants } from './items.js';
 import { REMOVE } from './items-data.js';
+import { score, isLight, isHelp, inPoly as inP, K as SK } from './score.js';
 
 const BUDGET = 1000, MAX_ITEMS = 300, MAX_TILES = 400, GRID = .5, UNDO_MAX = 50, SAVE_KEY = 'campusgame-work-v1';
 const D2R = Math.PI / 180;
@@ -77,10 +79,38 @@ const CSS = `
 #gConfirm .row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
 #gConfirm button{font:inherit;font-size:15px;font-weight:800;padding:10px 16px;border-radius:10px;border:1px solid var(--line);background:var(--btn);color:var(--ink);cursor:pointer}
 #gConfirm button.go{background:#e53935;color:#fff;border-color:transparent}
+#gStar{background:var(--panel);border:0;padding:6px 10px;border-radius:8px;font:inherit;font-size:13px;font-weight:900;pointer-events:auto;cursor:pointer;color:#e0a800;letter-spacing:1px}
+#gStar small{color:var(--ink);letter-spacing:0;margin-left:4px}
+#gScore{position:absolute;left:12px;top:60px;z-index:13;width:min(340px,calc(100% - 24px));max-height:calc(100% - 140px);overflow-y:auto;background:var(--panel);
+  border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,.25);padding:12px 14px;display:none;font-size:13px}
+#gScore.show{display:block}
+#gScore h3{margin:0 0 8px;font-size:16px;font-weight:900;display:flex;justify-content:space-between;align-items:center}
+#gScore h3 button{border:0;background:none;font-size:20px;color:var(--sub);cursor:pointer;padding:0 4px}
+#gScore .sbar{display:grid;grid-template-columns:42px 1fr 38px;gap:6px;align-items:center;margin:4px 0;font-weight:800}
+#gScore .sbar i{display:block;height:10px;border-radius:5px;background:var(--line);overflow:hidden}
+#gScore .sbar i b{display:block;height:100%;border-radius:5px}
+#gScore h4{margin:10px 0 4px;font-size:13px;font-weight:900;color:var(--sub)}
+#gScore li{margin:2px 0;line-height:1.45;font-weight:700}
+#gScore ul{margin:0;padding-left:18px}
+#gScore .ok{color:#2e7d4f} #gScore .no{color:#c62828}
+#gLayers{position:absolute;z-index:13;background:var(--panel);border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.25);padding:8px 12px;display:none;font-size:14px;font-weight:800}
+#gLayers.show{display:block}
+#gLayers label{display:flex;gap:8px;align-items:center;padding:5px 0;cursor:pointer}
+#gLayers label.off{opacity:.45;cursor:default}
+#gLayers input{width:18px;height:18px;margin:0}
+#gLayers i{width:14px;height:14px;border-radius:50%;display:inline-block}
+#gTip{position:absolute;right:12px;bottom:calc(66px + env(safe-area-inset-bottom));z-index:12;max-width:min(320px,calc(100% - 24px));background:#fffbe6;color:#3d3000;
+  border:2px solid #f2c230;border-radius:14px 14px 4px 14px;padding:10px 12px;font-size:14px;font-weight:800;line-height:1.55;box-shadow:0 4px 14px rgba(0,0,0,.2);
+  opacity:0;transform:translateY(8px);transition:opacity .4s,transform .4s;pointer-events:none}
+#gTip.show{opacity:1;transform:none}
+#gTip b{display:block;font-size:12px;color:#8a6d00;margin-bottom:2px}
+.building #gTip{right:326px}
+@media (orientation:portrait){ .building #gTip{right:12px;bottom:calc(36vh + 68px + env(safe-area-inset-bottom))} }
+.building.catHide #gTip{right:12px}
 `;
 
 export function init(G){
-  const { scene, camera, controls, renderer, occBoxes, BOUND, QL, WALK, toast, groundAt, RM = [], rmSet = () => {}, SURF = [] } = G;
+  const { scene, camera, controls, renderer, occBoxes, BOUND, QL, WALK, toast, groundAt, RM = [], rmSet = () => {}, SURF = [], PTS = [], DARK = [] } = G;
   const app = renderer.domElement.parentElement, body = document.body;
   const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
   // 整頁不該捲動（iPad 叫出鍵盤或程式捲動卡片時可能被推上去）：一捲就歸零
@@ -97,7 +127,7 @@ export function init(G){
   let uidN = 0; const newUid = () => 'i' + Date.now().toString(36) + (uidN++).toString(36);
 
   // ---------- 繪製：每種「物件＋顏色」一組 InstancedMesh ----------
-  const R = new Map(), M4 = new THREE.Matrix4(), Q = new THREE.Quaternion(), V = new THREE.Vector3(), SC = new THREE.Vector3(), YAX = new THREE.Vector3(0, 1, 0);
+  const R = new Map(), M4 = new THREE.Matrix4(), Q = new THREE.Quaternion(), V = new THREE.Vector3(), SV3 = new THREE.Vector3(), YAX = new THREE.Vector3(0, 1, 0);
   const ANIM = new Map();   // uid → 開始時間（放下的彈跳）
   function bucket(key){
     let b = R.get(key);
@@ -115,7 +145,7 @@ export function init(G){
   const yOf = (it) => (it.y || 0) + (isTile(it.id) ? .05 : 0);
   function matOf(u, it){
     const t = ANIM.get(u), k = t === undefined ? 1 : 1 + .12 * Math.sin(Math.PI * Math.min(1, (performance.now() - t) / 160));
-    return M4.compose(V.set(it.x, yOf(it), it.z), Q.setFromAxisAngle(YAX, it.rot * D2R), SC.set(k, k, k));
+    return M4.compose(V.set(it.x, yOf(it), it.z), Q.setFromAxisAngle(YAX, it.rot * D2R), SV3.set(k, k, k));
   }
   function refresh(key){
     const b = bucket(key); b.uids = Object.keys(S.items).filter((u) => keyOf(S.items[u]) === key); ensureCap(b, b.uids.length);
@@ -168,6 +198,7 @@ export function init(G){
   const spent = () => Object.values(S.items).reduce((s, it) => s + BY_ID[it.id].cost, 0)
     + Object.keys(S.removed).reduce((s, id) => s + ((RMI.get(id) && REMOVE[RMI.get(id).kind] || {}).cost || 0), 0);
   const snap = (v) => SNAP ? Math.round(v / GRID) * GRID : Math.round(v * 20) / 20;
+  const tsnap = (id, v, axis) => { const w = BY_ID[id].fp[axis]; return Math.floor(v / w) * w + w / 2; };   // 磁磚對齊自己的格子，鋪起來才不會錯開
 
   // ---------- 動作、復原、存檔 ----------
   function apply(u, b){
@@ -183,7 +214,7 @@ export function init(G){
   function redo(){ const ops = REDO.pop(); if (!ops){ toast('沒有可以重做的動作'); return; }
     ops.forEach((o) => doOp(o, o.b)); UNDO.push(ops); if (sel && !S.items[sel]) deselect(); changed(); }
   let saveT = 0;
-  function changed(){ clearTimeout(saveT); saveT = setTimeout(save, 300); hud(); showSel(); }
+  function changed(){ clearTimeout(saveT); saveT = setTimeout(save, 300); hud(); showSel(); rescore(); }
   function save(){ try { localStorage.setItem(SAVE_KEY, JSON.stringify({ v: 1, t: Date.now(), items: S.items, removed: S.removed })); } catch (e) {} }
   function load(){
     try { const d = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); if (!d || !d.items) return 0;
@@ -204,6 +235,12 @@ export function init(G){
     const left = BUDGET - spent(); if (it.cost > left){ toast(`預算不夠：${it.name}要 ${it.cost} 點，只剩 ${left} 點`); return false; }
     const why = check(id, x, z, rot, null, y); if (why){ toast(why); return false; }
     const u = newUid(); commit([{ u, a: null, b: { id, x, y, z, rot, v } }]); bounce(u); return u;
+  }
+  function canAdd(id){
+    const all = Object.values(S.items), tiles = all.filter((o) => isTile(o.id)).length;
+    if (isTile(id) ? tiles >= MAX_TILES : all.length - tiles >= MAX_ITEMS) return isTile(id) ? `磁磚最多 ${MAX_TILES} 格` : `物件最多 ${MAX_ITEMS} 件`;
+    const left = BUDGET - spent(); if (BY_ID[id].cost > left) return `預算不夠：${BY_ID[id].name}要 ${BY_ID[id].cost} 點，只剩 ${left} 點`;
+    return '';
   }
 
   // ---------- 幽靈、占地框、描邊 ----------
@@ -281,7 +318,7 @@ export function init(G){
   }
 
   const tools = document.createElement('div'); tools.id = 'gTools';
-  tools.innerHTML = `<button data-t="cat" class="on">型錄</button><button data-t="demo" class="demo" title="點一下物件就移走（自己放的或原有的樹、樹籬、路燈、中庭桌椅）">移除</button><button data-t="rot">旋轉</button><button data-t="grid" class="on">格線</button>
+  tools.innerHTML = `<button data-t="cat" class="on">型錄</button><button data-t="layer">圖層</button><button data-t="demo" class="demo" title="點一下物件就移走（自己放的或原有的樹、樹籬、路燈、中庭桌椅）">移除</button><button data-t="rot">旋轉</button><button data-t="grid" class="on">格線</button>
     <button data-t="undo">↶ 復原</button><button data-t="redo">↷ 重做</button><button data-t="done">完成</button><button data-t="snd" class="on">音效</button><button data-t="reset" class="reset">全部重置</button>`;
   body.appendChild(tools);
   const tb = {}; tools.querySelectorAll('button').forEach((b) => tb[b.dataset.t] = b);
@@ -363,7 +400,8 @@ export function init(G){
     deselect(); endPlace(); setDemolish(false); PL = { id, v, rot: rot || 0, x: null, y: 0, z: null }; TOOL = 'place';
     ghost = ghostOf(id, v); ghost.rotation.y = PL.rot * D2R; ghost.visible = false; fx.add(ghost);
     gridEl.querySelectorAll('.gc').forEach((c) => c.classList.toggle('on', c.dataset.id === id));
-    status(`放置「${BY_ID[id].name}」：點地面放下（可連續放）・「旋轉」或 R 鍵轉向・「完成」結束`);
+    status(isTile(id) ? `鋪「${BY_ID[id].name}」：點一格鋪一格、按住拖曳連續鋪・在同款磁磚上按住拖曳＝擦掉・要轉視角先按「完成」或用兩指`
+      : `放置「${BY_ID[id].name}」：點地面放下（可連續放）・「旋轉」或 R 鍵轉向・「完成」結束`);
     const r = renderer.domElement.getBoundingClientRect(), g = ground(r.left + r.width * .45, r.top + r.height * .55);   // 先放在畫面中央預覽
     if (g) ghostAt(snap(g.x), snap(g.z), g.y);
   }
@@ -373,7 +411,7 @@ export function init(G){
     gridEl.querySelectorAll('.gc.on').forEach((c) => c.classList.remove('on'));
   }
   function ghostAt(x, z, y = PL ? PL.y : 0){
-    if (!PL || x === null) return; PL.x = x; PL.z = z; PL.y = y;
+    if (!PL || x === null) return; if (isTile(PL.id)){ x = tsnap(PL.id, x, 0); z = tsnap(PL.id, z, 1); } PL.x = x; PL.z = z; PL.y = y;
     ghost.visible = true; ghost.position.set(x, y + (isTile(PL.id) ? .05 : 0), z);
     showFp(PL.id, x, z, PL.rot, check(PL.id, x, z, PL.rot, null, y) ? 0xe53935 : 0x2ecc71, y);
   }
@@ -395,7 +433,8 @@ export function init(G){
   app.addEventListener('pointerdown', (e) => {
     ptrs.add(e.pointerId);
     if (!ON || WALK.on || e.target !== canvas || (e.button !== undefined && e.button > 0)) return;
-    if (ptrs.size > 1){ clearTimeout(lp); down = null; if (drag) endDrag(false); return; }
+    if (ptrs.size > 1){ clearTimeout(lp); down = null; if (drag) endDrag(false); if (paint) endPaint(); return; }
+    if (TOOL === 'place' && PL && isTile(PL.id)){ startPaint(e); e.stopPropagation(); e.preventDefault(); return; }
     const u = TOOL === 'place' || TOOL === 'demolish' ? null : pick(e.clientX, e.clientY);
     if (u && u === sel){ startDrag(u, e.pointerId, e.clientX, e.clientY); e.stopPropagation(); e.preventDefault(); return; }
     down = { x: e.clientX, y: e.clientY, t: performance.now(), id: e.pointerId, u, moved: false };
@@ -403,6 +442,7 @@ export function init(G){
     if (u) lp = setTimeout(() => { if (down && !down.moved && ptrs.size === 1){ const d = down; down = null; startDrag(d.u, d.id, d.x, d.y); toast('拖曳到新位置'); } }, 450);
   }, true);
   addEventListener('pointermove', (e) => {
+    if (paint && e.pointerId === paint.pid){ paintAt(e.clientX, e.clientY); return; }
     if (drag && e.pointerId === drag.pid){
       const g = ground(e.clientX, e.clientY); if (!g) return;
       const it = S.items[drag.u], x = snap(g.x + drag.off[0]), z = snap(g.z + drag.off[1]), y = g.y;
@@ -417,17 +457,40 @@ export function init(G){
   });
   addEventListener('pointerup', (e) => {
     ptrs.delete(e.pointerId); clearTimeout(lp);
+    if (paint && e.pointerId === paint.pid){ endPaint(); return; }
     if (drag && e.pointerId === drag.pid){ endDrag(true); return; }
     if (!down || e.pointerId !== down.id) return;
     const d = down; down = null;
     if (d.moved || performance.now() - d.t > 350) return;
     tap(e.clientX, e.clientY, d.u);
   });
-  addEventListener('pointercancel', (e) => { ptrs.delete(e.pointerId); clearTimeout(lp); down = null; if (drag && e.pointerId === drag.pid) endDrag(false); });
+  addEventListener('pointercancel', (e) => { ptrs.delete(e.pointerId); clearTimeout(lp); down = null; if (drag && e.pointerId === drag.pid) endDrag(false); if (paint && e.pointerId === paint.pid) endPaint(); });
+  let paint = null;
+  function tileAt(id, x, z, y){ return Object.keys(S.items).find((u) => { const o = S.items[u]; return o.id === id && Math.abs(o.x - x) < .01 && Math.abs(o.z - z) < .01 && Math.abs((o.y || 0) - y) < .5; }); }
+  function startPaint(e){
+    const g = ground(e.clientX, e.clientY); if (!g) return;
+    const x = tsnap(PL.id, g.x, 0), z = tsnap(PL.id, g.z, 1);
+    paint = { pid: e.pointerId, ops: [], cells: new Set(), erase: !!tileAt(PL.id, x, z, g.y), warned: false };
+    controls.enabled = false; paintAt(e.clientX, e.clientY);
+  }
+  function paintAt(cx, cy){
+    const g = ground(cx, cy); if (!g) return;
+    const x = tsnap(PL.id, g.x, 0), z = tsnap(PL.id, g.z, 1), key = x + ',' + z;
+    ghostAt(x, z, g.y); if (paint.cells.has(key)) return; paint.cells.add(key);
+    if (paint.erase){ const u = tileAt(PL.id, x, z, g.y); if (u){ paint.ops.push({ u, a: { ...S.items[u] }, b: null }); apply(u, null); hud(); } return; }
+    const why = canAdd(PL.id) || check(PL.id, x, z, 0, null, g.y);
+    if (why){ if (!paint.warned){ toast(why); paint.warned = true; } return; }
+    const u = newUid(), b = { id: PL.id, x, y: g.y, z, rot: 0, v: 0 }; apply(u, b); paint.ops.push({ u, a: null, b }); hud();
+  }
+  function endPaint(){
+    const P = paint; paint = null; controls.enabled = true; if (!P || !P.ops.length) return;
+    UNDO.push(P.ops); if (UNDO.length > UNDO_MAX) UNDO.shift(); REDO.length = 0; changed(); pop();
+    toast(P.erase ? `擦掉 ${P.ops.length} 格磁磚` : `鋪了 ${P.ops.length} 格磁磚`); if (!P.erase) advise(P.ops[P.ops.length - 1].u);
+  }
   function tap(cx, cy, u){
     if (TOOL === 'place' && PL){
       const g = ground(cx, cy); if (!g) return; const x = snap(g.x), z = snap(g.z);
-      ghostAt(x, z, g.y); tryPlace(PL.id, PL.v, x, z, PL.rot, g.y); ghostAt(x, z, g.y); return;
+      ghostAt(x, z, g.y); const u = tryPlace(PL.id, PL.v, x, z, PL.rot, g.y); ghostAt(x, z, g.y); if (u) advise(u); return;
     }
     if (TOOL === 'moveTo' && sel){
       const g = ground(cx, cy), it = S.items[sel]; if (!g || !it) return;
@@ -484,6 +547,95 @@ export function init(G){
       canvas.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-7px)' }, { transform: 'translateX(7px)' }, { transform: 'translateX(-4px)' }, { transform: 'translateX(0)' }], { duration: 320 });
       toast('這個不能移除（建築、圍牆、道路）'); }
     else toast('這裡沒有可以移除的東西');
+  }
+
+  // ---------- 校園評價（M4，規格書 §8） ----------
+  header.insertAdjacentHTML('beforeend', '<button id="gStar" title="校園評價：點開看分數細節"></button>');
+  const starEl = document.getElementById('gStar');
+  const sc = document.createElement('div'); sc.id = 'gScore'; body.appendChild(sc);
+  starEl.onclick = () => { sc.classList.toggle('show'); renderScore(); };
+  let SC = null, prevSets = null;
+  function rescore(){
+    const L = Object.values(S.items).filter((o) => BY_ID[o.id]);
+    SC = score(L, PTS, DARK);
+    starEl.innerHTML = '★'.repeat(SC.stars) + '<span style="color:var(--line)">' + '★'.repeat(5 - SC.stars) + `</span><small>${Math.round(SC.total)} 分</small>`;
+    const keys = SC.sets.map((t) => t.id + t.k);
+    if (prevSets){ SC.sets.filter((t) => !prevSets.includes(t.id + t.k)).forEach((t) =>
+      tip(`觸發套組「${t.name}」${t.k > 1 ? '（5 種加倍）' : ''}：${[['安全', t.safe], ['安心', t.calm], ['美化', t.beauty]].filter(([, v]) => v).map(([k, v]) => k + '+' + v).join(' ')}`, '套組加成')); }
+    prevSets = keys;
+    if (sc.classList.contains('show')) renderScore();
+    drawLayers();
+  }
+  function renderScore(){
+    if (!SC) return; const bar = (k, v, c) => `<div class="sbar"><span>${k}</span><i><b style="width:${v}%;background:${c}"></b></i><span>${Math.round(v)}</span></div>`;
+    const pt = (p) => { const s = Math.min(SK.PER, Math.max(0, p.safe)), c = Math.min(SK.PER, Math.max(0, p.calm)), ok = s >= SK.PER * .5 && c >= SK.PER * .5;
+      return `<li class="${ok ? 'ok' : 'no'}">${p.n}. ${p.title}：安全 ${s.toFixed(1)}／${SK.PER}・安心 ${c.toFixed(1)}／${SK.PER}${p.by.length ? `<br><small style="color:var(--sub)">${p.by.slice(0, 4).join('、')}${p.by.length > 4 ? '…' : ''}</small>` : ''}</li>`; };
+    sc.innerHTML = `<h3>校園評價 ${'★'.repeat(SC.stars)}${'☆'.repeat(5 - SC.stars)} ${Math.round(SC.total)} 分<button aria-label="關閉">×</button></h3>`
+      + bar('安全', SC.safe, '#e53935') + bar('安心', SC.calm, '#1f6feb') + bar('美化', SC.beauty, '#2e9d5a')
+      + `<div style="color:var(--sub);font-size:12px;margin-top:2px">總分＝安全 ${SK.W.safe * 100}%＋安心 ${SK.W.calm * 100}%＋美化 ${SK.W.beauty * 100}%（暫定，待學習單）${SC.conc ? '・美化集中在一處，打 7 折' : ''}</div>`
+      + `<h4>8 個危險點（綠＝安全、安心都過半）</h4><ul>${SC.pts.map(pt).join('')}</ul>`
+      + `<h4>暗區照明</h4><ul>${SC.dark.map((d) => `<li class="${d.f >= .5 ? 'ok' : 'no'}">${d.name}：照亮 ${Math.round(d.f * 100)}%</li>`).join('')}</ul>`
+      + `<h4>套組加成</h4>${SC.sets.length ? `<ul>${SC.sets.map((t) => `<li class="ok">${t.name}（${t.kinds} 種${t.k > 1 ? '，加倍' : ''}）</li>`).join('')}</ul>` : '<div style="color:var(--sub)">還沒有觸發（同一套組 8 m 內擺 3 種）</div>'}`;
+    sc.querySelector('h3 button').onclick = () => sc.classList.remove('show');
+  }
+
+  // ---------- 圖層（模擬城市的資料圖層） ----------
+  const LY = { pts: true, dark: true, light: false, help: false };
+  const lay = new THREE.Group(); lay.name = 'layers'; scene.add(lay);
+  const flatMat = (c, o) => new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: o, depthWrite: false });
+  const darkMeshes = DARK.map((d) => { const sh = new THREE.Shape(d.poly.map(([x, z]) => new THREE.Vector2(x, -z)));
+    const m = new THREE.Mesh(new THREE.ShapeGeometry(sh), flatMat(0x1a237e, .42)); m.rotation.x = -Math.PI / 2; m.position.y = .09; m.renderOrder = 1; lay.add(m); return m; });
+  const ringGeo = new THREE.RingGeometry(3.2, 4.2, 40); ringGeo.rotateX(-Math.PI / 2);
+  const ptRings = PTS.map(([, , , , x, z]) => { const m = new THREE.Mesh(ringGeo, flatMat(0xe53935, .8)); m.position.set(x, .12, z); m.renderOrder = 2; lay.add(m); return m; });
+  const discGeo = new THREE.CircleGeometry(1, 36); discGeo.rotateX(-Math.PI / 2);
+  const mkDiscs = (c, o) => { const m = new THREE.InstancedMesh(discGeo, flatMat(c, o), 400); m.count = 0; m.renderOrder = 1; m.frustumCulled = false; lay.add(m); return m; };
+  const lightDiscs = mkDiscs(0xffc928, .2), helpDiscs = mkDiscs(0x2ecc71, .18);
+  const RED = new THREE.Color(0xe53935), GRN = new THREE.Color(0x2ecc71), YEL = new THREE.Color(0xf2c230);
+  function drawLayers(){
+    if (!SC) return;
+    darkMeshes.forEach((m, i) => { m.visible = LY.dark; m.material.opacity = .42 * (1 - Math.min(1, SC.dark[i].f)) + .04; });
+    ptRings.forEach((m, i) => { const p = SC.pts[i], f = (Math.min(SK.PER, Math.max(0, p.safe)) + Math.min(SK.PER, Math.max(0, p.calm))) / (2 * SK.PER);
+      m.visible = LY.pts; m.material.color.copy(f < .5 ? RED.clone().lerp(YEL, f * 2) : YEL.clone().lerp(GRN, (f - .5) * 2)); });
+    const fill = (im, pick, on) => { let n = 0; if (on) for (const o of Object.values(S.items)){ if (!pick(o.id) || !BY_ID[o.id].r) continue; if (n >= 400) break;
+        const r = BY_ID[o.id].r; im.setMatrixAt(n++, M4.compose(V.set(o.x, (o.y || 0) + .1 + n * .0004, o.z), Q.identity(), SC3.set(r, 1, r))); }
+      im.count = n; im.instanceMatrix.needsUpdate = true; };
+    fill(lightDiscs, isLight, LY.light); fill(helpDiscs, isHelp, LY.help);
+  }
+  const SC3 = new THREE.Vector3();
+  const lyEl = document.createElement('div'); lyEl.id = 'gLayers'; body.appendChild(lyEl);
+  lyEl.innerHTML = [['pts', '危險點（紅→綠＝處理程度）', '#e53935'], ['dark', '暗區（被燈照到會變亮）', '#1a237e'], ['light', '照明覆蓋', '#ffc928'], ['help', '求助與監看覆蓋', '#2ecc71']]
+    .map(([k, t, c]) => `<label><input type="checkbox" data-k="${k}"${LY[k] ? ' checked' : ''}><i style="background:${c}"></i>${t}</label>`).join('')
+    + '<label class="off"><input type="checkbox" disabled><i style="background:#9b5de5"></i>心情熱區（探勘後開放）</label>';
+  lyEl.querySelectorAll('input[data-k]').forEach((c) => c.onchange = () => { LY[c.dataset.k] = c.checked; if (c.dataset.k === 'pts') G.app && G.app.classList.toggle('hidePin', !c.checked); drawLayers(); });
+  lyEl.addEventListener('pointerdown', (e) => e.stopPropagation());
+  function toggleLayers(){ const r = tb.layer.getBoundingClientRect(); lyEl.style.left = Math.max(8, r.left) + 'px'; lyEl.style.bottom = (innerHeight - r.top + 8) + 'px'; lyEl.classList.toggle('show'); tb.layer.classList.toggle('on', lyEl.classList.contains('show')); }
+  tb.layer.onclick = toggleLayers;
+  addEventListener('pointerdown', (e) => { if (lyEl.classList.contains('show') && !e.target.closest('#gLayers') && e.target !== tb.layer){ lyEl.classList.remove('show'); tb.layer.classList.remove('on'); } }, true);
+
+  // ---------- 顧問提示（右下泡泡，一次一句，5 秒淡出，同句 2 分鐘內不重複） ----------
+  const tipEl = document.createElement('div'); tipEl.id = 'gTip'; body.appendChild(tipEl);
+  const said = new Map(); let tipT = 0, deco = 0;
+  function tip(msg, who = '顧問'){
+    const now = performance.now(); if (said.has(msg) && now - said.get(msg) < 120000) return; said.set(msg, now);
+    tipEl.innerHTML = `<b>💡 ${who}</b>${msg}`; tipEl.classList.add('show'); clearTimeout(tipT); tipT = setTimeout(() => tipEl.classList.remove('show'), 5500);
+  }
+  const nearPt = (o, r) => PTS.some(([, , , , x, z]) => Math.hypot(x - o.x, z - o.z) <= r);
+  const inDark = (o) => DARK.some((d) => inP(d.poly, o.x, o.z));
+  function advise(u){
+    const o = S.items[u]; if (!o) return; const it = BY_ID[o.id], left = BUDGET - spent();
+    if (it.safe > 0 || it.cat === 'C') deco = 0; else if ('AGK'.includes(it.cat) || isTile(o.id)) deco++;
+    if (it.tags.includes('dilemma')){
+      tip(o.id === 'cctv' ? `安全 +${it.safe}，安心 ${it.calm}。有沒有不用監視就能讓人安心的做法？` : `兩難：安全 ${it.safe >= 0 ? '+' : ''}${it.safe}、安心 ${it.calm >= 0 ? '+' : ''}${it.calm}。想想有沒有兩全的做法？`, '兩難');
+    } else if (isLight(o.id) && !inDark(o) && !nearPt(o, 20)){
+      tip('這裡白天就夠亮，晚上也沒什麼人經過；燈放到資訊館後方、車棚這些暗區更有用。');
+    } else if (it.cat === 'B' && nearPt(o, 20) && !Object.values(S.items).some((l) => isLight(l.id) && BY_ID[l.id].r && Math.hypot(l.x - o.x, l.z - o.z) <= BY_ID[l.id].r)){
+      tip('座椅會讓人停留，這裡靠近危險點：記得加燈，或讓這裡看得見。');
+    } else if (left <= BUDGET * .1){
+      tip(`預算快用完了（剩 ${left} 點），看看哪些東西可以用更便宜的替代。`);
+    } else if (deco > 8 && SC){
+      const n = SC.pts.filter((p) => p.safe < SK.PER * .5).length;
+      if (n) tip(`很好看！但還有 ${n} 個危險點的安全不到一半，記得也照顧一下。`);
+    }
   }
 
   // 建造／瀏覽切換
@@ -544,5 +696,6 @@ export function init(G){
   const n = load(); renderCat(); setOn(true); hud();
   const k = Object.keys(S.removed).length;
   if (n || k) toast(`已載入上次的改造：${n} 件物件${k ? `、移除 ${k} 件原有物件` : ""}`);
-  window.__gameState = { S, RM, SURF, askReset, doReset, tryPlace, check, select, undo, redo, startPlace, endPlace, setDemolish, pickRm, ground, get sel(){ return sel; }, get TOOL(){ return TOOL; } };   // 測試用
+  rescore();
+  window.__gameState = { S, RM, SURF, askReset, doReset, get SC(){ return SC; }, tip, LY, drawLayers, tryPlace, check, select, undo, redo, startPlace, endPlace, setDemolish, pickRm, ground, get sel(){ return sel; }, get TOOL(){ return TOOL; } };   // 測試用
 }

@@ -1360,6 +1360,14 @@ const PTS = [
   [7, 'c', '圖書館一樓後方階梯', '平時人群少至，屬於僻靜地點。', 8, -1],
   [8, 'c', '校園後門', '平時人群少至，屬於僻靜地點。', 211, 173]
 ];
+// 遊戲頁（M4）暗區：規格書 §5 列的五處，依安全地圖點位推估範圍（世界座標多邊形），待老師實地確認
+const DARK = [
+  { name: '資訊館後方', poly: [[66, 172], [106, 172], [106, 187], [66, 187]] },
+  { name: '活動中心後側', poly: [[226, 90], [246, 90], [246, 122], [226, 122]] },
+  { name: '圖書館後方階梯', poly: [[-4, -10], [18, -10], [18, 6], [-4, 6]] },
+  { name: '校園後門', poly: [[202, 165], [222, 165], [222, 186], [202, 186]] },
+  { name: '學生腳踏車棚', poly: [[226, 172], [258, 172], [256, 186], [226, 186]] }
+];
 const info = document.getElementById('info');
 info.querySelector('.x').onclick = () => info.style.display = 'none';
 PTS.forEach(([n, lv, title, desc, x, z]) => {
@@ -1627,7 +1635,7 @@ console.log(`[可拆] ${RM.length} 件：` + Object.entries(rmCount).map(([k, n]
 
 /* ================= 校園改造遊戲：建造模式（game.js，M2） =================
    學生擺放的物件在合併段之後才建立，不參與同材質合併；繪圖迴圈每幀呼叫 window.__gameTick() */
-window.__game = { scene, camera, controls, renderer, occBoxes, BOUND, QL, MOBILE, WALK, toast, groundAt, exitWalk, RM, rmSet, SURF };
+window.__game = { scene, camera, controls, renderer, occBoxes, BOUND, QL, MOBILE, WALK, toast, groundAt, exitWalk, RM, rmSet, SURF, PTS, DARK, app };
 import('./game.js').then((m) => m.init(window.__game)).catch((e) => { console.error(e); toast('建造模式載入失敗：' + e.message); });
 
 /* ================= 開場動畫：線條勾勒 → 校園安全地圖 → 3D =================
