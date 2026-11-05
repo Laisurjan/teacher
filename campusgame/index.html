@@ -59,77 +59,14 @@ header h1{margin:0;font-size:17px;font-weight:800;background:var(--panel);paddin
 .pin{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;
   font-size:14px;font-weight:900;color:#fff;border:3px solid #ffe14d;cursor:pointer;pointer-events:auto;box-shadow:0 2px 6px rgba(0,0,0,.35)}
 .hideLbl .lbl{display:none} .hidePin .pin{display:none}
-/* ===== 開場動畫：線條勾勒 → 校園安全地圖 → 3D ===== */
-header,.bar,#hint{transition:opacity .9s ease}
-.introOn header,.introOn .bar,.introOn #hint{opacity:0;pointer-events:none}
-.lbl{transition:opacity .9s ease} .pin{transition:opacity .7s ease}
-.introOn .lbl,.introOn:not(.introPins) .pin{opacity:0}
-.introOn #load{z-index:31;align-items:flex-end;padding-bottom:20vh;color:#6f9fbd;font-size:13px;letter-spacing:.3em}
-#intro{position:absolute;inset:0;z-index:30;display:none;background:#06101b;color:#d8ecf7;transition:background .8s ease}
-.introOn #intro,#intro.keep{display:block}
-#intro.enter{animation:itFade .5s ease both}
-@keyframes itFade{from{opacity:0}}
-#intro canvas{position:absolute;inset:0;width:100%;height:100%;transition:opacity .8s ease}
-#intro.fade,#intro.clear{background:transparent;pointer-events:none}
-#intro.fade canvas,#intro.fade .it-map{opacity:0}
-.it-title{position:absolute;left:16px;right:16px;top:50%;transform:translateY(-50%);text-align:center;pointer-events:none;transition:opacity .9s ease,transform 1.2s ease}
-.it-title small{display:block;font-size:clamp(9px,1.2vw,12px);letter-spacing:.42em;padding-left:.42em;color:#7fb8d8;font-weight:700;animation:itUp 1.2s .2s cubic-bezier(.2,.7,.2,1) both}
-.it-title b{display:block;font-size:clamp(34px,7.4vw,78px);font-weight:900;letter-spacing:.2em;padding-left:.2em;margin:.28em 0 .32em;color:#eef9ff;
-  text-shadow:0 0 28px rgba(110,200,255,.6),0 0 2px rgba(255,255,255,.8);animation:itUp 1.4s cubic-bezier(.2,.7,.2,1) both}
-.it-title i{display:block;height:1px;width:min(420px,70%);margin:0 auto .9em;background:linear-gradient(90deg,transparent,#8fe3ff,transparent);
-  transform-origin:center;animation:itLine 1.6s .3s cubic-bezier(.2,.7,.2,1) both}
-.it-title span{font-size:clamp(13px,1.9vw,19px);letter-spacing:.55em;padding-left:.55em;color:#a9dcf5;animation:itUp 1.2s .45s cubic-bezier(.2,.7,.2,1) both}
-.it-title.out{opacity:0;transform:translateY(-50%) scale(1.08)}
-@keyframes itUp{from{opacity:0;transform:translateY(14px) scale(.96)}}
-@keyframes itLine{from{transform:scaleX(0);opacity:0}}
-.it-map{position:absolute;left:max(16px,env(safe-area-inset-left));top:16px;color:#3d2373;pointer-events:none;opacity:0;transform:translateY(-8px);
-  transition:opacity .8s ease,transform .8s ease;background:rgba(255,255,255,.82);padding:10px 14px 10px;border-radius:12px;box-shadow:0 4px 18px rgba(61,35,115,.15)}
-.it-map.in{opacity:1;transform:none}
-.it-map b{display:block;font-size:clamp(18px,2.6vw,26px);font-weight:900;letter-spacing:.12em}
-.it-map ul{list-style:none;margin:6px 0 0;padding:0;display:flex;gap:4px 12px;flex-wrap:wrap;font-size:13px;font-weight:700}
-.it-map li{display:flex;align-items:center;gap:5px}
-.it-map li i{width:12px;height:12px;border-radius:50%;border:2px solid #ffe14d;display:inline-block}
-.it-foot{position:absolute;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));display:flex;flex-wrap:wrap;gap:8px 14px;
-  justify-content:center;align-items:center;pointer-events:auto;transition:opacity .6s ease}
-#intro.done .it-foot{opacity:0;pointer-events:none}
-.it-steps{display:flex;gap:6px;margin:0;padding:6px;list-style:none;background:rgba(6,16,27,.62);border-radius:999px;
-  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
-.it-steps li{position:relative;padding:6px 12px;font-size:13px;font-weight:700;letter-spacing:.12em;color:#cfe6f3;opacity:.45;transition:opacity .5s;overflow:hidden;border-radius:999px}
-.it-steps li::before{content:attr(data-n);margin-right:6px;font-size:11px;color:#8fe3ff}
-.it-steps li::after{content:"";position:absolute;left:12px;right:12px;bottom:3px;height:2px;background:#8fe3ff;transform-origin:left;transform:scaleX(var(--p,0))}
-.it-steps li.on{opacity:1}
-.it-ctrl{display:flex;gap:8px;align-items:center;background:rgba(6,16,27,.62);border-radius:999px;padding:4px 6px 4px 14px;
-  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);font-size:13px;color:#cfe6f3}
-.it-ctrl label{display:flex;gap:6px;align-items:center;cursor:pointer;padding:6px 0}
-.it-ctrl input{width:16px;height:16px;accent-color:#8fe3ff;margin:0}
-#itSkip{display:none;border:1px solid rgba(143,227,255,.5);background:transparent;color:#eaf7ff;font:inherit;font-size:13px;font-weight:700;
-  padding:6px 14px;border-radius:999px;cursor:pointer}
-.introSeen #itSkip{display:inline-block}
+/* 開場動畫的線條與地圖兩段已刪除（遊戲頁 M8，115/11/05），只保留「逐棟長出」 */
 #bIntro{background:var(--panel);border:0;padding:6px 10px;border-radius:8px;font:inherit;font-size:12px;color:var(--sub);pointer-events:auto;cursor:pointer}
 </style>
 </head>
 <body>
 <div id="app"></div>
-<div id="intro">
-  <canvas></canvas>
-  <div class="it-title"><small>NATIONAL HUALIEN COMMERCIAL HIGH SCHOOL</small><b>國立花蓮高商</b><i></i><span>3D 校園安全地圖</span></div>
-  <div class="it-map"><b>校園安全地圖</b><ul><li><i style="background:#d7263d"></i>最危險區域</li><li><i style="background:#e0457b"></i>危險區域</li><li><i style="background:#f29bb3"></i>次危險區域</li></ul></div>
-  <div class="it-foot">
-    <ol class="it-steps"><li data-n="01">線條勾勒</li><li data-n="02">安全地圖</li><li data-n="03">立體校園</li></ol>
-    <div class="it-ctrl"><label><input type="checkbox" id="itNext">下次直接進入 3D</label><button id="itSkip">跳過 ›</button></div>
-  </div>
-</div>
 <div id="load">模型載入中…</div>
 <script>
-/* 開場動畫（遊戲頁）：預設不播放，直接進入 3D；只有網址 ?intro=1 或右上「▶ 開場動畫」才播。
-   原始動畫頁 campus3d 的「第一次必播」邏輯在此停用，以免佔用 iPad 記憶體 */
-(function(){
-  var r = document.documentElement, q = new URLSearchParams(location.search).get('intro'), seen = false, skip = false;
-  try { seen = localStorage.getItem('campusgame-introSeen') === '1'; skip = localStorage.getItem('campusgame-skipIntro') === '1'; } catch (e) {}
-  var lost = false; try { lost = !!sessionStorage.getItem('campusgame-lost'); } catch (e) {}   // 本次瀏覽曾因記憶體不足降階重載
-  if (q === '1') r.classList.add('introOn');   // 遊戲頁：只在明確要求時播放（seen／skip／lost 保留給重播按鈕用）
-  if (seen) r.classList.add('introSeen');
-})();
 (function(){
   var el = document.getElementById('load');
   var shown = false;
@@ -1638,291 +1575,22 @@ console.log(`[可拆] ${RM.length} 件：` + Object.entries(rmCount).map(([k, n]
 window.__game = { scene, camera, controls, renderer, occBoxes, BOUND, QL, MOBILE, WALK, toast, groundAt, exitWalk, RM, rmSet, SURF, PTS, DARK, app };
 import('./game.js').then((m) => m.init(window.__game)).catch((e) => { console.error(e); toast('建造模式載入失敗：' + e.message); });
 
-/* ================= 開場動畫：線條勾勒 → 校園安全地圖 → 3D =================
-   線條與 3D 模型用同一組座標、同一種相機投影，所以三段能精準對位：
-   ① 深色藍圖上，從校門一路往校園深處畫出地面與每棟樓的立體線框，相機由斜角轉到正上方
-   ② 一道掃描光由左往右，把藍圖「印」成學校安全地圖的配色，標出建築名稱與 8 個安全點位
-   ③ 地圖淡出、露出同角度的 3D 模型（點位無縫接上），相機俯衝擺盪到預設視角 */
+/* ================= 長出動畫（遊戲頁 M8，115/11/05） =================
+   原本三段式開場（① 線條勾勒 ② 校園安全地圖 ③ 3D 逐棟長出）的前兩段已刪除：縮小檔案、省 iPad 記憶體。
+   只保留第三段：右上「▶ 長出動畫」或網址 ?intro=1 重播——長樓著色器的時鐘 GROW 從 -0.2 秒跑到 GROW_END，
+   各棟依 BEATS 的拍子從地面長出（回彈到 130% 再落回）。陰影開著時太陽由低角度移回，影子一起甩動 */
 intro = (() => {
-  const root = document.documentElement, ov = document.getElementById('intro'), cv = ov.querySelector('canvas'), g = cv.getContext('2d');
-  const V = (x, y, z) => new THREE.Vector3(x, y, z), rad = THREE.MathUtils.degToRad, lerp = THREE.MathUtils.lerp;
-  const clamp01 = (x) => Math.max(0, Math.min(1, x)), ease = (k) => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
-  const easeOut = (k) => 1 - Math.pow(1 - k, 2.2), back = (k) => 1 + 2.7 * Math.pow(k - 1, 3) + 1.7 * Math.pow(k - 1, 2);
-  const T = { cam: 4.3, wipe0: 4.4, wipe1: 5.9, pin0: 5.8, hold: 7.9 };   // 秒
-  /* 電腦版加強（手機、平板維持原樣）：
-     ①→② 掃描前線條充能閃光、掃描線噴出光粒子、色塊隨掃描暈開、點位帶光柱落下彈跳
-     ②→③ 以校門為圓心的光環把地圖溶解，光環掃到哪、3D 樓房就從哪裡長出來（與長樓順序同步）；
-           地圖疊層跟著起飛的相機重新投影，溶解過程全程對位 */
-  const FX = !MOBILE, RING_V = 230;   // RING_V：光環擴散速度（公尺／秒），約 1.5 秒溶完整張地圖
-  /* ②→③ 鏡頭：A 先在 1.4 秒內傾到約 40° 斜俯角（從正上方看，長高是朝著鏡頭的動作，看不出來），
-     A 結束前樓房開始依拍子長出來，B 再一邊長一邊慢慢拉到預設視角 */
-  const A0 = .3, AD = 1.4, BD = 3.6, GROW0 = A0 + AD - .15;
-  const SUN0 = sun.position.clone(), SUN_LOW = new THREE.Vector3(-165, 95, 40);   // 低角度太陽：影子拉長，長高時影子甩出去（只有開陰影的電腦版看得到）
-  const sparks = [], tmpV = new THREE.Vector3(); let lastT = 0, handed = false;
-  const bounce = (k) => { const n = 7.5625, d = 2.75;
-    return k < 1 / d ? n * k * k : k < 2 / d ? n * (k -= 1.5 / d) * k + .75 : k < 2.5 / d ? n * (k -= 2.25 / d) * k + .9375 : n * (k -= 2.625 / d) * k + .984375; };
-
-  // ---- 線條資料 ----
-  const S = [];
-  const rot = (cx, cz, P, deg) => { const a = rad(deg), c = Math.cos(a), s = Math.sin(a); return P.map(([u, v]) => [cx + u * c - v * s, cz + u * s + v * c]); };
-  const R = (cx, cz, w, d, deg = 0) => rot(cx, cz, [[-w / 2, -d / 2], [w / 2, -d / 2], [w / 2, d / 2], [-w / 2, d / 2]], deg);
-  const RB = (x0, z0, x1, z1) => [[x0, z0], [x1, z0], [x1, z1], [x0, z1]];
-  const stad = (cx, cz, L, W) => { const r = W / 2, s = (L - W) / 2, P = [];
-    for (let i = 0; i <= 16; i++){ const a = -Math.PI / 2 + Math.PI * i / 16; P.push([cx + s + r * Math.cos(a), cz + r * Math.sin(a)]); }
-    for (let i = 0; i <= 16; i++){ const a = Math.PI / 2 + Math.PI * i / 16; P.push([cx - s + r * Math.cos(a), cz + r * Math.sin(a)]); }
-    return P; };
-  const RR = (cx, cz, w, d, r, deg) => { const P = [];
-    [[w / 2 - r, d / 2 - r, 0], [-w / 2 + r, d / 2 - r, 90], [-w / 2 + r, -d / 2 + r, 180], [w / 2 - r, -d / 2 + r, 270]].forEach(([ox, oz, a0]) => {
-      for (let k = 0; k <= 4; k++){ const t = rad(a0 + k * 22.5); P.push([ox + r * Math.cos(t), oz + r * Math.sin(t)]); } });
-    return rot(cx, cz, P, deg); };
-  const circ = (cx, cz, r) => Array.from({ length: 28 }, (_, i) => [cx + r * Math.cos(i / 28 * Math.PI * 2), cz + r * Math.sin(i / 28 * Math.PI * 2)]);
-  const add = (pts, y, o) => S.push({ p: pts.map(([x, z]) => V(x, y, z)), close: true, kind: 'ground', ...o });
-  const GR = (pts, t0, dur, fill, o = {}) => add(pts, .1, { t0, dur, fill, ...o });
-  // 20 m 方格（衛星圖比例尺），藍圖底紋；隨相機轉動透出立體感
-  for (let x = -40; x <= 300; x += 20) add([[x, -60], [x, 220]], 0, { kind: 'grid', close: false, t0: .05 + (x + 40) / 340 * .8, dur: 1.1 });
-  for (let z = -60; z <= 220; z += 20) add([[-40, z], [300, z]], 0, { kind: 'grid', close: false, t0: .1 + (z + 60) / 280 * .8, dur: 1.1 });
-  // 地面（依疊放順序：校地 → 道路 → 草地 → 鋪面 → 操場 → 球場 → 水池）
-  GR(BOUND, .15, 1.9, '#fbfaf6');
-  GR(RB(-29, -60, -15, 230), .3, 1.3, '#e4e2dd');
-  GR([[-26, -34], [-10, -33], [10, -30], [50, -17], [90, -3], [247, 96], [258, 82], [95, -16], [55, -30], [10, -44], [-26, -48]], .4, 1.5, '#e4e2dd');
-  GR([[200, 200], [290, 160], [296, 170], [206, 212]], .7, .9, '#e4e2dd');
-  [RB(31, 10, 54, 71.5), RB(31, 80.5, 54, 126), RB(70, 30, 104, 128), [[0, 140], [62, 140], [62, 186], [0, 186]], RB(102, 58, 200, 130),
-   [[103, 32], [122, 40], [176, 60], [103, 60]], [[118, 18], [200, 70.5], [194, 78], [176, 62], [150, 54], [122, 43], [112, 30]],
-   RB(72, 120.2, 113, 137.5), [[137, 120.3], [137, 132], [190, 132], [207.3, 86.4], [192, 92], [178, 104], [160, 120.3]], RB(-9.6, 106, 14, 132)]
-    .forEach((p, i) => GR(p, 1.0 + i * .12, .9, '#d9ebc9', { kind: 'soft' }));
-  [RB(-8, 49, 13, 67), RB(-8, 85, 13, 103), RB(10, -14, 55, 0), RB(-10, 67, 19, 85)].forEach((p, i) => GR(p, .9 + i * .15, .8, '#e3e1ea'));
-  GR([[194, 70], [200, 70.3], [245, 98], [238, 100], [233.7, 94.8], [209.9, 84.2], [207.3, 86.4], [201.8, 79], [192.5, 77.5]], 2.3, .7, '#e2ded5');
-  GR([[186, 136.5], [214.9, 148.8], [213.6, 187.5], [199, 188], [199, 141.5], [186, 141.5]], 2.4, 1.0, '#dcdbd7');
-  GR([[237.96, 99.9], [242.5, 101.9], [221.7, 148.5], [219.5, 187.3], [214.5, 187], [216.9, 147.3]], 2.6, .9, '#e4e2dd');
-  GR(stad(147, 91.5, 88, 57), 1.25, 1.4, '#e8a08a');
-  GR(RB(74.5, 112.5, 131.5, 120), 1.7, .9, '#e8a08a'); GR(RB(162.5, 112.5, 186, 120), 1.9, .6, '#e8a08a');
-  GR(stad(147, 91.5, 73, 42), 1.5, 1.3, '#c4dfae');
-  GR(stad(147, 91.5, 80.5, 49.5), 1.8, 1.2, null, { kind: 'soft' });
-  GR(RB(113, 132, 200, 178), 1.9, 1.0, '#cfe3df', { kind: 'soft' });
-  [RB(116, 141, 136, 176), RB(140, 135, 167, 152), RB(140, 154, 167, 171), RB(170, 144, 184, 171), RB(186, 150, 197, 169)]
-    .forEach((p, i) => GR(p, 2.1 + i * .1, .6, '#bccdf0'));
-  GR([[6, 152], [18, 149], [30, 153], [37, 160], [34, 170], [26, 176], [24, 168], [16, 166], [10, 174], [4, 168], [3, 158]], 1.7, 1.1, '#93c5e6');
-  GR(circ(92, 38, 8), 2.0, .8, null); GR(RB(90.8, 46, 93.2, 72), 2.2, .6, '#e2b3a6');
-  add(MAIN_ROAD, .1, { close: false, t0: 2.3, dur: .8 }); add(SMALL_PATH, .1, { close: false, t0: 2.5, dur: 1.0 });
-  // 建築：底框 → 柱線 → 屋頂框；從校門依距離往校園深處長出來
-  [[RB(-6, 0, 14, 24), 23], [RB(19, 5, 31, 139), 10.8], [R(16.5, 76, 5, 15), 11.8], [RB(54, 5, 69, 139), 10.8],
-   [R(42.5, 6.5, 23, 7), 10.8], [R(42.5, 132.5, 23, 13), 10.8], [R(42.5, 76, 23, 9), 7.2], [R(100, 24, 46, 14, 33), 14.4],
-   [RR(210, 116, 29, 52, 6, 24), 11], [R(88.5, 151, 13, 10), 18], [R(74, 147, 16, 10), 18], [R(99, 162, 10, 36), 18], [R(75, 166, 14, 16), 10.8],
-   [RB(95, 140, 104, 147), 22.5, RB(95, 140, 99.8, 147)], [R(129, 126, 16, 9), 6.1], [R(8, 119, 11, 11), 10], [R(-3.5, 121, 6, 8), 3.35],
-   [R(247.9, 120.8, 20, 25, 24), 14.4], [R(-6.5, -17, 7, 22), 7.6], [R(-7.5, 87.2, 5, 4), 3], [R(-9.35, 76, 12.1, 20), 6.65], [R(-7.2, 67.5, 5.5, 5), 3.2], [R(61.35, -2.55, 16, 5, 19.29), 2.75],
-   [RB(222, 172.2, 254, 182.8), 2.75], [R(5, -24, 9, 7), .7]].forEach(([pts, h, roof]) => {
-    const cx = pts.reduce((a, p) => a + p[0], 0) / pts.length, cz = pts.reduce((a, p) => a + p[1], 0) / pts.length;
-    const t = .8 + Math.hypot(cx + 10, cz - 76) / 290 * 2.2;
-    add(pts, 0, { kind: 'base', t0: t, dur: .6 });
-    pts.forEach(([x, z], i) => S.push({ p: [V(x, 0, z), V(x, h, z)], close: false, kind: 'vert', t0: t + .3 + i * .03, dur: .35 }));
-    add(roof || pts, h, { kind: 'roof', t0: t + .55, dur: .75, fill: '#e8def6', h });
-  });
-  const roofs = S.filter(s => s.kind === 'roof').sort((a, b) => a.h - b.h), grounds = S.filter(s => s.fill && s.kind !== 'roof');
-  // 安全地圖上的名稱（z：沿南北向的長樓，直書）
-  const LBL = [['圖書資訊館', 6.5, 23, 12], ['行政教學大樓', 25, 10.8, 40, 'z'], ['後排教室', 61.5, 10.8, 40, 'z'], ['中庭', 42.5, 0, 40], ['中庭', 42.5, 0, 104],
-    ['人文館', 100, 14.4, 24], ['操場', 147, 0, 91.5, 'big'], ['活動中心', 210, 11, 116], ['資訊館', 88, 18, 158], ['司令台', 129, 6.1, 126],
-    ['網球場', 126, 0, 158], ['籃球場', 153.5, 0, 153], ['排球場', 191, 0, 160], ['泗水園', 20, 0, 182], ['女生宿舍', 247.9, 14.4, 120.8],
-    ['校門', -21, 0, 76, 'z'], ['中山路', -22, 0, 18, 'z'], ['商校街', 172, 0, 44], ['停車場', 32, 0, -7], ['腳踏車棚', 238, 2.75, 177]]
-    .map(([t, x, y, z, o]) => ({ t, p: V(x, y, z), q: o === 'z' ? V(x, y, z + 10) : null, big: o === 'big' }));
-  const PIN = PTS.map(([n, lv, , , x, z]) => ({ n, c: LEVEL[lv][0], p: V(x, 9, z) }));
-
-  // ---- 相機 ----
-  const ic = new THREE.PerspectiveCamera(45, 1, 1, 5000), C0 = V(127, 0, 79), tgt = new THREE.Vector3(), v = new THREE.Vector3();
-  let W = 1, H = 1, dpr = 1, dTop = 400, azTop = 0, ppm = 3, state = 'off', t0 = null, last = 0;
-  const pose = (cam, r, phi, th, c) => { cam.position.set(c.x + r * Math.sin(phi) * Math.sin(th), r * Math.cos(phi), c.z + r * Math.sin(phi) * Math.cos(th)); cam.lookAt(c); };
-  const DEF = { r: Math.hypot(200, 235), phi: Math.atan2(235, 200) };   // 與 viewDefault() 相同
-  let cw = 1, ch = 1;
-  function alloc(){ dpr = Math.min(devicePixelRatio || 1, MOBILE ? 1.5 : 2); cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr); W = cv.width; H = cv.height; }
-  function resize(w, h){
-    cw = w; ch = h; if (state === 'run') alloc();
-    ic.fov = camera.fov; ic.aspect = w / h; ic.updateProjectionMatrix();
-    // 整個校地塞進畫面（上下留給標題與按鈕）；直式手機把地圖轉 90°，讓校地長邊對齊螢幕長邊、中山路在下
-    const tf = Math.tan(rad(ic.fov) / 2), port = w < h, [sw, sh] = port ? [118, 160] : [160, 118];
-    azTop = port ? -Math.PI / 2 : 0; dTop = Math.max(sh * (port ? 1.4 : 1.24) / tf, sw * 1.06 / (tf * ic.aspect)); ppm = h / (2 * dTop * tf);
-    // 視野中心往畫面下方挪一點，地圖整體上移、讓出底部的步驟列與按鈕
-    if (port) C0.set(127 - sh * .12, 0, 79); else C0.set(127, 0, 79 + sh * .06);
-  }
-  function introCam(k){ const e = ease(k); pose(ic, lerp(dTop * 1.35, dTop, e), lerp(rad(50), .004, e), azTop + lerp(rad(-38), 0, e), C0); ic.updateMatrixWorld(); }
-  const MID = V(118, 0, 104);
-  function flyCam(tt){   // tt＝交接後經過秒數；回傳鏡頭是否已到預設視角
-    const top = [dTop, .004, azTop, C0], mid = [dTop * .74 + 20, rad(40), azTop ? rad(-55) : rad(-24), MID], end = [DEF.r, DEF.phi, 0, CENTER];
-    const inA = tt < A0 + AD, [a, b] = inA ? [top, mid] : [mid, end];
-    const k = inA ? ease(clamp01((tt - A0) / AD)) : (1 - Math.cos(Math.PI * clamp01((tt - A0 - AD) / BD))) / 2;
-    tgt.lerpVectors(a[3], b[3], k); pose(camera, lerp(a[0], b[0], k), lerp(a[1], b[1], k), lerp(a[2], b[2], k), tgt);
-    const fk = ease(clamp01((tt - A0) / (AD + BD))); scene.fog.near = lerp(5000, 450, fk); scene.fog.far = lerp(9000, 900, fk);
-    if (renderer.shadowMap.enabled) sun.position.lerpVectors(SUN_LOW, SUN0, ease(clamp01((tt - A0 - AD - BD * .45) / (BD * .55))));
-    return tt >= A0 + AD + BD;
-  }
-
-  // ---- 繪圖 ----
-  const proj = (p) => { v.copy(p).project(ic); return [(v.x + 1) / 2 * W, (1 - v.y) / 2 * H]; };
-  function trace(P, sp, close, p){   // 畫出折線的前 p 比例，回傳筆尖位置
-    const n = sp.length + (close ? 1 : 0), at = (i) => sp[i % sp.length];
-    P.moveTo(sp[0][0], sp[0][1]);
-    if (p >= 1){ for (let i = 1; i < n; i++) P.lineTo(at(i)[0], at(i)[1]); return null; }
-    const L = []; let tot = 0;
-    for (let i = 1; i < n; i++){ const a = at(i - 1), b = at(i), l = Math.hypot(b[0] - a[0], b[1] - a[1]); L.push(l); tot += l; }
-    let rem = tot * p;
-    for (let i = 1; i < n; i++){ const l = L[i - 1], a = at(i - 1), b = at(i);
-      if (rem >= l){ P.lineTo(b[0], b[1]); rem -= l; continue; }
-      const f = l ? rem / l : 0, x = a[0] + (b[0] - a[0]) * f, y = a[1] + (b[1] - a[1]) * f; P.lineTo(x, y); return [x, y]; }
-    return null;
-  }
-  const BLUE = { grid: ['rgba(70,150,210,.13)', .8], soft: ['rgba(70,165,225,.35)', 1], ground: ['rgba(85,185,240,.85)', 1.2],
-    base: ['rgba(110,200,255,.42)', 1], vert: ['rgba(140,215,255,.6)', 1], roof: ['rgba(210,246,255,1)', 1.5] };
-  const PAPER = { grid: ['rgba(75,42,134,.07)', .8], ground: ['rgba(80,70,110,.42)', 1], roof: ['#4b2a86', 1.6] };
-  const wipeAt = (x, y) => .7 * x / W + .3 * y / H;                       // 掃描線：wipeAt < pos 的一側已印成地圖
-  const wipeX = (pos, y) => (pos - .3 * y / H) / .7 * W;
-  function half(pos, mapSide){ const y0 = -H, y1 = 2 * H, a = wipeX(pos, y0), b = wipeX(pos, y1), F = mapSide ? -10 * W : 11 * W;
-    g.beginPath(); g.moveTo(a, y0); g.lineTo(F, y0); g.lineTo(F, y1); g.lineTo(b, y1); g.closePath(); g.clip(); }
-  function blueprint(t){
-    const pu = FX ? Math.exp(-Math.pow((t - T.wipe0 + .1) / .2, 2)) : 0;   // 掃描前的充能脈衝
-    g.fillStyle = '#06101b'; g.fillRect(0, 0, W, H);
-    g.globalCompositeOperation = 'lighter'; g.lineCap = g.lineJoin = 'round';
-    const tips = [];
-    for (const k in BLUE){
-      const P = new Path2D(); let any = false;
-      for (const s of S){ if (s.kind !== k) continue; const p = clamp01((t - s.t0) / s.dur); if (!p) continue;
-        any = true; const tip = trace(P, s.sp, s.close, easeOut(p)); if (tip && k !== 'grid') tips.push(tip); }
-      if (!any) continue;
-      const [c, w] = BLUE[k];
-      if (k !== 'grid' && k !== 'soft'){ g.globalAlpha = .16 + .22 * pu; g.strokeStyle = c; g.lineWidth = w * (6 + 2 * pu) * dpr; g.stroke(P); g.globalAlpha = 1; }
-      g.strokeStyle = c; g.lineWidth = w * (1 + .45 * pu) * dpr; g.stroke(P);
-    }
-    const r = 10 * dpr;
-    tips.forEach(([x, y]) => { const gr = g.createRadialGradient(x, y, 0, x, y, r);
-      gr.addColorStop(0, 'rgba(255,255,255,.95)'); gr.addColorStop(.3, 'rgba(150,225,255,.5)'); gr.addColorStop(1, 'rgba(150,225,255,0)');
-      g.fillStyle = gr; g.fillRect(x - r, y - r, 2 * r, 2 * r); });
-    if (pu > .01){ g.fillStyle = `rgba(110,190,255,${(.1 * pu).toFixed(3)})`; g.fillRect(0, 0, W, H); }
-    g.globalCompositeOperation = 'source-over';
-    const vg = g.createRadialGradient(W / 2, H / 2, Math.min(W, H) * .35, W / 2, H / 2, Math.hypot(W, H) * .62);
-    vg.addColorStop(0, 'rgba(2,6,12,0)'); vg.addColorStop(1, 'rgba(2,6,12,.7)'); g.fillStyle = vg; g.fillRect(0, 0, W, H);
-  }
-  function paper(pos){
-    g.fillStyle = '#f6f3ec'; g.fillRect(0, 0, W, H); g.lineCap = g.lineJoin = 'round';
-    const line = (list, k) => { const P = new Path2D(); list.forEach(s => trace(P, s.sp, s.close, 1)); g.strokeStyle = PAPER[k][0]; g.lineWidth = PAPER[k][1] * dpr; g.stroke(P); };
-    line(S.filter(s => s.kind === 'grid'), 'grid');
-    const ink = (s) => { if (!FX || pos > 1.3) return 1;   // 電腦版：掃描線經過後色塊才像墨水一樣暈開
-      let x = 0, y = 0; s.sp.forEach(q => { x += q[0]; y += q[1]; }); return clamp01((pos - wipeAt(x / s.sp.length, y / s.sp.length)) / .14); };
-    grounds.forEach(s => { const P = new Path2D(); trace(P, s.sp, true, 1); g.globalAlpha = ink(s); g.fillStyle = s.fill; g.fill(P); });
-    g.globalAlpha = 1; line(S.filter(s => s.kind === 'ground'), 'ground');
-    roofs.forEach(s => { const P = new Path2D(); trace(P, s.sp, true, 1); g.globalAlpha = ink(s); g.fillStyle = s.fill; g.fill(P); g.globalAlpha = Math.max(.35, g.globalAlpha);
-      g.strokeStyle = PAPER.roof[0]; g.lineWidth = PAPER.roof[1] * dpr; g.stroke(P); });
-    g.globalAlpha = 1;
-    const fs0 = Math.max(11, Math.min(19, ppm * 4.2)) * dpr;
-    g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
-    LBL.forEach(l => { const [x, y] = proj(l.p), a = clamp01((pos - wipeAt(x, y)) / .1); if (!a) return;
-      let vert = false; if (l.q){ const [x2, y2] = proj(l.q); vert = Math.abs(y2 - y) > Math.abs(x2 - x); }
-      const fs = l.big ? fs0 * 1.5 : fs0, chars = vert ? [...l.t] : [l.t], step = fs * 1.1, y0 = y - (chars.length - 1) * step / 2;
-      g.globalAlpha = a; g.font = `800 ${fs}px "Noto Sans TC","Microsoft JhengHei","PingFang TC",sans-serif`;
-      g.lineWidth = fs * .3; g.strokeStyle = 'rgba(255,255,255,.95)'; g.fillStyle = '#3d2373';
-      chars.forEach((c, i) => { g.strokeText(c, x, y0 + i * step); g.fillText(c, x, y0 + i * step); });
-    });
-    g.globalAlpha = 1;
-  }
-  function scanEdge(pos){
-    const y0 = -H, y1 = 2 * H, a = wipeX(pos, y0), b = wipeX(pos, y1);
-    g.globalCompositeOperation = 'lighter';
-    [[46, .07], [16, .18], [3, .9]].forEach(([w, al]) => { g.beginPath(); g.moveTo(a, y0); g.lineTo(b, y1); g.strokeStyle = `rgba(160,230,255,${al})`; g.lineWidth = w * dpr; g.stroke(); });
-    g.globalCompositeOperation = 'source-over';
-  }
-  function pins(t){
-    PIN.forEach((p, i) => { const tp = t - T.pin0 - i * .13; if (tp < 0) return;
-      const kd = FX ? clamp01(tp / .6) : 1, drop = (1 - bounce(kd)) * 130 * dpr;   // 電腦版：帶光柱從空中落下彈跳
-      const [x, y0] = proj(p.p), y = y0 - drop, k = FX ? clamp01(tp / .15) : back(clamp01(tp / .45)), r = 16 * dpr * k;   // 與 3D 點位 .pin 同尺寸（26px＋3px 邊框）
-      if (kd < 1){ const gr = g.createLinearGradient(x, y - 220 * dpr, x, y); gr.addColorStop(0, 'rgba(255,240,200,0)'); gr.addColorStop(1, `rgba(255,240,200,${(.85 * (1 - kd)).toFixed(3)})`);
-        g.globalCompositeOperation = 'lighter'; g.strokeStyle = gr; g.lineWidth = 5 * dpr; g.beginPath(); g.moveTo(x, y - 220 * dpr); g.lineTo(x, y); g.stroke(); g.globalCompositeOperation = 'source-over'; }
-      const rp = (tp % 1.6) / 1.6;
-      g.beginPath(); g.arc(x, y, (16 + 26 * rp) * dpr, 0, 7); g.strokeStyle = p.c; g.globalAlpha = .6 * (1 - rp) * clamp01(tp / .3); g.lineWidth = 3 * dpr; g.stroke(); g.globalAlpha = 1;
-      g.save(); g.shadowColor = 'rgba(0,0,0,.35)'; g.shadowBlur = 6 * dpr; g.shadowOffsetY = 2 * dpr;
-      g.beginPath(); g.arc(x, y, r, 0, 7); g.fillStyle = '#ffe14d'; g.fill(); g.restore();
-      g.beginPath(); g.arc(x, y, r * 13 / 16, 0, 7); g.fillStyle = p.c; g.fill();
-      g.fillStyle = '#fff'; g.font = `900 ${14 * dpr * k}px "Noto Sans TC","Microsoft JhengHei",sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle';
-      g.fillText(p.n, x, y + dpr); });
-  }
-  function ring(rt){   // ②→③：光環溶解地圖（畫在地面上，跟相機一起投影）
-    const R = rt * RING_V - 12; if (R <= 0) return;
-    const at = (rr, a) => proj(tmpV.set(-10 + rr * Math.cos(a), 0, 76 + rr * Math.sin(a)));
-    const circle = (rr) => { const P = new Path2D(); for (let i = 0; i <= 72; i++){ const [x, y] = at(rr, i / 72 * Math.PI * 2); i ? P.lineTo(x, y) : P.moveTo(x, y); } return P; };
-    g.globalCompositeOperation = 'destination-out';
-    [[R, .25], [R - 4, .3], [R - 9, .45], [R - 15, 1]].forEach(([rr, a]) => { if (rr > 0){ g.globalAlpha = a; g.fill(circle(rr)); } });
-    g.globalAlpha = 1; g.globalCompositeOperation = 'lighter';
-    const C = circle(R); [[26, .08], [10, .22], [2.4, .95]].forEach(([w, a]) => { g.strokeStyle = `rgba(150,230,255,${a})`; g.lineWidth = w * dpr; g.stroke(C); });
-    g.globalCompositeOperation = 'source-over';
-    for (let i = 0; i < 10; i++){ const a = Math.random() * Math.PI * 2, [x, y] = at(R, a), [x2, y2] = at(R + 10, a), d = Math.hypot(x2 - x, y2 - y) || 1, v = (60 + Math.random() * 180) * dpr;
-      sparks.push({ x, y, vx: (x2 - x) / d * v, vy: (y2 - y) / d * v - 50 * dpr, life: .35 + Math.random() * .45, age: 0, c: Math.random() < .3 ? '255,226,150' : '160,232,255' }); }
-  }
-  function sparkle(dt){
-    if (!sparks.length) return;
-    if (sparks.length > 500) sparks.splice(0, sparks.length - 500);
-    g.globalCompositeOperation = 'lighter';
-    for (let i = sparks.length - 1; i >= 0; i--){ const q = sparks[i]; q.age += dt; if (q.age > q.life){ sparks.splice(i, 1); continue; }
-      q.x += q.vx * dt; q.y += q.vy * dt; q.vy += 60 * dpr * dt; const a = 1 - q.age / q.life;
-      g.fillStyle = `rgba(${q.c},${a.toFixed(3)})`; g.beginPath(); g.arc(q.x, q.y, (1 + 2.2 * a) * dpr, 0, 7); g.fill(); }
-    g.globalCompositeOperation = 'source-over';
-  }
-  function draw(t){
-    const dt = Math.max(0, Math.min(.05, t - lastT)); lastT = t;
-    if (FX && t >= T.hold){ ic.position.copy(camera.position); ic.quaternion.copy(camera.quaternion); ic.updateMatrixWorld(); }
-    else introCam(Math.min(1, t / T.cam));
-    for (const s of S) s.sp = s.p.map(proj);
-    const wq = clamp01((t - T.wipe0) / (T.wipe1 - T.wipe0)), pos = -.12 + 1.3 * ease(wq);
-    if (wq < 1){ g.save(); if (wq > 0) half(pos, false); blueprint(t); g.restore(); }
-    if (wq > 0){ g.save(); if (wq < 1) half(pos, true); paper(pos); g.restore(); if (wq < 1) scanEdge(pos); }
-    pins(t);
-    if (FX && wq > 0 && wq < 1) for (let i = 0; i < 7; i++){ const y = Math.random() * H;
-      sparks.push({ x: wipeX(pos, y), y, vx: (80 + Math.random() * 260) * dpr, vy: (Math.random() - .5) * 90 * dpr, life: .4 + Math.random() * .5, age: 0, c: '170,235,255' }); }
-    if (FX && t >= T.hold) ring(t - T.hold);
-    if (FX) sparkle(dt);
-  }
-
-  // ---- 流程 ----
-  const title = ov.querySelector('.it-title'), mapT = ov.querySelector('.it-map'), steps = [...ov.querySelectorAll('.it-steps li')];
-  const chk = document.getElementById('itNext');
-  try { chk.checked = localStorage.getItem('campusgame-skipIntro') === '1'; } catch (e) {}
-  chk.onchange = () => { try { chk.checked ? localStorage.setItem('campusgame-skipIntro', '1') : localStorage.removeItem('campusgame-skipIntro'); } catch (e) {} };
-  function start(replay){
-    state = 'run'; t0 = null; last = 0; fly = null; controls.enabled = false; scene.fog.near = 5000; scene.fog.far = 9000; GROW.value = -1; if (renderer.shadowMap.enabled) sun.position.copy(SUN_LOW);
-    alloc(); ov.classList.remove('fade', 'clear', 'done', 'keep'); root.classList.remove('introPins'); root.classList.add('introOn');
-    handed = false; lastT = 0; sparks.length = 0;
-    mapT.classList.remove('in'); title.classList.remove('out');
-    if (replay){ ov.classList.remove('enter'); title.querySelectorAll('*').forEach(e => { e.style.animation = 'none'; void e.offsetWidth; e.style.animation = ''; });
-      void ov.offsetWidth; ov.classList.add('enter'); }
-    g.fillStyle = '#06101b'; g.fillRect(0, 0, W, H);
-  }
-  function finish(){
-    if (state === 'off') return; state = 'off';
-    ov.classList.add('keep', 'fade', 'done'); root.classList.remove('introOn', 'introPins'); root.classList.add('introSeen');
-    setTimeout(() => { if (state === 'off'){ ov.classList.remove('keep', 'done', 'fade', 'clear', 'enter'); cv.width = cv.height = 1; } }, 700);   // 釋放畫布記憶體（手機最後階段最吃緊）
-    scene.fog.near = 450; scene.fog.far = 900; GROW.value = 1e3; sun.position.copy(SUN0); viewDefault(); controls.enabled = true; controls.update();
-    try { localStorage.setItem('campusgame-introSeen', '1'); } catch (e) {}
-    hintLater();
-  }
-  document.getElementById('itSkip').onclick = finish;
+  let t0 = null, on = false;
+  const SUN0 = sun.position.clone(), SUN_LOW = new THREE.Vector3(-165, 95, 40);
+  function start(){ on = true; t0 = null; GROW.value = -.2; if (renderer.shadowMap.enabled) sun.position.copy(SUN_LOW); }
   function tick(now){
-    if (state !== 'run') return;
-    if (t0 === null) t0 = now;
-    const t = last = window.__introAt ?? (now - t0) / 1000;   // 測試用：設定 window.__introAt＝秒數可凍結在某一刻
-    if (t > 2.8) title.classList.add('out');
-    if (t > T.wipe0 + .5 && t < T.hold) mapT.classList.add('in');
-    const si = t < T.wipe0 ? 0 : t < T.hold ? 1 : 2, sp = [t / T.wipe0, (t - T.wipe0) / (T.hold - T.wipe0), (t - T.hold) / (A0 + AD + BD)];
-    steps.forEach((li, i) => { li.classList.toggle('on', i <= si); li.style.setProperty('--p', clamp01(sp[i])); });
-    if (t >= T.hold){
-      if (!handed){ handed = true; ov.classList.add(FX ? 'clear' : 'fade'); root.classList.add('introPins'); mapT.classList.remove('in'); }
-      if (FX && t >= T.hold + 1.3) ov.classList.add('fade');
-      // 地圖退場後 3D 只剩地面；鏡頭傾斜到位前樓房開始依拍子長出來
-      GROW.value = t - T.hold - GROW0;
-      if (flyCam(t - T.hold) && GROW.value >= GROW_END){ finish(); return; }
-    }
-    if (t < T.hold + (FX ? 2.2 : .9)) draw(t);
+    if (!on) return; if (t0 === null) t0 = now;
+    const t = window.__introAt ?? (now - t0) / 1000 - .2; GROW.value = t;   // 測試用：window.__introAt＝秒數可凍結
+    if (renderer.shadowMap.enabled) sun.position.lerpVectors(SUN_LOW, SUN0, Math.min(1, Math.max(0, t / GROW_END)));
+    if (t >= GROW_END + .2 && window.__introAt === undefined){ on = false; GROW.value = 1e3; sun.position.copy(SUN0); }
   }
-  return {
-    resize, tick, start: () => start(true),
-    prewarm(){ if (state === 'run'){ flyCam(0); GROW.value = 1e3; } },   // 第一幀改用開場交接的俯視角度、全部長好的樣子畫，讓繪圖晶片先備妥，交接那一刻才不會卡
-    get drive(){ return state === 'run'; },
-    get cover(){ return state === 'run' && (t0 === null || last < T.hold); },
-    _init(){ if (root.classList.contains('introOn')) start(false); }
-  };
+  return { resize(){}, tick, start, prewarm(){}, get drive(){ return false; }, get cover(){ return false; },
+    _init(){ if (new URLSearchParams(location.search).get('intro') === '1') start(); } };
 })();
 resize(); intro._init();
 
@@ -1974,7 +1642,7 @@ renderer.setAnimationLoop(() => {
     if (first || !intro.cover){ renderer.render(scene, camera); labelRenderer.render(scene, camera); }   // 開場線條／地圖蓋滿畫面時不畫 3D
     if (first){ first = false; const l = document.getElementById('load'); if (l) l.remove(); window.__stage = '完成';
       try { sessionStorage.setItem('campusgame-q', QL); } catch (er) {}
-      document.querySelector('header').insertAdjacentHTML('beforeend', `<span style="background:var(--panel);padding:6px 10px;border-radius:8px;font-size:12px;color:var(--sub);pointer-events:auto">畫質：${QNAME[QL]}</span><button id="bIntro">▶ 開場動畫</button>`);
+      document.querySelector('header').insertAdjacentHTML('beforeend', `<span style="background:var(--panel);padding:6px 10px;border-radius:8px;font-size:12px;color:var(--sub);pointer-events:auto">畫質：${QNAME[QL]}</span><button id="bIntro">▶ 長出動畫</button>`);
       document.getElementById('bIntro').onclick = () => { exitWalk(); intro.start(); };
       try { if (sessionStorage.getItem('campusgame-lost') === 'new'){ sessionStorage.setItem('campusgame-lost', 'shown');
         const n = document.createElement('div'); n.textContent = `手機繪圖記憶體不足，已自動降為「${QNAME[QL]}」畫質`;
