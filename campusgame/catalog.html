@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>校園改造物件型錄</title>
+<style>
+:root{--ink:#20313d;--sub:#5a6b77;--bg:#e6eef2;--card:#fff;--line:#c5d2da;--dil:#e8963a;--warn:#d32f2f}
+html,body{margin:0;height:100%;background:var(--bg);font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif;-webkit-text-size-adjust:100%;color:var(--ink)}
+body{overflow:hidden}
+body.grid{overflow:auto}
+#bar{position:fixed;left:0;right:0;top:0;display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 12px;background:rgba(255,255,255,.94);z-index:5;box-shadow:0 1px 6px rgba(0,0,0,.08)}
+#bar h1{font-size:18px;margin:0 8px 0 0;font-weight:900;white-space:nowrap}
+#bar button{font:inherit;font-weight:700;font-size:14px;border:1px solid #9fb3c0;background:#fff;color:var(--ink);border-radius:999px;padding:6px 12px;min-height:36px;cursor:pointer}
+#bar button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+#bar .sep{width:1px;height:26px;background:var(--line);margin:0 4px}
+#sum{font-size:13px;font-weight:700;color:var(--sub);margin-left:auto}
+#grid{display:none;padding:76px 16px 24px}
+body.grid #grid{display:block}
+body.grid #view,body.grid #lbl{display:none}
+#grid h2{font-size:20px;font-weight:900;margin:14px 4px 10px}
+#grid h2 small{font-size:14px;color:var(--sub);font-weight:700;margin-left:8px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.card{background:var(--card);border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.08);position:relative}
+.card img{display:block;width:100%;aspect-ratio:20/17;background:#f1f5f2}
+.card .t{padding:6px 10px 9px;line-height:1.3}
+.card b{font-size:15px;font-weight:900;display:block}
+.card span{font-size:12px;font-weight:700;color:var(--sub);display:block}
+.card .fx{color:#2e7d4f}
+.card .fx i{font-style:normal;color:var(--warn)}
+.card.dil{outline:3px solid var(--dil)}
+.card.dil::before{content:"兩難";position:absolute;left:8px;top:8px;background:var(--dil);color:#fff;font-size:12px;font-weight:900;padding:2px 8px;border-radius:999px}
+.card .tri{position:absolute;right:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;padding:1px 6px;border-radius:999px;font-style:normal}
+#view{display:block;position:fixed;inset:0;touch-action:none}
+.lb{font-size:13px;font-weight:800;color:var(--ink);text-align:center;line-height:1.2;background:rgba(255,255,255,.9);padding:3px 7px;border-radius:7px;white-space:nowrap;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.lb small{display:block;font-size:11px;color:var(--sub);font-weight:700}
+.lb.cat{font-size:17px;background:var(--ink);color:#fff}
+body.shot #bar{display:none}
+body.shot #grid{padding-top:8px}
+</style>
+</head>
+<body class="grid">
+<div id="bar">
+  <h1>物件型錄</h1>
+  <span id="cats"></span>
+  <span class="sep"></span>
+  <button id="mCard" title="每件各自取景，看造型">看造型</button>
+  <button id="mReal" title="3D 場景，依實際公尺大小排，旁邊有 160 cm 人形對照">實際比例</button>
+  <span id="sum"></span>
+</div>
+<div id="grid"></div>
+<canvas id="view"></canvas>
+<script type="module">
+import * as THREE from '../campus3d/lib/three.module.js';
+import { OrbitControls } from '../campus3d/lib/OrbitControls.js';
+import { CSS2DRenderer, CSS2DObject } from '../campus3d/lib/CSS2DRenderer.js';
+import { CATS, ITEMS, build, bake, triCount, MISSING } from './items.js';
+
+const Q = new URLSearchParams(location.search), SHOT = Q.get('shot') === '1';
+if (SHOT) document.body.classList.add('shot');
+let CAT = Q.get('cat') || 'A', MODE = Q.get('mode') === 'real' ? 'real' : 'card';
+const STATS = {};
+for (const it of ITEMS){ const p = bake(it.id); STATS[it.id] = { tris: triCount(p), parts: p.length }; }
+window.__stats = STATS; window.__missing = MISSING;
+const fxText = (it) => [['安全', it.safe], ['安心', it.calm], ['美化', it.beauty]].filter(([, v]) => v).map(([k, v]) => v < 0 ? `<i>${k}${v}</i>` : `${k}+${v}`).join(' ');
+
+// ---------- 縮圖：每件物件各自打光、取景（前右上方 25° 俯角），之後也可當遊戲物件卡圖示 ----------
+const TW = 400, TH = 340, THUMB = {};
+function makeThumbs(){
+  const r = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+  r.setSize(TW, TH, false); r.outputColorSpace = THREE.SRGBColorSpace; r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
+  const sc = new THREE.Scene(); sc.background = new THREE.Color(0xf1f5f2);
+  sc.add(new THREE.HemisphereLight(0xffffff, 0x9aa88a, 1.7));
+  const sun = new THREE.DirectionalLight(0xffffff, 2.1); sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024); sun.shadow.bias = -.0005; sun.shadow.normalBias = .02; sc.add(sun, sun.target);
+  const gr = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.ShadowMaterial({ opacity: .22 })); gr.rotation.x = -Math.PI / 2; gr.receiveShadow = true; sc.add(gr);
+  const cam = new THREE.PerspectiveCamera(28, TW / TH, .01, 500);
+  const el = THREE.MathUtils.degToRad(25), az = THREE.MathUtils.degToRad(32), dir = new THREE.Vector3(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el));
+  for (const it of ITEMS){
+    const g = build(it.id); sc.add(g);
+    const box = new THREE.Box3().setFromObject(g), ctr = box.getCenter(new THREE.Vector3()), size = box.getSize(new THREE.Vector3()), R = size.length() / 2 + .1;
+    gr.scale.set(R * 6, R * 6, 1); gr.position.set(ctr.x, 0, ctr.z);
+    sun.position.set(ctr.x - R * 1.2, ctr.y + R * 3, ctr.z + R * 1.6); sun.target.position.copy(ctr);
+    Object.assign(sun.shadow.camera, { left: -R * 1.6, right: R * 1.6, top: R * 1.6, bottom: -R * 1.6, near: .05, far: R * 8 }); sun.shadow.camera.updateProjectionMatrix();
+    const pts = []; for (const x of [box.min.x, box.max.x]) for (const y of [Math.max(0, box.min.y), box.max.y]) for (const z of [box.min.z, box.max.z]) pts.push(new THREE.Vector3(x, y, z));
+    const ok = (d) => { cam.position.copy(ctr).addScaledVector(dir, d); cam.lookAt(ctr); cam.updateMatrixWorld(); cam.updateProjectionMatrix();
+      return pts.every((p) => { const v = p.clone().project(cam); return Math.abs(v.x) < .86 && Math.abs(v.y) < .84 && v.z < 1; }); };
+    cam.near = .01; cam.far = 1000;   // 每件重設，否則沿用上一件的遠裁切面會讓取景失敗
+    let lo = .05, hi = 300; for (let i = 0; i < 36; i++){ const m = (lo + hi) / 2; if (ok(m)) hi = m; else lo = m; } ok(hi);
+    const ys = pts.map((p) => p.clone().project(cam).y), mid = (Math.max(...ys) + Math.min(...ys)) / 2, up = new THREE.Vector3(0, 1, 0).applyQuaternion(cam.quaternion);
+    cam.position.addScaledVector(up, mid * hi * Math.tan(THREE.MathUtils.degToRad(cam.fov) / 2));
+    cam.near = hi / 50; cam.far = hi * 6; cam.updateProjectionMatrix();
+    r.render(sc, cam); THUMB[it.id] = r.domElement.toDataURL('image/png');
+    sc.remove(g);
+  }
+  r.dispose();
+}
+
+function renderGrid(){
+  const el = document.getElementById('grid'); el.innerHTML = '';
+  for (const c of CATS){
+    if (CAT !== 'all' && c.k !== CAT) continue;
+    const list = ITEMS.filter((it) => it.cat === c.k);
+    el.insertAdjacentHTML('beforeend', `<h2>${c.k}　${c.name}<small>${list.length} 項</small></h2>`);
+    const wrap = document.createElement('div'); wrap.className = 'cards'; el.appendChild(wrap);
+    for (const it of list){
+      const st = STATS[it.id], fx = fxText(it), d = document.createElement('div');
+      d.className = 'card' + (it.tags.includes('dilemma') ? ' dil' : '');
+      d.title = `${it.id}｜三角形 ${st.tris}｜合併後 ${st.parts} 塊${it.note ? '｜' + it.note : ''}`;
+      d.innerHTML = `<img alt="${it.name}" src="${THUMB[it.id]}">${st.tris > 400 ? `<em class="tri">△${st.tris}</em>` : ''}
+        <div class="t"><b>${it.name}</b><span>${it.cost} 點${it.r ? `｜半徑 ${it.r} m` : ''}</span><span class="fx">${fx || '—'}</span>
+        <span>${it.fp[0]}×${it.fp[1]}×${it.h} m</span></div>`;
+      wrap.appendChild(d);
+    }
+  }
+}
+
+// ---------- 實際比例：3D 場景 ----------
+let renderer, labels, scene, camera, controls, ground, sun, root = null;
+function initReal(){
+  if (renderer) return;
+  renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('view'), antialias: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); renderer.setSize(innerWidth, innerHeight);
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; renderer.outputColorSpace = THREE.SRGBColorSpace;
+  labels = new CSS2DRenderer(); labels.setSize(innerWidth, innerHeight); labels.domElement.id = 'lbl';
+  Object.assign(labels.domElement.style, { position: 'fixed', left: 0, top: 0, pointerEvents: 'none' }); document.body.appendChild(labels.domElement);
+  scene = new THREE.Scene(); scene.background = new THREE.Color(0xdfe9ef);
+  camera = new THREE.PerspectiveCamera(30, innerWidth / innerHeight, .1, 2000);
+  controls = new OrbitControls(camera, renderer.domElement); controls.enableDamping = true; controls.maxPolarAngle = 1.45;
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x8a9a7a, 1.6));
+  sun = new THREE.DirectionalLight(0xffffff, 2.2); sun.castShadow = true; sun.shadow.mapSize.set(4096, 4096); sun.shadow.bias = -.0004; sun.shadow.normalBias = .02; scene.add(sun, sun.target);
+  ground = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshLambertMaterial({ color: 0xcfd9d0 })); ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+  addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); labels.setSize(innerWidth, innerHeight); });
+  renderer.setAnimationLoop(() => { if (MODE !== 'real') return; controls.update(); renderer.render(scene, camera); labels.render(scene, camera); });
+}
+function person(){
+  const g = new THREE.Group(), m = new THREE.MeshLambertMaterial({ color: 0x8aa0b0 });
+  const add = (geo, x, y, z) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.castShadow = true; g.add(o); };
+  [-.08, .08].forEach((x) => add(new THREE.BoxGeometry(.12, .8, .14), x, .4, 0));
+  add(new THREE.BoxGeometry(.4, .58, .22), 0, 1.09, 0); [-.25, .25].forEach((x) => add(new THREE.BoxGeometry(.09, .55, .1), x, 1.1, 0));
+  add(new THREE.IcosahedronGeometry(.12, 1), 0, 1.5, 0); return g;
+}
+function label(html, cls, x, y, z){ const d = document.createElement('div'); d.className = 'lb ' + (cls || ''); d.innerHTML = html; const o = new CSS2DObject(d); o.position.set(x, y, z); return o; }
+function fitCamera(box){
+  const el = .8, dir = new THREE.Vector3(0, Math.sin(el), Math.cos(el)), ctr = box.getCenter(new THREE.Vector3());
+  const top = SHOT ? .96 : 1 - 2 * 64 / innerHeight - .02;
+  const pts = []; for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) pts.push(new THREE.Vector3(x, y, z));
+  const ok = (d) => { camera.position.copy(ctr).addScaledVector(dir, d); camera.lookAt(ctr); camera.updateMatrixWorld(); camera.updateProjectionMatrix();
+    return pts.every((p) => { const v = p.clone().project(camera); return Math.abs(v.x) < .97 && v.y < top && v.y > -.97 && v.z < 1; }); };
+  let lo = 1, hi = 600; for (let i = 0; i < 40; i++){ const m = (lo + hi) / 2; if (ok(m)) hi = m; else lo = m; } ok(hi);
+  const ys = pts.map((p) => p.clone().project(camera).y), mid = (Math.max(...ys) + Math.min(...ys)) / 2, want = (top - .97) / 2;
+  const up = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion), sh = (mid - want) * hi * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
+  camera.position.addScaledVector(up, sh); controls.target.copy(ctr).addScaledVector(up, sh); camera.far = hi * 4; camera.updateProjectionMatrix(); controls.update();
+}
+function layoutReal(){
+  initReal();
+  if (root){ root.traverse((o) => { if (o.isCSS2DObject) o.element.remove(); }); scene.remove(root); }
+  root = new THREE.Group(); scene.add(root);
+  const cats = CAT === 'all' ? CATS : CATS.filter((c) => c.k === CAT);
+  let z0 = 0, maxW = 0;
+  for (const c of cats){
+    const list = ITEMS.filter((it) => it.cat === c.k), cell = Math.max(2.4, ...list.map((it) => Math.max(...it.fp) + 1.2));
+    const cols = Math.min(list.length, Math.ceil(Math.sqrt(list.length * 1.7))), rows = Math.ceil(list.length / cols), W = cols * cell, D = rows * cell;
+    if (CAT === 'all') root.add(label(`${c.k}　${c.name}（${list.length}）`, 'cat', -W / 2 - .5, 0, z0 - .8));
+    list.forEach((it, i) => {
+      const cx = -W / 2 + cell * (i % cols + .5), cz = z0 + cell * (Math.floor(i / cols) + .5), [w, d] = it.fp;
+      const g = build(it.id); g.position.set(cx, 0, cz); root.add(g);
+      const pad = new THREE.Mesh(new THREE.PlaneGeometry(cell - .25, cell - .25), new THREE.MeshLambertMaterial({ color: 0xeef3f0 })); pad.rotation.x = -Math.PI / 2; pad.position.set(cx, .002, cz); pad.receiveShadow = true; root.add(pad);
+      root.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints([[-w / 2, -d / 2], [w / 2, -d / 2], [w / 2, d / 2], [-w / 2, d / 2]].map(([a, b]) => new THREE.Vector3(cx + a, .004, cz + b))), new THREE.LineBasicMaterial({ color: 0x5b8fb0 })));
+      root.add(label(`${it.name}<small>${it.cost} 點</small>`, '', cx, 0, cz + cell / 2 - .35));
+    });
+    const p = person(); p.position.set(-W / 2 - .9, 0, z0 + cell / 2); root.add(p); root.add(label('160 cm', '', -W / 2 - .9, 0, z0 + cell - .3));
+    maxW = Math.max(maxW, W); z0 += D + (CAT === 'all' ? 3 : 0);
+  }
+  const box = new THREE.Box3(new THREE.Vector3(-maxW / 2 - 1.5, 0, CAT === 'all' ? -1.4 : 0), new THREE.Vector3(maxW / 2 + .1, 2.5, z0));
+  const ctr = box.getCenter(new THREE.Vector3()), size = box.getSize(new THREE.Vector3());
+  ground.scale.set(size.x + 60, size.z + 60, 1); ground.position.set(ctr.x, 0, ctr.z);
+  sun.position.set(ctr.x - size.x * .3, 30, ctr.z + size.z * .2); sun.target.position.set(ctr.x, 0, ctr.z);
+  const R = Math.max(size.x, size.z) * .7 + 3; Object.assign(sun.shadow.camera, { left: -R, right: R, top: R, bottom: -R, near: 1, far: 120 }); sun.shadow.camera.updateProjectionMatrix();
+  fitCamera(box);
+}
+
+// ---------- 介面 ----------
+const catsEl = document.getElementById('cats'), mCard = document.getElementById('mCard'), mReal = document.getElementById('mReal');
+[...CATS.map((c) => [c.k, `${c.k} ${c.name}`]), ['all', '全部']].forEach(([k, t]) => {
+  const b = document.createElement('button'); b.textContent = t; b.dataset.k = k; b.onclick = () => { CAT = k; sync(); }; catsEl.appendChild(b); });
+mCard.onclick = () => { MODE = 'card'; sync(); }; mReal.onclick = () => { MODE = 'real'; sync(); };
+function sync(){
+  catsEl.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.k === CAT));
+  mCard.classList.toggle('on', MODE === 'card'); mReal.classList.toggle('on', MODE === 'real');
+  document.body.classList.toggle('grid', MODE === 'card');
+  if (MODE === 'card') renderGrid(); else layoutReal();
+  const n = ITEMS.filter((it) => CAT === 'all' || it.cat === CAT).length, over = ITEMS.filter((it) => STATS[it.id].tris > 400).length;
+  document.getElementById('sum').textContent = `${n} 項｜全部 ${ITEMS.length} 項｜超過 400 三角形 ${over} 項` + (MISSING.length ? `｜缺模型 ${MISSING.length}` : '');
+  history.replaceState(null, '', `?cat=${CAT}${MODE === 'real' ? '&mode=real' : ''}${SHOT ? '&shot=1' : ''}`);
+  scrollTo(0, 0);
+}
+makeThumbs(); sync();
+requestAnimationFrame(() => requestAnimationFrame(() => (window.__ready = true)));
+</script>
+</body>
+</html>
