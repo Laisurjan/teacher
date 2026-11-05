@@ -7,9 +7,9 @@ export const ADMINS = ['igene@hlbh.hlc.edu.tw', 'walala@hlbh.hlc.edu.tw'];
 const PROJ = 'hlbh-admin-duty', DOCS = `projects/${PROJ}/databases/(default)/documents`, BASE = `https://firestore.googleapis.com/v1/${DOCS}`;
 export const MOCK = new URLSearchParams(location.search).get('cgmock') === '1';
 
-// 班級：科、年級、可開的班（老師 115/11/05 指定；英科一年級只有甲班、二三年級甲乙）
+// 班級：科、年級、可開的班（老師 115/11/05 指定；英科、會科一年級只有甲班、二三年級甲乙）
 export const DEPTS = [
-  ['商', 'bus', { 1: '甲乙', 2: '甲乙', 3: '甲乙' }], ['會', 'acc', { 1: '甲乙', 2: '甲乙', 3: '甲' }], ['資', 'inf', { 1: '甲乙', 2: '甲乙', 3: '甲乙' }],
+  ['商', 'bus', { 1: '甲乙', 2: '甲乙', 3: '甲乙' }], ['會', 'acc', { 1: '甲', 2: '甲乙', 3: '甲乙' }], ['資', 'inf', { 1: '甲乙', 2: '甲乙', 3: '甲乙' }],
   ['英', 'eng', { 1: '甲', 2: '甲乙', 3: '甲乙' }], ['日', 'jpn', { 1: '甲' }], ['多', 'mmd', { 1: '甲', 2: '甲', 3: '甲' }], ['貿', 'trd', { 1: '甲' }]
 ];
 export const GRADE = ['', '一', '二', '三'];
