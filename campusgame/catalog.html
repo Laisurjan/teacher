@@ -36,6 +36,27 @@ body.grid #view,body.grid #lbl{display:none}
 .lb{font-size:13px;font-weight:800;color:var(--ink);text-align:center;line-height:1.2;background:rgba(255,255,255,.9);padding:3px 7px;border-radius:7px;white-space:nowrap;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,.12)}
 .lb small{display:block;font-size:11px;color:var(--sub);font-weight:700}
 .lb.cat{font-size:17px;background:var(--ink);color:#fff}
+.card.cul{outline:3px solid #7b2cbf}
+.card.cul::before{content:"待文化審查";position:absolute;left:8px;top:8px;background:#7b2cbf;color:#fff;font-size:12px;font-weight:900;padding:2px 8px;border-radius:999px}
+.card .st{color:#1d6fa5}
+.card .rc{display:flex;gap:3px;margin-top:3px}
+.card .rc i{width:11px;height:11px;border-radius:50%;border:1px solid rgba(0,0,0,.25)}
+.crow{background:var(--card);border-radius:14px;box-shadow:0 1px 4px rgba(0,0,0,.08);margin:0 0 12px;padding:8px 10px}
+.crow b{font-size:15px;font-weight:900}
+.crow b small{font-size:12px;color:var(--sub);font-weight:700;margin-left:6px}
+.strip{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:6px;margin-top:6px}
+.strip figure{margin:0;text-align:center;font-size:12px;font-weight:800;color:var(--sub)}
+.strip img{display:block;width:100%;aspect-ratio:20/17;border-radius:8px;background:#f1f5f2}
+.strip figcaption{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:2px}
+.strip figcaption i{width:10px;height:10px;border-radius:50%;border:1px solid rgba(0,0,0,.25)}
+.setbox{background:var(--card);border-radius:14px;box-shadow:0 1px 4px rgba(0,0,0,.08);margin:0 0 14px;padding:10px 12px}
+.setbox h3{margin:0 0 8px;font-size:18px;font-weight:900}
+.setbox h3 small{font-size:13px;color:#2e7d4f;font-weight:800;margin-left:8px}
+.setbox .mem{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
+.setbox figure{margin:0;text-align:center;font-size:12px;font-weight:800}
+.setbox figure img{display:block;width:100%;aspect-ratio:20/17;border-radius:8px;background:#f1f5f2}
+.setbox figure span{display:block;color:var(--sub);font-size:11px}
+@media (max-width:700px){.strip{grid-template-columns:repeat(5,minmax(0,1fr))}}
 body.shot #bar{display:none}
 body.shot #grid{padding-top:8px}
 </style>
@@ -47,6 +68,8 @@ body.shot #grid{padding-top:8px}
   <span class="sep"></span>
   <button id="mCard" title="每件各自取景，看造型">看造型</button>
   <button id="mReal" title="3D 場景，依實際公尺大小排，旁邊有 160 cm 人形對照">實際比例</button>
+  <button id="mColor" title="可改色物件的每種顏色">改色</button>
+  <button id="mSets" title="套組加成：同一組在 8 m 內擺 3 種就觸發">套組</button>
   <span id="sum"></span>
 </div>
 <div id="grid"></div>
@@ -55,19 +78,19 @@ body.shot #grid{padding-top:8px}
 import * as THREE from '../campus3d/lib/three.module.js';
 import { OrbitControls } from '../campus3d/lib/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from '../campus3d/lib/CSS2DRenderer.js';
-import { CATS, ITEMS, build, bake, triCount, MISSING } from './items.js';
+import { CATS, ITEMS, PALETTE, SETS, build, bake, triCount, MISSING, variants, setsOf } from './items.js';
 
 const Q = new URLSearchParams(location.search), SHOT = Q.get('shot') === '1';
 if (SHOT) document.body.classList.add('shot');
-let CAT = Q.get('cat') || 'A', MODE = Q.get('mode') === 'real' ? 'real' : 'card';
+let CAT = Q.get('cat') || 'A', MODE = ['real', 'color', 'sets'].includes(Q.get('mode')) ? Q.get('mode') : 'card';
 const STATS = {};
 for (const it of ITEMS){ const p = bake(it.id); STATS[it.id] = { tris: triCount(p), parts: p.length }; }
 window.__stats = STATS; window.__missing = MISSING;
 const fxText = (it) => [['安全', it.safe], ['安心', it.calm], ['美化', it.beauty]].filter(([, v]) => v).map(([k, v]) => v < 0 ? `<i>${k}${v}</i>` : `${k}+${v}`).join(' ');
 
 // ---------- 縮圖：每件物件各自打光、取景（前右上方 25° 俯角），之後也可當遊戲物件卡圖示 ----------
-const TW = 400, TH = 340, THUMB = {};
-function makeThumbs(){
+const TW = 400, TH = 340, THUMB = {}, CTHUMB = {};
+function shooter(TW, TH){
   const r = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
   r.setSize(TW, TH, false); r.outputColorSpace = THREE.SRGBColorSpace; r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
   const sc = new THREE.Scene(); sc.background = new THREE.Color(0xf1f5f2);
@@ -76,8 +99,7 @@ function makeThumbs(){
   const gr = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.ShadowMaterial({ opacity: .22 })); gr.rotation.x = -Math.PI / 2; gr.receiveShadow = true; sc.add(gr);
   const cam = new THREE.PerspectiveCamera(28, TW / TH, .01, 500);
   const el = THREE.MathUtils.degToRad(25), az = THREE.MathUtils.degToRad(32), dir = new THREE.Vector3(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el));
-  for (const it of ITEMS){
-    const g = build(it.id); sc.add(g);
+  return (g) => { sc.add(g);
     const box = new THREE.Box3().setFromObject(g), ctr = box.getCenter(new THREE.Vector3()), size = box.getSize(new THREE.Vector3()), R = size.length() / 2 + .1;
     gr.scale.set(R * 6, R * 6, 1); gr.position.set(ctr.x, 0, ctr.z);
     sun.position.set(ctr.x - R * 1.2, ctr.y + R * 3, ctr.z + R * 1.6); sun.target.position.copy(ctr);
@@ -90,11 +112,14 @@ function makeThumbs(){
     const ys = pts.map((p) => p.clone().project(cam).y), mid = (Math.max(...ys) + Math.min(...ys)) / 2, up = new THREE.Vector3(0, 1, 0).applyQuaternion(cam.quaternion);
     cam.position.addScaledVector(up, mid * hi * Math.tan(THREE.MathUtils.degToRad(cam.fov) / 2));
     cam.near = hi / 50; cam.far = hi * 6; cam.updateProjectionMatrix();
-    r.render(sc, cam); THUMB[it.id] = r.domElement.toDataURL('image/png');
-    sc.remove(g);
-  }
-  r.dispose();
+    r.render(sc, cam); const url = r.domElement.toDataURL('image/png');
+    sc.remove(g); return url;
+  };
 }
+function makeThumbs(){ const shot = shooter(TW, TH); for (const it of ITEMS) THUMB[it.id] = shot(build(it.id)); }
+let cshot = null;
+const cthumb = (id, v) => { const k = id + '#' + v; if (!CTHUMB[k]){ cshot = cshot || shooter(240, 204); CTHUMB[k] = cshot(build(id, v)); } return CTHUMB[k]; };
+const dot = (v) => `<i style="background:${PALETTE[v][1] || 'conic-gradient(#e63946,#f4a261,#2a9d8f,#457b9d,#e63946)'}"></i>`;
 
 function renderGrid(){
   const el = document.getElementById('grid'); el.innerHTML = '';
@@ -105,13 +130,40 @@ function renderGrid(){
     const wrap = document.createElement('div'); wrap.className = 'cards'; el.appendChild(wrap);
     for (const it of list){
       const st = STATS[it.id], fx = fxText(it), d = document.createElement('div');
-      d.className = 'card' + (it.tags.includes('dilemma') ? ' dil' : '');
+      d.className = 'card' + (it.tags.includes('dilemma') ? ' dil' : '') + (it.tags.includes('culture') ? ' cul' : '');
+      const sets = setsOf(it.id).map((t) => t.name).join('・'), vs = it.rc ? variants(it.id) : [];
       d.title = `${it.id}｜三角形 ${st.tris}｜合併後 ${st.parts} 塊${it.note ? '｜' + it.note : ''}`;
       d.innerHTML = `<img alt="${it.name}" src="${THUMB[it.id]}">${st.tris > 400 ? `<em class="tri">△${st.tris}</em>` : ''}
         <div class="t"><b>${it.name}</b><span>${it.cost} 點${it.r ? `｜半徑 ${it.r} m` : ''}</span><span class="fx">${fx || '—'}</span>
-        <span>${it.fp[0]}×${it.fp[1]}×${it.h} m</span></div>`;
+        <span>${it.fp[0]}×${it.fp[1]}×${it.h} m</span>${sets ? `<span class="st">套組：${sets}</span>` : ''}
+        ${vs.length > 1 ? `<span class="rc">${vs.map(dot).join('')}</span>` : ''}</div>`;
       wrap.appendChild(d);
     }
+  }
+}
+
+// ---------- 改色：每件可改色物件一列，列出所有顏色 ----------
+function renderColor(){
+  const el = document.getElementById('grid'); el.innerHTML = '';
+  for (const c of CATS){
+    if (CAT !== 'all' && c.k !== CAT) continue;
+    const list = ITEMS.filter((it) => it.cat === c.k && it.rc);
+    el.insertAdjacentHTML('beforeend', `<h2>${c.k}　${c.name}<small>${list.length ? `可改色 ${list.length} 項` : '這一類不開放改色（規格書 §6.3）'}</small></h2>`);
+    for (const it of list){
+      const vs = variants(it.id), row = document.createElement('div'); row.className = 'crow';
+      row.innerHTML = `<b>${it.name}<small>${vs.length - 1} 種顏色</small></b><div class="strip">${vs.map((v) => `<figure><img alt="${PALETTE[v][0]}" src="${cthumb(it.id, v)}"><figcaption>${dot(v)}${PALETTE[v][0]}</figcaption></figure>`).join('')}</div>`;
+      el.appendChild(row);
+    }
+  }
+}
+// ---------- 套組：每組列出成員 ----------
+function renderSets(){
+  const el = document.getElementById('grid'); el.innerHTML = `<h2>套組加成<small>同一套組在 8 m 內擺出 3 種不同成員就觸發，5 種加倍（規格書 §6.4）</small></h2>`;
+  for (const t of SETS){
+    const fx = [['安全', t.safe], ['安心', t.calm], ['美化', t.beauty]].filter(([, v]) => v).map(([k, v]) => `${k}+${v}`).join(' ');
+    const by = Object.fromEntries(ITEMS.map((it) => [it.id, it]));
+    el.insertAdjacentHTML('beforeend', `<div class="setbox"><h3>${t.name}<small>湊 3 種：${fx}</small></h3><div class="mem">${t.members.map((id) =>
+      `<figure><img alt="${by[id].name}" src="${THUMB[id]}">${by[id].name}<span>${by[id].cat} 類｜${by[id].cost} 點</span></figure>`).join('')}</div></div>`);
   }
 }
 
@@ -181,18 +233,19 @@ function layoutReal(){
 }
 
 // ---------- 介面 ----------
-const catsEl = document.getElementById('cats'), mCard = document.getElementById('mCard'), mReal = document.getElementById('mReal');
+const catsEl = document.getElementById('cats'), mCard = document.getElementById('mCard'), mReal = document.getElementById('mReal'), mColor = document.getElementById('mColor'), mSets = document.getElementById('mSets');
 [...CATS.map((c) => [c.k, `${c.k} ${c.name}`]), ['all', '全部']].forEach(([k, t]) => {
   const b = document.createElement('button'); b.textContent = t; b.dataset.k = k; b.onclick = () => { CAT = k; sync(); }; catsEl.appendChild(b); });
 mCard.onclick = () => { MODE = 'card'; sync(); }; mReal.onclick = () => { MODE = 'real'; sync(); };
+mColor.onclick = () => { MODE = 'color'; sync(); }; mSets.onclick = () => { MODE = 'sets'; sync(); };
 function sync(){
   catsEl.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.k === CAT));
-  mCard.classList.toggle('on', MODE === 'card'); mReal.classList.toggle('on', MODE === 'real');
-  document.body.classList.toggle('grid', MODE === 'card');
-  if (MODE === 'card') renderGrid(); else layoutReal();
+  [[mCard, 'card'], [mReal, 'real'], [mColor, 'color'], [mSets, 'sets']].forEach(([b, m]) => b.classList.toggle('on', MODE === m));
+  document.body.classList.toggle('grid', MODE !== 'real');
+  if (MODE === 'card') renderGrid(); else if (MODE === 'color') renderColor(); else if (MODE === 'sets') renderSets(); else layoutReal();
   const n = ITEMS.filter((it) => CAT === 'all' || it.cat === CAT).length, over = ITEMS.filter((it) => STATS[it.id].tris > 400).length;
-  document.getElementById('sum').textContent = `${n} 項｜全部 ${ITEMS.length} 項｜超過 400 三角形 ${over} 項` + (MISSING.length ? `｜缺模型 ${MISSING.length}` : '');
-  history.replaceState(null, '', `?cat=${CAT}${MODE === 'real' ? '&mode=real' : ''}${SHOT ? '&shot=1' : ''}`);
+  document.getElementById('sum').textContent = `${n} 項｜全部 ${ITEMS.length} 項｜可改色 ${ITEMS.filter((it) => it.rc).length}｜套組 ${SETS.length}｜超過 400 三角形 ${over} 項` + (MISSING.length ? `｜缺模型 ${MISSING.length}` : '');
+  history.replaceState(null, '', `?cat=${CAT}${MODE !== 'card' ? '&mode=' + MODE : ''}${SHOT ? '&shot=1' : ''}`);
   scrollTo(0, 0);
 }
 makeThumbs(); sync();

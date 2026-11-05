@@ -3,8 +3,8 @@
 // 遊戲裡用 bake(id) 把一個物件依材質合併成少數幾塊，再做成 InstancedMesh。
 import * as THREE from '../campus3d/lib/three.module.js';
 import { mergeGeometries } from '../campus3d/lib/BufferGeometryUtils.js';
-import { CATS, ITEMS } from './items-data.js';
-export { CATS, ITEMS };
+import { CATS, ITEMS, PALETTE, SETS } from './items-data.js';
+export { CATS, ITEMS, PALETTE, SETS };
 
 const PI = Math.PI, DS = THREE.DoubleSide;
 const FONT = '"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif';
@@ -247,6 +247,109 @@ const stripes = (key, a, b, n, vertical = true) => tex(key, 256, 256, (x, w, h) 
   for (let i = 0; i < n; i++){ x.fillStyle = i % 2 ? b : a; if (vertical) x.fillRect(i * w / n, 0, w / n + 1, h); else x.fillRect(0, i * h / n, w, h / n + 1); } });
 
 // ---------- 地板磁磚貼圖（1 m × 1 m ＝ 256 px） ----------
+// ---------- J／K／L 擴充用貼圖（115/11/05） ----------
+function heart(x, a, b, s){ x.beginPath(); x.moveTo(a, b + s * .7); x.bezierCurveTo(a - s * 1.2, b - s * .1, a - s * .5, b - s, a, b - s * .35); x.bezierCurveTo(a + s * .5, b - s, a + s * 1.2, b - s * .1, a, b + s * .7); x.fill(); }
+function drawBuddy(x, w, h){
+  x.fillStyle = '#fff7e0'; x.fillRect(0, 0, w, h); x.strokeStyle = '#3f8fd2'; x.lineWidth = 10; x.strokeRect(5, 5, w - 10, h - 10);
+  x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = '#e8505b'; heart(x, w / 2, 44, 24);
+  x.fillStyle = '#1d3557'; x.font = `900 46px ${FONT}`; x.fillText('夥伴長凳', w / 2, 100);
+  x.fillStyle = '#3f6f9f'; x.font = `800 22px ${FONT}`; x.fillText('想有人陪，就坐這裡', w / 2, 150);
+}
+function drawTalk(x, w, h){
+  x.fillStyle = '#fff7e0'; x.fillRect(0, 0, w, h); x.fillStyle = '#e9a23b';
+  x.beginPath(); x.ellipse(w / 2, h * .44, w * .45, h * .37, 0, 0, 7); x.fill();
+  x.beginPath(); x.moveTo(w * .3, h * .7); x.lineTo(w * .2, h * .97); x.lineTo(w * .44, h * .76); x.fill();
+  x.fillStyle = '#fff'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = `900 40px ${FONT}`; x.fillText('想聊聊嗎？', w / 2, h * .44);
+}
+function drawMood(x, w, h){
+  x.fillStyle = '#fffaf0'; x.fillRect(0, 0, w, h);
+  x.fillStyle = '#3d2373'; x.fillRect(0, 0, w, 80); x.fillStyle = '#fff'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = `900 46px ${FONT}`; x.fillText('今天的心情', w / 2, 42);
+  const rows = [['#ff8a65', '超開心', 3], ['#ffd54f', '還不錯', 5], ['#aed581', '普通', 4], ['#81d4fa', '有點累', 3], ['#9575cd', '想找人聊', 1]];
+  const gr = x.createLinearGradient(0, 110, 0, h - 40); rows.forEach(([c], i) => gr.addColorStop(i / 4, c));
+  x.fillStyle = gr; x.fillRect(32, 110, 36, h - 150); x.fillStyle = '#9575cd'; x.beginPath(); x.arc(50, h - 40, 30, 0, 7); x.fill();
+  rows.forEach(([c, t, n], i) => { const y = 130 + i * 84, k = (2 - i) * 5;
+    x.fillStyle = c; x.beginPath(); x.arc(120, y, 28, 0, 7); x.fill(); x.fillStyle = '#333';
+    [110, 130].forEach((a) => { x.beginPath(); x.arc(a, y - 7, 4, 0, 7); x.fill(); });
+    x.strokeStyle = '#333'; x.lineWidth = 4; x.beginPath(); x.moveTo(108, y + 9 - k * .3); x.quadraticCurveTo(120, y + 9 + k, 132, y + 9 - k * .3); x.stroke();
+    x.textAlign = 'left'; x.font = `800 30px ${FONT}`; x.fillText(t, 162, y);
+    for (let j = 0; j < n; j++){ x.fillStyle = ['#e63946', '#2a9d8f', '#f4a261', '#457b9d', '#e76f51'][(i + j) % 5]; x.beginPath(); x.arc(300 + j * 19, y, 8, 0, 7); x.fill(); }
+  });
+}
+function drawMarble(x, w, h){
+  x.fillStyle = '#eceae4'; x.fillRect(0, 0, w, h); const r = rng(77);
+  for (let i = 0; i < 10; i++){ x.strokeStyle = i % 3 ? 'rgba(150,150,158,.3)' : 'rgba(110,110,120,.4)'; x.lineWidth = .6 + r() * 1.2;
+    let a = r() * w, b = r() * h; x.beginPath(); x.moveTo(a, b); for (let k = 0; k < 6; k++){ a += (r() - .3) * 60; b += (r() - .5) * 50; x.lineTo(a, b); } x.stroke(); }
+}
+function drawSchool(x, w, h){
+  x.fillStyle = '#8f8b83'; x.fillRect(0, 0, w, h); const r = rng(5);
+  for (let i = 0; i < 260; i++){ x.fillStyle = r() < .5 ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.08)'; x.fillRect(r() * w, r() * h, 2 + r() * 6, 2 + r() * 4); }
+  x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = `900 108px ${FONT}`;
+  x.fillStyle = 'rgba(0,0,0,.35)'; x.fillText('花蓮高商', w / 2 + 3, h * .42 + 3); x.fillStyle = '#b3261e'; x.fillText('花蓮高商', w / 2, h * .42);
+  x.font = `800 30px ${FONT}`; x.fillStyle = '#2b2620'; x.fillText('國立花蓮高級商業職業學校', w / 2, h * .8);
+}
+function drawHands(x, w, h){
+  x.fillStyle = '#f7f3ea'; x.fillRect(0, 0, w, h);
+  const r = rng(23), cols = ['#e63946', '#f4a261', '#2a9d8f', '#457b9d', '#9b5de5', '#f15bb5', '#00b4d8', '#80b918', '#ffb703'];
+  for (let i = 0; i < 46; i++){ const a = 60 + r() * (w - 120), b = 170 + r() * (h - 220), s = 24 + r() * 10, t = (r() - .5) * .8;
+    x.save(); x.translate(a, b); x.rotate(t); x.fillStyle = cols[i % cols.length]; x.globalAlpha = .85;
+    x.beginPath(); x.ellipse(0, s * .4, s * .9, s, 0, 0, 7); x.fill();
+    [[-.95, -.1, -.7], [-.4, -1.05, -.12], [.05, -1.25, 0], [.48, -1.1, .12], [.85, -.6, .4]].forEach(([fx, fy, fr]) => { x.beginPath(); x.ellipse(fx * s, fy * s, s * .22, s * .5, fr, 0, 7); x.fill(); });
+    x.restore(); }
+  x.globalAlpha = 1; x.fillStyle = 'rgba(247,243,234,.9)'; x.fillRect(0, 20, w, 100);
+  x.fillStyle = '#1d3557'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = `900 64px ${FONT}`; x.fillText('我們在這裡長大', w / 2, 70);
+}
+function drawClock(x, w, h){
+  const c = w / 2; x.fillStyle = '#1f4d3a'; x.fillRect(0, 0, w, h); x.fillStyle = '#fbf8ef'; x.beginPath(); x.arc(c, c, w * .47, 0, 7); x.fill();
+  x.strokeStyle = '#222'; x.fillStyle = '#222'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = `900 30px ${FONT}`;
+  for (let i = 0; i < 12; i++){ const a = i / 12 * 2 * PI; x.lineWidth = i % 3 ? 3 : 6;
+    x.beginPath(); x.moveTo(c + Math.sin(a) * 100, c - Math.cos(a) * 100); x.lineTo(c + Math.sin(a) * 112, c - Math.cos(a) * 112); x.stroke();
+    if (i % 3 === 0) x.fillText(String(i || 12), c + Math.sin(a) * 80, c - Math.cos(a) * 80); }
+  const hand = (a, l, lw) => { x.lineWidth = lw; x.lineCap = 'round'; x.beginPath(); x.moveTo(c, c); x.lineTo(c + Math.sin(a) * l, c - Math.cos(a) * l); x.stroke(); };
+  hand((7 + 50 / 60) / 12 * 2 * PI, 55, 8); hand(50 / 60 * 2 * PI, 85, 5);
+}
+// 太魯閣族織布的菱形紋（待原民老師審查配色與紋樣）：紅底，黑白同心菱形
+function rhombusBand(x, cx, cy, rw, rh){
+  [['#f5efe0', 1], ['#1b1b1b', .78], ['#a3161a', .58], ['#f5efe0', .4], ['#1b1b1b', .2]].forEach(([c, k]) => { x.fillStyle = c;
+    x.beginPath(); x.moveTo(cx, cy - rh * k); x.lineTo(cx + rw * k, cy); x.lineTo(cx, cy + rh * k); x.lineTo(cx - rw * k, cy); x.closePath(); x.fill(); });
+}
+function drawRhombus(x, w, h){
+  x.fillStyle = '#a3161a'; x.fillRect(0, 0, w, h);
+  [[.05, '#1b1b1b'], [.09, '#f5efe0'], [.88, '#f5efe0'], [.92, '#1b1b1b']].forEach(([y, c]) => { x.fillStyle = c; x.fillRect(0, h * y, w, h * .025); });
+  const n = 5, rw = w / n / 2; for (let i = 0; i < n; i++) rhombusBand(x, rw * (2 * i + 1), h / 2, rw * .9, h * .26);
+  x.fillStyle = '#f5efe0'; for (let i = 0; i <= n * 2; i++) [.18, .82].forEach((yy) => { const a = i * rw;
+    x.beginPath(); x.moveTo(a, h * (yy - .035)); x.lineTo(a + rw * .35, h * yy); x.lineTo(a, h * (yy + .035)); x.lineTo(a - rw * .35, h * yy); x.fill(); });
+}
+function drawRhombusTile(x, w, h){ x.fillStyle = '#a3161a'; x.fillRect(0, 0, w, h); x.strokeStyle = '#1b1b1b'; x.lineWidth = 12; x.strokeRect(6, 6, w - 12, h - 12); rhombusBand(x, w / 2, h / 2, w * .4, h * .4); }
+function drawEco(x, w, h){
+  x.fillStyle = '#f4efe1'; x.fillRect(0, 0, w, h); x.fillStyle = '#2e7d4f'; x.fillRect(0, 0, w, 56);
+  x.fillStyle = '#fff'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = `900 36px ${FONT}`; x.fillText('生態觀察站', w / 2, 30);
+  x.fillStyle = '#f08a24'; [-1, 1].forEach((s) => { x.beginPath(); x.ellipse(80 + s * 24, 112, 22, 30, s * .5, 0, 7); x.fill(); x.beginPath(); x.ellipse(80 + s * 18, 152, 14, 18, -s * .4, 0, 7); x.fill(); });
+  x.fillStyle = '#222'; x.fillRect(77, 96, 6, 70);
+  x.fillStyle = '#d62828'; x.beginPath(); x.arc(200, 134, 34, 0, 7); x.fill(); x.fillStyle = '#222'; x.beginPath(); x.arc(200, 100, 14, 0, 7); x.fill(); x.fillRect(198, 100, 4, 68);
+  [[186, 124], [214, 124], [184, 150], [216, 150]].forEach(([a, b]) => { x.beginPath(); x.arc(a, b, 6, 0, 7); x.fill(); });
+  x.fillStyle = '#5a9e3a'; x.beginPath(); x.ellipse(320, 132, 26, 44, .6, 0, 7); x.fill(); x.strokeStyle = '#2e5e22'; x.lineWidth = 4; x.beginPath(); x.moveTo(298, 164); x.lineTo(342, 100); x.stroke();
+  x.fillStyle = '#333'; x.font = `800 24px ${FONT}`; ['蝴蝶', '昆蟲', '植物'].forEach((t, i) => x.fillText(t, 80 + i * 120, 210));
+}
+
+// 阿美族服飾配色的幾何紋（待阿美族老師審查）：紅底，黑白鋸齒帶，黃綠細線，中段黑菱格
+function drawAmis(x, w, h){
+  x.fillStyle = '#c4161c'; x.fillRect(0, 0, w, h);
+  const band = (y0, bh, up) => { x.fillStyle = '#111'; x.fillRect(0, y0, w, bh); x.fillStyle = '#f5efe0'; const n = 16, tw = w / n;
+    for (let i = 0; i < n; i++){ x.beginPath(); x.moveTo(i * tw, up ? y0 + bh : y0); x.lineTo(i * tw + tw / 2, up ? y0 : y0 + bh); x.lineTo(i * tw + tw, up ? y0 + bh : y0); x.fill(); } };
+  band(h * .1, h * .12, true); band(h * .78, h * .12, false);
+  [[.27, '#f2c230'], [.31, '#1f8a4c'], [.67, '#1f8a4c'], [.71, '#f2c230']].forEach(([y, c]) => { x.fillStyle = c; x.fillRect(0, h * y, w, h * .025); });
+  const n = 8, cw = w / n; for (let i = 0; i < n; i++){ const cx = cw * (i + .5), cy = h * .49;
+    x.fillStyle = '#111'; x.beginPath(); x.moveTo(cx, cy - h * .13); x.lineTo(cx + cw * .42, cy); x.lineTo(cx, cy + h * .13); x.lineTo(cx - cw * .42, cy); x.fill();
+    x.fillStyle = '#f2c230'; x.beginPath(); x.arc(cx, cy, h * .03, 0, 7); x.fill();
+    x.fillStyle = '#f5efe0'; [-1, 1].forEach((sg) => { x.beginPath(); x.arc(cx + sg * cw * .25, cy, h * .018, 0, 7); x.fill(); }); }
+}
+function drawAmisTile(x, w, h){
+  x.fillStyle = '#c4161c'; x.fillRect(0, 0, w, h); x.strokeStyle = '#111'; x.lineWidth = 14; x.strokeRect(7, 7, w - 14, h - 14);
+  x.fillStyle = '#f5efe0'; const n = 8, tw = (w - 28) / n;
+  for (let i = 0; i < n; i++) [[14, 1], [h - 14, -1]].forEach(([y, d]) => { x.beginPath(); x.moveTo(14 + i * tw, y); x.lineTo(14 + i * tw + tw / 2, y + d * tw * .6); x.lineTo(14 + (i + 1) * tw, y); x.fill(); });
+  x.fillStyle = '#111'; x.beginPath(); x.moveTo(w / 2, h * .25); x.lineTo(w * .75, h / 2); x.lineTo(w / 2, h * .75); x.lineTo(w * .25, h / 2); x.fill();
+  x.fillStyle = '#f2c230'; x.beginPath(); x.arc(w / 2, h / 2, w * .07, 0, 7); x.fill(); x.fillStyle = '#1f8a4c'; x.beginPath(); x.arc(w / 2, h / 2, w * .03, 0, 7); x.fill();
+}
 const TILE = {
   tile_brick: ['#cfc6b8', (x, w, h) => { x.fillStyle = '#cfc6b8'; x.fillRect(0, 0, w, h); const c = ['#b5523b', '#a8472f', '#c0603f'], r = rng(3);
     for (let j = 0; j < 8; j++) for (let i = -1; i < 4; i++){ x.fillStyle = c[Math.floor(r() * 3)]; x.fillRect(i * 64 + (j % 2) * 32 + 3, j * 32 + 3, 58, 26); } }],
@@ -282,6 +385,8 @@ const TILE = {
     x.beginPath(); x.arc(w / 2, 26, 22, PI, 0); x.stroke(); }, false, 128, 384],
   rainbow_crossing: ['#4a4a4a', (x, w, h) => { x.fillStyle = '#4a4a4a'; x.fillRect(0, 0, w, h); const c = ['#e63946', '#f4a261', '#f1c453', '#2a9d8f', '#457b9d', '#8e44ad'];
     c.forEach((col, i) => { x.fillStyle = col; x.fillRect(16 + i * 62, 10, 44, h - 20); }); }, false, 384, 256],
+  rhombus_tile: ['#7a1a1a', drawRhombusTile],   // 太魯閣族菱形紋（待文化審查）
+  amis_tile: ['#7a1014', drawAmisTile],         // 阿美族紋樣（待文化審查）
 };
 
 // ---------- 各物件模型 ----------
@@ -638,6 +743,166 @@ const BUILD = {
   charger(g){ B(g, .95, .06, .5, WOOD, -.125, .43); [-.55, .25].forEach((x) => B(g, .05, .43, .45, MET, x, 0, 0));
     B(g, .25, 1.0, .5, 0x2f3e46, .475); P(g, .18, .3, tmat(tex('usb', 128, 210, drawUsb)), .475, .7, .251);
     B(g, .3, .03, .55, 0x1d3557, .475, 1.0); B(g, .02, .6, .02, glow(0x7cfc9a), .37, .3, .251); },
+
+  // ===== J. 心靈陪伴（115/11/05 擴充） =====
+  buddy_bench(g){ const Bl = 0x3f8fd2;
+    [-.85, .45].forEach((x) => { B(g, .06, .42, .5, MET, x, 0, 0); B(g, .06, .5, .06, MET, x, .42, -.22); });
+    [-.15, 0, .15].forEach((z) => B(g, 1.4, .04, .13, Bl, -.2, .42, z)); [.58, .76].forEach((y) => B(g, 1.4, .1, .03, Bl, -.2, y, -.25));
+    B(g, .06, 1.6, .06, WOOD_D, .78, 0, -.15); B(g, .5, .38, .04, WOOD_D, .78, 1.12, -.15);
+    P(g, .46, .34, tmat(tex('buddy', 256, 190, drawBuddy)), .78, 1.31, -.129); },
+  thanks_tree(g){ C(g, .45, .5, .4, WOOD_D, 0, 0, 0, 10); C(g, .42, .42, .02, SOIL, 0, .4, 0, 10); C(g, .06, .09, 1.2, TRUNK, 0, .4, 0, 6);
+    const pastel = [0xfff59d, 0xffccbc, 0xc5e1a5, 0xb3e5fc, 0xf8bbd0, 0xd1c4e9];
+    for (let k = 0; k < 5; k++){ const a = k / 5 * 2 * PI + .3, tip = [Math.cos(a) * .7, 2.0 + (k % 2) * .22, Math.sin(a) * .7];
+      Rod(g, [0, 1.55, 0], tip, .035, TRUNK, 4); S(g, .2, LEAF3, tip[0], tip[1] + .06, tip[2], 1, .7, 1, 0);
+      [.45, .8].forEach((t, j) => { const px = tip[0] * t, py = 1.55 + (tip[1] - 1.55) * t, pz = tip[2] * t;
+        Rod(g, [px, py, pz], [px, py - .09, pz], .004, 0xeeeeee, 3); B(g, .1, .14, .01, pastel[(k * 2 + j) % 6], px, py - .23, pz, -a); }); }
+    S(g, .3, LEAF, 0, 1.75, 0, 1, .8, 1, 0); },
+  step_quotes(g){ const Cn = 0xd9d4ca;
+    [['你可以的', '#e76f51'], ['慢慢來', '#2a9d8f'], ['我們都在', '#457b9d']].forEach(([t, c], i) => {
+      const z = .4 - i * .4, hh = .2 * (i + 1); B(g, 1.6, hh, .4, Cn, 0, 0, z);
+      P(g, 1.56, .18, tmat(sign('step' + i, t, { w: 512, h: 60, bg: c, fg: '#fff', size: 44 })), 0, hh - .1, z + .201); }); },
+  mood_meter(g){ [-.55, .55].forEach((x) => B(g, .06, 1.85, .06, WOOD_D, x)); B(g, 1.04, 1.36, .05, WOOD, 0, .47, -.01);
+    P(g, 1.0, 1.3, tmat(tex('moodmeter', 400, 520, drawMood)), 0, 1.15, .017); B(g, 1.2, .05, .22, WOOD_D, 0, 1.85); },
+  peace_stones(g){ const Gy = 0x9fb3bf, cols = [0xf28482, 0xf6bd60, 0x84a59d, 0x6fa8dc, 0xb39ddb];
+    for (let k = 0; k < 6; k++){ const a = k / 6 * 2 * PI; S(g, .12, Gy, Math.cos(a) * .27, .06, Math.sin(a) * .27, 1, .5, .85, 0); }
+    [[.15, .07], [.12, .19], [.1, .29], [.08, .37], [.06, .44]].forEach(([r, y], i) => S(g, r, cols[i], (i % 2) * .02, y, 0, 1, .5, 1, 0));
+    [[.3, .25, cols[3]], [-.28, .2, cols[0]]].forEach(([x, z, c]) => S(g, .06, c, x, .14, z, 1, .5, 1, 0)); },
+  wish_rack(g){ [-.85, .85].forEach((x) => { B(g, .08, 1.8, .08, WOOD, x); B(g, .3, .06, .3, WOOD_D, x); });
+    [1.0, 1.35].forEach((y) => B(g, 1.7, .05, .05, WOOD, 0, y));
+    B(g, 1.9, .06, .4, WOOD_D, 0, 1.8); B(g, .74, .2, .03, WOOD_D, 0, 1.56);
+    P(g, .7, .16, tmat(sign('wish', '心願卡', { w: 320, h: 72, bg: '#fff3d6', fg: '#b5452b', size: 48 })), 0, 1.66, .016);
+    const pastel = [0xfff59d, 0xffccbc, 0xc5e1a5, 0xb3e5fc, 0xf8bbd0, 0xd1c4e9]; let n = 0;
+    [1.0, 1.35].forEach((y) => { for (let i = 0; i < 8; i++, n++) B(g, .12, .17, .01, pastel[n % 6], -.72 + i * .205 + (n % 3) * .015, y - .2, .035, (n % 3 - 1) * .15); }); },
+  talk_corner(g){ const Ch = 0xe9a23b;
+    [[-.6, PI / 2], [.6, -PI / 2]].forEach(([x, ry]) => { const c = sub(g, x, 0, .1, ry);
+      [[-.21, -.21], [.21, -.21], [-.21, .21], [.21, .21]].forEach(([a, b]) => B(c, .04, .4, .04, WOOD_D, a, 0, b));
+      B(c, .5, .07, .5, Ch, 0, .4); B(c, .5, .5, .06, Ch, 0, .47, -.22); });
+    C(g, .05, .07, .5, WOOD_D, 0, 0, .1, 6); C(g, .28, .28, .04, WOOD_L, 0, .5, .1, 12);
+    B(g, .05, 1.2, .05, WOOD_D, 0, 0, -.5); B(g, .56, .3, .03, WOOD_D, 0, 1.15, -.5);
+    P(g, .52, .26, tmat(tex('talk', 256, 128, drawTalk)), 0, 1.3, -.484); },
+
+  // ===== K. 花蓮在地與校園認同 =====
+  driftwood_bench(g){ const Dw = 0xb7a58a, Dd = 0x8f7f68;
+    [-.62, .62].forEach((x) => C(g, .13, .15, .14, Dd, x, 0, 0, 7));
+    const l = C(g, .18, .2, 1.95, Dw, 0, 0, 0, 7); l.rotation.z = PI / 2; l.position.set(0, .3, 0);
+    B(g, 1.7, .03, .24, 0xcbbb9e, 0, .45);
+    Rod(g, [.7, .35, .1], [.82, .52, .27], .04, Dw, 5); Rod(g, [-.5, .3, -.12], [-.6, .42, -.27], .035, Dw, 5); },
+  driftwood_art(g){ const Dw = 0xb7a58a, Dd = 0x8f7f68, Dl = 0xcfc0a4;
+    B(g, .6, .25, .4, STONE_D); Rod(g, [0, .25, 0], [0, 1.15, -.04], .04, Dd, 5);
+    S(g, .14, Dw, 0, 1.25, 0, .9, .8, 1.9, 0); S(g, .09, Dl, 0, 1.33, .2, 1, 1, 1.2, 0);
+    const bk = K(g, .03, .1, Dd, 0, 0, 0, 4); bk.rotation.x = PI / 2; bk.position.set(0, 1.33, .3);
+    [-1, 1].forEach((s) => { for (let i = 0; i < 5; i++){ const z0 = .12 - i * .07;
+      Rod(g, [s * .08, 1.28, z0], [s * (.58 - i * .05), 1.45 + i * .06 - (i % 2) * .03, z0 - .1 - i * .02], .022, i % 2 ? Dw : Dl, 4); } });
+    [-.08, 0, .08].forEach((x) => Rod(g, [0, 1.25, -.2], [x * 1.5, 1.3, -.3], .02, Dd, 4)); },
+  dolphin_statue(g){ const Dl = 0x7d8fa3, Bl = 0x2f6fb0;
+    C(g, .5, .55, .25, STONE_D, 0, 0, 0, 10);
+    [[-.2, .1, .2], [.2, -.1, .18], [0, .25, .14], [.25, .25, .12]].forEach(([x, z, r]) => { S(g, r, Bl, x, .27, z, 1.2, .8, 1, 0); S(g, r * .45, WHITE, x + r * .5, .27 + r * .6, z, 1, .6, 1, 0); });
+    const fish = (x, y, z, ry, rx, k) => { const p = sub(g, x, y, z, ry); p.rotation.order = 'YXZ'; p.rotation.x = rx; p.scale.setScalar(k);
+      S(p, .16, Dl, 0, 0, 0, .85, .9, 3, 0); S(p, .07, Dl, 0, -.02, .5, .8, .7, 1.4, 0);
+      tri(p, Dl, [0, .12, .05], [0, .13, -.18], [0, .3, -.16]);
+      [-1, 1].forEach((s) => { tri(p, Dl, [0, 0, -.44], [s * .24, .03, -.62], [s * .06, 0, -.5]); tri(p, Dl, [s * .1, -.06, .15], [s * .26, -.12, -.02], [s * .1, -.08, -.02]); }); };
+    fish(-.12, 1.05, 0, .35, -1.0, 1); fish(.25, .78, .05, -.5, -.55, .8);
+    Rod(g, [-.18, .3, -.15], [-.21, .64, -.24], .03, Dl, 5); Rod(g, [.35, .3, -.1], [.4, .57, -.23], .03, Dl, 5); },
+  marble_rock(g){ const M = tmat(tex('marble', 256, 256, drawMarble));
+    S(g, .5, M, 0, .36, 0, 1.38, .9, .95, 1); S(g, .16, M, .45, .08, .32, 1, .7, 1, 0);
+    [[-.55, .35], [.4, -.42], [-.2, .45]].forEach(([x, z]) => K(g, .06, .16, 0x5f9b3a, x, 0, z, 4)); },
+  school_stone(g){ const St = 0x8f8b83;
+    B(g, 1.8, .15, .6, STONE_D); B(g, 1.6, .95, .4, St, 0, .15); B(g, 1.5, .08, .34, St, 0, 1.1);
+    P(g, 1.5, .9, tmat(tex('schoolstone', 512, 300, drawSchool)), 0, .62, .201);
+    [-.75, .75].forEach((x) => S(g, .12, LEAF, x, .2, .18, 1.2, .8, 1, 0)); },
+  abacus(g){ const Fr = WOOD_D, Bd = 0x8b2b1f;
+    const oct = (x, y) => { const o = mesh(g, new THREE.OctahedronGeometry(.085), Bd, x, y, 0); o.scale.set(1, .55, .75); };
+    [-.95, .95].forEach((x) => { B(g, .1, 1.4, .14, Fr, x); B(g, .16, .06, .5, Fr, x); });
+    [[.45, .1], [1.0, .06], [1.3, .1]].forEach(([y, t]) => B(g, 1.8, t, .12, Fr, 0, y));
+    const val = [0, 0, 0, 0, 1, 1, 5];   // 撥出「115」
+    for (let i = 0; i < 7; i++){ const x = -.78 + i * .26, v = val[i], lo = v % 5; C(g, .012, .012, .75, MET_L, x, .55, 0, 4);
+      oct(x, v >= 5 ? 1.11 : 1.24);
+      for (let k = 0; k < 4; k++) oct(x, k < lo ? .95 - k * .095 : .6 + (3 - k) * .095); } },
+  handprint_wall(g){ B(g, 3, 1.92, .3, 0xf2efe6); B(g, 3.1, .08, .34, 0x8c7b6b, 0, 1.92);
+    P(g, 2.9, 1.86, tmat(tex('hands', 1024, 656, drawHands)), 0, .96, .151); },
+  clock_post(g){ const Gn = 0x1f4d3a, Au = 0xc9a23a;
+    C(g, .26, .3, .3, Gn, 0, 0, 0, 10); C(g, .2, .26, .1, Au, 0, .3, 0, 10); C(g, .07, .09, 2.1, Gn, 0, .4, 0, 8); C(g, .12, .1, .2, Au, 0, 2.45, 0, 8);
+    const d = C(g, .3, .3, .12, Gn, 0, 0, 0, 16); d.rotation.x = PI / 2; d.position.set(0, 2.8, 0);
+    [.06, -.06].forEach((z) => T(g, .3, .02, Au, 0, 2.8, z, 0, 0, 0, 2 * PI, 16, 4));
+    const f = tmat(tex('clock', 256, 256, drawClock));
+    [1, -1].forEach((s) => { const c = mesh(g, new THREE.CircleGeometry(.27, 20), f, 0, 2.8, s * .062); c.rotation.y = s > 0 ? 0 : PI; c.castShadow = false; });
+    K(g, .07, .14, Au, 0, 3.1, 0, 8); },
+  rhombus_wall(g){ B(g, 2.4, 1.5, .3, 0xe8e2d6); B(g, 2.5, .1, .36, 0x4a3b30, 0, 1.5);
+    const t = tmat(tex('rhombus', 512, 300, drawRhombus)); P(g, 2.3, 1.3, t, 0, .8, .151); P(g, 2.3, 1.3, t, 0, .8, -.151, PI); },
+  // 阿美族（115/11/05 追加，全部待阿美族老師審查）：生活器物為主，不做祭儀物件與人像
+  amis_wall(g){ B(g, 2.4, 1.5, .3, 0xe8e2d6); B(g, 2.5, .1, .36, 0x4a3b30, 0, 1.5);
+    const t = tmat(tex('amis', 512, 300, drawAmis)); P(g, 2.3, 1.3, t, 0, .8, .151); P(g, 2.3, 1.3, t, 0, .8, -.151, PI); },
+  amis_pot(g){ const CL = 0x9c5a3c;   // 圓底陶壺放在藤圈上
+    B(g, .56, .22, .56, WOOD_D); T(g, .13, .03, RATTAN, 0, .25, 0, PI / 2, 0, 0, 2 * PI, 12, 4);
+    const pts = [[0, 0], [.12, .01], [.22, .08], [.27, .2], [.26, .33], [.19, .44], [.12, .5], [.12, .55], [.15, .59]].map(([r, y]) => new THREE.Vector2(r, y));
+    mesh(g, new THREE.LatheGeometry(pts, 12), mat(CL, { side: DS }), 0, .26, 0);
+    T(g, .2, .01, 0x6b3a24, 0, .26 + .44, 0, PI / 2, 0, 0, 2 * PI, 12, 3); },
+  amis_hut(g){ const Bm = 0xc2a65a, Bd = 0x9c8443, St = 0xc9a85a;   // 竹構茅草頂工寮，後半部有竹床可坐
+    [[-1.3, -1.3], [1.3, -1.3], [-1.3, 1.3], [1.3, 1.3]].forEach(([x, z]) => C(g, .06, .07, 2.0, Bm, x, 0, z, 6));
+    [-1.4, 1.4].forEach((z) => C(g, .06, .07, 2.72, Bm, 0, 0, z, 6));
+    B(g, .1, .1, 3.0, Bd, 0, 2.66); [-1.3, 1.3].forEach((x) => B(g, .08, .08, 2.8, Bd, x, 1.92));
+    [-1, 1].forEach((sg) => { const r = B(g, 1.76, .12, 3.1, St, sg * .75, 2.265); r.rotation.z = -sg * .515;
+      const e = B(g, .1, .14, 3.1, 0xa88a45, sg * 1.5, 1.82); e.rotation.z = -sg * .515; });
+    [[-1.1, -.25], [1.1, -.25], [-1.1, -1.25], [1.1, -1.25]].forEach(([x, z]) => C(g, .04, .04, .42, Bd, x, 0, z, 5));
+    for (let i = 0; i < 9; i++) C(g, .055, .055, 2.4, i % 2 ? Bm : 0xb39a52, 0, 0, 0, 6).rotation.z = PI / 2;
+    g.children.slice(-9).forEach((o, i) => o.position.set(0, .47, -.25 - i * .125)); },
+  bamboo_raft(g){ const Bm = 0xc2a65a, Bd = 0x9c8443;   // 海岸漁撈用竹筏，架在兩個木架上展示
+    [-1.0, 1.0].forEach((x) => B(g, .16, .34, 1.1, WOOD_D, x));
+    for (let i = 0; i < 8; i++){ const o = C(g, .065, .065, 2.9, i % 2 ? Bm : 0xb39a52, 0, 0, 0, 6); o.rotation.z = PI / 2; o.position.set(0, .405, -.455 + i * .13); }
+    [-1.15, -.3, .55].forEach((x) => B(g, .07, .06, 1.12, Bd, x, .46));
+    Rod(g, [-.6, .5, .3], [.9, .55, .42], .025, WOOD_D, 5); B(g, .1, .02, .3, WOOD_D, .95, .53, .42);
+    S(g, .16, 0x3d5a40, .55, .55, -.15, 1.2, .5, 1, 0); },
+
+  // ===== L. 自然生態 =====
+  bug_hotel(g){ const F = WOOD_D;
+    [[-.33, -.15], [.33, -.15], [-.33, .15], [.33, .15]].forEach(([x, z]) => B(g, .05, .4, .05, F, x, 0, z));
+    B(g, .74, 1.0, .04, F, 0, .4, -.17); [-.35, .35].forEach((x) => B(g, .04, 1.0, .38, F, x, .4, 0));
+    [.4, .65, .9, 1.15, 1.38].forEach((y) => B(g, .74, .03, .38, F, 0, y, 0));
+    const zc = (o, x, y) => { o.rotation.x = PI / 2; o.position.set(x, y, .02); };
+    for (let i = 0; i < 8; i++) zc(C(g, .035, .035, .3, i % 2 ? 0xc9b46a : 0xb39b52, 0, 0, 0, 6), -.27 + (i % 4) * .18, .49 + Math.floor(i / 4) * .08);
+    [-.22, 0, .22].forEach((x) => zc(C(g, .1, .1, .3, WOOD_L, 0, 0, 0, 8), x, .78));
+    [-.24, -.08, .08, .24].forEach((x) => S(g, .07, 0x7a4b2a, x, 1.02, .05, 1, 1.4, 1, 0));
+    B(g, .66, .2, .32, 0xd9b45a, 0, 1.17, .01);
+    P(g, .36, .09, tmat(sign('bughotel', '昆蟲旅館', { w: 256, h: 64, bg: '#fff3d6', fg: '#6b4423', size: 40 })), 0, 1.27, .171);
+    [-1, 1].forEach((s) => { const r = B(g, .46, .03, .46, 0x8b3a2b, s * .19, 1.515, 0); r.rotation.z = -s * .6; }); },
+  bird_bath(g){ C(g, .2, .24, .08, STONE_D, 0, 0, 0, 10); C(g, .07, .1, .62, STONE, 0, .08, 0, 8); C(g, .3, .14, .16, STONE, 0, .7, 0, 12);
+    C(g, .27, .27, .02, water(), 0, .83, 0, 12);
+    const Br = 0x8d6e63; S(g, .055, Br, .2, .93, .05, 1.4, 1, 1, 0); S(g, .035, Br, .26, .98, .05, 1, 1, 1, 0);
+    const bk = K(g, .012, .04, 0xf2a03d, 0, 0, 0, 4); bk.rotation.z = -PI / 2; bk.position.set(.31, .98, .05); },
+  butterfly_bed(g){ B(g, 1.6, .35, 1, WOOD); B(g, 1.52, .02, .92, SOIL, 0, .34);
+    const oct = (r, c, x, y, z) => mesh(g, new THREE.OctahedronGeometry(r), c, x, y, z), fc = [0xf26b1d, 0xe63946, 0xc77dff, 0xffd166, 0xff8fab];
+    [[-.5, -.2, .26], [0, .15, .3], [.5, -.15, .24], [-.25, .3, .2], [.35, .3, .2]].forEach(([x, z, r], i) => { S(g, r, i % 2 ? LEAF : LEAF3, x, .36 + r * .7, z, 1, 1, 1, 0);
+      for (let k = 0; k < 3; k++){ const a = k * 2.1 + i; oct(.045, fc[(i + k) % 5], x + Math.cos(a) * r * .7, .36 + r * 1.35, z + Math.sin(a) * r * .7); } });
+    [[-.3, .82, .1, 0xf26b1d, .4], [.25, .76, -.2, 0xffd166, -.6]].forEach(([x, y, z, c, ry]) => { const p = sub(g, x, y, z, ry);
+      [-1, 1].forEach((s) => { tri(p, c, [0, 0, .03], [s * .09, .05, .05], [s * .08, .01, -.04]); tri(p, c, [0, 0, -.01], [s * .06, -.01, -.06], [s * .02, 0, -.05]); });
+      B(p, .012, .012, .07, BLACK, 0, -.006, 0); });
+    B(g, .02, .5, .02, WOOD_D, .7, .35, .42); P(g, .26, .1, tmat(sign('nectar', '蜜源植物', { w: 256, h: 96, bg: '#fff', fg: '#2e7d4f', size: 46 })), .7, .8, .432); },
+  rain_barrel(g){ const Bl = 0x2f6fb0, Bd = 0x245a90;
+    B(g, .62, .16, .62, WOOD_D); C(g, .29, .27, .86, Bl, 0, .16, 0, 16); C(g, .3, .3, .04, Bd, 0, 1.02, 0, 16);
+    [.35, .78].forEach((y) => C(g, .3, .3, .03, Bd, 0, y, 0, 16));
+    Rod(g, [-.1, 1.03, -.1], [-.1, 1.1, -.1], .04, MET_L, 6); Rod(g, [-.1, 1.1, -.1], [-.1, 1.1, -.34], .04, MET_L, 6);
+    B(g, .05, .05, .1, MET_L, 0, .24, .3);
+    P(g, .24, .12, tmat(sign('rain', '雨水撲滿', { w: 256, h: 128, bg: '#e8f4ff', fg: '#245a90', size: 50 })), 0, .6, .29); },
+  compost(g){ const F = WOOD;
+    [[-.58, -.38], [.58, -.38], [-.58, .38], [.58, .38], [0, -.38], [0, .38]].forEach(([x, z]) => B(g, .06, .75, .06, WOOD_D, x, 0, z));
+    [.05, .3, .55].forEach((y) => { [-.38, .38].forEach((z) => B(g, 1.2, .15, .03, F, 0, y, z)); [-.58, 0, .58].forEach((x) => B(g, .03, .15, .76, F, x, y, 0)); });
+    B(g, 1.1, .6, .7, SOIL);
+    const r = rng(9); for (let i = 0; i < 5; i++) S(g, .07, i % 3 ? LEAF3 : 0xd9822b, -.5 + r() * .4, .62, -.25 + r() * .5, 1, .4, 1, 0);
+    B(g, .6, .03, .82, WOOD_D, .3, .75);
+    const lid = B(g, .6, .03, .82, WOOD_D); lid.rotation.x = -.6; lid.position.set(-.3, .98, -.07);
+    P(g, .26, .09, tmat(sign('compost', '堆肥箱', { w: 256, h: 88, bg: '#fff3d6', fg: '#6b4423', size: 50 })), .3, .52, .397); },
+  cat_station(g){ const Rf = 0x8b3a2b, O = 0xe39a4f;
+    B(g, .5, .4, .5, WOOD, -.12, 0, -.05);
+    [-1, 1].forEach((s) => { const r = B(g, .36, .03, .6, Rf, -.12 + s * .149, .485, -.05); r.rotation.z = -s * .6; });
+    tri(g, WOOD, [-.37, .4, .201], [.13, .4, .201], [-.12, .58, .201]);
+    mesh(g, new THREE.CircleGeometry(.11, 12), BLACK, -.12, .18, .202).castShadow = false;
+    P(g, .2, .065, tmat(sign('catsign', '校貓之家', { w: 256, h: 80, bg: '#fff3d6', fg: '#8b3a2b', size: 44 })), -.12, .44, .204);
+    [[.15, .2, 0x4fa3d1, water()], [.3, .2, 0xf28482, 0x8d5524]].forEach(([x, z, c, f]) => { C(g, .07, .05, .04, c, x, 0, z, 10); C(g, .055, .055, .01, f, x, .035, z, 10); });
+    S(g, .1, O, .28, .1, -.12, 1, 1, 1.3, 0); S(g, .07, O, .28, .24, -.04, 1, 1, 1, 0);
+    [-.04, .04].forEach((dx) => K(g, .025, .06, O, .28 + dx, .29, -.04, 4));
+    Rod(g, [.28, .06, -.25], [.36, .2, -.3], .018, O, 4); },
+  eco_sign(g){ [-.33, .33].forEach((x) => B(g, .06, 1.15, .06, WOOD_D, x));
+    const p = sub(g, 0, 1.25, 0); p.rotation.x = -.5; B(p, .8, .5, .04, WOOD, 0, -.5, 0); P(p, .74, .44, tmat(tex('eco', 400, 240, drawEco)), 0, -.25, .021); },
 };
 
 // 地板磁磚：底座 3 cm 厚＋上面一層貼圖
@@ -652,16 +917,58 @@ for (const [id, [base, draw, emit, tw = 256, th = 256]] of Object.entries(TILE))
 export const BY_ID = Object.fromEntries(ITEMS.map((it) => [it.id, it]));
 export const MISSING = ITEMS.filter((it) => !BUILD[it.id]).map((it) => it.id);
 
-// 建出物件：回傳 THREE.Group（未合併，方便檢視）
-export function build(id){
+export const setsOf = (id) => SETS.filter((t) => t.members.includes(id));
+
+// ---------- 改色（規格書 §6.3）：把物件的「主色」換成調色盤顏色 ----------
+// 主色＝表面積最大、沒貼圖、不透明、不發光、也不是葉子／泥土／樹幹的顏色；認錯時在 KEY 手動指定
+export const KEY = {};
+const NOT_KEY = new Set([LEAF, LEAF2, LEAF3, SOIL, TRUNK].map((c) => new THREE.Color(c).getHex()));
+const KC = new Map(), RCM = new Map();
+const plain = (m) => m.isMeshLambertMaterial && !m.map && !m.transparent && m.emissive.getHex() === 0;
+function surf(o){
+  const geo = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone(); geo.applyMatrix4(o.matrixWorld);
+  const p = geo.attributes.position, a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3(); let s = 0;
+  for (let i = 0; i < p.count; i += 3){ a.fromBufferAttribute(p, i); b.fromBufferAttribute(p, i + 1); c.fromBufferAttribute(p, i + 2); s += b.sub(a).cross(c.sub(a)).length() / 2; }
+  geo.dispose(); return s;
+}
+export function keyColor(id){
+  if (KC.has(id)) return KC.get(id);
+  let best = null;
+  if (BY_ID[id] && BY_ID[id].rc){
+    if (KEY[id] !== undefined) best = new THREE.Color(KEY[id]).getHex();
+    else {
+      const g = build(id), area = new Map(); g.updateMatrixWorld(true);
+      g.traverse((o) => { if (!o.isMesh || !plain(o.material)) return; const c = o.material.color.getHex(); if (NOT_KEY.has(c)) return; area.set(c, (area.get(c) || 0) + surf(o)); });
+      let a0 = 0; for (const [c, a] of area) if (a > a0){ a0 = a; best = c; }
+    }
+  }
+  KC.set(id, best); return best;
+}
+// 這件物件可用的顏色序號（0＝原色）；和主色太接近的色票略過
+export function variants(id){
+  const k = keyColor(id); if (k === null) return [0];
+  const kc = new THREE.Color(k), out = [0];
+  for (let i = 1; i < PALETTE.length; i++){ const c = new THREE.Color(PALETTE[i][1]); if (Math.abs(c.r - kc.r) + Math.abs(c.g - kc.g) + Math.abs(c.b - kc.b) > .12) out.push(i); }
+  return out;
+}
+
+// 建出物件：回傳 THREE.Group（未合併，方便檢視）；v＝調色盤序號，0 是原色
+export function build(id, v = 0){
   const it = BY_ID[id], g = new THREE.Group(); g.name = id;
   if (BUILD[id]) BUILD[id](g, it); else B(g, it.fp[0], it.h, it.fp[1], mat(0xff00ff));   // 沒有模型時用洋紅方塊提醒
+  const k = v ? keyColor(id) : null, hex = v && PALETTE[v] ? PALETTE[v][1] : null;
+  if (k !== null && hex) g.traverse((o) => {
+    if (!o.isMesh || !plain(o.material) || o.material.color.getHex() !== k) return;
+    const key = o.material.uuid + hex; let m = RCM.get(key);
+    if (!m){ m = o.material.clone(); m.color.set(hex); RCM.set(key, m); }
+    o.material = m;
+  });
   return g;
 }
 
-// 依材質合併：回傳 [{ geometry, material, cast }]，遊戲端每一塊做一個 InstancedMesh
-export function bake(id){
-  const g = build(id); g.updateMatrixWorld(true);
+// 依材質合併：回傳 [{ geometry, material, cast }]，遊戲端每個「物件＋顏色」的每一塊做一個 InstancedMesh
+export function bake(id, v = 0){
+  const g = build(id, v); g.updateMatrixWorld(true);
   const by = new Map();
   g.traverse((o) => {
     if (!o.isMesh) return;
