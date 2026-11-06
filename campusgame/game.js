@@ -1130,7 +1130,7 @@ export function init(G){
   // 用 Web Audio 的 GainNode 調音量（iPad Safari 不理 audio.volume）；瀏覽器規定要先有一次點擊才能出聲，所以第一次點畫面（起始頁的按鈕也算）才開始播
   const BGM = { on: true, vol: .5, cur: '', ctx: null, master: null, tr: {}, armed: false };
   try { const v = JSON.parse(localStorage.getItem('campusgame-bgm') || '{}'); if (v.on === false) BGM.on = false; if (typeof v.vol === 'number') BGM.vol = Math.max(0, Math.min(1, v.vol)); } catch (e) {}
-  const BGM_T = { explore: ['🔍 探勘', 'Hot Springs Town'], build: ['🛠 改造', 'Lovely Town'], show: ['🏆 展示', 'Loop Town'] };
+  const BGM_T = { explore: ['🔍 探勘', 'Hot Springs Town'], build: ['🛠 改造', 'Apple Cider'], show: ['🏆 展示', 'Loop Town'] };
   header.insertAdjacentHTML('beforeend', '<button id="gBgm" title="背景音樂：開關與音量"></button>');
   body.insertAdjacentHTML('beforeend', '<div id="gBgmPop"><label><input type="checkbox"> 背景音樂</label><input type="range" min="0" max="100" aria-label="音量"><small></small></div>');
   const bgmBtn = document.getElementById('gBgm'), bgmPop = document.getElementById('gBgmPop'), bgmChk = bgmPop.querySelector('input[type=checkbox]'), bgmVol = bgmPop.querySelector('input[type=range]'), bgmInfo = bgmPop.querySelector('small');
