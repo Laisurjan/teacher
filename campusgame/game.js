@@ -131,6 +131,12 @@ const CSS = `
 #gStart button{font:inherit;font-size:16px;font-weight:900;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--btn);color:var(--ink);cursor:pointer}
 #gStart button.go{background:var(--accent);color:#fff;border-color:transparent;font-size:17px}
 #gStart button.lk{border:0;background:none;color:var(--sub);font-size:14px;font-weight:700;padding:6px;text-decoration:underline}
+#gBgm{background:var(--panel);border:0;padding:6px 9px;border-radius:8px;font:inherit;font-size:14px;font-weight:800;pointer-events:auto;cursor:pointer;color:var(--ink)}
+#gBgmPop{position:fixed;top:58px;right:12px;z-index:30;width:220px;background:var(--panel);color:var(--ink);border-radius:12px;padding:10px 12px;box-shadow:0 4px 16px rgba(0,0,0,.25);display:none;flex-direction:column;gap:8px;font-size:14px;font-weight:800}
+#gBgmPop.show{display:flex}
+#gBgmPop label{display:flex;align-items:center;gap:8px;cursor:pointer}
+#gBgmPop input[type=range]{width:100%;accent-color:var(--accent)}
+#gBgmPop small{color:var(--sub);font-weight:700;font-size:12px;line-height:1.4}
 #gAdmin{background:#fff3e0;color:#e65100;border:0;padding:6px 10px;border-radius:8px;font:inherit;font-size:13px;font-weight:800;pointer-events:auto;cursor:pointer;display:none}
 #gLogin{background:var(--panel);border:0;padding:6px 10px;border-radius:8px;font:inherit;font-size:13px;font-weight:800;pointer-events:auto;cursor:pointer;color:var(--ink)}
 #gLogin.in{background:#e8f5e9;color:#1b5e20}
@@ -1119,6 +1125,56 @@ export function init(G){
     if (rmDirty && marks.visible) updMarks();
     fx.visible = !WALK.on;
   };
+
+  // ---------- 背景音樂（115/11/06 老師要求）：改造／探勘／展示各一首 CC0 曲（music/README.txt），切換時交叉淡入淡出 ----------
+  // 用 Web Audio 的 GainNode 調音量（iPad Safari 不理 audio.volume）；瀏覽器規定要先有一次點擊才能出聲，所以第一次點畫面（起始頁的按鈕也算）才開始播
+  const BGM = { on: true, vol: .5, cur: '', ctx: null, master: null, tr: {}, armed: false };
+  try { const v = JSON.parse(localStorage.getItem('campusgame-bgm') || '{}'); if (v.on === false) BGM.on = false; if (typeof v.vol === 'number') BGM.vol = Math.max(0, Math.min(1, v.vol)); } catch (e) {}
+  const BGM_T = { explore: ['🔍 探勘', 'Hot Springs Town'], build: ['🛠 改造', 'Lovely Town'], show: ['🏆 展示', 'Loop Town'] };
+  header.insertAdjacentHTML('beforeend', '<button id="gBgm" title="背景音樂：開關與音量"></button>');
+  body.insertAdjacentHTML('beforeend', '<div id="gBgmPop"><label><input type="checkbox"> 背景音樂</label><input type="range" min="0" max="100" aria-label="音量"><small></small></div>');
+  const bgmBtn = document.getElementById('gBgm'), bgmPop = document.getElementById('gBgmPop'), bgmChk = bgmPop.querySelector('input[type=checkbox]'), bgmVol = bgmPop.querySelector('input[type=range]'), bgmInfo = bgmPop.querySelector('small');
+  const bgmSave = () => { try { localStorage.setItem('campusgame-bgm', JSON.stringify({ on: BGM.on, vol: BGM.vol })); } catch (e) {} };
+  function bgmMode(){   // 參觀別組或展示階段＝展示曲；街景、瀏覽（建造關閉）、探勘階段、放心情釘＝探勘曲；其餘＝改造曲
+    const ph = CS.cls && !CS.demo ? CS.cls.phase : '';
+    if (SH.view || ph === 'show') return 'show';
+    if (WALK.on || !ON || ph === 'explore' || TOOL === 'mood') return 'explore';
+    return 'build';
+  }
+  function bgmUi(){
+    bgmBtn.textContent = BGM.on && BGM.vol > 0 ? '🎵' : '🔇'; bgmChk.checked = BGM.on; bgmVol.value = Math.round(BGM.vol * 100);
+    const t = BGM_T[bgmMode()]; bgmInfo.textContent = `音量 ${Math.round(BGM.vol * 100)}・現在：${t[0]}〈${t[1]}〉`;
+  }
+  function bgmTrack(k){
+    if (BGM.tr[k]) return BGM.tr[k];
+    const a = new Audio('music/' + k + '.mp3'); a.loop = true; a.preload = 'auto';
+    const g = BGM.ctx.createGain(); g.gain.value = 0; BGM.ctx.createMediaElementSource(a).connect(g); g.connect(BGM.master);
+    return (BGM.tr[k] = { a, g });
+  }
+  function bgmLevel(){ if (BGM.master) BGM.master.gain.setTargetAtTime(BGM.on ? BGM.vol * BGM.vol * .9 : 0, BGM.ctx.currentTime, .15); }   // 平方曲線：小音量比較好調
+  function bgmSwitch(){
+    bgmUi();
+    if (!BGM.ctx) return;
+    const want = BGM.on && BGM.vol > 0 && document.visibilityState === 'visible' ? bgmMode() : '';
+    if (want === BGM.cur) return;
+    const t = BGM.ctx.currentTime;
+    if (BGM.cur){ const o = BGM.tr[BGM.cur], k = BGM.cur; o.g.gain.cancelScheduledValues(t); o.g.gain.setTargetAtTime(0, t, .4); setTimeout(() => { if (BGM.cur !== k) o.a.pause(); }, 2000); }
+    BGM.cur = want;
+    if (want){ const n = bgmTrack(want); n.g.gain.cancelScheduledValues(t); n.g.gain.setTargetAtTime(1, t + .3, .5); n.a.play().catch(() => {}); }
+  }
+  function bgmArm(){   // 第一次點擊：建立 AudioContext（必須在使用者手勢裡）
+    if (BGM.armed) return; BGM.armed = true;
+    try { BGM.ctx = new (window.AudioContext || window.webkitAudioContext)(); BGM.master = BGM.ctx.createGain(); BGM.master.connect(BGM.ctx.destination); bgmLevel(); BGM.ctx.resume(); } catch (e){ BGM.ctx = null; return; }
+    bgmSwitch();
+  }
+  ['pointerdown', 'keydown', 'touchend'].forEach((ev) => window.addEventListener(ev, bgmArm, { capture: true, passive: true }));
+  bgmBtn.onclick = (e) => { e.stopPropagation(); bgmPop.classList.toggle('show'); bgmUi(); };
+  document.addEventListener('pointerdown', (e) => { if (bgmPop.classList.contains('show') && !bgmPop.contains(e.target) && e.target !== bgmBtn) bgmPop.classList.remove('show'); });
+  bgmChk.onchange = () => { BGM.on = bgmChk.checked; if (BGM.on && BGM.vol === 0) BGM.vol = .5; bgmSave(); bgmLevel(); bgmSwitch(); };
+  bgmVol.oninput = () => { BGM.vol = bgmVol.value / 100; if (BGM.vol > 0) BGM.on = true; bgmSave(); bgmLevel(); bgmSwitch(); };
+  document.addEventListener('visibilitychange', () => { if (!BGM.ctx) return; if (document.visibilityState === 'visible') BGM.ctx.resume(); bgmSwitch(); });
+  setInterval(bgmSwitch, 500);
+  window.__bgm = BGM;   // 測試用
 
   // ---------- 開始 ----------
   if (h1) h1.textContent = '花蓮高商・校園改造';
