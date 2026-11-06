@@ -71,6 +71,7 @@ td button{min-height:30px;padding:3px 9px;font-size:13px}
     </section>
     <section>
       <h2>班級</h2>
+      <label class="muted" style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><input id="iAll" type="checkbox" style="width:auto;margin:0"> 顯示全部班級（含另一位管理老師的班）</label>
       <ul id="classes"></ul>
       <div id="noClass" class="muted">還沒有班級。</div>
     </section>
@@ -162,10 +163,12 @@ function fillCls(){
 }
 const newName = () => $('sDept').value + C.GRADE[$('sGrade').value] + $('sCls').value;
 function nameIt(){ $('newName').textContent = `${$('sYear').value} 學年 ${newName()}`; }
+$('iAll').onchange = loadClasses;
 $('sDept').onchange = fillGrade; $('sGrade').onchange = fillCls; $('sCls').onchange = nameIt; $('sYear').onchange = nameIt; fillGrade();
 $('bCreate').onclick = async () => {
   const year = +$('sYear').value, dept = $('sDept').value, grade = +$('sGrade').value, cls = $('sCls').value, id = C.classId(year, dept, grade, cls);
-  if (CLASSES.some((c) => c.id === id)){ say('createMsg', `${year} 學年 ${newName()} 已經建立過了。`, 'err'); return; }
+  const dup = CLASSES.find((c) => c.id === id);
+  if (dup){ const by = (dup.data.createdBy || '').toLowerCase(); say('createMsg', `${year} 學年 ${newName()} 已經建立過了${by && by !== ME.email ? `（由 ${by.split('@')[0]} 建立，勾「顯示全部班級」可看到）` : ''}。`, 'err'); return; }
   try {
     await C.patch('cgClasses/' + id, { name: newName(), dept, grade, cls, year, groupSize: 4, groups: 0, n: 0, budget: 1000, phase: 'build', createdBy: ME.email, created: new Date().toISOString() });
     say('createMsg', `已建立 ${year} 學年 ${newName()}。`, 'ok'); await loadClasses(); pickClass(id);
@@ -177,8 +180,12 @@ const order = (c) => [-c.data.year, C.DEPTS.findIndex((x) => x[0] === c.data.dep
 async function loadClasses(){
   try { CLASSES = (await C.list('cgClasses')).sort((a, b) => { const A = order(a), B = order(b); for (let i = 0; i < 4; i++) if (A[i] !== B[i]) return A[i] < B[i] ? -1 : 1; return 0; }); }
   catch (e){ say('createMsg', '讀取班級失敗：' + e.message, 'err'); return; }
-  $('noClass').classList.toggle('hidden', CLASSES.length > 0);
-  $('classes').innerHTML = CLASSES.map((c) => `<li data-id="${c.id}" class="${CUR && CUR.id === c.id ? 'on' : ''}"><span>${c.data.year} ${c.data.name}</span><small>${c.data.n || 0} 人・${c.data.groups || 0} 組</small></li>`).join('');
+  // 兩位管理老師的班分開列：預設只列自己建立的班，勾「顯示全部」才看得到對方的班（115/11/06 老師要求）
+  const all = $('iAll').checked, mine = (c) => (c.data.createdBy || '').toLowerCase() === ME.email;
+  const shown = all ? CLASSES : CLASSES.filter(mine);
+  $('noClass').textContent = CLASSES.length ? '你還沒有建立班級（勾「顯示全部班級」可看另一位老師的班）。' : '還沒有班級。';
+  $('noClass').classList.toggle('hidden', shown.length > 0);
+  $('classes').innerHTML = shown.map((c) => `<li data-id="${c.id}" class="${CUR && CUR.id === c.id ? 'on' : ''}"><span>${c.data.year} ${c.data.name}</span><small>${all && !mine(c) ? `${esc((c.data.createdBy || '').split('@')[0])} 的班・` : ''}${c.data.n || 0} 人・${c.data.groups || 0} 組</small></li>`).join('');
   $('classes').querySelectorAll('li').forEach((li) => li.onclick = () => pickClass(li.dataset.id));
 }
 async function pickClass(id){
