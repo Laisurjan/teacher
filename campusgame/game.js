@@ -113,6 +113,25 @@ const CSS = `
 .building #gTip{right:326px}
 @media (orientation:portrait){ .building #gTip{right:12px;bottom:calc(36vh + 68px + env(safe-area-inset-bottom))} }
 .building.catHide #gTip{right:12px}
+/* 起始頁（115/11/06）：每次開遊戲先看到，學生登入後看到自己的班、組與這個階段要做什麼；老師可進後台或示範 */
+#gStart{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(12,22,32,.5);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+#gStart.show{display:flex}
+#gStart .card{background:var(--panel);color:var(--ink);border-radius:18px;width:100%;max-width:460px;max-height:calc(100% - 8px);overflow:auto;padding:22px 22px 18px;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+#gStart h2{margin:0 0 4px;font-size:24px;font-weight:900}
+#gStart .lead{margin:0 0 14px;color:var(--sub);font-size:15px;font-weight:600;line-height:1.55}
+#gStart .who{margin:0 0 12px;font-size:17px;font-weight:900}
+#gStart .who small{display:block;font-size:13px;color:var(--sub);font-weight:600;margin-top:2px;word-break:break-all}
+#gStart ol{list-style:none;margin:0 0 14px;padding:0;display:flex;flex-direction:column;gap:6px}
+#gStart li{border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-size:14px;font-weight:600;color:var(--sub);line-height:1.5}
+#gStart li b{display:block;font-size:15px;font-weight:900;color:var(--ink)}
+#gStart li.now{border:2px solid var(--accent);color:var(--ink);background:rgba(31,111,235,.08)}
+#gStart li.now b::after{content:'　← 現在';color:var(--accent);font-size:13px}
+#gStart .warn{background:rgba(229,57,53,.1);border-radius:10px;padding:9px 12px;font-size:14px;font-weight:700;margin:0 0 12px;line-height:1.5}
+#gStart .btns{display:flex;flex-direction:column;gap:8px}
+#gStart button{font:inherit;font-size:16px;font-weight:900;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--btn);color:var(--ink);cursor:pointer}
+#gStart button.go{background:var(--accent);color:#fff;border-color:transparent;font-size:17px}
+#gStart button.lk{border:0;background:none;color:var(--sub);font-size:14px;font-weight:700;padding:6px;text-decoration:underline}
+#gAdmin{background:#fff3e0;color:#e65100;border:0;padding:6px 10px;border-radius:8px;font:inherit;font-size:13px;font-weight:800;pointer-events:auto;cursor:pointer;display:none}
 #gLogin{background:var(--panel);border:0;padding:6px 10px;border-radius:8px;font:inherit;font-size:13px;font-weight:800;pointer-events:auto;cursor:pointer;color:var(--ink)}
 #gLogin.in{background:#e8f5e9;color:#1b5e20}
 #gLogin i{display:inline-block;width:8px;height:8px;border-radius:50%;background:#2ecc71;margin-left:6px;vertical-align:middle}
@@ -684,9 +703,13 @@ export function init(G){
   const CS = { w: '', cls: null, g: 0, synced: { items: {}, removed: {} }, ut: '', busy: false, t: 0 };
   header.insertAdjacentHTML('beforeend', '<button id="gLogin" title="用學校 Google 帳號登入，作品會存到雲端、和同組同學一起編輯">登入</button>');
   const loginEl = document.getElementById('gLogin');
+  header.insertAdjacentHTML('beforeend', '<button id="gAdmin" title="開啟管理後台（班級、名單、分組、階段）">⚙ 後台</button>');
+  const adminEl = document.getElementById('gAdmin'), openAdmin = () => open('./admin.html' + (CL.MOCK ? '?cgmock=1' : ''), '_blank');
+  adminEl.onclick = openAdmin;
   const deep = (o) => JSON.parse(JSON.stringify(o));
   function loginLabel(stat = ''){
     const m = CL.me();
+    adminEl.style.display = m && m.admin ? 'inline-block' : 'none';
     if (!m){ loginEl.textContent = '登入'; loginEl.className = ''; return; }
     loginEl.className = 'in';
     loginEl.innerHTML = (CS.demo ? '👩‍🏫 示範模式' : CS.cls ? `${CS.cls.name}・第 ${CS.g} 組` : m.admin ? '管理者' : '未加入班級') + (CS.w ? `<i class="${stat}" title="${stat === 'busy' ? '同步中' : stat === 'err' ? '同步失敗，稍後重試' : '已同步'}"></i>` : '');
@@ -699,7 +722,7 @@ export function init(G){
       return;
     }
     dialog(m.email, CS.demo ? '示範模式：不限預算，作品存在你自己的帳號（換裝置登入還在），不影響任何班級。要清空示範內容請按工具列「全部重置」。' : CS.cls ? `你在 ${CS.cls.year} 學年 ${CS.cls.name} 第 ${CS.g} 組，作品自動存到雲端。` : m.admin ? '管理者帳號：班級、名單、分組請到後台設定。' : '這個帳號還不在任何班級名單裡，作品只存在這台裝置。',
-      [['關閉'], ...(m.admin ? [['開啟後台', '', () => open('./admin.html' + (CL.MOCK ? '?cgmock=1' : ''), '_blank')]] : []), ['登出', 'go', async () => { await CL.logout(); try { localStorage.removeItem('campusgame-login'); } catch (e) {} location.reload(); }]]);
+      [['關閉'], ...(m.admin ? [['開啟後台', '', openAdmin]] : []), ['登出', 'go', async () => { await CL.logout(); try { localStorage.removeItem('campusgame-login'); } catch (e) {} location.reload(); }]]);
   };
   async function join(fresh){
     const m = CL.me(); loginLabel(); if (!m) return;
@@ -713,13 +736,13 @@ export function init(G){
       if (fresh) toast('老師示範模式：不限預算、自動存到你的帳號，不影響任何班級');
       clearInterval(CS.poll); CS.poll = setInterval(poll, 5000); moodInit(); return;
     }
-    let r, c, d;
+    let r, c, d; CS.why = '';
     try { r = await CL.getDoc('cgRoster/' + m.email); }
-    catch (e){ toast('讀取名單失敗：' + e.message); return; }
-    if (!r || !r.data.w){ toast(r ? '老師還沒幫你分組，作品先存在這台裝置' : `${m.email} 不在任何班級名單裡，作品只存在這台裝置`); return; }
+    catch (e){ CS.why = '讀取名單失敗，請稍後重新整理。'; toast('讀取名單失敗：' + e.message); return; }
+    if (!r || !r.data.w){ CS.why = r ? '老師還沒幫你分組，作品先存在這台裝置。' : '這個帳號不在任何班級名單裡。請確認登入的是學校給你的學生帳號（@stu.hlbh.hlc.edu.tw），或請老師把你加入名單。'; toast(r ? '老師還沒幫你分組，作品先存在這台裝置' : `${m.email} 不在任何班級名單裡，作品只存在這台裝置`); return; }
     try { c = await CL.getDoc('cgClasses/' + r.data.classId); d = await CL.getDoc('cgWorks/' + r.data.w); }
-    catch (e){ toast('讀取雲端資料失敗：' + e.message); return; }
-    if (!c){ toast('找不到你的班級（可能已被刪除）'); return; }
+    catch (e){ CS.why = '讀取雲端資料失敗，請稍後重新整理。'; toast('讀取雲端資料失敗：' + e.message); return; }
+    if (!c){ CS.why = '找不到你的班級（可能已被刪除），請問老師。'; toast('找不到你的班級（可能已被刪除）'); return; }
     CS.cls = { id: c.id, ...c.data }; CS.g = r.data.g; CS.w = r.data.w; BUDGET = c.data.budget || 1000; SAVE_KEY = 'campusgame-work-' + CS.w;
     endPlace(); deselect(); UNDO.length = 0; REDO.length = 0;
     if (d){ applyRemote(d); toast(`歡迎！${CS.cls.name} 第 ${CS.g} 組：已載入全組的作品`); }
@@ -732,7 +755,7 @@ export function init(G){
     hud(); rescore(); loginLabel();
     clearInterval(CS.poll); CS.poll = setInterval(poll, 5000);
     moodInit();
-    if (CS.cls.phase === 'explore' && fresh) setTimeout(() => tip('現在是探勘階段：按工具列「心情釘」，走到有感覺的地方釘下去（怕、吵、暗、想待、想躲）', '老師'), 1500);
+    if (CS.cls.phase === 'explore' && fresh) whenStarted(() => tip('現在是探勘階段：按工具列「心情釘」，走到有感覺的地方釘下去（怕、吵、暗、想待、想躲）', '老師'));
   }
   function diff(){
     const a = CS.synced, mask = [], data = { items: {}, removed: {} };
@@ -771,7 +794,51 @@ export function init(G){
     if (!CS.w || CS.busy || SH.view || drag || paint || document.visibilityState !== 'visible' || diff().mask.length) return;
     try { const d = await CL.getDoc('cgWorks/' + CS.w); if (d && d.updateTime !== CS.ut && !CS.busy && !drag && !paint && !diff().mask.length) applyRemote(d); } catch (e) {}
   }
-  (async () => { let on = CL.MOCK; try { on = on || localStorage.getItem('campusgame-login') === '1'; } catch (e) {} if (on && await CL.restore()) join(false); else loginLabel(); })();
+  // ---------- 起始頁（115/11/06 老師要求）：學生先登入、看到自己的班組與目前階段再開始；老師可進後台或示範。網址 ?start=0 略過 ----------
+  const PH = [['explore', '🔍 探勘', '走進校園，在讓你覺得怕、暗、吵、想待、想躲的地方插「心情釘」。'],
+    ['build', '🛠 改造', '和組員用預算放設施、鋪地磚、移除樹木，讓校園更安全、更安心。'],
+    ['show', '🏆 展示', '寫下改造理念、做海報，參觀別組的方案並投票。']];
+  document.body.insertAdjacentHTML('beforeend', '<div id="gStart"><div class="card"></div></div>');
+  const stEl = document.getElementById('gStart'), stCard = stEl.querySelector('.card');
+  let started = new URLSearchParams(location.search).get('start') === '0', afterStart = [];
+  function whenStarted(fn){ if (started) setTimeout(fn, 1200); else afterStart.push(fn); }
+  function startGo(){ started = true; stEl.classList.remove('show'); afterStart.splice(0).forEach((fn) => setTimeout(fn, 800)); }
+  async function startLogout(){ await CL.logout(); try { localStorage.removeItem('campusgame-login'); } catch (e) {} location.reload(); }
+  function renderStart(busy){
+    if (started) return;
+    const m = CL.me(), esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const head = '<h2>花商校園改造計畫</h2><p class="lead">在 3D 校園裡找出讓人不安的角落，和組員一起動手改造，讓每個人都更安心。</p>';
+    const steps = (now) => '<ol>' + PH.map(([k, t, d]) => `<li class="${k === now ? 'now' : ''}"><b>${t}</b>${d}</li>`).join('') + '</ol>';
+    let html, btns = [];
+    if (busy) html = head + '<p class="who">登入中，正在找你的班級……</p>';
+    else if (!m){
+      html = head + steps('') + '<p class="lead" style="margin-bottom:10px">請用<b>學校給你的 Google 帳號</b>登入，作品會存到雲端，和同組同學一起編輯。</p>';
+      btns = [['用學校 Google 帳號登入', 'go', startLogin], ['先不登入，隨便逛逛（作品只存在這台裝置）', 'lk', startGo]];
+    } else if (m.admin){
+      html = head + `<p class="who">老師您好<small>${esc(m.email)}</small></p><p class="lead">班級、名單、分組與階段請到後台設定；示範模式不限預算，作品存在你自己的帳號，不影響任何班級。</p>`;
+      btns = [['⚙ 進入後台', 'go', openAdmin], ['👩‍🏫 進入示範模式', '', startGo], ['登出', 'lk', startLogout]];
+    } else if (CS.cls && !CS.demo){
+      const ph = CS.cls.phase || 'build', cur = PH.find((x) => x[0] === ph) || PH[1];
+      html = head + `<p class="who">${esc(CS.cls.year)} 學年 ${esc(CS.cls.name)}・第 ${esc(CS.g)} 組<small>${esc(m.email)}</small></p>` + steps(ph)
+        + `<p class="lead" style="margin-bottom:10px">現在是<b>「${cur[1].split(" ")[1]}」</b>階段。${ph === 'build' ? `你們這組的預算是 ${esc(CS.cls.budget || 1000)} 點，同組同學改的東西會自動同步。` : ph === 'explore' ? '按工具列的「心情釘」開始。' : '按右上「📋 方案」看全班的方案。'}</p>`;
+      btns = [['開始', 'go', startGo], ['不是你？登出換帳號', 'lk', startLogout]];
+    } else {
+      html = head + `<p class="who">${esc(m.email)}</p><p class="warn">${esc(CS.why || '找不到你的班級。')}</p>`;
+      btns = [['登出換帳號', 'go', startLogout], ['先逛逛（作品只存在這台裝置）', 'lk', startGo]];
+    }
+    stCard.innerHTML = html + '<div class="btns"></div>';
+    const row = stCard.querySelector('.btns');
+    btns.forEach(([t, cls, fn]) => { const b = document.createElement('button'); b.textContent = t; if (cls) b.className = cls; b.onclick = fn; row.appendChild(b); });
+  }
+  async function startLogin(){
+    try { await CL.login(); } catch (e){ toast('登入失敗：' + CL.loginError(e)); return; }
+    try { localStorage.setItem('campusgame-login', '1'); } catch (e) {}
+    renderStart(true); await join(true); renderStart();
+  }
+  if (!started){ renderStart(true); stEl.classList.add('show'); }
+  (async () => { let on = CL.MOCK; try { on = on || localStorage.getItem('campusgame-login') === '1'; } catch (e) {}
+    if (on && await CL.restore()) await join(false); else loginLabel();
+    renderStart(); })();
 
   // ---------- 心情釘（M6，規格書 §7.1） ----------
   const MD = { id: '', pins: {}, all: [], need: [], open: false, allowed: false, sel: null, t: 0, busy: false };
