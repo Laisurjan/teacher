@@ -1242,6 +1242,7 @@ for (let i = 0; i < 90; i++){ const x = 72 + rnd() * 30, z = 32 + rnd() * 92;
   const TR = lam(0x5a4636), C1 = lam(0x2f5d32), C2 = lam(0x3b6e3a), cone = new THREE.ConeGeometry(1, 2.2, 7), trunk = new THREE.CylinderGeometry(.18, .3, 1, 6);
   function juniper(x, z, s){
     const g = group(x, z, r() * 360), lean = (r() - .5) * .5, H = 2.2 * s;
+    g.userData.rm = 'juniper';   // 遊戲頁：可拆（115/11/06 老師問中庭的樹為何不能移除）；用獨立種類，不改動 tree 的編號，舊存檔不錯位
     const t = new THREE.Mesh(trunk, TR); t.scale.set(s, H, s); t.position.set(Math.sin(lean) * H / 2, H / 2, 0); t.rotation.z = -lean; t.castShadow = true; g.add(t);
     const tx = Math.sin(lean) * H;
     for (let k = 0; k < 5; k++){ const c = new THREE.Mesh(leafGeo, r() < .5 ? C1 : C2), sc = (1.2 + r() * .8) * s;   // 蓬鬆團簇

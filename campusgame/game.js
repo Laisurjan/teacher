@@ -230,7 +230,7 @@ export function init(G){
   }
   const rectPoly = (q) => [[q.x0, q.z0], [q.x1, q.z0], [q.x1, q.z1], [q.x0, q.z1]];
   // 原有可拆物件的占地：樹與棕櫚只算樹幹附近，其他用整個外框
-  RM.forEach((r) => { const c = r.box.getCenter(new THREE.Vector3()), k = r.kind === 'tree' || r.kind === 'palm' ? .5 : 0;
+  RM.forEach((r) => { const c = r.box.getCenter(new THREE.Vector3()), k = r.kind === 'tree' || r.kind === 'palm' || r.kind === 'juniper' ? .5 : 0;
     r.foot = k ? [c.x - k, c.z - k, c.x + k, c.z + k] : [r.box.min.x, r.box.min.z, r.box.max.x, r.box.max.z]; });
   const rmName = (k) => ((REMOVE[k] && REMOVE[k].name) || '物件').replace(/（.*）/, '');
   function check(id, x, z, rot, ignore, y = 0){
