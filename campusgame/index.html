@@ -2,6 +2,8 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
+<script>/* 網址結尾少了斜線（…/campusgame）時，補上 base，讓 ./game.js、../campus3d/lib/ 這些相對路徑仍指向遊戲資料夾（115/11/06） */
+(function(){ var p = location.pathname; if (!/\/$/.test(p) && !/\.html?$/.test(p)) document.write('<base href="' + p + '/">'); })();</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <title>花蓮高商 校園改造遊戲</title>
