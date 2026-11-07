@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>地科天文期刊導讀 第 3 期</title>
+<meta name="description" content="本期四篇：一顆石榴子石記下隱沒帶兩段旅程、西太平洋忙碌的颱風季與掠過台灣的薔琵、ESCAPADE 雙探測器借地球甩向火星、第一張星際介質 3D 溫度地圖有 41% 卡在不穩定狀態。英文原文為主，中文導讀為輔。">
+<meta property="og:title" content="地科天文期刊導讀 第 3 期">
+<meta property="og:description" content="石榴子石記得兩段旅程｜薔琵跑去阿拉斯加、甜甜圈颱風煙花｜今天傍晚兩艘探測器借地球甩向火星｜「空的」太空一直在翻攪">
+<meta property="og:type" content="article">
+<style>
+:root{
+  --bg:#f7f5ef;--card:#ffffff;--ink:#1d1d1b;--muted:#5c5a54;--line:#e3dfd3;
+  --geo:#1f6f5f;--geo-bg:#e3f1ec;--astro:#3b3f8f;--astro-bg:#e7e8f6;
+  --adv:#9a4a12;--adv-bg:#f8e8d8;--quote:#f3efe3;--link:#1a5bb5;--tw:#b03a3a;--tw-bg:#fbeaea;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#15161a;--card:#1f2127;--ink:#ececea;--muted:#b4b3ad;--line:#33363e;
+    --geo:#7fd1b9;--geo-bg:#1d332d;--astro:#a9adf0;--astro-bg:#272a4a;
+    --adv:#f0b07a;--adv-bg:#3d2a1a;--quote:#262830;--link:#8ab8ff;--tw:#ff9c9c;--tw-bg:#3a2222;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15161a;--card:#1f2127;--ink:#ececea;--muted:#b4b3ad;--line:#33363e;
+  --geo:#7fd1b9;--geo-bg:#1d332d;--astro:#a9adf0;--astro-bg:#272a4a;
+  --adv:#f0b07a;--adv-bg:#3d2a1a;--quote:#262830;--link:#8ab8ff;--tw:#ff9c9c;--tw-bg:#3a2222;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei","Helvetica Neue",Arial,sans-serif;font-weight:600;line-height:1.75;font-size:17px}
+a{color:var(--link);text-decoration-thickness:1px;text-underline-offset:3px}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px 64px}
+header.top{padding:40px 0 16px}
+header.top .brand{font-size:14px;letter-spacing:.12em;color:var(--muted)}
+header.top h1{font-size:30px;line-height:1.3;margin:6px 0 8px}
+header.top p{margin:0;color:var(--muted)}
+nav.issues{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
+nav.issues a{display:inline-block;padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);text-decoration:none;font-size:14px;font-weight:700}
+nav.issues a:hover{border-color:var(--link)}
+nav.issues a[aria-current]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+nav.issues a small{font-weight:600;color:inherit;opacity:.75;margin-left:4px}
+nav.toc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin:0 0 28px}
+nav.toc ol{margin:0;padding-left:22px}
+nav.toc li{margin:4px 0}
+nav.toc a{text-decoration:none}
+nav.toc .tag{font-size:12px;margin-right:6px}
+.how{border-left:4px solid var(--line);padding:4px 16px;color:var(--muted);font-size:15px;margin:0 0 32px}
+.how p{margin:6px 0}
+article{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 20px 10px;margin:0 0 36px}
+@media(min-width:640px){article{padding:30px 32px 16px}}
+.kicker{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--muted);margin-bottom:12px}
+.tag{display:inline-block;padding:2px 10px;border-radius:999px;font-size:13px;font-weight:700;line-height:1.6}
+.tag.geo{background:var(--geo-bg);color:var(--geo)}
+.tag.astro{background:var(--astro-bg);color:var(--astro)}
+.tag.adv{background:var(--adv-bg);color:var(--adv)}
+.tag.base{background:var(--quote);color:var(--muted)}
+article h2{font-size:25px;line-height:1.35;margin:0 0 4px}
+article h3.en{font-size:17px;font-weight:600;font-style:italic;color:var(--muted);margin:0 0 14px;font-family:Georgia,"Times New Roman",serif}
+.src{font-size:14px;color:var(--muted);border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);padding:10px 0;margin:0 0 18px}
+.src .go{display:inline-block;margin-top:4px;margin-right:10px;font-weight:700}
+figure{margin:0 0 20px}
+figure img{width:100%;height:auto;border-radius:10px;display:block;background:#000}
+figure .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:520px){figure .two{grid-template-columns:1fr}}
+figcaption{font-size:13px;color:var(--muted);line-height:1.6;margin-top:8px}
+h4{font-size:15px;letter-spacing:.08em;color:var(--muted);margin:26px 0 8px;text-transform:uppercase}
+h4::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--muted);margin-right:8px;vertical-align:1px}
+article.geo h4::before{background:var(--geo)}
+article.astro h4::before{background:var(--astro)}
+ol.sum{padding-left:22px;margin:0}
+ol.sum li{margin:8px 0}
+blockquote.en{background:var(--quote);border-radius:12px;padding:16px 18px;margin:0 0 10px;font-family:Georgia,"Times New Roman",serif;font-size:17px;line-height:1.7}
+blockquote.en p{margin:0 0 10px}
+blockquote.en p:last-child{margin:0}
+.zh{padding:0 6px;color:var(--ink)}
+.zh p{margin:0 0 10px}
+dl.terms{margin:0;display:grid;grid-template-columns:1fr;gap:6px 0}
+dl.terms div{display:grid;grid-template-columns:minmax(120px,36%) 1fr;gap:10px;border-bottom:1px solid var(--line);padding:7px 0}
+dl.terms dt{margin:0;font-weight:700}
+dl.terms dt small{display:block;font-weight:600;color:var(--muted);font-size:13px}
+dl.terms dd{margin:0;color:var(--ink);font-size:15.5px}
+ul.open{padding-left:22px;margin:0}
+ul.open li{margin:6px 0}
+ul.open li.warn{color:var(--tw)}
+.tw{background:var(--tw-bg);border-radius:12px;padding:14px 16px}
+.tw h4{margin-top:0;color:var(--tw)}
+.tw h4::before{background:var(--tw)}
+.tw p{margin:0 0 10px}
+.tw p:last-child{margin:0}
+.ask{border:2px solid var(--line);border-radius:12px;padding:12px 16px;margin:18px 0 0}
+.ask b{display:block;margin-bottom:4px}
+.adv-note{font-size:14.5px;color:var(--muted);margin:14px 0 0}
+details.check{margin:22px -4px 10px;border-top:1px solid var(--line);padding-top:8px}
+details.check summary{cursor:pointer;color:var(--muted);font-size:14px;padding:6px 4px}
+details.check table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px}
+details.check th,details.check td{text-align:left;vertical-align:top;padding:6px 6px;border-bottom:1px solid var(--line)}
+details.check th{color:var(--muted);font-weight:700;white-space:nowrap}
+details.check td:first-child{width:38%}
+details.check .warn{color:var(--tw);font-weight:700}
+section.next{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 20px;margin:0 0 28px}
+section.next h2{font-size:22px;margin:0 0 6px}
+section.next p.lead{color:var(--muted);margin:0 0 12px}
+section.next ol{padding-left:24px;margin:0}
+section.next li{margin:10px 0}
+section.next li b{display:block}
+section.next li span{color:var(--muted);font-size:15px}
+footer{font-size:13.5px;color:var(--muted);line-height:1.7;border-top:1px solid var(--line);padding-top:16px}
+footer p{margin:6px 0}
+.back{font-size:14px;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="brand">地科天文期刊導讀 · EARTH &amp; SPACE READER</div>
+  <h1>第 3 期</h1>
+  <p>115 學年 11 月 7 日出刊 · 地科 2 篇、天文 2 篇 · 原文全部可免費閱讀</p>
+</header>
+
+<nav class="issues" aria-label="期數">
+  <a href="../001/">第 1 期<small>10/25</small></a>
+  <a href="../002/">第 2 期<small>11/1</small></a>
+  <a href="../003/" aria-current="page">第 3 期<small>11/7</small></a>
+</nav>
+
+<nav class="toc">
+  <ol>
+    <li><a href="#a1"><span class="tag geo">地科</span>一顆石榴子石記得兩段旅程：隱沒帶淺處比教科書熱得多</a></li>
+    <li><a href="#a2"><span class="tag geo">地科</span>西太平洋的忙碌颱風季：掠過台灣的薔琵跑去阿拉斯加，「甜甜圈」煙花現身關島</a></li>
+    <li><a href="#a3"><span class="tag astro">天文</span>今天傍晚，兩艘探測器借地球「甩」向火星：沒有人做過的動力飛掠</a></li>
+    <li><a href="#a4"><span class="tag astro">天文</span><span class="tag adv">進階</span>「空的」太空一直在翻攪：第一張星際介質 3D 溫度地圖，41% 卡在不該存在的狀態</a></li>
+  </ol>
+</nav>
+
+<div class="how">
+  <p><b>怎麼讀</b>：每篇先看「三句話」，再讀英文「關鍵段」，然後點「讀原文」去讀完整英文。中文只是導讀，不是全譯。</p>
+  <p>讀完看「還沒解決的問題」，那才是真正有趣的地方。最後的「校對紀錄」列出導讀裡每個數字出自原文哪一段，歡迎抓錯。本期的進階篇在第 4 篇，而且是四篇裡最長的；第 3 篇講的事就發生在今天傍晚，可以先讀。</p>
+</div>
+
+<!-- ======================= A1 ======================= -->
+<article id="a1" class="geo">
+  <div class="kicker"><span class="tag geo">地科 · 板塊構造與變質岩</span><span class="tag base">基礎</span><span>原文約 850 字 · 6 分鐘（論文另計）</span></div>
+  <h2>一顆石榴子石記得兩段旅程：隱沒帶淺處比教科書熱得多</h2>
+  <h3 class="en">Deep-Diving Rocks Reveal a Subduction Zone’s Thermal Secrets</h3>
+  <div class="src">
+    Eos（新聞）· 2026-11-06 · 作者 Katherine Kornei · 論文：Schönig 等人，<i>Nature Geoscience</i>（2026-10），<a href="https://doi.org/10.1038/s41561-026-02110-1" target="_blank" rel="noopener">doi:10.1038/s41561-026-02110-1</a>（期刊頁可免費讀摘要與主文）<br>
+    <a class="go" href="https://eos.org/articles/deep-diving-rocks-reveal-a-subduction-zones-thermal-secrets" target="_blank" rel="noopener">讀原文 →</a>
+    <a class="go" href="https://www.nature.com/articles/s41561-026-02110-1" target="_blank" rel="noopener">讀論文 →</a>
+  </div>
+
+  <figure>
+    <img src="img/subduction.jpg" alt="隱沒帶立體剖面示意圖：海洋地殼沿海溝斜插到大陸岩石圈之下，上方有增積岩體、弧前、火山弧與弧後" width="636" height="354">
+    <figcaption>海洋板塊隱沒帶的示意圖：海洋地殼從海溝（trench）往下斜插，上方依序是增積岩體（accretionary wedge）、弧前（forearc）、火山弧（volcanic arc）與弧後（backarc）。本篇的岩石就是沿著這條斜坡下到約 90 公里深、再回到地表的。示意圖，不是巴布亞紐幾內亞的實際剖面。圖：USGS，<i>This Dynamic Earth</i>（公有領域）。Eos 原文的岩石照片為第三方版權，未轉載。</figcaption>
+  </figure>
+
+  <h4>三句話</h4>
+  <ol class="sum">
+    <li>巴布亞紐幾內亞東部的 Goodenough 島上，有一塊 2000 年代初採回來的榴輝岩（eclogite）。它裡面的石榴子石像洋蔥一樣分層：內核的包裹體只有普通石英，外層卻有柯石英（coesite），而柯石英只在極高壓下才會生成。也就是說，同一顆礦物記下了它旅程的兩個時刻：一次在大約 45 公里深，一次在大約 90 公里深。</li>
+    <li>哥廷根大學 Jan Schönig 領導的團隊用這兩個「定位點」算出地溫梯度，發現淺層那一段比所有隱沒帶模型預測的都熱得多，到了深處才轉成大家熟悉的「冷隱沒」。論文說這塊岩石一路以超過每年 60 公釐的垂直速度往下衝，因為跑得快，早期的紀錄才來不及被蓋掉。</li>
+    <li>為什麼淺處這麼熱？兩個不互斥的解釋：一是「摩擦生熱」，隱沒帶最上面幾十公里有大量冷岩石互相刮擦；二是這是一條年輕的隱沒帶，周圍地函還沒被冷地殼稀釋。沒參與研究的 Cailey Condit 提醒：這很有意思，但「很希望看到在更多樣本上重現」。</li>
+  </ol>
+
+  <h4>原文關鍵段</h4>
+  <blockquote class="en" lang="en">
+    <p>Using a combination of laboratory analyses and modeling, the researchers estimated that their rock recorded temperature and pressure conditions at two distinct locations along its subsurface journey—one at a depth of about 45 kilometers and one at a depth of about 90 kilometers. “We were lucky enough to find this garnet was preserving two different moments of its trajectory,” said Ferrero.</p>
+    <p>The team found that at relatively shallow depths, their sample had been heated much more rapidly than models of subduction would suggest. “The first gradient is much hotter than anything else that has been proposed,” said Ferrero.</p>
+  </blockquote>
+  <div class="zh">
+    <p>研究者結合實驗室分析與模擬，估計這塊岩石記錄了它地下旅程中兩個不同位置的溫度與壓力條件：一個在大約 45 公里深，另一個在大約 90 公里深。「我們很幸運，找到這顆石榴子石保存了它軌跡上的兩個不同時刻，」Ferrero 說。</p>
+    <p>團隊發現，在相對較淺的深度，他們的樣本被加熱的速度遠比隱沒帶模型所預測的快得多。「第一段梯度比先前提出過的任何東西都熱，」Ferrero 說。</p>
+  </div>
+
+  <h4>術語表</h4>
+  <dl class="terms">
+    <div><dt>subduction zone<small>隱沒帶</small></dt><dd>一個板塊鑽到另一個板塊底下的地方。課本的「聚合型板塊邊界」，台灣東部的琉球海溝、南邊的馬尼拉海溝都是。</dd></div>
+    <div><dt>eclogite<small>榴輝岩</small></dt><dd>紅綠相間的高壓變質岩，主要礦物是石榴子石（紅）和綠輝石（綠）。看到它，就知道這塊岩石曾經被埋到很深的地方。</dd></div>
+    <div><dt>garnet<small>石榴子石</small></dt><dd>一月的生日石，也是變質岩的「黑盒子」：它一層一層往外長，把每個時期的環境包進去。原文說這是 nested minerals，「礦物裡套著礦物」。</dd></div>
+    <div><dt>mineral inclusion<small>礦物包裹體</small></dt><dd>晶體長大時包進來的其他小礦物。這篇看的是石榴子石裡只有幾微米大的包裹體，要用拉曼光譜才認得出來。</dd></div>
+    <div><dt>coesite<small>柯石英</small></dt><dd>石英的高壓版本，化學式一樣是 SiO₂，但要在 2.7 到 3.0 GPa 以上（大約 90 公里深）才穩定。它是「超高壓變質」最明確的證據。</dd></div>
+    <div><dt>ultrahigh-pressure (UHP) metamorphism<small>超高壓變質作用</small></dt><dd>地殼岩石被帶到 90 公里以深、再回到地表的過程。論文的核心論點：UHP 不等於「全程都是冷隱沒」。</dd></div>
+    <div><dt>geothermal gradient<small>地溫梯度</small></dt><dd>往下每深一點溫度升高多少。課本用「°C/km」，這篇論文用「°C/GPa」（每單位壓力升幾度），因為岩石量到的是壓力，不是深度。</dd></div>
+    <div><dt>exhumation<small>剝露／抬升出露</small></dt><dd>深處的岩石被帶回地表。巴布亞紐幾內亞這裡的岩石「正在被主動剝露」，所以是全世界最年輕的 UHP 岩石之一。</dd></div>
+    <div><dt>shear heating<small>剪切生熱／摩擦生熱</small></dt><dd>岩石沿板塊界面滑動時摩擦產生的熱。原文的比喻：「有巨量的東西在互相刮擦」。</dd></div>
+    <div><dt>zircon U–Pb dating<small>鋯石鈾鉛定年</small></dt><dd>論文用石榴子石裡的微小鋯石定年，得到約 510 萬到 310 萬年前，超高壓階段約 440 萬年前。這些數字來自論文，不在 Eos 裡。</dd></div>
+  </dl>
+
+  <h4>為什麼重要</h4>
+  <p>課本畫的隱沒帶剖面裡，下沉的板塊是一條冷冷的藍色舌頭，溫度要很深才升上來。這篇說：至少在這條年輕的隱沒帶，淺層其實熱得多。這會改變兩件事。第一，地質學家過去常拿一塊岩石「到過的最深最高壓條件」來反推整條隱沒帶冷不冷，論文直說這可能會誤導。第二，隱沒帶淺層幾十公里正是大地震發生的深度，溫度決定岩石是脆的還是會流動的，所以這件事和地震學是連著的。另外值得學的是方法：一顆幾公釐的石榴子石，用微米級的包裹體分層讀，能讀出一段幾百萬年的旅程。</p>
+
+  <h4>還沒解決的問題</h4>
+  <ul class="open">
+    <li>淺層的高溫到底是摩擦生熱、還是年輕隱沒帶的暫態？論文承認「量化兩者的相對貢獻超出本研究範圍」。</li>
+    <li>這是「一塊岩石」的故事。Condit 說一塊樣本能保存這麼多資訊很罕見，但也因此需要更多樣本來確認這不是特例。</li>
+    <li>加了摩擦生熱的模型，形狀比較像觀測到的路徑，但算出來的溫度還是偏低。論文猜可能是會聚速率超過每年 100 公釐、摩擦係數比預期高、或下沉板塊很年輕，三者都還沒有證據定案。</li>
+    <li class="warn"><b>找碴點</b>：Eos 說岩石記錄的兩個深度是「約 45 公里」和「約 90 公里」，論文寫的是壓力 1.5 GPa 與大於 2.9 GPa，深度是換算出來的。1 GPa 大約等於多少公里？用「每公里增加約 30 MPa」去算一次，看看 45 和 90 對不對。</li>
+  </ul>
+
+  <div class="tw">
+    <h4>台灣連結：花蓮玉里帶，世界最年輕的高壓變質帶之一</h4>
+    <p>台灣也有自己的「深潛岩石」：花蓮到台東之間的玉里帶（Yuli belt）出露藍閃石片岩、含綠輝石的變質輝長岩等高壓變質岩，記錄的是約 1,500 萬到 500 萬年前南海板塊隱沒到菲律賓海板塊之下、再進入弧陸碰撞的過程。中研院團隊在 2024 年歐洲地球科學聯盟（EGU）年會的摘要直接稱它是「世界最年輕的高壓變質帶之一」，和本篇巴布亞紐幾內亞的岩石是同一個等級的「年輕」。</p>
+    <p>有趣的是，玉里帶的岩石到底多深、多熱，台灣學界自己也還在爭：東華大學團隊 2023 年用石榴子石成分估出 10–18 kbar、500–580 °C；另一組 2021 年發表在 <i>Journal of Metamorphic Geology</i> 的研究則估到約 22 kbar、545 °C，換算地溫梯度約 7 °C/km，是很冷的隱沒。而本篇論文正好在問：「用最高壓條件反推整條隱沒帶冷不冷」可靠嗎？玉里帶會不會也有一段「淺而熱」的歷史被蓋掉了？資料：<a href="https://doi.org/10.5194/egusphere-egu24-16362" target="_blank" rel="noopener">EGU 2024 摘要（中研院地球所等）</a>、<a href="https://doi.org/10.5194/egusphere-egu23-12855" target="_blank" rel="noopener">EGU 2023 摘要（東華大學）</a>、<a href="https://doi.org/10.1111/jmg.12577" target="_blank" rel="noopener">Huang 等人 2021（僅讀摘要）</a>、<a href="https://doi.org/10.1016/j.tecto.2015.09.012" target="_blank" rel="noopener">Keyser 等人 2016，<i>Tectonophysics</i>（僅確認書目）</a>。</p>
+  </div>
+
+  <div class="ask"><b>一個問題</b>這塊岩石從 45 公里下到 90 公里，壓力從 1.5 GPa 升到 2.9 GPa，溫度卻只從約 700 °C 升到約 800 °C；而前半段從地表到 45 公里就升了 700 °C。如果你只拿到「最深處 90 公里、800 °C」這一個點，你會把這條隱沒帶判成冷的還是熱的？這說明了什麼？</div>
+
+  <details class="check">
+    <summary>校對紀錄：導讀裡的每個數字出自原文哪裡</summary>
+    <table>
+      <tr><th>導讀說法</th><th>原文依據</th></tr>
+      <tr><td>巴布亞紐幾內亞、Goodenough 島、2000 年代初採集、榴輝岩、石榴子石與綠輝石</td><td>Eos "Down and Up Again" 一節 "The specimen, collected in the early 2000s from Goodenough Island in eastern Papua New Guinea, is what is known as an eclogite."</td></tr>
+      <tr><td>內核無柯石英、外圍有柯石英；「礦物裡套著礦物」</td><td>Eos "Minerals All the Way Down" 一節；論文 "Inclusions of… monomineralic coesite… are restricted to mantle"。</td></tr>
+      <tr><td>約 45 公里與約 90 公里；「保存了兩個時刻」</td><td>Eos 同節（即關鍵段）。</td></tr>
+      <tr><td>垂直速度超過每年 60 公釐；跑得快所以沒被蓋掉</td><td>Eos "it traversed more than 60 millimeters per year in the vertical direction… There's not time for [prior conditions] to be overprinted."；論文摘要 "ultrafast subduction rates of greater than 60 mm yr⁻¹ (vertical component)"。</td></tr>
+      <tr><td>淺層比模型熱得多；「比先前提出的任何東西都熱」</td><td>Eos "Why So Hot?" 一節（即關鍵段）。</td></tr>
+      <tr><td>摩擦生熱、年輕隱沒帶稀釋兩種解釋</td><td>Eos "Why So Hot?" 末兩段；論文摘要 "explained by shear heating and/or by formation during the non-steady-state phase of a young subduction zone"。</td></tr>
+      <tr><td>Condit（華盛頓大學）：罕見、希望更多樣本重現</td><td>Eos 倒數第 1、4 段。</td></tr>
+      <tr><td>1.5 GPa／2.9 GPa、700 °C／800 °C、470 °C/GPa 轉冷、峰值約 280 °C/GPa、模型 &lt;300 °C/GPa</td><td>論文 "Pressure–temperature conditions" 一節 "1.5 ± 0.2 GPa and 700 ± 20 °C"、"&gt; 2.9 GPa and 800 ± 25 °C"；"In summary" 段 "~470 °C GPa⁻¹ to ~1.5 GPa… (~280 °C GPa⁻¹)"；Main 第 1 段 "T/P gradients &lt;300 °C GPa⁻¹"。</td></tr>
+      <tr><td>柯石英 2.7–3.0 GPa</td><td>論文 "quartz-to-coesite transition located at 2.7–3.0 GPa"。</td></tr>
+      <tr><td>鋯石 510 萬–310 萬年、UHP 約 440 萬年、最年輕柯石英榴輝岩之一</td><td>論文 "U–Pb dating" 一節 "5.1 ± 0.2 million years (Ma) to 3.1 ± 0.1 Ma"、"about 4.4 Ma for the UHP stage… among Earth's youngest coesite eclogites"。</td></tr>
+      <tr><td>會聚速率 &gt;100 mm/yr、摩擦係數、板塊年齡三個猜測；「量化相對貢獻超出範圍」</td><td>論文 "Geothermal gradient change" 一節 "convergence rates exceeded 100 mm yr⁻¹… ~110 mm yr⁻¹… effective coefficient of friction was unexpectedly high… age of the downgoing plate"；"In summary" 段。</td></tr>
+      <tr><td>大地震發生在淺層幾十公里、溫度決定脆性或流動</td><td><span class="warn">Eos 第 1 段只說隱沒帶會產生大地震與海嘯；「深度與溫度決定脆性」是導讀補充的課本知識，不在原文裡。</span></td></tr>
+      <tr><td>1 GPa ≈ 30 km 的換算</td><td><span class="warn">導讀依論文 1.5 GPa ≈ 45 km、2.9 GPa ≈ 90 km 反推的近似值，論文本身沒有寫出換算式。</span></td></tr>
+      <tr><td>台灣：玉里帶 1,500–500 萬年、南海板塊隱沒；約 22 kbar／545 °C、約 7 °C/km</td><td>Huang 等人 2021 摘要（Crossref 收錄）。<span class="warn">只讀了摘要；該文標題寫 "Evidence related to warm subduction"，摘要結論卻是「比先前研究冷得多」，請讀者自行到原文確認作者的立場。</span></td></tr>
+      <tr><td>台灣：10–18 kbar、500–580 °C；「世界最年輕的高壓變質帶之一」</td><td>EGU 2023 摘要（Lo、Tsai、Dewangga，東華大學）；EGU 2024 摘要（Pang 等人，中研院）。</td></tr>
+    </table>
+  </details>
+</article>
+
+<!-- ======================= A2 ======================= -->
+<article id="a2" class="geo">
+  <div class="kicker"><span class="tag geo">地科 · 大氣與氣候</span><span class="tag base">基礎</span><span>原文約 700 字 · 5 分鐘</span></div>
+  <h2>西太平洋的忙碌颱風季：掠過台灣的薔琵跑去阿拉斯加，「甜甜圈」煙花現身關島</h2>
+  <h3 class="en">The Pacific’s Busy Storm Season</h3>
+  <div class="src">
+    NASA Earth Observatory（Image of the Day）· 2026-11-03 · 文 Adam Voiland，圖 Michala Garrison<br>
+    <a class="go" href="https://science.nasa.gov/earth/earth-observatory/the-pacifics-busy-storm-season/" target="_blank" rel="noopener">讀原文 →</a>
+  </div>
+
+  <figure>
+    <img src="img/infa_epic.jpg" alt="從 150 萬公里外拍的整顆地球：澳洲在下方，太平洋中央偏右有一個小而緊實的颱風，右上方白令海一帶有一連串大型逗點狀雲系" width="1200" height="1200">
+    <figcaption>2026 年 10 月 29 日，DSCOVR 衛星上的 EPIC 相機從約 150 萬公里外拍下整顆地球：畫面中央偏右、關島附近那個又小又圓的是超級颱風煙花（In-fa）；右上方白令海一帶的大型逗點狀雲系，就是薔琵（Champi）殘骸併入的溫帶氣旋列隊。圖：NASA Earth Observatory／Michala Garrison，資料 DSCOVR EPIC（NASA 影像，公有領域）。</figcaption>
+  </figure>
+
+  <h4>三句話</h4>
+  <ol class="sum">
+    <li>西北太平洋今年從 4 月的超級颱風辛樂克（Sinlaku）開始就一直很忙，到 10 月底已經有 25 個命名風暴。10 月 29 日 DSCOVR 衛星從 150 萬公里外拍到的整顆地球上，同時看得到關島附近的超級颱風煙花，和正在逼近阿拉斯加的薔琵殘骸。煙花是今年第五個影響馬里亞納群島的颱風。</li>
+    <li>煙花很特別：形狀幾乎正圓、眼很大、外圍幾乎沒有螺旋雨帶，是氣象學家稱為「環狀颱風」的少數族群，綽號「甜甜圈」或「卡車輪胎」。這類颱風在西北太平洋只占約 4%，眼的平均直徑約 45 公里（一般颱風約 25 公里），而且在不利環境下也能撐得比較久。</li>
+    <li>薔琵則走完了另一種人生：巔峰時最大持續風速接近每小時 300 公里，擦過台灣與關島後，殘骸北上「溫帶氣旋化」，併入白令海的風暴列隊打到阿拉斯加。它是今年第四個進入阿拉斯加海域的「前颱風」，而 1997 和 2015 這兩個超強聖嬰年的秋天各只有三個。NASA 的氣象學家說今年是「特別活躍的一年」，正在發展的強聖嬰是「可能的推手」。</li>
+  </ol>
+
+  <h4>原文關鍵段</h4>
+  <blockquote class="en" lang="en">
+    <p>Annular storms are rare, accounting for just 4 percent of tropical cyclones in the western North Pacific, according to one analysis. Their eyes average about 45 kilometers (30 miles) in diameter, compared to about 25 kilometers for standard tropical cyclones, and the storms typically maintain their strength longer in unfavorable conditions.</p>
+    <p>Tropical cyclones are warm-core storms fueled by the heat and moisture of warm ocean water, but extratropical cyclones typically have cold cores and draw energy from temperature contrasts between warm and cold air masses.</p>
+  </blockquote>
+  <div class="zh">
+    <p>環狀風暴很罕見，根據一項分析，只占西北太平洋熱帶氣旋的 4%。它們的眼平均直徑約 45 公里（30 英里），一般熱帶氣旋約 25 公里；而且這類風暴在不利的環境下，通常能把強度維持得更久。</p>
+    <p>熱帶氣旋是暖心風暴，靠溫暖海水的熱與水氣供給能量；溫帶氣旋通常是冷心的，能量來自暖氣團與冷氣團之間的溫度對比。</p>
+  </div>
+
+  <figure>
+    <img src="img/infa_tmo.jpg" alt="Terra 衛星 MODIS 近距離影像：一個近乎正圓的颱風，眼又大又清楚，外圍幾乎沒有螺旋雨帶" width="1200" height="800">
+    <figcaption>10 月 30 日 Terra 衛星 MODIS 拍下剛通過馬里亞納群島西側的超級颱風煙花。注意它幾乎正圓、眼很大、外圍沒有一般颱風那種長長的螺旋雨帶，這就是「環狀颱風」的長相。圖：NASA Earth Observatory／Michala Garrison，資料 MODIS（NASA EOSDIS LANCE、GIBS/Worldview），公有領域。</figcaption>
+  </figure>
+
+  <h4>術語表</h4>
+  <dl class="terms">
+    <div><dt>annular tropical cyclone<small>環狀熱帶氣旋</small></dt><dd>正圓、大眼、幾乎沒有外圍雨帶的颱風。台灣課本與氣象署的分類裡沒有這個詞，它是依「長相」分的一個子類，不是強度等級。</dd></div>
+    <div><dt>rainband<small>雨帶</small></dt><dd>繞著颱風中心的螺旋狀對流雲帶。氣象署講「外圍環流影響，北部有雨」時，很多時候就是雨帶掃過來。環狀颱風正好缺這個。</dd></div>
+    <div><dt>extratropical transition<small>溫帶氣旋化／變性</small></dt><dd>颱風北上離開暖海，從「暖心」變成靠冷暖氣團對比維生的「冷心」溫帶氣旋。氣象署的用語是「轉化為溫帶氣旋」。</dd></div>
+    <div><dt>warm core / cold core<small>暖心／冷心</small></dt><dd>颱風中心比四周暖，溫帶氣旋中心比四周冷。這一個字決定了風暴的能量來源完全不同。</dd></div>
+    <div><dt>front<small>鋒面</small></dt><dd>冷暖氣團的交界。颱風沒有鋒面，溫帶氣旋有，所以雲會拉成逗點形。</dd></div>
+    <div><dt>wind field<small>風場</small></dt><dd>原文說變性最明顯的特徵不是風變強，而是「風場擴大」：同樣的風吹到更大的範圍。</dd></div>
+    <div><dt>maximum sustained winds<small>最大持續風速</small></dt><dd>原文說薔琵「接近每小時 300 公里」，氣象署 10 月 20 日說它是每秒 55 公尺（約 198 公里）。見找碴點。</dd></div>
+    <div><dt>EPIC / DSCOVR<small>深太空氣候觀測衛星</small></dt><dd>停在日地之間第一拉格朗日點（L1）、離地球約 150 萬公里的衛星，永遠看著地球的白天面，所以能一張拍下整顆地球。</dd></div>
+    <div><dt>El Niño<small>聖嬰</small></dt><dd>第 1、2 期講過。這篇的重點是：聖嬰年西北太平洋的颱風比較容易北轉而不是一路西行，所以關島、日本、韓國被打的機會變多，阿拉斯加收到的「前颱風」也變多。</dd></div>
+  </dl>
+
+  <h4>為什麼重要</h4>
+  <p>同一個 10 月底，兩個颱風給了我們兩堂課。煙花告訴你颱風不是只有「強弱」一個維度，它的結構（有沒有雨帶、眼多大）會影響它多耐打；薔琵則示範了課本上「颱風北上後轉化為溫帶氣旋」那一行字的完整版：從擦過台灣，到在白令海併入另一個低壓，再把雨雪送進阿拉斯加。而且這兩件事都放在今年超強聖嬰的背景下：第 2 期提過氣象署的統計，超強聖嬰年強颱特別多；這篇從阿拉斯加那一端看到同一個訊號。</p>
+
+  <h4>還沒解決的問題</h4>
+  <ul class="open">
+    <li>為什麼有些颱風會長成環狀？原文只描述特徵，沒有解釋成因。參考文獻裡 Knaff 等人 2003 年的論文是這個分類的起點，可以去查。</li>
+    <li>聖嬰是「可能的推手」，但 Thoman 提到的 1997 與 2015 秋天各只有三個前颱風到阿拉斯加，今年到 10 月底已經四個。一年的差異能說是聖嬰造成的嗎？樣本太小，文章也沒有這樣說。</li>
+    <li>阿拉斯加的災情（強風、大雨與降雪）是文章引新聞報導；對台灣、關島、中國與日本的影響也只有一句話。</li>
+    <li class="warn"><b>找碴點</b>：NASA 寫薔琵最大持續風速「接近每小時 300 公里（185 英里）」，但氣象署 10 月 20 日的動態分析寫「中心附近最大風速每秒 55 公尺」，換算只有每小時 198 公里。這不是誰抄錯：美國系統（JTWC）用 1 分鐘平均風速，氣象署與日本用 10 分鐘平均，1 分鐘平均通常高 10–15% 左右，而且兩邊估計的時間點也可能不同。先去查「1 分鐘與 10 分鐘平均風速」怎麼換算，再判斷這兩個數字到底差多少。</li>
+  </ul>
+
+  <div class="tw">
+    <h4>台灣連結：薔琵在台灣留下的紀錄</h4>
+    <p>薔琵（Champi，氣象署編號 115 年第 29 號）10 月 15 日在台灣東方約 4,000 公里海面生成，20 日增強為強烈颱風，氣象署說它與辛樂克、白海豚、巴威並列今年最強颱風，「主因是今年為超強聖嬰年，高海溫有利於颱風發展」。它的中心 23 日只掠過宜蘭南方澳、沒有登陸，但因為七級風暴風半徑擴大到 320 公里，全台約 87 個鄉鎮測到 10 級以上陣風；蘭嶼浪高 10.6 公尺、彭佳嶼 9.4 公尺，都打破該站建站以來的紀錄；累積雨量宜蘭太平山 652 毫米最多。有意思的是，颱風在東側海面北上時，花蓮、台東反而位在背風側，台東成功出現 39.3 °C 的焚風高溫。氣象署 24 日下午 2 時 30 分解除陸警、晚間 8 時 30 分解除海警。</p>
+    <p>資料：<a href="https://www.cwa.gov.tw/Data/service/news/Upload/CH/NewsHot_20261020134553.pdf" target="_blank" rel="noopener">中央氣象署 115/10/20 颱風動態分析（PDF）</a>、<a href="https://cna.com.tw/news/ahel/202610240199.aspx" target="_blank" rel="noopener">中央社 2026-10-24</a>。</p>
+  </div>
+
+  <div class="ask"><b>一個問題</b>薔琵沒有登陸，中心離台灣最近時也只是掠過南方澳，為什麼全台還有 87 個鄉鎮吹到 10 級以上的風、宜蘭山區下了 650 毫米的雨？「登陸」這個詞，對判斷一個颱風的影響到底有多大用處？</div>
+
+  <details class="check">
+    <summary>校對紀錄：導讀裡的每個數字出自原文哪裡</summary>
+    <table>
+      <tr><th>導讀說法</th><th>原文依據</th></tr>
+      <tr><td>4 月辛樂克以來活躍、25 個命名風暴、10 月底仍忙</td><td>第 1 段 "elevated since April 2026, when Sinlaku surged to super typhoon strength… Twenty-five named storms later, the basin still hummed with activity in late October."</td></tr>
+      <tr><td>10/29 EPIC 影像、煙花在馬里亞納附近、薔琵殘骸逼近阿拉斯加、第五個影響馬里亞納的颱風</td><td>第 2 段。</td></tr>
+      <tr><td>10/30 MODIS 影像、正圓、大眼、環狀、「甜甜圈」「卡車輪胎」</td><td>第 3 段。</td></tr>
+      <tr><td>4%、眼 45 公里 vs 25 公里、撐得久</td><td>第 4 段（即關鍵段），文末參考 Knaff et al. (2003, 2008)。</td></tr>
+      <tr><td>暖心／冷心、鋒面、逗點雲、風場擴大、Partyka 引言</td><td>第 5–7 段。</td></tr>
+      <tr><td>薔琵接近 300 km/h（185 mph）、「本季最強之一」、擦過台灣與關島</td><td>第 8–9 段。<span class="warn">與氣象署 55 m/s 的差異見找碴點。</span></td></tr>
+      <tr><td>阿拉斯加災情為新聞報導</td><td>第 9 段 "according to news reports"。</td></tr>
+      <tr><td>今年第四個前颱風（Bang-Lang、Dujuan、Choi-wan）、1997 與 2015 各三個、1970 年以來約 60 個</td><td>第 10 段 Rick Thoman（阿拉斯加大學費爾班克斯分校）。</td></tr>
+      <tr><td>「特別活躍的一年」、強聖嬰是「可能的推手」</td><td>第 11 段 Partyka。</td></tr>
+      <tr><td>聖嬰年颱風較易北轉，影響關島、日本、韓國</td><td>第 12 段 "some experts say"。</td></tr>
+      <tr><td>DSCOVR 在 L1、約 150 萬公里</td><td><span class="warn">不在原文裡，是導讀補充的衛星背景知識。</span></td></tr>
+      <tr><td>1 分鐘與 10 分鐘平均風速差約 10–15%</td><td><span class="warn">導讀補充的通行換算，不在任何一方原文裡，請自行查證。</span></td></tr>
+      <tr><td>台灣：第 29 號、55 m/s、七級風暴風半徑 250 公里（10/20 時）</td><td>氣象署 115/10/20 颱風動態分析 PDF 第 1 頁。</td></tr>
+      <tr><td>台灣：10/15 生成、20 日轉強颱、並列今年最強、超強聖嬰年高海溫、掠過南方澳未登陸、暴風半徑 320 公里、87 鄉鎮、蘭嶼 10.6 公尺、彭佳嶼 9.4 公尺、太平山 652 毫米、成功 39.3 °C、14:30 解除陸警、20:30 解除海警</td><td>中央社 2026-10-24 引氣象署預報科長林秉煜；解除陸警時間見同日其他報導。</td></tr>
+    </table>
+  </details>
+</article>
+
+<!-- ======================= A3 ======================= -->
+<article id="a3" class="astro">
+  <div class="kicker"><span class="tag astro">天文 · 太空任務與行星科學</span><span class="tag base">基礎</span><span>原文約 1,200 字 · 8 分鐘（Eos 另計約 1,100 字）</span></div>
+  <h2>今天傍晚，兩艘探測器借地球「甩」向火星：沒有人做過的動力飛掠</h2>
+  <h3 class="en">NASA’s Twin ESCAPADE Spacecraft to Slingshot Past Earth on Way to Mars</h3>
+  <div class="src">
+    NASA ESCAPADE 部落格 · 2026-11-02 · 作者 Vanessa Thomas（戈達德太空飛行中心）· 另參考 Eos 新聞 2026-10-27（Damond Benningfield）<br>
+    <a class="go" href="https://science.nasa.gov/blogs/escapade/2026/11/02/nasas-twin-escapade-spacecraft-to-slingshot-past-earth-on-way-to-mars/" target="_blank" rel="noopener">讀原文 →</a>
+    <a class="go" href="https://eos.org/articles/twin-spacecraft-ready-to-head-for-a-martian-escapade" target="_blank" rel="noopener">讀 Eos →</a>
+    <a class="go" href="https://science.nasa.gov/image-article/centers-and-facilities/goddard/nasas-escapade-snaps-family-portrait-of-earth-moon/" target="_blank" rel="noopener">地月合照 →</a>
+  </div>
+
+  <figure>
+    <img src="img/escapade_family.jpg" alt="熱紅外影像：黑底上左邊一顆橘黃色發亮的圓球是地球，右邊一個白色圓圈裡只有一小彎紫色亮邊，是月球" width="800" height="800">
+    <figcaption>2026 年 7 月 3 日，其中一艘 ESCAPADE 在離地球約 58 萬公里處拍下的地球（左）與月球（右）熱紅外影像。地球背光的那一面靠自己的熱發光（約 250–280 K）；月球背面沒有大氣和海洋保溫，只有約 100 K，暗到幾乎看不見，白圈標的是它實際的大小。圖：NASA/UCB-SSL/NAU-Radiant/Lucint（NASA 任務影像）。</figcaption>
+  </figure>
+
+  <h4>三句話</h4>
+  <ol class="sum">
+    <li>ESCAPADE 是 NASA 一對一模一樣的小探測器，叫 Blue 和 Gold，2025 年 11 月 13 日搭 Blue Origin 的 New Glenn 火箭升空。問題是發射時地球和火星在太陽兩側，根本不是去火星的時機（每 26 個月才對齊一次），所以它們先繞著日地第二拉格朗日點（L2，離地球約 150 萬公里）畫了一年的腰果形軌道，等行星對齊再回來。</li>
+    <li>回來就是今天：台灣時間 11 月 7 日傍晚 6 點左右（美東 5 a.m.），Blue 會以離地面約 970 到 1,770 公里的高度掠過地球，同時點火約 9 分鐘，把地球重力的加速和引擎推力加在一起，直接甩向火星；Gold 兩天後照做。NASA 說這種「動力飛掠」（Oberth 機動）從來沒有任何去火星的探測器成功做過。點火時它們正飛在澳洲南部上空，南澳洲用望遠鏡有機會看到。</li>
+    <li>這一年沒有白等：兩艘船順路穿過了地球磁尾深處約 200 萬公里的地方，是從來沒有探測器直接去過的區域，首席科學家 Lillis 說那會是「發現等級的科學」。到了火星（預計 2027 年 9 月 7 日與 9 日），它們要做的是第一次用兩艘船同時量太陽風怎麼一點一點剝掉火星的大氣，回答「火星的水跑去哪裡了」。</li>
+  </ol>
+
+  <h4>原文關鍵段</h4>
+  <blockquote class="en" lang="en">
+    <p>Some spacecraft have used Earth flybys to direct themselves to other destinations in the solar system, but no Mars-bound spacecraft has successfully executed a powered flyby, also known as an Oberth maneuver. Previous missions that reached Mars launched from Earth at a time when the two planets were aligned in space — which only happens every 26 months — to shorten the trip and use the least amount of fuel. However, ESCAPADE launched in November 2025, when Earth and Mars were on opposite sides of the Sun.</p>
+    <p>At their closest approach to Earth, the spacecraft, which are each about the size of a standard refrigerator, will be between 600 and 1,100 miles above the planet’s surface, which is higher than most Earth-orbiting satellites.</p>
+  </blockquote>
+  <div class="zh">
+    <p>有些探測器用過飛掠地球的方式把自己導向太陽系的其他目的地，但從來沒有一艘前往火星的探測器成功執行過「動力飛掠」，也就是所謂的 Oberth 機動。過去抵達火星的任務，都是趁兩顆行星在太空中對齊的時候從地球發射（每 26 個月才發生一次），以縮短旅程並用最少的燃料。然而 ESCAPADE 是在 2025 年 11 月發射的，當時地球和火星在太陽的兩側。</p>
+    <p>在離地球最近的時候，這兩艘各約一台標準冰箱大小的探測器，會在地表上方 600 到 1,100 英里之間，比大多數繞地衛星都高。</p>
+  </div>
+
+  <h4>術語表</h4>
+  <dl class="terms">
+    <div><dt>gravity assist / flyby<small>重力助推／飛掠</small></dt><dd>借行星的重力改變探測器的速度和方向，不花燃料。課本講過的「彈弓效應」。</dd></div>
+    <div><dt>powered flyby, Oberth maneuver<small>動力飛掠／歐伯特機動</small></dt><dd>在飛掠最低點、速度最快時點火。同樣的燃料，在速度最快的地方燒，得到的能量增加最多。這就是今天要做、沒人對火星做過的事。</dd></div>
+    <div><dt>trans-Mars injection (TMI) burn<small>火星轉移軌道點火</small></dt><dd>把探測器從繞地球／繞太陽的軌道送上往火星的軌道的那一次點火。這次約 9 分鐘，速度從每秒約 10.1 公里加到約 10.8 公里。</dd></div>
+    <div><dt>launch window<small>發射窗口</small></dt><dd>地球與火星相對位置適合出發的時段，每 26 個月一次。ESCAPADE 錯過了，就自己想辦法「等」下一次。</dd></div>
+    <div><dt>Lagrange point L2<small>第二拉格朗日點</small></dt><dd>日地連線上、地球外側約 150 萬公里處，太陽與地球重力平衡的位置。韋伯望遠鏡也停在那附近。</dd></div>
+    <div><dt>loiter orbit<small>「閒晃」軌道</small></dt><dd>原文的用詞。繞 L2 一年的腰果形軌道，目的只是等時間到，順便做科學。</dd></div>
+    <div><dt>magnetotail<small>磁尾</small></dt><dd>地球磁層被太陽風吹成淚滴形，背對太陽那一側拉長幾百萬公里的尾巴。ESCAPADE 鑽進去約 200 萬公里，比以前任何任務都深。</dd></div>
+    <div><dt>solar wind<small>太陽風</small></dt><dd>太陽持續吹出的帶電粒子流，時速約百萬英里。火星沒有全球磁場，太陽風直接刮它的高層大氣。</dd></div>
+    <div><dt>atmospheric escape<small>大氣逃逸</small></dt><dd>火星早期溫暖潮濕，後來大氣和水大多流失；主流看法是內部發電機停了、磁場消失，太陽風慢慢把大氣剝走。ESCAPADE 要量的就是「現在」的剝離速率。</dd></div>
+    <div><dt>string of pearls<small>珍珠串隊形</small></dt><dd>到火星後兩艘船先走同一條橢圓軌道、一前一後相差幾分鐘，等於同一個地方量兩次，看它變多快。</dd></div>
+  </dl>
+
+  <h4>為什麼重要</h4>
+  <p>第一層是軌道力學的現場教學：「錯過發射窗口」在以前等於等兩年或取消任務，這次他們用一條新路線把等待變成了繞 L2 的一年，還順便撿到磁尾的科學。第二層是方法：火星為什麼失去大氣，以前一艘船只能每幾小時看一次磁場的變化，現在兩艘船一艘在前面看太陽送來什麼、一艘在後面看火星怎麼反應，Curry 說這是「第一次能即時看到這個反應」。第三層是給自己的提醒：這篇導讀寫在飛掠「之前」，你讀到的時候結果可能已經出來了。</p>
+
+  <h4>還沒解決的問題</h4>
+  <ul class="open">
+    <li>今天的點火成功了嗎？NASA 說點火後「幾天內」才會知道瞄得準不準，之後還要靠多次軌道修正。去查 NASA ESCAPADE 部落格的下一篇。</li>
+    <li>磁尾深處到底看到了什麼？兩篇原文都只說「有趣的活動與結構」「正在分析」，還沒有發表。</li>
+    <li>火星大氣的流失量，「現在量到的」能不能回推 30 幾億年前？Curry 說當時太陽更活躍、風暴更多，這個外推本身就是假設。</li>
+    <li class="warn"><b>找碴點</b>：Eos 寫 Blue 的點火是「9.5 分鐘」，NASA 部落格寫「約 9 分鐘」；Eos 說 L2「大約 150 萬公里」，NASA 只說是日地 L2。小差異，但可以練習：哪一個是四捨五入、哪一個是不同來源的數字？</li>
+  </ul>
+
+  <div class="ask"><b>一個問題</b>為什麼在離地球最近、速度最快的那一刻點火最划算，而不是在遠處慢慢加速？提示：動能是 ½mv²，同樣增加 Δv，v 越大時動能增加越多。用數字算一次：從 10.1 加到 10.8 公里／秒，和從 1.0 加到 1.7 公里／秒，動能各增加多少？</div>
+
+  <details class="check">
+    <summary>校對紀錄：導讀裡的每個數字出自原文哪裡</summary>
+    <table>
+      <tr><th>導讀說法</th><th>原文依據</th></tr>
+      <tr><td>兩次動力飛掠、Nov 7 約 5 a.m. EST 與 Nov 9 約 6 a.m. EST、約 9 分鐘點火</td><td>NASA 第 1–2 段 "around 5 a.m. EST on Saturday, Nov. 7… around 6 a.m. EST on Monday, Nov. 9… firing its engine for about 9 minutes"。</td></tr>
+      <tr><td>台灣時間傍晚 6 點左右</td><td>導讀換算：EST = UTC−5，5 a.m. EST = 10:00 UTC = 18:00 台灣。</td></tr>
+      <tr><td>速度 6.3 → 6.7 英里／秒、增加超過 1,000 mph、Mach 30 → 31</td><td>NASA 第 4 段；導讀換算為約 10.1 → 10.8 公里／秒。</td></tr>
+      <tr><td>2027-09-07 與 09-09 抵達、10 個月巡航、第一個繞火星編隊任務、太陽風時速百萬英里</td><td>NASA 第 5–6 段。</td></tr>
+      <tr><td>沒有火星任務成功做過動力飛掠、26 個月、2025 年 11 月發射時地火在太陽兩側、繞 L2 腰果形軌道</td><td>NASA 第 7 段（即關鍵段）。</td></tr>
+      <tr><td>磁尾「有趣的活動與結構」、尚未發表</td><td>NASA 第 9 段 "observed some interesting activity and structure in the magnetotail and are planning to share those findings soon"。</td></tr>
+      <tr><td>冰箱大小、600–1,100 英里高、澳洲南部上空點火、南澳可見</td><td>NASA 第 10–11 段；導讀換算 600–1,100 英里 ≈ 970–1,770 公里。</td></tr>
+      <tr><td>幾天後才知道瞄準結果、多次軌道修正</td><td>NASA 倒數第 2 段。</td></tr>
+      <tr><td>Blue 與 Gold、2025-11-13 發射、L2 約 150 萬公里、Blue 點火 9.5 分鐘、磁尾約 200 萬公里、Lillis「發現等級」、珍珠串隊形相差 2–30 分鐘、Curry「第一次即時看到」、30–35 億年前太陽風暴</td><td>Eos 2026-10-27 全文。<span class="warn">9.5 分鐘與 NASA 的「約 9 分鐘」不一致，見找碴點。</span></td></tr>
+      <tr><td>地月合照：7 月 3 日、58 萬 4,600 公里、250–280 K、月球背面約 100 K</td><td>NASA 影像文章 2026-07-24（7 月 30 日更正圖說）。</td></tr>
+      <tr><td>韋伯望遠鏡也在 L2 附近</td><td><span class="warn">不在原文裡，導讀補充。</span></td></tr>
+    </table>
+  </details>
+</article>
+
+<!-- ======================= A4 ======================= -->
+<article id="a4" class="astro">
+  <div class="kicker"><span class="tag astro">天文 · 星際介質與恆星形成</span><span class="tag adv">進階</span><span>原文約 2,300 字 · 15 分鐘（論文另計）</span></div>
+  <h2>「空的」太空一直在翻攪：第一張星際介質 3D 溫度地圖，41% 卡在不該存在的狀態</h2>
+  <h3 class="en">A New Map of ‘Empty’ Space Challenges a Tranquil Picture of the Galaxy</h3>
+  <div class="src">
+    Quanta Magazine · 2026-10-30 · 作者 Perri Thaler · 論文：Shelest 等人，<a href="https://arxiv.org/abs/2607.15352" target="_blank" rel="noopener">arXiv:2607.15352</a>（2026-07-16 上傳，<i>Nature Astronomy</i> 審稿中）<br>
+    <a class="go" href="https://www.quantamagazine.org/a-new-map-of-empty-space-challenges-a-tranquil-picture-of-the-galaxy-20261030/" target="_blank" rel="noopener">讀原文 →</a>
+    <a class="go" href="https://arxiv.org/abs/2607.15352" target="_blank" rel="noopener">讀論文（免費）→</a>
+  </div>
+
+  <figure>
+    <img src="img/mystic.jpg" alt="哈伯望遠鏡影像：藍紫色的氣體背景前，一根褐色的塵埃柱像山峰一樣聳立，頂端有噴流射出" width="1200" height="1105">
+    <figcaption>船底座星雲裡的塵埃柱「神秘山」（HH 901／902），哈伯太空望遠鏡 2010 年為 20 週年發布，高約 3 光年。Quanta 原文的題圖是同一個星雲的另一根柱子。冷而密的塵埃柱、周圍被恆星紫外光加熱的氣體，就是這篇要在 3D 裡分出「冷、暖、不穩定」三種狀態的東西。圖：NASA, ESA, M. Livio and the Hubble 20th Anniversary Team (STScI)，取自 ESA/Hubble 圖庫（CC BY 4.0）。</figcaption>
+  </figure>
+
+  <h4>三句話</h4>
+  <ol class="sum">
+    <li>恆星之間不是真空，是一層極稀薄的氫霧（新視野號在冥王星軌道外量到每公升約 130 個氫原子），叫星際介質（ISM）。1969 年起的教科書理論說它只有兩種穩定狀態：冷而密的雲（約 100 K）和暖而稀的雲（約 8,000 K），中間的溫度不穩定，氣體會「幾乎瞬間」掉進其中一邊，所以中間狀態應該幾乎不存在。</li>
+    <li>以色列理工學院的大學生 Jonathan Shelest 和教授 Shmuel Bialy，把 Gaia 衛星衍生的 3D 塵埃密度圖，和史丹佛 Troy Porter 還沒發表的 3D 紫外輻射圖疊在一起（共 200 GB），在太陽周圍直徑 1 kpc（約 3,260 光年）、每 2 pc 一格的立體網格上，逐點算出氣體該是冷還是暖。結果：27% 冷、32% 暖，剩下 41% 落在理論上「禁止」的不穩定區，而且不是雜訊，而是一層一層包住冷雲的連貫「毯子」。Shelest 的第一反應是「我以為我算錯了」。</li>
+    <li>如果是真的，表示有東西一直在攪動星際介質，逼它不停換狀態；這可能解釋一個老問題：為什麼星系把氣體變成恆星的效率這麼低。但 1977 年三相模型的作者 McKee 和史丹佛的 Philipp Frank 都提醒：解析度不夠、或用「系集平均」把冷暖交界抹平，都會高估不穩定的比例。作者回應：換一張解析度較低的塵埃圖重算，比例只變了約 5%。論文還在審。</li>
+  </ol>
+
+  <h4>原文關鍵段</h4>
+  <blockquote class="en" lang="en">
+    <p>Shelest then set out to see what the map could tell him. The biggest surprise came when he investigated the ISM’s overall temperature: Shelest found that 27% of the ISM in our galactic neighborhood was cold, 32% was warm, and the remaining 41% sat squarely in the forbidden zone as unstable medium. “I thought I was wrong,” Shelest said. “How do you go to your science adviser and tell him that you get so much unstable media?”</p>
+    <p>But the map didn’t appear to be broken. Shelest saw no evidence of artifacts or random statistical noise in the 3D grid. Instead, the unstable ISM formed massive, coherent blankets that wrapped around the cold clouds completely.</p>
+  </blockquote>
+  <div class="zh">
+    <p>接著 Shelest 開始看這張圖能告訴他什麼。最大的驚訝出現在他研究星際介質整體溫度的時候：Shelest 發現，我們銀河系鄰近區域的星際介質有 27% 是冷的、32% 是暖的，剩下的 41% 正好落在「禁區」裡，是不穩定介質。「我以為我算錯了，」Shelest 說。「你要怎麼走去跟指導教授說，你算出這麼多不穩定介質？」</p>
+    <p>但這張圖看起來並沒有壞掉。Shelest 在 3D 網格裡找不到任何人工假象或隨機統計雜訊的證據。相反地，不穩定的星際介質形成巨大而連貫的「毯子」，把冷雲完完全全包住。</p>
+  </div>
+
+  <h4>術語表</h4>
+  <dl class="terms">
+    <div><dt>interstellar medium, ISM<small>星際介質</small></dt><dd>恆星之間的氣體與塵埃，大多是氫，來自大霹靂的剩料加上恆星生與死時吐出來的東西。</dd></div>
+    <div><dt>two-phase model<small>兩相模型</small></dt><dd>Field、Goldsmith、Habing 1969 年提出：中性氣體只在「冷」與「暖」兩個溫度穩定，中間不穩定。課本（如果有講）講的就是這個。</dd></div>
+    <div><dt>cold neutral medium / warm neutral medium<small>冷中性介質／暖中性介質</small></dt><dd>約 100 K 的密雲，與約 8,000 K、被鄰近恆星紫外光維持溫度的稀薄雲。</dd></div>
+    <div><dt>thermally unstable medium<small>熱不穩定介質</small></dt><dd>介於兩者之間的狀態。理論說它像立在山脊上的球，一碰就滾向一邊，所以不該占 41%。</dd></div>
+    <div><dt>three-phase model<small>三相模型</small></dt><dd>McKee 與 Ostriker 1977 年加上超新星震波加熱的第三相：約 50 萬 K 的電漿。這次挑戰的不是第三相，是前兩相之間「沒有中間狀態」這個假設。</dd></div>
+    <div><dt>21 cm line<small>21 公分譜線</small></dt><dd>中性氫原子裡電子與質子自旋翻轉時發出的微弱無線電波。七十多年來量 ISM 的主要工具，但沿一條視線量到的是所有雲疊在一起的總和。</dd></div>
+    <div><dt>parallax<small>視差</small></dt><dd>Gaia 量恆星距離的方法：地球繞太陽一圈，近的星看起來會相對於遠處背景移動。原文的比喻是閉左眼、閉右眼看自己的大拇指。</dd></div>
+    <div><dt>dust extinction map<small>塵埃消光圖</small></dt><dd>利用星光穿過塵埃會變暗變紅，加上 Gaia 的距離，反推 3D 的塵埃分布。2024 年的版本涵蓋太陽周圍 4,000 多光年。</dd></div>
+    <div><dt>far-ultraviolet radiation field<small>遠紫外輻射場</small></dt><dd>年輕恆星發出的紫外光，是加熱 ISM 的主要能源。Porter 的 3D 輻射圖提供「哪裡被烤得比較熱」。</dd></div>
+    <div><dt>ensemble-averaged mean<small>系集平均</small></dt><dd>Frank 的質疑點：對很多可能的塵埃分布取平均，會把冷雲到暖雲的陡峭邊界抹成緩坡，人為製造出「中間溫度」。</dd></div>
+    <div><dt>parsec, pc<small>秒差距</small></dt><dd>約 3.26 光年。論文的地圖直徑 1 kpc（1,000 pc），格點 2 pc。</dd></div>
+  </dl>
+
+  <h4>為什麼重要</h4>
+  <p>這篇最值得學的不是結論，是「一張新地圖怎麼推翻一個用了五十年的假設」。兩相模型不是錯在物理，而是錯在假設 ISM 是靜態的、有時間掉進穩定態；只要有東西（恆星回饋、超新星）攪得夠快，氣體就一直在「換狀態的路上」。它連到一個大問題：星系造星效率為什麼那麼低？如果 ISM 一直被加熱、推擠、循環，氣體就很難安靜地塌縮成恆星。另外請注意這篇的科學社會學：主角是一個聽完一堂課就寫信加入研究室的大學生，關鍵資料來自一場會議上的閒聊，而論文到現在還在審稿中，Quanta 也很誠實地把兩位質疑者的意見寫進去。</p>
+
+  <h4>還沒解決的問題</h4>
+  <ul class="open">
+    <li>41% 是真的，還是解析度與平滑造成的假象？McKee 與 Frank 各提出一種高估的機制；作者用另一張低解析度地圖重算只差約 5%，但審稿還沒結束。</li>
+    <li>到底是什麼在攪動？Ginsburg 說「有東西」在逼氣體換狀態，Rosen 說是恆星回饋的加熱與推擠，但這張圖本身只給出「狀態分布」，沒有直接量到攪動的來源。</li>
+    <li>論文摘要還有一個 Quanta 沒寫的發現：冷相的密度分布很窄，內部馬赫數最多約 1.5（接近音速），這和很多恆星形成模型假設的「強超音速冷氣體」不合。這一點對星形成理論的衝擊可能比 41% 更大。</li>
+    <li class="warn"><b>找碴點</b>：Quanta 說 2024 年的塵埃圖涵蓋「直徑超過 4,000 光年的球」，論文摘要則說新的溫度地圖涵蓋「以太陽為中心、直徑 1 kpc 的區域」（約 3,260 光年），而且 41% 這個數字只算離銀河盤面 150 pc 以內的質量。兩個「範圍」不是同一張圖，27／32／41 的分母到底是什麼？去論文裡找。</li>
+  </ul>
+
+  <div class="ask"><b>一個問題</b>原文用「立在山脊上的球」來講不穩定：理論說球一碰就會滾下去，所以山脊上不該有球。但如果有人每隔幾秒就把球丟回山脊上呢？觀察到 41% 的球在山脊上，你能反推「丟球的人」多久丟一次嗎？論文給的答案是幾百萬年，你覺得合理嗎？</div>
+  <p class="adv-note">進階讀法：Quanta 讀完後打開 arXiv 摘要（很短），對一下三個數字：1 kpc、2 pc、41%，再找「2.9–6 Myr」那句，那就是上面問題的答案。論文全文很長，看 Figure 1 的 3D 地圖（黃色是不穩定、藍色是冷雲）就夠了。</p>
+
+  <details class="check">
+    <summary>校對紀錄：導讀裡的每個數字出自原文哪裡</summary>
+    <table>
+      <tr><th>導讀說法</th><th>原文依據</th></tr>
+      <tr><td>新視野號 2020 年、每公升約 130 個氫原子</td><td>Quanta 第 1 段 "New Horizons found around 130 hydrogen atoms per liter of space."</td></tr>
+      <tr><td>1969 年 Field、Goldsmith、Habing 兩相；約 100 K；約 8,000 K；「幾乎瞬間」</td><td>"Hot and Cold" 一節。</td></tr>
+      <tr><td>1977 年 McKee 與 Ostriker、約 50 萬 K</td><td>同節 "In 1977, Chris McKee and Jeremiah Ostriker added a third phase… half a million kelvins."</td></tr>
+      <tr><td>21 公分、七十多年、彩色塑膠片比喻</td><td>同節末三段。</td></tr>
+      <tr><td>Gaia 2013 年發射、將近 20 億顆星、視差、2024 年 4,000 多光年塵埃圖</td><td>"The Gift of Gaia" 一節。</td></tr>
+      <tr><td>Shelest 大學生、2024 年研討課、Bialy、Porter 未發表的輻射圖、200 GB</td><td>"State of Flux" 一節。</td></tr>
+      <tr><td>27%／32%／41%、「我以為我算錯了」、連貫的毯子</td><td>同節（即關鍵段）。</td></tr>
+      <tr><td>Ginsburg、Narayanan 的血液比喻</td><td>同節末兩段。</td></tr>
+      <tr><td>2026 年 7 月上傳、McKee 與 Frank 的質疑、系集平均、換圖只差約 5%、審稿中</td><td>"A Measured Approach" 一節。</td></tr>
+      <tr><td>星系造星效率低、Rosen「回饋加熱並推擠氣體」</td><td>"The Churn of Creation" 一節。</td></tr>
+      <tr><td>直徑 1 kpc、2 pc 格點、|z| ≤ 150 pc、41% 的塵埃示蹤中性質量、2.9–6 Myr、馬赫數 ≲ 1.5、<i>Nature Astronomy</i> 審稿中、2026-07-16</td><td>arXiv:2607.15352 摘要與 Comments 欄。<span class="warn">只讀了摘要，未讀全文。</span></td></tr>
+      <tr><td>1 kpc ≈ 3,260 光年</td><td>導讀換算（1 pc ≈ 3.26 光年）。</td></tr>
+      <tr><td>圖：神秘山高約 3 光年、2010 年哈伯 20 週年</td><td>ESA/Hubble heic1007a 頁面（2010-04-23 發布）；Quanta 題圖說明寫其題圖的柱子「約 3 光年高」，兩者是同一星雲的不同柱子。</td></tr>
+    </table>
+  </details>
+</article>
+
+<!-- ======================= NEXT ======================= -->
+<section class="next">
+  <h2>下期候選：你想讀哪一篇？</h2>
+  <p class="lead">五個都是這兩週的新文章。挑一到兩個編號，或者說「都不要，我想看 ○○」。</p>
+  <ol>
+    <li><b>賽普勒斯：一座島就是一片被抬上來的海底</b><span>NASA Earth Observatory，11/5。地中海第三大島的山脈是 9,000 萬年前的海洋地殼（蛇綠岩），綠得像蛇皮；島上還有一座正在被季節雨水填滿的鹽湖。地科／板塊構造，台灣東部也有蛇綠岩系。</span></li>
+    <li><b>熔岩洞裡的冰正在消失</b><span>Eos，11/5。加州熔岩床國家保護區有 800 多個洞穴，有些洞裡有常年不化的冰；20 年的洞內溫度紀錄顯示，溫度的大幅擺盪正在把冰融掉。地科／氣候與洞穴。</span></li>
+    <li><b>用 1,815 個地震儀替基拉韋厄火山照 X 光</b><span>Eos，11/3。夏威夷最活躍的火山底下到底有幾個岩漿庫？一張 12 公里見方的密集地震儀網給出了高解析度的答案：兩個。地科／火山學。</span></li>
+    <li><b>黑洞的照片是怎麼拍出來的？</b><span>Quanta，10/29。事件視界望遠鏡其實是一台地球那麼大的虛擬望遠鏡，這篇對談講它怎麼把全球的電波望遠鏡拼成一張圖。天文／黑洞，對談體。</span></li>
+    <li><b>貓頭星雲：哈伯和韋伯看同一隻貓</b><span>ESA／NASA，10/29。船底座星雲裡一根像貓背影的塵埃柱，可見光下是黑影，紅外光下滿是正在誕生的恆星，和本期第 4 篇是一組。天文／恆星形成，圖很美。</span></li>
+  </ol>
+</section>
+
+<footer>
+  <p><b>關於這份導讀</b>：文章由編者挑選，中文導讀、翻譯與術語表由 AI（Claude）協助撰寫，編者讀過但不是科學專業。科學內容一律以英文原文和論文為準；發現導讀講錯、講淺的地方，就是最好的閱讀成果。</p>
+  <p><b>授權</b>：原文只做短篇引用並附連結；圖片僅使用公有領域（NASA、USGS）與創用 CC（ESA/Hubble，CC BY 4.0）的影像，授權資訊見各圖說。Eos 文章依 CC BY-NC-ND 3.0 引用；Quanta 文章依 CC BY-NC-ND 4.0 引用；NASA 文字為公有領域；<i>Nature Geoscience</i>、<i>Journal of Metamorphic Geology</i> 與中央社僅引用短句並附連結。</p>
+  <p class="back"><a href="../">← 所有期數</a></p>
+</footer>
+
+</div>
+</body>
+</html>
