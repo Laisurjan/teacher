@@ -170,7 +170,7 @@ $('bCreate').onclick = async () => {
   const dup = CLASSES.find((c) => c.id === id);
   if (dup){ const by = (dup.data.createdBy || '').toLowerCase(); say('createMsg', `${year} 學年 ${newName()} 已經建立過了${by && by !== ME.email ? `（由 ${by.split('@')[0]} 建立，勾「顯示全部班級」可看到）` : ''}。`, 'err'); return; }
   try {
-    await C.patch('cgClasses/' + id, { name: newName(), dept, grade, cls, year, groupSize: 4, groups: 0, n: 0, budget: 1000, phase: 'build', createdBy: ME.email, created: new Date().toISOString() });
+    await C.patch('cgClasses/' + id, { name: newName(), dept, grade, cls, year, groupSize: 4, groups: 0, n: 0, budget: 2000, b2: 1, phase: 'build', createdBy: ME.email, created: new Date().toISOString() });
     say('createMsg', `已建立 ${year} 學年 ${newName()}。`, 'ok'); await loadClasses(); pickClass(id);
   } catch (e){ say('createMsg', '建立失敗：' + e.message, 'err'); }
 };
@@ -193,7 +193,7 @@ async function pickClass(id){
   $('classes').querySelectorAll('li').forEach((li) => li.classList.toggle('on', li.dataset.id === id));
   $('detail').classList.remove('hidden'); $('pick').classList.add('hidden');
   $('dTitle').textContent = `${CUR.data.year} 學年 ${CUR.data.name}`;
-  $('iBudget').value = CUR.data.budget || 1000; $('iPhase').value = CUR.data.phase || 'build'; $('iSize').value = CUR.data.groupSize || 4; $('iMoodOpen').checked = !!CUR.data.moodOpen;
+  $('iBudget').value = CUR.data.budget && (CUR.data.b2 || CUR.data.budget !== 1000) ? CUR.data.budget : 2000;   // 115/11/10 預設改 2000；之前建的班存的 1000 是舊預設，一律當 2000 $('iPhase').value = CUR.data.phase || 'build'; $('iSize').value = CUR.data.groupSize || 4; $('iMoodOpen').checked = !!CUR.data.moodOpen;
   $('tImport').value = ''; $('prev').textContent = ''; $('bImport').disabled = true; PREVIEW = null;
   ['setMsg', 'groupMsg', 'delMsg'].forEach((m) => say(m, '')); $('works').textContent = '';
   await loadRoster(); loadMoods(); loadVotes(); say('voteMsg', '');
@@ -219,8 +219,8 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 
 // ---------- 設定 ----------
 $('bSave').onclick = async () => {
-  const budget = Math.max(100, Math.min(9999, Math.round(+$('iBudget').value || 1000))), phase = $('iPhase').value, moodOpen = $('iMoodOpen').checked;
-  try { await C.patch('cgClasses/' + CUR.id, { budget, phase, moodOpen }, ['budget', 'phase', 'moodOpen']); Object.assign(CUR.data, { budget, phase, moodOpen });
+  const budget = Math.max(100, Math.min(9999, Math.round(+$('iBudget').value || 2000))), phase = $('iPhase').value, moodOpen = $('iMoodOpen').checked;
+  try { await C.patch('cgClasses/' + CUR.id, { budget, b2: 1, phase, moodOpen }, ['budget', 'b2', 'phase', 'moodOpen']); Object.assign(CUR.data, { budget, b2: 1, phase, moodOpen });
     say('setMsg', '已儲存。學生端約 30 秒內會更新' + (phase === 'explore' ? '（工具列出現「心情釘」）' : '') + '。', 'ok'); }
   catch (e){ say('setMsg', '儲存失敗：' + e.message, 'err'); }
 };
@@ -364,16 +364,21 @@ async function loadMoods(){
 }
 
 // ---------- 展示投票（M7）：票只有管理者讀得到；按「公布」才把各組票數寫進班級文件給學生看 ----------
-let TALLY = {};
+let TALLY = {}, CO_TALLY = {}, CO_WIN = {};   // CO_*：全班共創校園的各點投票（115/11/10），v 裡的 s<點編號>＝投給的組號
+const PT_NAME = { 1: '泗水園', 2: '資訊館後方', 3: '活動中心後及側邊', 4: '學生腳踏車車棚', 5: '停車場原舞台後方階梯', 6: '人文館東側', 7: '圖書館一樓後方階梯', 8: '校園後門' };
 async function loadVotes(){
   let docs = []; try { docs = await C.query('cgVotes', 'classId', CUR.id); } catch (e){ say('voteMsg', '讀取失敗：' + e.message, 'err'); return; }
   TALLY = {}; let voters = 0;
-  docs.forEach((d) => { const ks = Object.keys(d.data.v || {}).filter((k) => d.data.v[k]); if (ks.length) voters++; ks.forEach((k) => TALLY[k] = (TALLY[k] || 0) + 1); });
+  CO_TALLY = {}; CO_WIN = {};
+  docs.forEach((d) => { const v = d.data.v || {}, ks = Object.keys(v).filter((k) => v[k]); if (ks.length) voters++;
+    ks.forEach((k) => { if (/^g\d+$/.test(k)) TALLY[k] = (TALLY[k] || 0) + 1; else if (/^s[1-8]$/.test(k) && +v[k] > 0){ const t = CO_TALLY[k] = CO_TALLY[k] || {}; t['g' + +v[k]] = (t['g' + +v[k]] || 0) + 1; } }); });
+  for (const [s, t] of Object.entries(CO_TALLY)) CO_WIN[s] = +Object.entries(t).sort((a, b) => b[1] - a[1] || +a[0].slice(1) - +b[0].slice(1))[0][0].slice(1);   // 同票取組號小的
   const k = CUR.data.groups || 0;
-  $('votes').innerHTML = `${voters} 位同學投了票${CUR.data.votesShown ? '・<b>已公布</b>' : '・尚未公布（學生看不到票數）'}<br>` + Array.from({ length: k }, (_, i) => `第 ${i + 1} 組：👍 ${TALLY['g' + (i + 1)] || 0}`).join('｜');
+  $('votes').innerHTML = `${voters} 位同學投了票${CUR.data.votesShown ? '・<b>已公布</b>' : '・尚未公布（學生看不到票數）'}<br>` + Array.from({ length: k }, (_, i) => `第 ${i + 1} 組：👍 ${TALLY['g' + (i + 1)] || 0}`).join('｜')
+    + '<br><b>全班共創校園（同一個改造點選一組）</b>：' + (Object.keys(CO_TALLY).length ? Object.keys(CO_TALLY).sort().map((s) => `${PT_NAME[s.slice(1)]}：` + Object.entries(CO_TALLY[s]).sort((a, b) => b[1] - a[1]).map(([g, n]) => `第 ${g.slice(1)} 組 ${n} 票`).join('、') + `（🏆 第 ${CO_WIN[s]} 組）`).join('；') : '還沒有人投');
 }
 $('bVotes').onclick = loadVotes;
-$('bPub').onclick = async () => { await loadVotes(); try { await C.patch('cgClasses/' + CUR.id, { votes: TALLY, votesShown: true }, ['votes', 'votesShown']); CUR.data.votes = TALLY; CUR.data.votesShown = true; await loadVotes(); say('voteMsg', '已公布，學生端約 30 秒內看得到各組票數。', 'ok'); } catch (e){ say('voteMsg', '公布失敗：' + e.message, 'err'); } };
+$('bPub').onclick = async () => { await loadVotes(); try { await C.patch('cgClasses/' + CUR.id, { votes: TALLY, votesShown: true, coVotes: CO_TALLY, coWin: CO_WIN }, ['votes', 'votesShown', 'coVotes', 'coWin']); CUR.data.votes = TALLY; CUR.data.votesShown = true; await loadVotes(); say('voteMsg', '已公布，學生端約 30 秒內看得到各組票數。', 'ok'); } catch (e){ say('voteMsg', '公布失敗：' + e.message, 'err'); } };
 $('bUnpub').onclick = async () => { try { await C.patch('cgClasses/' + CUR.id, { votesShown: false }, ['votesShown']); CUR.data.votesShown = false; await loadVotes(); say('voteMsg', '已收回公布。', 'ok'); } catch (e){ say('voteMsg', '收回失敗：' + e.message, 'err'); } };
 
 boot();

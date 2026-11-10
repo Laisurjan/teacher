@@ -16,7 +16,7 @@ export const SETS = [
   {"id":"reading","name":"戶外讀書角","members":["book_box","booth","floor_lamp","beanbag","blackboard","table_square"],"need":3,"r":8,"safe":0,"calm":3,"beauty":0},
   {"id":"picnic","name":"野餐草地","members":["picnic_table","umbrella","lawn_roll","hammock","tree_round"],"need":3,"r":8,"safe":0,"calm":2,"beauty":2},
 ];
-export const CATS = [{"k": "A", "name": "植栽", "n": 22}, {"k": "B", "name": "休息座椅", "n": 20}, {"k": "C", "name": "求助與安全設施", "n": 21}, {"k": "D", "name": "地板磁磚", "n": 14}, {"k": "E", "name": "桌子", "n": 7}, {"k": "F", "name": "燈具", "n": 10}, {"k": "G", "name": "裝飾品", "n": 24}, {"k": "H", "name": "遮蔽與角落", "n": 6}, {"k": "I", "name": "生活與活動設施", "n": 13}, {"k": "J", "name": "心靈陪伴", "n": 7}, {"k": "K", "name": "花蓮在地與校園認同", "n": 15}, {"k": "L", "name": "自然生態", "n": 7}];
+export const CATS = [{"k": "A", "name": "植栽", "n": 22}, {"k": "B", "name": "休息座椅", "n": 20}, {"k": "C", "name": "求助與安全設施", "n": 25}, {"k": "D", "name": "地板磁磚", "n": 15}, {"k": "E", "name": "桌子", "n": 7}, {"k": "F", "name": "燈具", "n": 10}, {"k": "G", "name": "裝飾品", "n": 24}, {"k": "H", "name": "遮蔽與角落", "n": 6}, {"k": "I", "name": "生活與活動設施", "n": 13}, {"k": "J", "name": "心靈陪伴", "n": 7}, {"k": "K", "name": "花蓮在地與校園認同", "n": 15}, {"k": "L", "name": "自然生態", "n": 7}];
 export const ITEMS = [
   {"id":"pot_l","cat":"A","name":"大盆栽（小樹）","cost":60,"safe":0,"calm":2,"beauty":2,"fp":[1.0,1.0],"h":2.3,"r":0,"note":"","tags":[],"rc":true},
   {"id":"pot_m","cat":"A","name":"中盆栽（灌木）","cost":30,"safe":0,"calm":0,"beauty":1,"fp":[0.6,0.6],"h":1.3,"r":0,"note":"","tags":[],"rc":true},
@@ -62,6 +62,10 @@ export const ITEMS = [
   {"id":"log_seat","cat":"B","name":"原木座","cost":15,"safe":0,"calm":1,"beauty":0,"fp":[1.2,0.4],"h":0.4,"r":0,"note":"","tags":[],"rc":true},
   {"id":"sos_post","cat":"C","name":"SOS 求助柱","cost":120,"safe":5,"calm":2,"beauty":0,"fp":[0.4,0.4],"h":2.3,"r":25.0,"note":"依校內實物：灰柱、橘箱、藍色屋形牌白底紅字、紅色緊急鈕、編號","tags":[],"rc":false},
   {"id":"help_bell","cat":"C","name":"求助鈴（矮柱）","cost":60,"safe":3,"calm":0,"beauty":0,"fp":[0.2,0.2],"h":1.2,"r":12.0,"note":"","tags":[],"rc":false},
+  {"id":"water_sign","cat":"C","name":"水邊警示牌","cost":30,"safe":3,"calm":0,"beauty":0,"fp":[0.7,0.2],"h":1.7,"r":10.0,"note":"","tags":[],"rc":false},
+  {"id":"wet_sign","cat":"C","name":"小心地滑告示","cost":15,"safe":2,"calm":0,"beauty":0,"fp":[0.5,0.5],"h":0.7,"r":6.0,"note":"","tags":[],"rc":false},
+  {"id":"life_ring","cat":"C","name":"救生圈架","cost":60,"safe":4,"calm":1,"beauty":0,"fp":[0.6,0.3],"h":1.6,"r":15.0,"note":"","tags":[],"rc":false},
+  {"id":"mosquito_lamp","cat":"C","name":"滅蚊燈","cost":50,"safe":0,"calm":2,"beauty":0,"fp":[0.3,0.3],"h":1.5,"r":0,"note":"","tags":[],"rc":false},
   {"id":"aed_box","cat":"C","name":"AED 箱","cost":150,"safe":4,"calm":0,"beauty":0,"fp":[0.5,0.4],"h":1.6,"r":40.0,"note":"","tags":[],"rc":false},
   {"id":"first_aid","cat":"C","name":"急救站","cost":80,"safe":2,"calm":0,"beauty":0,"fp":[0.6,0.4],"h":1.6,"r":30.0,"note":"","tags":[],"rc":false},
   {"id":"emergency_light","cat":"C","name":"緊急照明柱","cost":70,"safe":2,"calm":0,"beauty":0,"fp":[0.3,0.3],"h":3.0,"r":10.0,"note":"","tags":[],"rc":false},
@@ -93,6 +97,7 @@ export const ITEMS = [
   {"id":"tile_pebble","cat":"D","name":"鵝卵石步道","cost":4,"safe":0,"calm":1,"beauty":0,"fp":[1,1],"h":0.03,"r":0,"note":"","tags":["tile"],"rc":false},
   {"id":"tile_glow","cat":"D","name":"夜光地磚","cost":8,"safe":1,"calm":0,"beauty":0,"fp":[1,1],"h":0.03,"r":0,"note":"暗區","tags":["tile"],"rc":false},
   {"id":"tile_tactile","cat":"D","name":"導盲磚（黃）","cost":5,"safe":2,"calm":0,"beauty":0,"fp":[1,1],"h":0.03,"r":0,"note":"","tags":["tile"],"rc":false},
+  {"id":"tile_warn","cat":"D","name":"警示地貼（黃黑）","cost":6,"safe":2,"calm":0,"beauty":0,"fp":[1,1],"h":0.03,"r":0,"note":"","tags":["tile"],"rc":false},
   {"id":"hopscotch","cat":"D","name":"跳格子（1×3）","cost":12,"safe":0,"calm":2,"beauty":0,"fp":[1,3],"h":0.03,"r":0,"note":"","tags":["tile"],"rc":false},
   {"id":"rainbow_crossing","cat":"D","name":"彩虹斑馬線（3×2）","cost":20,"safe":1,"calm":1,"beauty":0,"fp":[3,2],"h":0.03,"r":0,"note":"","tags":["tile"],"rc":false},
   {"id":"table_round","cat":"E","name":"圓桌","cost":30,"safe":0,"calm":1,"beauty":0,"fp":[1.0,1.0],"h":0.75,"r":0,"note":"","tags":[],"rc":true},

@@ -49,6 +49,26 @@ export function findSets(list){
   return out;
 }
 
+// 主要改造點計分（115/11/10，老師與學習單「一組改一處」對齊）：
+// 主點 R 公尺內的安全值 → 安心指數、安心＋美化值 → 散心指數（各 25 分，從學習單填的現況分數往上加，沒填以 BASE 起算）；
+// 總分＝主點兩個指數佔 MAIN 分，另外每照顧到一個其他危險點（該點安全值過半）加 OTHER 分，最多 OTHER_MAX 個
+export const K2 = { R: 30, SAFE_FULL: 14, RELAX_FULL: 24, BASE: 12, MAIN: 70, OTHER: 10, OTHER_MAX: 3 };
+export function siteScore(items, PTS, site, base, sc){
+  const P = PTS.find((p) => p[0] === site); if (!P) return null;
+  const c = { x: P[4], z: P[5] }, byA = [], byR = []; let sa = 0, sr = 0;
+  for (const o of items){ const it = BY_ID[o.id]; if (!it) continue; const k = it.tags.includes('tile') ? K.TILE_K : 1, d = dist(c, o);
+    if (it.safe && d <= Math.max(K2.R, it.r || 0)){ sa += it.safe * k; if (it.safe > 0 && !byA.includes(it.name)) byA.push(it.name); }
+    const v = it.calm + it.beauty; if (v && d <= K2.R){ sr += v * k; if (v > 0 && !byR.includes(it.name)) byR.push(it.name); } }
+  for (const s of sc.sets) if (dist(c, s) <= K2.R){ sa += s.safe; sr += s.calm + s.beauty; }
+  const ok = (v) => typeof v === 'number' && v >= 5 && v <= 25, given = !!base && ok(base.a) && ok(base.s);
+  const a0 = given ? base.a : K2.BASE, s0 = given ? base.s : K2.BASE;
+  const after = (now, sum, full) => sum >= 0 ? now + (25 - now) * Math.min(1, sum / full) : Math.max(5, now + sum);
+  const a = after(a0, sa, K2.SAFE_FULL), s = after(s0, sr, K2.RELAX_FULL);
+  const others = sc.pts.filter((p) => p.n !== site && p.safe >= K.PER * .5).map((p) => p.title);
+  const bonus = Math.min(K2.OTHER_MAX, others.length) * K2.OTHER, total = Math.min(100, K2.MAIN * (a + s) / 50 + bonus);
+  return { n: site, title: P[2], given, a0, s0, a, s, sa, sr, byA, byR, others, bonus, total, stars: (K.STARS.find(([t]) => total >= t) || [0, 1])[1] };
+}
+
 export function score(items, PTS, DARK, NEED = []){
   const L = items.map((o) => ({ ...o, it: BY_ID[o.id], tile: BY_ID[o.id].tags.includes('tile') }));
   const sets = findSets(L.filter((o) => !o.tile));

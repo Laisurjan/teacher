@@ -1481,6 +1481,8 @@ const SURF = [
 ];
 // 不能放東西的實心矮設施（115/11/10）：高度不到 3 m 不在 occBoxes 裡，以前東西會直接埋進去
 const SOLID = [{ name: '資訊館大階梯', x0: 80, x1: 101.5, z0: 137.1, z1: 140.2 }];
+// 水面（115/11/10）：泗水園水池，和上面「泗水園」段鋪水面的多邊形相同；池裡不能放東西（木棧板除外，可當棧道）
+const WATER = [{ name: '泗水園水池', poly: [[6, 152], [18, 149], [30, 153], [37, 160], [34, 170], [26, 176], [24, 168], [16, 166], [10, 174], [4, 168], [3, 158]] }];
 
 /* ================= 同材質合併 =================
    原本約兩三千個物件、每個各畫一次；手機繪圖晶片負擔太重。
@@ -1580,7 +1582,7 @@ console.log(`[可拆] ${RM.length} 件：` + Object.entries(rmCount).map(([k, n]
 
 /* ================= 校園改造遊戲：建造模式（game.js，M2） =================
    學生擺放的物件在合併段之後才建立，不參與同材質合併；繪圖迴圈每幀呼叫 window.__gameTick() */
-window.__game = { scene, camera, controls, renderer, occBoxes, BOUND, QL, MOBILE, WALK, toast, groundAt, exitWalk, RM, rmSet, SURF, SOLID, PTS, DARK, app };
+window.__game = { scene, camera, controls, renderer, occBoxes, BOUND, QL, MOBILE, WALK, toast, groundAt, exitWalk, RM, rmSet, SURF, SOLID, WATER, PTS, DARK, app };
 import('./game.js').then((m) => m.init(window.__game)).catch((e) => { console.error(e); toast('建造模式載入失敗：' + e.message); });
 
 /* ================= 長出動畫（遊戲頁 M8，115/11/05） =================

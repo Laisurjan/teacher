@@ -10,11 +10,13 @@
 import * as THREE from '../campus3d/lib/three.module.js';
 import { CATS, ITEMS, PALETTE, BY_ID, bake, build, variants } from './items.js';
 import { REMOVE } from './items-data.js';
-import { score, isLight, isHelp, inPoly as inP, K as SK } from './score.js';
+import { score, siteScore, isLight, isHelp, inPoly as inP, K as SK, K2 } from './score.js';
 import * as CL from './cloud.js';
 import { CSS2DObject } from '../campus3d/lib/CSS2DRenderer.js';
 
-let BUDGET = 1000, SAVE_KEY = 'campusgame-work-v1';   // 登入班級後改用班級預算與該組的存檔鍵
+let BUDGET = 2000, SAVE_KEY = 'campusgame-work-v1';   // 登入班級後改用班級預算與該組的存檔鍵
+// 預算預設 2000 點（115/11/10 老師決定，原 1000）。115/11/10 前建的班都存著舊預設 1000，一律當成 2000；老師之後在後台另外設定的（b2 標記）才照設定值
+const budgetOf = (c) => c && c.budget && (c.b2 || c.budget !== 1000) ? c.budget : 2000;
 const MAX_ITEMS = 300, MAX_TILES = 400, GRID = .5, UNDO_MAX = 50;
 const D2R = Math.PI / 180;
 const isTile = (id) => BY_ID[id].tags.includes('tile');
@@ -172,6 +174,34 @@ const CSS = `
 #gFrameV{position:absolute;inset:0;border:6px solid #90a4ae;z-index:9;pointer-events:none;display:none}
 .viewing #gFrameV{display:block}
 .viewing #gCat,.viewing #gTools,.viewing #gSel,.viewing #gStat{display:none!important}
+/* 主要改造點、全班共創校園（115/11/10） */
+#gSite{position:fixed;inset:0;z-index:45;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:14px}
+#gSite.show{display:flex}
+#gSite .box{background:var(--panel);color:var(--ink);border-radius:16px;padding:16px 18px;max-width:520px;width:100%;max-height:calc(100% - 8px);overflow:auto;box-shadow:0 8px 30px rgba(0,0,0,.35)}
+#gSite h3{margin:0 0 6px;font-size:19px;font-weight:900}
+#gSite p{margin:0 0 10px;font-size:14px;line-height:1.55;color:var(--sub);font-weight:700}
+#gSite .ls{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px}
+#gSite .ls button{font:inherit;text-align:left;font-size:15px;font-weight:800;padding:9px 11px;border-radius:11px;border:2px solid var(--line);background:var(--btn);color:var(--ink);cursor:pointer}
+#gSite .ls button.on{border-color:var(--accent);background:rgba(31,111,235,.1)}
+#gSite .ls small{display:block;font-size:12px;font-weight:700;color:var(--sub)} #gSite .ls small.many{color:#c62828}
+#gSite .bs{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:14px;font-weight:800;margin-bottom:12px}
+#gSite .bs input{width:64px;font:inherit;font-size:16px;font-weight:800;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--btn);color:var(--ink)}
+#gSite .row{display:flex;gap:8px;justify-content:flex-end}
+#gSite .row button{font:inherit;font-size:15px;font-weight:800;padding:10px 16px;border-radius:10px;border:1px solid var(--line);background:var(--btn);color:var(--ink);cursor:pointer}
+#gSite .row button.go{background:var(--accent);color:#fff;border-color:transparent} #gSite .row button:disabled{opacity:.45}
+@media (max-width:520px){ #gSite .ls{grid-template-columns:1fr} }
+#gPlans .site{border:2px solid var(--accent);border-radius:10px;padding:8px 10px;margin-bottom:10px;font-size:14px;font-weight:800;display:flex;gap:8px;align-items:center;justify-content:space-between}
+#gPlans .site button{font:inherit;font-size:13px;font-weight:800;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--btn);color:var(--ink);cursor:pointer;flex:none}
+#gCo{position:absolute;left:12px;top:60px;z-index:13;width:min(340px,calc(100% - 24px));max-height:calc(100% - 140px);overflow-y:auto;background:var(--panel);
+  border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,.25);padding:12px 14px;display:none;font-size:13px}
+#gCo.show{display:block}
+#gCo h3{margin:0 0 6px;font-size:16px;font-weight:900} #gCo p{margin:0 0 8px;color:var(--sub);font-weight:700;line-height:1.55}
+#gCo .cs{border:1px solid var(--line);border-radius:10px;padding:7px 9px;margin:6px 0}
+#gCo .cs b{display:block;font-size:14px;font-weight:900;cursor:pointer} #gCo .cs b small{font-weight:700;color:var(--sub);margin-left:6px}
+#gCo .cg{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
+#gCo button{font:inherit;font-size:13px;font-weight:800;padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--btn);color:var(--ink);cursor:pointer}
+#gCo button.on{background:var(--accent);color:#fff;border-color:transparent} #gCo button.cv{background:#ffca28;color:#3d2c00;border-color:transparent;margin-top:5px} #gCo button.cv.on{background:#43a047;color:#fff}
+.photoing #gCo,.photoing #gSite{display:none!important}
 /* 改造前照片（115/11/10） */
 .ppin{font-size:17px;line-height:1;width:34px;height:34px;border-radius:50%;background:#fff;border:3px solid #1f6feb;display:flex;align-items:center;justify-content:center;
   box-shadow:0 2px 6px rgba(0,0,0,.35);pointer-events:auto;cursor:pointer}
@@ -220,7 +250,7 @@ const CSS = `
 `;
 
 export function init(G){
-  const { scene, camera, controls, renderer, occBoxes, BOUND, QL, WALK, toast, groundAt, RM = [], rmSet = () => {}, SURF = [], SOLID = [], PTS = [], DARK = [], exitWalk = () => {} } = G;
+  const { scene, camera, controls, renderer, occBoxes, BOUND, QL, WALK, toast, groundAt, RM = [], rmSet = () => {}, SURF = [], SOLID = [], WATER = [], PTS = [], DARK = [], exitWalk = () => {} } = G;
   const app = renderer.domElement.parentElement, body = document.body;
   const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
   // 整頁不該捲動（iPad 叫出鍵盤或程式捲動卡片時可能被推上去）：一捲就歸零
@@ -228,7 +258,7 @@ export function init(G){
   addEventListener('scroll', unscroll, true); if (window.visualViewport) visualViewport.addEventListener('resize', () => setTimeout(unscroll, 50));
 
   // ---------- 狀態 ----------
-  const S = { items: {}, removed: {} };   // items：uid → { id, x, y（所在表面高度）, z, rot（度）, v（調色盤序號） }；removed：拆掉的原有物件 id
+  const S = { items: {}, removed: {}, site: 0, base: null };   // site：主要改造點（危險點編號，0＝還沒選）；base：學習單現況分數 {a 安心, s 散心}；items：uid → { id, x, y（所在表面高度）, z, rot（度）, v（調色盤序號） }；removed：拆掉的原有物件 id
   const RMI = new Map(RM.map((r) => [r.id, r]));
   let ON = true, TOOL = 'idle', PL = null, sel = null, SNAP = true, SOUND = true;   // TOOL：idle／place／moveTo／demolish
   const UNDO = [], REDO = [];
@@ -294,7 +324,9 @@ export function init(G){
       if (!q) return `要整個放在${qs[0] ? qs[0].name : '台'}上`;
       if (BY_ID[id].h > q.clear) return `太高了，${q.name}上放不下`;
     } else if (SURF.some((q) => overlap(C4, rectPoly(q)))) return '壓到平台或司令台的邊了，請放到台上或台下空地';
-    else { const q = SOLID.find((o) => overlap(C4, rectPoly(o))); if (q) return `這裡是${q.name}，放不了東西`; }
+    else { const q = SOLID.find((o) => overlap(C4, rectPoly(o))); if (q) return `這裡是${q.name}，放不了東西`;
+      const w = id === 'tile_wood' ? null : WATER.find((o) => inP(o.poly, x, z) || C4.some(([a, b]) => inP(o.poly, a, b)));   // 水池（115/11/10）：只有木棧板能鋪在水上
+      if (w) return `這裡是${w.name}，不能放（木棧板可以鋪在水面上當棧道）`; }
     const xs = C4.map((c) => c[0]), zs = C4.map((c) => c[1]), x0 = Math.min(...xs), x1 = Math.max(...xs), z0 = Math.min(...zs), z1 = Math.max(...zs);
     if (occBoxes.some((b) => !b.off && b.min.y < y + 1 && b.max.y > y + .3 && b.max.x > x0 && b.min.x < x1 && b.max.z > z0 && b.min.z < z1)) return '這裡有建築或原有設施擋住';
     if (!isTile(id) && y === 0){ const r = RM.find((o) => !o.off && o.foot && o.foot[2] > x0 && o.foot[0] < x1 && o.foot[3] > z0 && o.foot[1] < z1);
@@ -327,11 +359,12 @@ export function init(G){
     ops.forEach((o) => doOp(o, o.b)); UNDO.push(ops); if (sel && !S.items[sel]) deselect(); changed(); }
   let saveT = 0;
   function changed(){ clearTimeout(saveT); saveT = setTimeout(save, 300); hud(); showSel(); rescore(); if (CS.w) schedulePush(); }
-  function save(){ try { localStorage.setItem(SAVE_KEY, JSON.stringify({ v: 1, t: Date.now(), items: S.items, removed: S.removed })); } catch (e) {} }
+  function save(){ try { localStorage.setItem(SAVE_KEY, JSON.stringify({ v: 1, t: Date.now(), items: S.items, removed: S.removed, site: S.site, base: S.base })); } catch (e) {} }
   function load(){
     try { const d = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); if (!d || !d.items) return 0;
       let n = 0; for (const [u, it] of Object.entries(d.items)) if (BY_ID[it.id] && !BY_ID[it.id].tags.includes('hidden')){ S.items[u] = { id: it.id, x: +it.x, y: +it.y || 0, z: +it.z, rot: +it.rot || 0, v: +it.v || 0 }; n++; }
       for (const id of Object.keys(d.removed || {})) if (RMI.has(id)) setRm(id, true);
+      S.site = +d.site || 0; S.base = d.base || null;
       new Set(Object.values(S.items).map(keyOf)).forEach(refresh); return n;
     } catch (e){ return 0; }
   }
@@ -672,6 +705,8 @@ export function init(G){
   function rescore(){
     const L = Object.values(S.items).filter((o) => BY_ID[o.id]);
     SC = score(L, PTS, DARK, MD.open ? MD.need : []);
+    SC.site = S.site ? siteScore(L, PTS, S.site, S.base, SC) : null;   // 選了主要改造點：改用主點雙指數計分
+    if (SC.site){ SC.total = SC.site.total; SC.stars = SC.site.stars; }
     starEl.innerHTML = '★'.repeat(SC.stars) + '<span style="color:var(--line)">' + '★'.repeat(5 - SC.stars) + `</span><small>${Math.round(SC.total)} 分</small>`;
     const keys = SC.sets.map((t) => t.id + t.k);
     if (prevSets){ SC.sets.filter((t) => !prevSets.includes(t.id + t.k)).forEach((t) =>
@@ -681,7 +716,18 @@ export function init(G){
     drawLayers();
   }
   function renderScore(){
-    if (!SC) return; const bar = (k, v, c) => `<div class="sbar"><span>${k}</span><i><b style="width:${v}%;background:${c}"></b></i><span>${Math.round(v)}</span></div>`;
+    if (!SC) return;
+    if (SC.site){ const T = SC.site, f1 = (v) => (Math.round(v * 10) / 10).toString(), ib = (k, v0, v, c) => `<div class="sbar" style="grid-template-columns:64px 1fr 76px"><span>${k}</span><i><b style="width:${v * 4}%;background:${c}"></b></i><span>${f1(v0)} → ${f1(v)}</span></div>`;
+      sc.innerHTML = `<h3>校園評價 ${'★'.repeat(SC.stars)}${'☆'.repeat(5 - SC.stars)} ${Math.round(SC.total)} 分<button aria-label="關閉">×</button></h3>`
+        + `<div style="font-weight:900;font-size:14px;margin-bottom:4px">📍 主要改造點：${T.n}. ${T.title}</div>` + ib('安心指數', T.a0, T.a, '#e53935') + ib('散心指數', T.s0, T.s, '#1f6feb')
+        + `<div style="color:var(--sub);font-size:12px;margin-top:2px">各 25 分，和學習單第三題一樣：「現況 → 改造後」。${T.given ? '現況是你們學習單的分數。' : `還沒填學習單的現況分數，先以 ${K2.BASE} 分起算（到「📋 方案」更換改造點時可以填）。`}只算主點 ${K2.R} 公尺內的東西。</div>`
+        + `<h4>安心指數：安全設施（求助、照明、護欄、警示…）</h4><div>${T.byA.length ? T.byA.slice(0, 8).join('、') + (T.byA.length > 8 ? '…' : '') : '<span class="no">主點附近還沒有安全設施</span>'}</div>`
+        + `<h4>散心指數：讓人想停留的東西（座椅、遮蔭、植栽、美化…）</h4><div>${T.byR.length ? T.byR.slice(0, 8).join('、') + (T.byR.length > 8 ? '…' : '') : '<span class="no">主點附近還沒有</span>'}</div>`
+        + `<h4>其他危險點加分（每照顧好一個 +${K2.OTHER}，最多 ${K2.OTHER_MAX} 個）</h4><div>${T.others.length ? `<span class="ok">${T.others.join('、')}　+${T.bonus}</span>` : '還沒有。預算有剩的話，也看看別的危險點。'}</div>`
+        + `<div style="color:var(--sub);font-size:12px;margin-top:8px">總分＝主點兩個指數（佔 ${K2.MAIN} 分）＋其他危險點加分。</div>`
+        + `<h4>套組加成</h4>${SC.sets.length ? `<ul>${SC.sets.map((t) => `<li class="ok">${t.name}（${t.kinds} 種${t.k > 1 ? '，加倍' : ''}）</li>`).join('')}</ul>` : '<div style="color:var(--sub)">還沒有觸發（同一套組 8 m 內擺 3 種）</div>'}`;
+      sc.querySelector('h3 button').onclick = () => sc.classList.remove('show'); return; }
+    const bar = (k, v, c) => `<div class="sbar"><span>${k}</span><i><b style="width:${v}%;background:${c}"></b></i><span>${Math.round(v)}</span></div>`;
     const pt = (p) => { const s = Math.min(SK.PER, Math.max(0, p.safe)), c = Math.min(SK.PER, Math.max(0, p.calm)), ok = s >= SK.PER * .5 && c >= SK.PER * .5;
       return `<li class="${ok ? 'ok' : 'no'}">${p.n}. ${p.title}：安全 ${s.toFixed(1)}／${SK.PER}・安心 ${c.toFixed(1)}／${SK.PER}${p.by.length ? `<br><small style="color:var(--sub)">${p.by.slice(0, 4).join('、')}${p.by.length > 4 ? '…' : ''}</small>` : ''}</li>`; };
     sc.innerHTML = `<h3>校園評價 ${'★'.repeat(SC.stars)}${'☆'.repeat(5 - SC.stars)} ${Math.round(SC.total)} 分<button aria-label="關閉">×</button></h3>`
@@ -798,7 +844,7 @@ export function init(G){
     try { c = await CL.getDoc('cgClasses/' + r.data.classId); d = await CL.getDoc('cgWorks/' + r.data.w); }
     catch (e){ CS.why = '讀取雲端資料失敗，請稍後重新整理。'; toast('讀取雲端資料失敗：' + e.message); return; }
     if (!c){ CS.why = '找不到你的班級（可能已被刪除），請問老師。'; toast('找不到你的班級（可能已被刪除）'); return; }
-    CS.cls = { id: c.id, ...c.data }; CS.g = r.data.g; CS.w = r.data.w; BUDGET = c.data.budget || 1000; SAVE_KEY = 'campusgame-work-' + CS.w;
+    CS.cls = { id: c.id, ...c.data }; CS.g = r.data.g; CS.w = r.data.w; BUDGET = budgetOf(c.data); SAVE_KEY = 'campusgame-work-' + CS.w;
     endPlace(); deselect(); UNDO.length = 0; REDO.length = 0;
     if (d){ applyRemote(d); toast(`歡迎！${CS.cls.name} 第 ${CS.g} 組：已載入全組的作品`); }
     else {   // 這組雲端還是空的：把這台裝置目前的作品當作起點送上去
@@ -810,6 +856,7 @@ export function init(G){
     hud(); rescore(); loginLabel();
     clearInterval(CS.poll); CS.poll = setInterval(poll, 5000);
     moodInit();
+    if (CS.cls.phase !== 'explore') whenStarted(() => { if (!S.site && !SH.view && CS.w && !CS.demo) siteOpen(); });   // 還沒選主要改造點：開始後先選
     if (CS.cls.phase === 'explore' && fresh) whenStarted(() => tip('現在是探勘階段：按工具列「心情釘」，走到有感覺的地方釘下去（怕、吵、暗、想待、想躲）', '老師'));
   }
   function diff(){
@@ -843,6 +890,7 @@ export function init(G){
     CS.synced = { items: deep(S.items), removed: { ...S.removed } }; CS.ut = d.updateTime;
     if (typeof d.data.theme === 'string' && document.activeElement !== themeEl){ CS.theme = d.data.theme; themeEl.value = CS.theme; }
     if (sel && !S.items[sel]) deselect();
+    if (!SITE.busy){ S.site = +d.data.site || 0; S.base = d.data.base || null; }
     if (JSON.stringify(d.data.photos || {}) !== PHO.raw){ PHO.raw = JSON.stringify(d.data.photos || {}); phoSet(d.data.photos); }
     save(); hud(); showSel(); rescore();
   }
@@ -876,7 +924,7 @@ export function init(G){
     } else if (CS.cls && !CS.demo){
       const ph = CS.cls.phase || 'build', cur = PH.find((x) => x[0] === ph) || PH[1];
       html = head + `<p class="who">${esc(CS.cls.year)} 學年 ${esc(CS.cls.name)}・第 ${esc(CS.g)} 組<small>${esc(m.email)}</small></p>` + steps(ph)
-        + `<p class="lead" style="margin-bottom:10px">現在是<b>「${cur[1].split(" ")[1]}」</b>階段。${ph === 'build' ? `你們這組的預算是 ${esc(CS.cls.budget || 1000)} 點，同組同學改的東西會自動同步。` : ph === 'explore' ? '按工具列的「心情釘」開始。' : '按右上「📋 方案」看全班的方案。'}</p>`;
+        + `<p class="lead" style="margin-bottom:10px">現在是<b>「${cur[1].split(" ")[1]}」</b>階段。${ph === 'build' ? `你們這組的預算是 ${esc(budgetOf(CS.cls))} 點，同組同學改的東西會自動同步。` : ph === 'explore' ? '按工具列的「心情釘」開始。' : '按右上「📋 方案」看全班的方案。'}</p>`;
       btns = [['開始', 'go', startGo], ['不是你？登出換帳號', 'lk', startLogout]];
     } else {
       html = head + `<p class="who">${esc(m.email)}</p><p class="warn">${esc(CS.why || '找不到你的班級。')}</p>`;
@@ -987,7 +1035,7 @@ export function init(G){
     const lm = document.getElementById('lyMood'); lm.classList.toggle('off', !MD.open); lm.querySelector('input').disabled = !MD.open;
     lm.querySelector('span').textContent = MD.open ? '全班心情熱區' : '心情熱區（老師開放後才看得到）';
     if (!MD.open){ LY.mood = false; lm.querySelector('input').checked = false; }
-    if (!CS.demo && c.budget) BUDGET = c.budget;
+    if (!CS.demo) BUDGET = budgetOf(CS.cls);
     drawPins(); hud(); plansClass();
   }
   async function moodInit(){
@@ -1007,7 +1055,7 @@ export function init(G){
   const SH = { view: 0, stash: null, votes: {}, vid: '' };
   header.insertAdjacentHTML('beforeend', '<button id="gPlanBtn" title="改造理念、提案海報；展示階段可以看別組方案並投票">📋 方案</button>');
   const planBtn = document.getElementById('gPlanBtn'), plans = document.createElement('div'); plans.id = 'gPlans'; body.appendChild(plans);
-  plans.innerHTML = `<h3>方案與提案<button aria-label="關閉">×</button></h3>
+  plans.innerHTML = `<h3>方案與提案<button aria-label="關閉">×</button></h3><div class="site"></div>
     <h4>我們的改造理念（一句話，60 字內）</h4><textarea maxlength="60" placeholder="例如：讓資訊館後方晚上也有人敢走"></textarea>
     <button class="pb go" data-a="poster">📥 下載提案海報（PNG）</button><div class="list"></div>`;
   const themeEl = plans.querySelector('textarea'), listEl = plans.querySelector('.list');
@@ -1031,11 +1079,15 @@ export function init(G){
   }
   function renderPlans(){
     themeEl.disabled = !!SH.view || !CS.w; if (document.activeElement !== themeEl) themeEl.value = CS.theme || '';
+    { const sp = PTS.find((p) => p[0] === S.site), se = plans.querySelector('.site');
+      se.innerHTML = `<span>📍 主要改造點：${sp ? sp[0] + '. ' + sp[2] : '還沒選'}</span>${SH.view ? '' : `<button>${sp ? '更換' : '選擇'}</button>`}`;
+      const sb = se.querySelector('button'); if (sb) sb.onclick = () => { plans.classList.remove('show'); siteOpen(); }; }
     if (!showPhase()){ listEl.innerHTML = CS.cls && !CS.demo ? '<p style="color:var(--sub)">老師把階段切到「展示」後，這裡會列出全班各組的方案，可以走進去看、投票。</p>' : ''; return; }
     const k = CS.cls.groups || 0, V = CS.cls.votesShown && CS.cls.votes || null;
-    listEl.innerHTML = `<h4>全班方案（點一下走進去看${V ? '・已公布票數' : '・每組可投一票，不能投自己組'}）</h4>` + Array.from({ length: k }, (_, i) => i + 1).map((g) =>
+    listEl.innerHTML = `<button class="pb go" data-a="co">🏫 全班共創校園（每個改造點選一組、投票）</button><h4>全班方案（點一下走進去看${V ? '・已公布票數' : '・每組可投一票，不能投自己組'}）</h4>` + Array.from({ length: k }, (_, i) => i + 1).map((g) =>
       `<button class="pb${g === CS.g ? ' me' : ''}${(SH.view || CS.g) === g ? ' on' : ''}" data-g="${g}">第 ${g} 組${g === CS.g ? '（我們）' : ''}<small>${V ? `👍 ${V['g' + g] || 0}` : SH.votes['g' + g] ? '已投 👍' : ''}</small></button>`).join('');
     listEl.querySelectorAll('.pb[data-g]').forEach((b) => b.onclick = () => viewGroup(+b.dataset.g));
+    listEl.querySelector('[data-a="co"]').onclick = () => coOpen();
   }
   function setState(d){
     const items = d.items || {}, removed = d.removed || {};
@@ -1043,6 +1095,7 @@ export function init(G){
       const it = items[u] && BY_ID[items[u].id] && !BY_ID[items[u].id].tags.includes('hidden') ? { id: items[u].id, x: +items[u].x, y: +items[u].y || 0, z: +items[u].z, rot: +items[u].rot || 0, v: +items[u].v || 0 } : null;
       if (JSON.stringify(S.items[u] || null) !== JSON.stringify(it)) apply(u, it); }
     for (const id of new Set([...Object.keys(S.removed), ...Object.keys(removed)])) if (!!S.removed[id] !== !!removed[id] && RMI.has(id)) setRm(id, !!removed[id]);
+    S.site = +d.site || 0; S.base = d.base || null;
     hud(); rescore();
   }
   const viewEl = document.createElement('div'); viewEl.id = 'gView'; body.appendChild(viewEl);
@@ -1052,16 +1105,17 @@ export function init(G){
   async function viewGroup(g){
     if (g === CS.g){ backHome(); return; }
     let d; try { d = await CL.getDoc('cgWorks/' + CL.workId(CS.cls.id, g)); } catch (e){ toast('讀取失敗：' + e.message); return; }
-    if (!SH.view){ endPlace(); deselect(); setDemolish(false); if (TOOL === 'mood') setMood(null); SH.stash = { items: deep(S.items), removed: { ...S.removed }, photos: deep(PHO.meta) }; }
-    if (PHO.mode) phoExit();
+    if (!SH.view){ endPlace(); deselect(); setDemolish(false); if (TOOL === 'mood') setMood(null); SH.stash = { items: deep(S.items), removed: { ...S.removed }, photos: deep(PHO.meta), site: S.site, base: S.base }; }
+    if (PHO.mode) phoExit(); CO.on = false; coEl.classList.remove('show');
     SH.view = g; viewTheme = d && d.data.theme || ''; setState(d ? d.data : {}); phoSet(d ? d.data.photos : {}); body.classList.add('viewing'); renderView(); renderPlans();
     toast(`走進第 ${g} 組的方案（唯讀）`);
   }
   function backHome(){
-    if (!SH.view) return; if (PHO.mode) phoExit(); const st = SH.stash; SH.view = 0; SH.stash = null; body.classList.remove('viewing');
+    if (!SH.view) return; if (PHO.mode) phoExit(); const st = SH.stash; SH.view = 0; SH.stash = null; CO.on = false; coEl.classList.remove('show'); body.classList.remove('viewing');
     setState(st || {}); phoSet(st && st.photos); renderPlans(); if (CS.w) schedulePush(300); toast('回到我們組');
   }
   function renderView(){
+    if (CO.on){ viewEl.innerHTML = '🏫 全班共創校園・唯讀 <button class="home">回我們組</button>'; viewEl.querySelector('.home').onclick = backHome; return; }
     const g = SH.view, on = !!SH.votes['g' + g];
     viewEl.innerHTML = `👀 第 ${g} 組的方案${viewTheme ? `：「${viewTheme.replace(/[<>&]/g, '')}」` : ''}・唯讀 <button class="vote${on ? ' on' : ''}">${on ? '✔ 已投「我願意在這裡待」' : '👍 我願意在這裡待'}</button><button class="home">回我們組</button>`;
     viewEl.querySelector('.home').onclick = backHome;
@@ -1078,7 +1132,7 @@ export function init(G){
   async function poster(){
     const W = 1080, H = 1920, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const x = cv.getContext('2d');
     const F = (w, s) => `${w} ${s}px "Noto Sans TC","Microsoft JhengHei","PingFang TC",sans-serif`;
-    const g = SH.view || CS.g, title = CS.cls ? (CS.demo ? '老師示範' : `${CS.cls.year} 學年 ${CS.cls.name}・第 ${g} 組`) : '我的方案', theme = SH.view ? viewTheme : (themeEl.value.trim() || CS.theme || '');
+    const g = SH.view || CS.g, title = CS.cls ? (CS.demo ? '老師示範' : CO.on ? `${CS.cls.year} 學年 ${CS.cls.name}・全班共創校園` : `${CS.cls.year} 學年 ${CS.cls.name}・第 ${g} 組`) : '我的方案', theme = SH.view ? viewTheme : (themeEl.value.trim() || CS.theme || '');
     toast('海報產生中…');
     // 3D 截圖：暫時改畫布大小與相機，畫完立刻複製，再還原
     const sv = { p: camera.position.clone(), t: controls.target.clone(), fov: camera.fov, asp: camera.aspect, size: renderer.getSize(new THREE.Vector2()), pr: renderer.getPixelRatio(), fx: fx.visible, lay: lay.visible };
@@ -1103,7 +1157,7 @@ export function init(G){
     x.fillStyle = '#f4f1ea'; x.fillRect(0, 0, W, H);
     x.fillStyle = '#1f6feb'; x.fillRect(0, 0, W, 210);
     x.fillStyle = '#fff'; x.font = F(900, 40); x.fillText('花蓮高商 校園改造提案', 40, 72); x.font = F(800, 34); x.fillText(title, 40, 128);
-    x.font = F(800, 26); x.fillStyle = '#d6e6ff'; x.fillText(SC ? `校園評價 ${'★'.repeat(SC.stars)}${'☆'.repeat(5 - SC.stars)}　${Math.round(SC.total)} 分` : '', 40, 180);
+    x.font = F(800, 26); x.fillStyle = '#d6e6ff'; x.fillText(SC ? `${SC.site ? '主要改造點：' + SC.site.title + '　' : ''}校園評價 ${'★'.repeat(SC.stars)}${'☆'.repeat(5 - SC.stars)}　${Math.round(SC.total)} 分` : '', 40, 180);
     x.fillStyle = '#1d2a33'; x.font = F(900, 34); const wrap = (t, x0, y0, maxW, lh) => { let line = '', y = y0; for (const ch of t){ if (x.measureText(line + ch).width > maxW){ x.fillText(line, x0, y); line = ch; y += lh; } else line += ch; } if (line) x.fillText(line, x0, y); return y; };
     const ty = wrap(theme ? `「${theme}」` : '（還沒寫改造理念）', 40, 270, W - 80, 46);
     const y1 = ty + 30; x.drawImage(top, 40, y1, 1000, 760); x.strokeStyle = '#1d2a33'; x.lineWidth = 3; x.strokeRect(40, y1, 1000, 760);
@@ -1111,9 +1165,10 @@ export function init(G){
     views.forEach((v, i) => { const vx = 40 + i * 340; x.drawImage(v.c, vx, y2, 320, 290); x.strokeRect(vx, y2, 320, 290); x.fillText(v.n, vx + 4, y2 + 318); });
     if (!views.length){ x.fillText('（放上物件後會自動挑代表視角）', 40, y2 + 40); }
     let y3 = y2 + (views.length ? 360 : 80);
-    if (SC){ [['安全', SC.safe, '#e53935'], ['安心', SC.calm, '#1f6feb'], ['美化', SC.beauty, '#2e9d5a']].forEach(([k, v, c], i) => { const yy = y3 + i * 44;
-      x.fillStyle = '#1d2a33'; x.font = F(900, 26); x.fillText(k, 40, yy + 24); x.fillStyle = '#dde3e8'; x.fillRect(120, yy + 4, 760, 26); x.fillStyle = c; x.fillRect(120, yy + 4, 7.6 * Math.max(0, Math.min(100, v)), 26);
-      x.fillStyle = '#1d2a33'; x.fillText(Math.round(v), 900, yy + 26); }); y3 += 150; }
+    if (SC){ const f1 = (v) => Math.round(v * 10) / 10; (SC.site ? [['安心指數', SC.site.a * 4, '#e53935', `${f1(SC.site.a0)}→${f1(SC.site.a)}`], ['散心指數', SC.site.s * 4, '#1f6feb', `${f1(SC.site.s0)}→${f1(SC.site.s)}`], ['他點加分', SC.site.bonus * 100 / 30, '#2e9d5a', '+' + SC.site.bonus]]
+      : [['安全', SC.safe, '#e53935'], ['安心', SC.calm, '#1f6feb'], ['美化', SC.beauty, '#2e9d5a']]).forEach(([k, v, c, t], i) => { const yy = y3 + i * 44;
+      x.fillStyle = '#1d2a33'; x.font = F(900, 26); x.fillText(k, 40, yy + 24); x.fillStyle = '#dde3e8'; x.fillRect(160, yy + 4, 700, 26); x.fillStyle = c; x.fillRect(160, yy + 4, 7 * Math.max(0, Math.min(100, v)), 26);
+      x.fillStyle = '#1d2a33'; x.fillText(t || Math.round(v), 876, yy + 26); }); y3 += 150; }
     const cnt = {}; Object.values(S.items).forEach((o) => { const n = BY_ID[o.id].name; cnt[n] = (cnt[n] || 0) + 1; });
     const rows = Object.entries(cnt).sort((a, b) => b[1] - a[1]), nr = Object.keys(S.removed).length;
     x.fillStyle = '#1d2a33'; x.font = F(900, 28); x.fillText(`擺放 ${Object.keys(S.items).length} 件${nr ? `・移除原有物件 ${nr} 件` : ''}・花費 ${spent()} 點`, 40, y3); y3 += 44;
@@ -1122,6 +1177,98 @@ export function init(G){
     const blob = await new Promise((r) => cv.toBlob(r, 'image/png')), a = document.createElement('a');
     a.href = URL.createObjectURL(blob); a.download = `${title.replace(/[\s/：・]/g, '')}_提案海報.png`; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 4000);
     toast('提案海報已下載'); window.__posterCanvas = cv;
+  }
+
+  // ---------- 主要改造點（115/11/10）：和學習單一樣一組主攻一處；選點時看得到同班已有幾組選了這裡 ----------
+  const SITE = { busy: false, pick: 0 };
+  document.body.insertAdjacentHTML('beforeend', '<div id="gSite"><div class="box" role="dialog" aria-modal="true"></div></div>');
+  const siteEl = document.getElementById('gSite'), siteBox = siteEl.querySelector('.box');
+  siteEl.addEventListener('pointerdown', (e) => { e.stopPropagation(); if (e.target === siteEl && S.site) siteEl.classList.remove('show'); });
+  async function siteCounts(){   // 同班其他組各選了哪個點
+    const c = {}; if (!CS.cls || CS.demo || !CS.w) return c;
+    const docs = await Promise.all(Array.from({ length: CS.cls.groups || 0 }, (_, i) => i + 1 === CS.g ? null : CL.getDoc('cgWorks/' + CL.workId(CS.cls.id, i + 1)).catch(() => null)));
+    docs.forEach((d) => { const n = d && +d.data.site; if (n) c[n] = (c[n] || 0) + 1; }); return c;
+  }
+  function siteOpen(){
+    if (SH.view){ toast('先回到我們組再選改造點'); return; }
+    SITE.pick = S.site; const inClass = !!CS.w && !CS.demo;
+    siteBox.innerHTML = `<h3>📍 選定主要改造點</h3><p>和學習單一樣，每組主攻<b>一個地點</b>：分數主要看這個點的「安心指數」和「散心指數」。預算有剩，再照顧其他危險點可以加分。之後可以到「📋 方案」更換。</p>
+      <div class="ls">${PTS.map(([n, , t]) => `<button data-n="${n}" class="${n === SITE.pick ? 'on' : ''}">${n}. ${t}<small data-c="${n}">${inClass ? '查詢中…' : ''}</small></button>`).join('')}</div>
+      <div class="bs">學習單第三題的現況總分（可不填）：安心 <input type="number" min="5" max="25" inputmode="numeric" data-b="a" value="${S.base && S.base.a || ''}">／25　散心 <input type="number" min="5" max="25" inputmode="numeric" data-b="s" value="${S.base && S.base.s || ''}">／25</div>
+      <div class="row">${S.site ? '<button data-a="x">取消</button>' : ''}<button data-a="ok" class="go"${SITE.pick ? '' : ' disabled'}>確定</button></div>`;
+    const okB = siteBox.querySelector('[data-a="ok"]');
+    siteBox.querySelectorAll('.ls button').forEach((b) => b.onclick = () => { SITE.pick = +b.dataset.n; siteBox.querySelectorAll('.ls button').forEach((o) => o.classList.toggle('on', o === b)); okB.disabled = false; });
+    const xB = siteBox.querySelector('[data-a="x"]'); if (xB) xB.onclick = () => siteEl.classList.remove('show');
+    okB.onclick = () => { const v = (k) => { const n = Math.round(+siteBox.querySelector(`[data-b="${k}"]`).value); return n >= 5 && n <= 25 ? n : 0; }, a = v('a'), s = v('s');
+      siteEl.classList.remove('show'); siteSet(SITE.pick, a && s ? { a, s } : null); };
+    siteEl.classList.add('show');
+    if (inClass) siteCounts().then((c) => siteBox.querySelectorAll('small[data-c]').forEach((el) => { const k = c[+el.dataset.c] || 0; el.textContent = k ? `已有 ${k} 組選這裡` : '還沒有別組選'; el.classList.toggle('many', k >= 2); }))
+      .catch(() => siteBox.querySelectorAll('small[data-c]').forEach((el) => el.textContent = ''));
+  }
+  async function siteSet(n, base){
+    const p = PTS.find((q) => q[0] === n); if (!p) return;
+    S.site = n; S.base = base; save(); rescore(); if (plans.classList.contains('show')) renderPlans();
+    if (!WALK.on && window.setView) window.setView(p[4] - 16, 46, p[5] + 52, p[4], 0, p[5]);
+    toast(`主要改造點：${p[2]}。先把這裡做好，再看別的危險點`);
+    if (!CS.w) return;
+    SITE.busy = true;
+    try { await CL.patch('cgWorks/' + CS.w, { site: n, ...(base ? { base } : {}), classId: CS.cls.id, g: CS.g }, ['site', 'base', 'classId', 'g']); }
+    catch (e){ toast('改造點存檔失敗：' + e.message); }
+    SITE.busy = false;
+  }
+
+  // ---------- 全班共創校園（115/11/10 試做）：每個改造點放進一組的方案；同一點有多組時可切換比較並投票，老師公布後留下得票最高的 ----------
+  const CO = { on: false, docs: {}, sites: [], pick: {} }, CO_R = 50;
+  const coEl = document.createElement('div'); coEl.id = 'gCo'; body.appendChild(coEl);
+  coEl.addEventListener('pointerdown', (e) => e.stopPropagation());
+  const ptOf = (x, z) => { let b = 0, bd = CO_R; for (const p of PTS){ const d = Math.hypot(p[4] - x, p[5] - z); if (d <= bd){ bd = d; b = p[0]; } } return b; };   // 這個位置算哪個危險點的範圍（50 m 內最近的）
+  function guessSite(d){   // 還沒選主點的舊作品：看東西最多放在哪個點附近
+    if (+d.site) return +d.site; const c = {};
+    for (const v of Object.values(d.items || {})){ const n = ptOf(+v.x, +v.z); if (n) c[n] = (c[n] || 0) + 1; }
+    const top = Object.entries(c).sort((a, b) => b[1] - a[1])[0]; return top ? +top[0] : 0;
+  }
+  async function coOpen(){
+    if (!showPhase()){ toast('老師把階段切到「展示」後才能看全班共創校園'); return; }
+    toast('載入全班的方案…');
+    const docs = await Promise.all(Array.from({ length: CS.cls.groups || 0 }, (_, i) => CL.getDoc('cgWorks/' + CL.workId(CS.cls.id, i + 1)).catch(() => null)));
+    CO.docs = {}; const by = {};
+    docs.forEach((d, i) => { if (!d || !Object.keys(d.data.items || {}).length) return; const n = guessSite(d.data); if (!n) return; CO.docs[i + 1] = d.data; (by[n] = by[n] || []).push(i + 1); });
+    CO.sites = PTS.filter((p) => by[p[0]]).map((p) => ({ n: p[0], title: p[2], x: p[4], z: p[5], gs: by[p[0]] }));
+    if (!CO.sites.length){ toast('還沒有任何一組放了東西'); return; }
+    const win = CS.cls.votesShown && CS.cls.coWin || {};
+    CO.pick = {}; CO.sites.forEach((s) => { const w = +win['s' + s.n], m = +SH.votes['s' + s.n]; CO.pick[s.n] = s.gs.includes(w) ? w : s.gs.includes(m) ? m : s.gs[0]; });
+    if (PHO.mode) phoExit();
+    if (!SH.view){ endPlace(); deselect(); setDemolish(false); if (TOOL === 'mood') setMood(null); SH.stash = { items: deep(S.items), removed: { ...S.removed }, photos: deep(PHO.meta), site: S.site, base: S.base }; }
+    SH.view = -1; CO.on = true; body.classList.add('viewing'); plans.classList.remove('show'); coApply(); renderView(); coRender(); coEl.classList.add('show');
+    toast('全班共創校園：每個改造點放進一組的方案');
+  }
+  function coApply(){
+    const items = {}, removed = {}, photos = {};
+    for (const s of CO.sites){ const g = CO.pick[s.n], d = CO.docs[g]; if (!d) continue;
+      for (const [u, v] of Object.entries(d.items || {})) if (ptOf(+v.x, +v.z) === s.n) items['g' + g + '_' + u] = v;
+      for (const id of Object.keys(d.removed || {})){ const r = RMI.get(id); if (!r) continue; const c = r.box.getCenter(new THREE.Vector3()); if (ptOf(c.x, c.z) === s.n) removed[id] = true; }
+      for (const [k, p] of Object.entries(d.photos || {})) if (/^p[1-6]$/.test(k) && p && ptOf(+p.x, +p.z) === s.n) photos['g' + g + k] = { ...p, w: CL.workId(CS.cls.id, g), slot: k };
+    }
+    setState({ items, removed }); phoSet(photos);
+  }
+  function coRender(){
+    const shown = !!CS.cls.votesShown, tally = shown && CS.cls.coVotes || {}, win = shown && CS.cls.coWin || {};
+    coEl.innerHTML = `<h3>🏫 全班共創校園</h3><p>每個改造點放進<b>一組</b>的方案。同一個點有好幾組時，點組別切換比較，再投給你覺得最好的一組（不能投自己組）。${shown ? '<b>老師已公布：🏆 是得票最高的方案。</b>' : '老師公布後，得票最高的會留在全班的校園裡。'}</p>`
+      + CO.sites.map((s) => { const cur = CO.pick[s.n], mine = +SH.votes['s' + s.n] || 0, many = s.gs.length > 1;
+        return `<div class="cs"><b data-n="${s.n}">${s.n}. ${s.title}<small>${many ? s.gs.length + ' 組競選' : '只有一組'}</small></b><div class="cg">${s.gs.map((g) => { const t = (tally['s' + s.n] || {})['g' + g];
+          return `<button data-n="${s.n}" data-g="${g}" class="${g === cur ? 'on' : ''}">${+win['s' + s.n] === g ? '🏆 ' : ''}第 ${g} 組${g === CS.g ? '（我們）' : ''}${shown && many ? `　👍 ${t || 0}` : ''}</button>`; }).join('')}</div>`
+          + (many && cur !== CS.g ? `<button class="cv${mine === cur ? ' on' : ''}" data-v="${s.n}">${mine === cur ? `✔ 已投第 ${cur} 組（再按收回）` : `👍 這個點投給第 ${cur} 組`}</button>` : '') + '</div>'; }).join('');
+    coEl.querySelectorAll('.cs b').forEach((b) => b.onclick = () => coFly(+b.dataset.n));
+    coEl.querySelectorAll('.cg button').forEach((b) => b.onclick = () => coPick(+b.dataset.n, +b.dataset.g));
+    coEl.querySelectorAll('.cv').forEach((b) => b.onclick = () => coVote(+b.dataset.v, CO.pick[+b.dataset.v]));
+  }
+  function coFly(n){ const s = CO.sites.find((o) => o.n === n); if (s && !WALK.on && window.setView) window.setView(s.x - 16, 40, s.z + 46, s.x, 0, s.z); }
+  function coPick(n, g){ if (!CO.on) return; CO.pick[n] = g; coApply(); coRender(); coFly(n); }
+  async function coVote(n, g){
+    if (g === CS.g){ toast('不能投自己組'); return; }
+    const k = 's' + n, old = SH.votes[k]; if (+old === g) delete SH.votes[k]; else SH.votes[k] = g; coRender();
+    try { await CL.patch('cgVotes/' + SH.vid, { classId: CS.cls.id, g: CS.g, v: SH.votes }, ['classId', 'g', 'v']); toast(+old === g ? '收回了這一票' : `這個點投給第 ${g} 組`); }
+    catch (e){ if (old === undefined) delete SH.votes[k]; else SH.votes[k] = old; coRender(); toast('投票失敗：' + e.message); }
   }
 
   // ---------- 改造前照片（115/11/10 老師要求：像「全能住宅改造王」看見改造前和改造後） ----------
@@ -1135,8 +1282,8 @@ export function init(G){
   const clampN = (v, a, b, d) => { v = +v; return isFinite(v) ? Math.max(a, Math.min(b, v)) : d; };
   function phoSet(m){
     PHO.meta = {};
-    for (const [k, v] of Object.entries(m || {})) if (/^p[1-6]$/.test(k) && v && isFinite(+v.x) && isFinite(+v.z))
-      PHO.meta[k] = { x: +v.x, z: +v.z, h: clampN(v.h, .3, 40, 1.5), yaw: clampN(v.yaw, -1e3, 1e3, 0), pitch: clampN(v.pitch, -1.4, 1.4, 0), fov: clampN(v.fov, 15, 115, 53), ar: clampN(v.ar, .3, 3.5, 1.33), t: +v.t || 0, cap: String(v.cap || '').slice(0, 30) };
+    for (const [k, v] of Object.entries(m || {})) if (/^(g\d+)?p[1-6]$/.test(k) && v && isFinite(+v.x) && isFinite(+v.z))
+      PHO.meta[k] = { w: v.w || '', slot: v.slot || '', x: +v.x, z: +v.z, h: clampN(v.h, .3, 40, 1.5), yaw: clampN(v.yaw, -1e3, 1e3, 0), pitch: clampN(v.pitch, -1.4, 1.4, 0), fov: clampN(v.fov, 15, 115, 53), ar: clampN(v.ar, .3, 3.5, 1.33), t: +v.t || 0, cap: String(v.cap || '').slice(0, 30) };
     phoPins(); if (phoEl.classList.contains('show')) phoList();
   }
   function phoPins(){
@@ -1147,8 +1294,8 @@ export function init(G){
       const o = new CSS2DObject(d); o.position.set(p.x, 2.6, p.z); phoRoot.add(o); }
   }
   async function phoImg(k){
-    const p = PHO.meta[k], key = phoW() + '_' + k + '_' + (p ? p.t : 0); if (PHO.cache.has(key)) return PHO.cache.get(key);
-    const d = await CL.getDoc('cgPhotos/' + phoW() + '_' + k), img = d && typeof d.data.img === 'string' && d.data.img.startsWith(PH_HEAD) ? d.data.img : '';
+    const p = PHO.meta[k], w = (p && p.w) || phoW(), slot = (p && p.slot) || k, key = w + '_' + slot + '_' + (p ? p.t : 0); if (PHO.cache.has(key)) return PHO.cache.get(key);
+    const d = await CL.getDoc('cgPhotos/' + w + '_' + slot), img = d && typeof d.data.img === 'string' && d.data.img.startsWith(PH_HEAD) ? d.data.img : '';
     if (img) PHO.cache.set(key, img); return img;
   }
   const phoErr = (e) => e.status === 401 || e.status === 403 ? '要登入學校帳號才能看照片' : '照片讀取失敗：' + e.message;
@@ -1443,5 +1590,5 @@ export function init(G){
   const k = Object.keys(S.removed).length;
   if (n || k) toast(`已載入上次的改造：${n} 件物件${k ? `、移除 ${k} 件原有物件` : ""}`);
   rescore();
-  window.__gameState = { S, RM, SURF, CS, MD, SH, join, addPin, setMood, viewGroup, backHome, vote, poster, askReset, doReset, get SC(){ return SC; }, tip, LY, drawLayers, tryPlace, check, select, undo, redo, PHO, phoSet, phoOpen, phoAlign, phoCommit, phoExit, phoShrink, phoAdd, startPlace, endPlace, setDemolish, pickRm, ground, get sel(){ return sel; }, get TOOL(){ return TOOL; } };   // 測試用
+  window.__gameState = { S, RM, SURF, CS, MD, SH, join, addPin, setMood, viewGroup, backHome, vote, poster, askReset, doReset, get SC(){ return SC; }, tip, LY, drawLayers, tryPlace, check, select, undo, redo, SITE, siteOpen, siteSet, CO, coOpen, coPick, coVote, PHO, phoSet, phoOpen, phoAlign, phoCommit, phoExit, phoShrink, phoAdd, startPlace, endPlace, setDemolish, pickRm, ground, get sel(){ return sel; }, get TOOL(){ return TOOL; } };   // 測試用
 }

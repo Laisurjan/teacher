@@ -374,6 +374,9 @@ const TILE = {
   tile_glow: ['#1b2b4a', (x, w, h) => { x.fillStyle = '#1b2b4a'; x.fillRect(0, 0, w, h); const r = rng(29);
     x.strokeStyle = '#5ff0ff'; x.lineWidth = 4; x.beginPath(); x.arc(w / 2, h / 2, 70, 0, 7); x.stroke(); x.beginPath(); x.arc(w / 2, h / 2, 30, 0, 7); x.stroke();
     x.fillStyle = '#9ffcff'; for (let i = 0; i < 40; i++){ x.beginPath(); x.arc(r() * w, r() * h, 1.5 + r() * 2.5, 0, 7); x.fill(); } }, true],
+  tile_warn: ['#e0b00c', (x, w, h) => { x.fillStyle = '#f2c230'; x.fillRect(0, 0, w, h); x.fillStyle = '#222';   // 警示地貼：黃底黑斜紋邊＋驚嘆號（115/11/10）
+    x.save(); x.beginPath(); x.rect(0, 0, w, 34); x.rect(0, h - 34, w, 34); x.clip(); for (let i = -h; i < w; i += 44){ x.beginPath(); x.moveTo(i, h); x.lineTo(i + 22, h); x.lineTo(i + 22 + h, 0); x.lineTo(i + h, 0); x.fill(); } x.restore();
+    x.beginPath(); x.moveTo(w / 2, 58); x.lineTo(w - 62, h - 58); x.lineTo(62, h - 58); x.closePath(); x.fill(); x.fillStyle = '#f2c230'; x.fillRect(w / 2 - 7, 104, 14, 56); x.beginPath(); x.arc(w / 2, 178, 9, 0, 7); x.fill(); }],
   tile_tactile: ['#d9a90f', (x, w, h) => { x.fillStyle = '#f2c230'; x.fillRect(0, 0, w, h); x.strokeStyle = '#c99a08'; x.lineWidth = 2;
     x.strokeRect(1, 1, w - 2, h - 2); x.fillStyle = '#e0b00c'; for (let j = 0; j < 6; j++) for (let i = 0; i < 6; i++){ x.beginPath(); x.arc(22 + i * 42.4, 22 + j * 42.4, 12, 0, 7); x.fill(); x.stroke(); } }],
   hopscotch: ['#7f7f78', (x, w, h) => { x.fillStyle = '#8f8f88'; x.fillRect(0, 0, w, h); x.strokeStyle = '#fff'; x.lineWidth = 5;
@@ -507,6 +510,17 @@ const BUILD = {
     const sh = new THREE.Shape([[-.21, 0], [.21, 0], [.21, .245], [0, .39], [-.21, .245]].map((p) => new THREE.Vector2(...p)));
     mesh(g, new THREE.ExtrudeGeometry(sh, { depth: .04, bevelEnabled: false }), 0x8ec5e8, 0, 1.7, -.02);
     P(g, .42, .39, tmat(tex('sos_sign', 256, 238, drawSosSign), { transparent: true, alphaTest: .5 }), 0, 1.7 + .195, .022); },
+  // 115/11/10 依學生學習單增補：水邊安全、地面濕滑、蚊蟲
+  water_sign(g){ [-.28, .28].forEach((x) => B(g, .05, 1.7, .05, MET, x)); B(g, .66, .62, .04, YELLOW, 0, 1.02);
+    [1, -1].forEach((d) => P(g, .62, .58, tmat(sign('water_warn', '水深危險\n請勿靠近', { w: 320, h: 300, bg: '#f2c230', fg: '#c62828', size: 64, border: '#222' })), 0, 1.33, d * .022, d > 0 ? 0 : PI)); },
+  wet_sign(g){ [1, -1].forEach((d) => { const o = B(g, .42, .7, .03, YELLOW, 0, 0, d * .12); o.rotation.x = -d * .33;
+      const p = P(g, .38, .5, tmat(sign('wet_floor', '小心\n地滑', { w: 192, h: 256, bg: '#f2c230', fg: '#222', size: 72 })), 0, .36, d * .14, d > 0 ? 0 : PI); p.rotation.x = -d * .33; }); B(g, .4, .03, .05, 0x222222, 0, .68); },
+  life_ring(g){ B(g, .08, 1.6, .08, 0xf2f0ea); B(g, .5, .5, .04, 0xf2f0ea, 0, .95, .06); T(g, .19, .055, 0xf4511e, 0, 1.2, .12, 0, 0, 0, 2 * PI, 16, 6);
+    [0, 1, 2, 3].forEach((i) => { const a = i * PI / 2 + PI / 4; B(g, .07, .07, .125, 0xf2f0ea, Math.cos(a) * .19, 1.2 + Math.sin(a) * .19 - .035, .12); });
+    P(g, .44, .12, tmat(sign('life_lbl', '救生圈', { w: 256, h: 72, bg: '#fff', fg: '#c62828', size: 50 })), 0, 1.52, .081); B(g, .5, .16, .04, 0xf2f0ea, 0, 1.44, .06); },
+  mosquito_lamp(g){ C(g, .13, .16, .06, MET, 0, 0, 0, 10); C(g, .03, .03, 1.1, MET, 0, .06, 0, 6); C(g, .12, .12, .05, MET, 0, 1.16, 0, 10);
+    C(g, .07, .07, .26, mat(0x9b7bff, { emissive: 0x6a3cff, emissiveIntensity: .9 }), 0, 1.21, 0, 8);
+    for (let i = 0; i < 8; i++){ const a = i * PI / 4; B(g, .012, .26, .012, MET, Math.cos(a) * .11, 1.21, Math.sin(a) * .11); } C(g, .15, .12, .06, MET, 0, 1.47, 0, 10); },
   help_bell(g){ B(g, .14, 1.0, .1, 0x6c7a86); B(g, .22, .28, .14, YELLOW, 0, 1.0); B(g, .26, .03, .18, 0x6c7a86, 0, 1.28);
     const b = C(g, .05, .05, .04, 0xd81e1e, 0, 0, 0, 10); b.rotation.x = PI / 2; b.position.set(0, 1.1, .08);
     P(g, .18, .07, tmat(sign('bell', '求助', { w: 192, h: 80, bg: '#f2c230', fg: '#222', size: 54 })), 0, 1.22, .071); },
