@@ -4,6 +4,7 @@
 // M5：學校 Google 帳號登入，依名單進入自己那一組，作品存在 Firestore cgWorks（每 5 秒同步同組隊友）
 // M6：探勘階段放心情釘（怕／吵／暗／想待／想躲，每種 3 支），老師開放後看全班熱區；安心分改以全班「怕／暗／想躲」為需求點
 // M7：方案面板（改造理念、提案海報 PNG）；展示階段看別組方案（唯讀）並投「我願意在這裡待」
+// 115/11/10：資訊館周遭設施可移除（雜草、矮牆、花台、水塔、走廊…）；改造前照片（每組 6 張，對位後左右拉桿比較「改造前照片／改造後 3D」）
 // 由 index.html 在「同材質合併」之後載入，學生物件掛在 studentRoot，每種「物件＋顏色」一組 InstancedMesh，不參與合併。
 // 規格：C:\1031hlbhschool\校園改造遊戲規格書.md §4.2–4.6、§10
 import * as THREE from '../campus3d/lib/three.module.js';
@@ -171,10 +172,55 @@ const CSS = `
 #gFrameV{position:absolute;inset:0;border:6px solid #90a4ae;z-index:9;pointer-events:none;display:none}
 .viewing #gFrameV{display:block}
 .viewing #gCat,.viewing #gTools,.viewing #gSel,.viewing #gStat{display:none!important}
+/* 改造前照片（115/11/10） */
+.ppin{font-size:17px;line-height:1;width:34px;height:34px;border-radius:50%;background:#fff;border:3px solid #1f6feb;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 6px rgba(0,0,0,.35);pointer-events:auto;cursor:pointer}
+.photoing .lbl,.photoing .pin,.photoing .mpin,.photoing .ppin{display:none!important}
+.photoing header,.photoing #gCat,.photoing #gTools,.photoing #gSel,.photoing #gStat,.photoing #peg,.photoing #gTip,.photoing #gView,.photoing #gPhoto,.photoing #gScore,.photoing #gPlans,
+.photoing #gFrameV,.photoing #gFrame,.photoing #gLayers,.photoing #gMood{display:none!important}
+#gPhoto{position:absolute;left:12px;top:60px;z-index:13;width:min(340px,calc(100% - 24px));max-height:calc(100% - 140px);overflow-y:auto;background:var(--panel);
+  border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,.25);padding:12px 14px;display:none;font-size:13px}
+#gPhoto.show{display:block}
+#gPhoto h3{margin:0 0 8px;font-size:16px;font-weight:900;display:flex;justify-content:space-between;align-items:center}
+#gPhoto h3 button{border:0;background:none;font-size:20px;color:var(--sub);cursor:pointer;padding:0 4px}
+#gPhoto p{margin:0 0 8px;color:var(--sub);font-weight:700;line-height:1.55}
+#gPhoto .pr{display:flex;gap:8px;align-items:center;margin:6px 0;padding:6px;border:1px solid var(--line);border-radius:10px}
+#gPhoto .pr img{width:72px;height:54px;object-fit:cover;border-radius:6px;background:#dde3e8;flex:none}
+#gPhoto .pr span{flex:1;font-weight:800;min-width:0;word-break:break-all;color:var(--ink)}
+#gPhoto .pr button,#gPhoto .go{font:inherit;font-size:13px;font-weight:800;padding:7px 10px;border-radius:9px;border:1px solid var(--line);background:var(--btn);color:var(--ink);cursor:pointer;flex:none}
+#gPhoto .pr button.del{color:#c62828}
+#gPhoto .go{display:block;width:100%;margin-top:8px;background:var(--accent);color:#fff;border-color:transparent;padding:10px;font-size:14px}
+#gPho{position:fixed;inset:0;z-index:30;display:none;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+.photoing #gPho{display:block}
+#gPho .fr{position:absolute;box-shadow:0 0 0 200vmax rgba(0,0,0,.82);pointer-events:none}
+#gPho.al .fr{box-shadow:0 0 0 200vmax rgba(0,0,0,.35);outline:2px dashed rgba(255,255,255,.9)}
+#gPho .fr img{position:absolute;inset:0;width:100%;height:100%;display:block}
+#gPho .dv{position:absolute;top:0;bottom:0;width:4px;margin-left:-2px;background:#fff;box-shadow:0 0 6px rgba(0,0,0,.6)}
+#gPho .dv::after{content:'⇔';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:46px;height:46px;border-radius:50%;background:#fff;color:#1d2a33;font-size:22px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.45)}
+#gPho .fr b{position:absolute;bottom:10px;font-size:15px;font-weight:900;color:#fff;background:rgba(0,0,0,.62);padding:4px 12px;border-radius:999px}
+#gPho .tb{left:10px} #gPho .ta{right:10px}
+#gPho.al .dv,#gPho.al .fr b,#gPho.mix .dv,#gPho.mix .fr b{display:none}
+#gPho .top{position:absolute;left:0;right:0;top:0;display:flex;gap:8px;align-items:center;justify-content:flex-end;flex-wrap:wrap;padding:calc(8px + env(safe-area-inset-top)) 10px 8px;pointer-events:none}
+#gPho .top span{flex:1;min-width:140px;color:#fff;font-size:15px;font-weight:900;text-shadow:0 1px 4px #000,0 0 8px #000}
+#gPho button{pointer-events:auto;font:inherit;font-size:14px;font-weight:800;padding:9px 13px;border-radius:10px;border:0;background:#fff;color:#1d2a33;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+#gPho button.go{background:#1f6feb;color:#fff} #gPho button.del{color:#c62828} #gPho button.on{background:#ffca28}
+#gPho button:disabled{opacity:.6}
+#gPho.al .vw,#gPho:not(.al) .aw,#gPho.ro .ow{display:none}
+#gPho .pan{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(8px + env(safe-area-inset-bottom));width:min(760px,calc(100% - 16px));box-sizing:border-box;background:rgba(20,28,36,.84);color:#fff;
+  border-radius:14px;padding:10px 12px;display:none;gap:8px 14px;flex-wrap:wrap;align-items:center;font-size:13px;font-weight:800;cursor:default}
+#gPho.al .pan{display:flex}
+#gPho .pad{display:grid;grid-template-columns:repeat(3,46px);grid-template-rows:repeat(2,40px);gap:4px;flex:none}
+#gPho .pad button{padding:0;font-size:15px}
+#gPho .pan label{display:flex;align-items:center;gap:6px;flex:1 1 170px;white-space:nowrap}
+#gPho .pan input[type=range]{flex:1;min-width:70px;accent-color:#ffca28}
+#gPho .pan input[type=text]{flex:1 1 220px;min-width:0;font:inherit;font-size:14px;font-weight:700;padding:8px 10px;border-radius:9px;border:0;user-select:text;-webkit-user-select:text}
+#gPho .pan p{flex:1 1 100%;margin:0;font-size:12px;font-weight:700;opacity:.9;line-height:1.5}
+#gPho .acts{display:flex;gap:8px;margin-left:auto}
 `;
 
 export function init(G){
-  const { scene, camera, controls, renderer, occBoxes, BOUND, QL, WALK, toast, groundAt, RM = [], rmSet = () => {}, SURF = [], PTS = [], DARK = [] } = G;
+  const { scene, camera, controls, renderer, occBoxes, BOUND, QL, WALK, toast, groundAt, RM = [], rmSet = () => {}, SURF = [], SOLID = [], PTS = [], DARK = [], exitWalk = () => {} } = G;
   const app = renderer.domElement.parentElement, body = document.body;
   const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
   // 整頁不該捲動（iPad 叫出鍵盤或程式捲動卡片時可能被推上去）：一捲就歸零
@@ -237,19 +283,21 @@ export function init(G){
   const rectPoly = (q) => [[q.x0, q.z0], [q.x1, q.z0], [q.x1, q.z1], [q.x0, q.z1]];
   // 原有可拆物件的占地：樹與棕櫚只算樹幹附近，其他用整個外框
   RM.forEach((r) => { const c = r.box.getCenter(new THREE.Vector3()), k = r.kind === 'tree' || r.kind === 'palm' || r.kind === 'juniper' ? .5 : 0;
-    r.foot = k ? [c.x - k, c.z - k, c.x + k, c.z + k] : [r.box.min.x, r.box.min.z, r.box.max.x, r.box.max.z]; });
+    r.foot = k ? [c.x - k, c.z - k, c.x + k, c.z + k] : [r.box.min.x, r.box.min.z, r.box.max.x, r.box.max.z];
+    if (r.kind === 'corridor' || r.kind === 'awning') r.foot = null; });   // 有頂的走廊、遮陽棚：底下本來就能放東西
   const rmName = (k) => ((REMOVE[k] && REMOVE[k].name) || '物件').replace(/（.*）/, '');
   function check(id, x, z, rot, ignore, y = 0){
     const C4 = corners(id, x, z, rot, .02);
     if (!C4.every(([a, b]) => inPoly(a, b))) return '超出校園範圍';
     if (y > 0){
-      const q = SURF.find((o) => Math.abs(o.y - y) < .01);
-      if (!q || !C4.every(([a, b]) => a > q.x0 && a < q.x1 && b > q.z0 && b < q.z1)) return `要整個放在${q ? q.name : '台'}上`;
+      const qs = SURF.filter((o) => Math.abs(o.y - y) < .01), q = qs.find((o) => C4.every(([a, b]) => a > o.x0 && a < o.x1 && b > o.z0 && b < o.z1));   // 同高度的台可能不只一個（資訊館平台、右翼平台）
+      if (!q) return `要整個放在${qs[0] ? qs[0].name : '台'}上`;
       if (BY_ID[id].h > q.clear) return `太高了，${q.name}上放不下`;
     } else if (SURF.some((q) => overlap(C4, rectPoly(q)))) return '壓到平台或司令台的邊了，請放到台上或台下空地';
+    else { const q = SOLID.find((o) => overlap(C4, rectPoly(o))); if (q) return `這裡是${q.name}，放不了東西`; }
     const xs = C4.map((c) => c[0]), zs = C4.map((c) => c[1]), x0 = Math.min(...xs), x1 = Math.max(...xs), z0 = Math.min(...zs), z1 = Math.max(...zs);
     if (occBoxes.some((b) => !b.off && b.min.y < y + 1 && b.max.y > y + .3 && b.max.x > x0 && b.min.x < x1 && b.max.z > z0 && b.min.z < z1)) return '這裡有建築或原有設施擋住';
-    if (!isTile(id) && y === 0){ const r = RM.find((o) => !o.off && o.foot[2] > x0 && o.foot[0] < x1 && o.foot[3] > z0 && o.foot[1] < z1);
+    if (!isTile(id) && y === 0){ const r = RM.find((o) => !o.off && o.foot && o.foot[2] > x0 && o.foot[0] < x1 && o.foot[3] > z0 && o.foot[1] < z1);
       if (r) return `這裡有原本的${rmName(r.kind)}（可以用「移除」移走）`; }
     const t = isTile(id);
     for (const [u, it] of Object.entries(S.items)){
@@ -382,7 +430,7 @@ export function init(G){
   }
 
   const tools = document.createElement('div'); tools.id = 'gTools';
-  tools.innerHTML = `<button data-t="cat" class="on">型錄</button><button data-t="mood" style="display:none">心情釘</button><button data-t="layer">圖層</button><button data-t="demo" class="demo" title="點一下物件就移走（自己放的或原有的樹、樹籬、路燈、中庭桌椅）">移除</button><button data-t="rot">旋轉</button><button data-t="grid" class="on">格線</button>
+  tools.innerHTML = `<button data-t="cat" class="on">型錄</button><button data-t="mood" style="display:none">心情釘</button><button data-t="layer">圖層</button><button data-t="demo" class="demo" title="點一下物件就移走（自己放的，或頭上有紅點的原有物件：樹、樹籬、路燈、桌椅、雜草、矮牆、花台…）">移除</button><button data-t="photo" title="上傳改造前的照片，和改造後的 3D 左右比較">📷 照片</button><button data-t="rot">旋轉</button><button data-t="grid" class="on">格線</button>
     <button data-t="undo">↶ 復原</button><button data-t="redo">↷ 重做</button><button data-t="done">完成</button><button data-t="snd" class="on">音效</button><button data-t="reset" class="reset">全部重置</button>`;
   body.appendChild(tools);
   const tb = {}; tools.querySelectorAll('button').forEach((b) => tb[b.dataset.t] = b);
@@ -499,7 +547,7 @@ export function init(G){
     if (!ON || WALK.on || SH.view || e.target !== canvas || (e.button !== undefined && e.button > 0)) return;
     if (ptrs.size > 1){ clearTimeout(lp); down = null; if (drag) endDrag(false); if (paint) endPaint(); return; }
     if (TOOL === 'place' && PL && isTile(PL.id)){ startPaint(e); e.stopPropagation(); e.preventDefault(); return; }
-    const u = TOOL === 'place' || TOOL === 'demolish' || TOOL === 'mood' ? null : pick(e.clientX, e.clientY);
+    const u = TOOL === 'place' || TOOL === 'demolish' || TOOL === 'mood' || TOOL === 'photo' ? null : pick(e.clientX, e.clientY);
     if (u && u === sel){ startDrag(u, e.pointerId, e.clientX, e.clientY); e.stopPropagation(); e.preventDefault(); return; }
     down = { x: e.clientX, y: e.clientY, t: performance.now(), id: e.pointerId, u, moved: false };
     clearTimeout(lp);
@@ -564,6 +612,7 @@ export function init(G){
     }
     if (TOOL === 'demolish'){ demolishAt(cx, cy); return; }
     if (TOOL === 'mood'){ moodAt(cx, cy); return; }
+    if (TOOL === 'photo'){ phoSpot(cx, cy); return; }
     if (u) select(u); else if (sel) deselect();
   }
   addEventListener('keydown', (e) => {
@@ -571,7 +620,7 @@ export function init(G){
     const k = e.key.toLowerCase(), mod = e.ctrlKey || e.metaKey;
     if (mod && k === 'z'){ e.preventDefault(); e.shiftKey ? redo() : undo(); }
     else if (mod && k === 'y'){ e.preventDefault(); redo(); }
-    else if (k === 'escape'){ if (cf.classList.contains('show')){ cf.classList.remove('show'); return; } endPlace(); deselect(); setDemolish(false); if (TOOL === 'mood') setMood(null); }
+    else if (k === 'escape'){ if (cf.classList.contains('show')){ cf.classList.remove('show'); return; } if (TOOL === 'photo'){ TOOL = 'idle'; PHO.cur = null; status(''); } endPlace(); deselect(); setDemolish(false); if (TOOL === 'mood') setMood(null); }
     else if (k === 'r') rotate();
     else if ((k === 'delete' || k === 'backspace') && sel){ e.preventDefault(); selAct('del'); }
   });
@@ -587,7 +636,7 @@ export function init(G){
   function hoverRm(r){ hov.visible = !!r; if (r) hov.box.copy(r.box); }
   function setDemolish(on){
     if (on === (TOOL === 'demolish')) return;
-    if (on){ endPlace(); if (TOOL === 'mood') setMood(null); sel = null; showSel(); TOOL = 'demolish'; status('移除：點一下要移走的物件（自己放的，或頭上有紅點的原有樹、樹籬、路燈、中庭桌椅）・可復原・按「完成」結束'); }
+    if (on){ endPlace(); if (TOOL === 'mood') setMood(null); sel = null; showSel(); TOOL = 'demolish'; status('移除：點一下要移走的物件（自己放的，或頭上有紅點的原有物件：樹、樹籬、路燈、桌椅、雜草、矮牆、花台…）・可復原・按「完成」結束'); }
     else { TOOL = 'idle'; status(''); hoverRm(null); }
     body.classList.toggle('demolish', on); tb.demo.classList.toggle('on', on); marks.visible = on;
   }
@@ -737,7 +786,7 @@ export function init(G){
       CS.demo = true; CS.cls = { id: 'demo', name: '示範模式', year: CL.schoolYear() }; CS.g = 0; CS.w = 'demo_' + m.email.split('@')[0].replace(/[^a-z0-9]/g, '');
       BUDGET = 99999; SAVE_KEY = 'campusgame-work-' + CS.w;
       endPlace(); deselect(); UNDO.length = 0; REDO.length = 0;
-      if (d) applyRemote(d); else { CS.synced = { items: {}, removed: {} }; schedulePush(0); }
+      if (d) applyRemote(d); else { CS.synced = { items: {}, removed: {} }; phoSet({}); schedulePush(0); }
       hud(); rescore(); loginLabel();
       if (fresh) toast('老師示範模式：不限預算、自動存到你的帳號，不影響任何班級');
       clearInterval(CS.poll); CS.poll = setInterval(poll, 5000); moodInit(); return;
@@ -753,7 +802,7 @@ export function init(G){
     endPlace(); deselect(); UNDO.length = 0; REDO.length = 0;
     if (d){ applyRemote(d); toast(`歡迎！${CS.cls.name} 第 ${CS.g} 組：已載入全組的作品`); }
     else {   // 這組雲端還是空的：把這台裝置目前的作品當作起點送上去
-      CS.synced = { items: {}, removed: {} };
+      CS.synced = { items: {}, removed: {} }; phoSet({});
       const n = Object.keys(S.items).length + Object.keys(S.removed).length;
       toast(`歡迎！${CS.cls.name} 第 ${CS.g} 組${n ? '：這台裝置的作品已送到雲端，成為全組的起點' : ''}`);
       schedulePush(0);
@@ -794,6 +843,7 @@ export function init(G){
     CS.synced = { items: deep(S.items), removed: { ...S.removed } }; CS.ut = d.updateTime;
     if (typeof d.data.theme === 'string' && document.activeElement !== themeEl){ CS.theme = d.data.theme; themeEl.value = CS.theme; }
     if (sel && !S.items[sel]) deselect();
+    if (JSON.stringify(d.data.photos || {}) !== PHO.raw){ PHO.raw = JSON.stringify(d.data.photos || {}); phoSet(d.data.photos); }
     save(); hud(); showSel(); rescore();
   }
   async function poll(){
@@ -1002,13 +1052,14 @@ export function init(G){
   async function viewGroup(g){
     if (g === CS.g){ backHome(); return; }
     let d; try { d = await CL.getDoc('cgWorks/' + CL.workId(CS.cls.id, g)); } catch (e){ toast('讀取失敗：' + e.message); return; }
-    if (!SH.view){ endPlace(); deselect(); setDemolish(false); if (TOOL === 'mood') setMood(null); SH.stash = { items: deep(S.items), removed: { ...S.removed } }; }
-    SH.view = g; viewTheme = d && d.data.theme || ''; setState(d ? d.data : {}); body.classList.add('viewing'); renderView(); renderPlans();
+    if (!SH.view){ endPlace(); deselect(); setDemolish(false); if (TOOL === 'mood') setMood(null); SH.stash = { items: deep(S.items), removed: { ...S.removed }, photos: deep(PHO.meta) }; }
+    if (PHO.mode) phoExit();
+    SH.view = g; viewTheme = d && d.data.theme || ''; setState(d ? d.data : {}); phoSet(d ? d.data.photos : {}); body.classList.add('viewing'); renderView(); renderPlans();
     toast(`走進第 ${g} 組的方案（唯讀）`);
   }
   function backHome(){
-    if (!SH.view) return; const st = SH.stash; SH.view = 0; SH.stash = null; body.classList.remove('viewing');
-    setState(st || {}); renderPlans(); if (CS.w) schedulePush(300); toast('回到我們組');
+    if (!SH.view) return; if (PHO.mode) phoExit(); const st = SH.stash; SH.view = 0; SH.stash = null; body.classList.remove('viewing');
+    setState(st || {}); phoSet(st && st.photos); renderPlans(); if (CS.w) schedulePush(300); toast('回到我們組');
   }
   function renderView(){
     const g = SH.view, on = !!SH.votes['g' + g];
@@ -1073,6 +1124,215 @@ export function init(G){
     toast('提案海報已下載'); window.__posterCanvas = cv;
   }
 
+  // ---------- 改造前照片（115/11/10 老師要求：像「全能住宅改造王」看見改造前和改造後） ----------
+  // 每組最多 6 張（p1–p6）。照片在瀏覽器縮成長邊 1280 的 JPEG，存 cgPhotos/{作品 id}_{p1..p6}（只有登入學校帳號的人讀得到）；
+  // 拍攝位置與視角存在 cgWorks 的 photos 欄位，跟著作品同步。對位＝照片半透明疊在 3D 上，學生走動轉頭到兩者重合
+  const PHO = { meta: {}, raw: '{}', cache: new Map(), mode: '', cur: null, k: '', pose: null, ar: 1.33, fw: 1, fh: 1, split: .5, op: .5, seen: false, busy: false, keys: new Set(), last: 0 };
+  const PH_MAX = 6, PH_EDGE = 1280, PH_LIM = 700000, PH_HEAD = 'data:image/jpeg;base64,';
+  const phoW = () => SH.view ? CL.workId(CS.cls.id, SH.view) : CS.w;
+  const phoMine = () => !!CS.w && !SH.view;
+  const phoRoot = new THREE.Group(); phoRoot.name = 'photoPins'; scene.add(phoRoot);
+  const clampN = (v, a, b, d) => { v = +v; return isFinite(v) ? Math.max(a, Math.min(b, v)) : d; };
+  function phoSet(m){
+    PHO.meta = {};
+    for (const [k, v] of Object.entries(m || {})) if (/^p[1-6]$/.test(k) && v && isFinite(+v.x) && isFinite(+v.z))
+      PHO.meta[k] = { x: +v.x, z: +v.z, h: clampN(v.h, .3, 40, 1.5), yaw: clampN(v.yaw, -1e3, 1e3, 0), pitch: clampN(v.pitch, -1.4, 1.4, 0), fov: clampN(v.fov, 15, 115, 53), ar: clampN(v.ar, .3, 3.5, 1.33), t: +v.t || 0, cap: String(v.cap || '').slice(0, 30) };
+    phoPins(); if (phoEl.classList.contains('show')) phoList();
+  }
+  function phoPins(){
+    [...phoRoot.children].forEach((o) => phoRoot.remove(o));
+    for (const [k, p] of Object.entries(PHO.meta)){
+      const d = document.createElement('div'); d.className = 'ppin'; d.textContent = '📷'; d.title = p.cap || '改造前照片：點一下比較改造前後';
+      d.addEventListener('pointerdown', (e) => e.stopPropagation()); d.onclick = () => phoOpen(k);
+      const o = new CSS2DObject(d); o.position.set(p.x, 2.6, p.z); phoRoot.add(o); }
+  }
+  async function phoImg(k){
+    const p = PHO.meta[k], key = phoW() + '_' + k + '_' + (p ? p.t : 0); if (PHO.cache.has(key)) return PHO.cache.get(key);
+    const d = await CL.getDoc('cgPhotos/' + phoW() + '_' + k), img = d && typeof d.data.img === 'string' && d.data.img.startsWith(PH_HEAD) ? d.data.img : '';
+    if (img) PHO.cache.set(key, img); return img;
+  }
+  const phoErr = (e) => e.status === 401 || e.status === 403 ? '要登入學校帳號才能看照片' : '照片讀取失敗：' + e.message;
+
+  // 清單面板
+  const phoEl = document.createElement('div'); phoEl.id = 'gPhoto'; body.appendChild(phoEl);
+  phoEl.addEventListener('pointerdown', (e) => e.stopPropagation());
+  const phoFile = document.createElement('input'); phoFile.type = 'file'; phoFile.accept = 'image/*'; phoFile.style.display = 'none'; body.appendChild(phoFile);
+  function phoList(){
+    const ks = Object.keys(PHO.meta).sort(), mine = phoMine();
+    phoEl.innerHTML = `<h3>📷 改造前照片<button aria-label="關閉">×</button></h3>
+      <p>${SH.view ? `第 ${SH.view} 組拍的改造前照片。` : '把要改造的地方拍下來，放到地圖上、對好角度，就能左右拉動比較「改造前的照片」和「改造後的 3D」。每組最多 ' + PH_MAX + ' 張。'}</p>
+      <div class="pl">${ks.length ? '' : '<p>還沒有照片。</p>'}</div>${mine && ks.length < PH_MAX ? '<button class="go" data-a="add">＋ 新增改造前照片</button>' : ''}
+      ${!CS.w ? '<p style="margin-top:8px">登入學校帳號、加入班級後才能上傳照片。</p>' : ''}`;
+    const pl = phoEl.querySelector('.pl');
+    for (const k of ks){ const p = PHO.meta[k], r = document.createElement('div'); r.className = 'pr';
+      r.innerHTML = `<img alt=""><span></span><button data-a="see">比較</button>${mine ? '<button data-a="del" class="del">刪除</button>' : ''}`;
+      r.querySelector('span').textContent = p.cap || '（沒有寫說明）';
+      r.querySelector('[data-a="see"]').onclick = () => phoOpen(k); if (mine) r.querySelector('[data-a="del"]').onclick = () => phoDel(k);
+      pl.appendChild(r); phoImg(k).then((src) => { if (src) r.querySelector('img').src = src; }).catch(() => {}); }
+    phoEl.querySelector('h3 button').onclick = () => phoPanel(false);
+    const add = phoEl.querySelector('[data-a="add"]'); if (add) add.onclick = phoAdd;
+  }
+  function phoPanel(on){ phoEl.classList.toggle('show', on); tb.photo.classList.toggle('on', on); if (on){ sc.classList.remove('show'); plans.classList.remove('show'); phoList(); } }
+  tb.photo.onclick = () => phoPanel(!phoEl.classList.contains('show'));
+  function phoAdd(){
+    if (!phoMine()){ toast('登入學校帳號、加入班級後才能上傳照片'); return; }
+    if (Object.keys(PHO.meta).length >= PH_MAX){ toast(`每組最多 ${PH_MAX} 張，先刪掉一張再加`); return; }
+    const go = () => { phoFile.value = ''; phoFile.click(); };
+    if (PHO.seen) go();
+    else dialog('上傳前請先看', '照片會給登入學校帳號的同學和老師看到。請拍「地方」，不要拍到同學的臉、車牌或個人資料；拍到了請換一張。', [['取消'], ['我知道了，選照片', 'go', () => { PHO.seen = true; go(); }]]);
+  }
+  // 縮圖：長邊 1280、JPEG，太大就降品質、再縮尺寸（Firestore 單一文件上限 1 MB）
+  function phoShrink(f){ return new Promise((res, rej) => { const url = URL.createObjectURL(f), im = new Image();
+    im.onload = () => { try {
+      let k = Math.min(1, PH_EDGE / Math.max(im.naturalWidth, im.naturalHeight)), q = .72, out = '';
+      const cv = document.createElement('canvas'), cx = cv.getContext('2d');
+      for (let i = 0; i < 8; i++){ cv.width = Math.max(1, Math.round(im.naturalWidth * k)); cv.height = Math.max(1, Math.round(im.naturalHeight * k)); cx.drawImage(im, 0, 0, cv.width, cv.height);
+        out = cv.toDataURL('image/jpeg', q); if (out.length <= PH_LIM) break; if (q > .5) q -= .1; else k *= .8; }
+      URL.revokeObjectURL(url);
+      if (out.length > PH_LIM || !out.startsWith(PH_HEAD)) rej(new Error('too big')); else res({ img: out, ar: cv.width / cv.height });
+    } catch (e){ rej(e); } };
+    im.onerror = () => { URL.revokeObjectURL(url); rej(new Error('decode')); }; im.src = url; }); }
+  // 預設視野：假設是手機主鏡頭（等效 26 mm，對角約 79°），依照片長寬比換算垂直視角
+  const phoPose0 = (ar) => ({ x: 0, z: 0, h: 1.5, yaw: 0, pitch: 0, fov: Math.round(2 * Math.atan(.832 / Math.hypot(1, ar)) / D2R) });
+  phoFile.onchange = async () => {
+    const f = phoFile.files && phoFile.files[0]; if (!f) return;
+    let r; try { r = await phoShrink(f); } catch (e){ toast('這張照片讀不了，請改用 JPG 或 PNG 檔'); return; }
+    const slot = Array.from({ length: PH_MAX }, (_, i) => 'p' + (i + 1)).find((k) => !PHO.meta[k]); if (!slot){ toast(`已經滿 ${PH_MAX} 張了`); return; }
+    PHO.cur = { k: slot, img: r.img, ar: r.ar, fresh: true, cap: '', t: 0 }; phoPanel(false);
+    if (WALK.on){ const p = { x: WALK.pos.x, z: WALK.pos.z, yaw: WALK.yaw }; phoAlign({ ...phoPose0(r.ar), ...p }); return; }   // 街景中：就用現在站的位置
+    endPlace(); deselect(); setDemolish(false); if (TOOL === 'mood') setMood(null);
+    TOOL = 'photo'; status('📷 點一下地面：拍這張照片的時候，你站在哪裡？（Esc 取消）');
+  };
+  function phoSpot(cx, cy){
+    const g = groundAt(cx, cy); if (!g || !PHO.cur){ TOOL = 'idle'; status(''); return; }
+    const d = V.subVectors(controls.target, camera.position), yaw = Math.atan2(d.x, d.z);
+    TOOL = 'idle'; status(''); phoAlign({ ...phoPose0(PHO.cur.ar), x: g.x, z: g.z, yaw });
+  }
+
+  // 全螢幕舞台：對位（al）與前後對照
+  const phoSt = document.createElement('div'); phoSt.id = 'gPho'; body.appendChild(phoSt);
+  phoSt.innerHTML = `<div class="fr"><img alt="" draggable="false"><i class="dv"></i><b class="tb">改造前</b><b class="ta">改造後</b></div>
+    <div class="top"><span></span><button data-a="mix" class="vw">疊圖</button><button data-a="edit" class="vw ow">重新對位</button><button data-a="del" class="vw ow del">刪除</button><button data-a="x" class="vw">✕ 關閉</button></div>
+    <div class="pan"><div class="pad"><button data-m="up" title="升高">升</button><button data-m="f" title="往前走">▲</button><button data-m="dn" title="降低">降</button><button data-m="l" title="往左">◀</button><button data-m="b" title="後退">▼</button><button data-m="r" title="往右">▶</button></div>
+      <label>視野 <input type="range" data-r="fov" min="15" max="115" step="1"></label><label>照片透明 <input type="range" data-r="op" min="0" max="100" step="1"></label>
+      <input type="text" maxlength="30" placeholder="這裡的問題是…（30 字內，可不寫）">
+      <div class="acts"><button data-a="cancel">取消</button><button data-a="save" class="go">儲存</button></div>
+      <p>拖曳畫面＝轉頭；按鈕或方向鍵＝走動、升降；滾輪或兩指＝調視野。讓 3D 校園和半透明的照片疊在一起，再按「儲存」。</p></div>`;
+  const phoFr = phoSt.querySelector('.fr'), phoIm = phoFr.querySelector('img'), phoDv = phoFr.querySelector('.dv'), phoTitle = phoSt.querySelector('.top span'),
+    fovEl = phoSt.querySelector('[data-r="fov"]'), opEl = phoSt.querySelector('[data-r="op"]'), capEl = phoSt.querySelector('input[type=text]'), saveBtn = phoSt.querySelector('[data-a="save"]');
+  let phoSave = null;
+  function phoLayout(){
+    if (!PHO.mode) return; const r = canvas.getBoundingClientRect(), fw = Math.min(r.width, r.height * PHO.ar), fh = fw / PHO.ar;
+    PHO.fw = fw; PHO.fh = fh; PHO.fl = r.left + (r.width - fw) / 2;
+    phoFr.style.left = PHO.fl + 'px'; phoFr.style.top = r.top + (r.height - fh) / 2 + 'px'; phoFr.style.width = fw + 'px'; phoFr.style.height = fh + 'px';
+    const al = PHO.mode === 'align', mix = phoSt.classList.contains('mix');
+    phoIm.style.opacity = al ? PHO.op : mix ? .5 : 1; phoIm.style.clipPath = al || mix ? 'none' : `inset(0 ${(1 - PHO.split) * 100}% 0 0)`; phoDv.style.left = PHO.split * 100 + '%';
+  }
+  addEventListener('resize', phoLayout); if (window.visualViewport) visualViewport.addEventListener('resize', phoLayout);
+  function phoEnter(mode, pose){
+    if (WALK.on) exitWalk();
+    endPlace(); deselect(); setDemolish(false); if (TOOL === 'mood') setMood(null); phoPanel(false);
+    if (!PHO.mode) phoSave = { p: camera.position.clone(), t: controls.target.clone(), fov: camera.fov, near: camera.near };
+    PHO.mode = mode; PHO.pose = { x: pose.x, z: pose.z, h: pose.h, yaw: pose.yaw, pitch: pose.pitch, fov: pose.fov }; PHO.keys.clear(); PHO.last = 0;
+    controls.enabled = false; lay.visible = false; body.classList.add('photoing');
+    phoSt.classList.toggle('al', mode === 'align'); phoSt.classList.remove('mix'); phoSt.classList.toggle('ro', !phoMine()); phoSt.querySelector('[data-a="mix"]').classList.remove('on');
+    PHO.split = .5; phoLayout();
+  }
+  function phoExit(){
+    if (!PHO.mode) return; PHO.mode = ''; PHO.cur = null; PHO.keys.clear(); body.classList.remove('photoing'); lay.visible = true;
+    camera.position.copy(phoSave.p); controls.target.copy(phoSave.t); camera.fov = phoSave.fov; camera.near = phoSave.near; camera.updateProjectionMatrix();
+    controls.enabled = true; controls.update(); phoIm.removeAttribute('src');
+  }
+  function phoTick(){
+    const p = PHO.pose, now = performance.now(), dt = Math.min(.05, (now - (PHO.last || now)) / 1000); PHO.last = now;
+    if (PHO.mode === 'align' && PHO.keys.size){ const K = PHO.keys, sp = (K.has('shift') ? 8 : 3) * dt;
+      phoMove(((K.has('w') || K.has('arrowup') || K.has('f') ? 1 : 0) - (K.has('s') || K.has('arrowdown') || K.has('b') ? 1 : 0)) * sp, ((K.has('d') || K.has('arrowright') || K.has('r') ? 1 : 0) - (K.has('a') || K.has('arrowleft') || K.has('l') ? 1 : 0)) * sp,
+        ((K.has('e') || K.has('up') ? 1 : 0) - (K.has('q') || K.has('dn') ? 1 : 0)) * sp * .5); }
+    const H = canvas.getBoundingClientRect().height || 1;
+    camera.position.set(p.x, p.h, p.z); camera.lookAt(p.x + Math.sin(p.yaw) * Math.cos(p.pitch), p.h + Math.sin(p.pitch), p.z + Math.cos(p.yaw) * Math.cos(p.pitch));
+    camera.fov = 2 * Math.atan(Math.tan(p.fov * D2R / 2) * H / PHO.fh) / D2R; camera.near = .1; camera.updateProjectionMatrix();   // 照片框的垂直視角固定，畫面其餘部分是多出來的邊
+  }
+  function phoMove(fwd, side, up){
+    const p = PHO.pose, sy = Math.sin(p.yaw), cy = Math.cos(p.yaw);
+    p.x = Math.max(-30, Math.min(300, p.x + sy * fwd - cy * side)); p.z = Math.max(-60, Math.min(215, p.z + cy * fwd + sy * side)); p.h = Math.max(.3, Math.min(40, p.h + up));
+  }
+  function phoAlign(pose){
+    const c = PHO.cur; if (!c) return; PHO.ar = c.ar; PHO.op = .5; phoIm.src = c.img; capEl.value = c.cap || '';
+    phoEnter('align', pose); fovEl.value = PHO.pose.fov; opEl.value = 50; phoTitle.textContent = '對位：讓 3D 校園和照片疊在一起';
+  }
+  async function phoOpen(k){
+    const p = PHO.meta[k]; if (!p) return; let img;
+    try { img = await phoImg(k); } catch (e){ toast(phoErr(e)); return; }
+    if (!img){ toast('找不到這張照片（可能被刪掉了）'); return; }
+    PHO.k = k; PHO.ar = p.ar; phoIm.src = img; phoEnter('view', p);
+    phoTitle.textContent = (SH.view ? `第 ${SH.view} 組・` : '') + (p.cap || '改造前照片') + '　← 左右拉動比較 →';
+  }
+  async function phoCommit(){
+    const c = PHO.cur, p = PHO.pose; if (!c || PHO.busy || PHO.mode !== 'align') return;
+    if (!phoMine()){ toast('現在不能儲存（沒有登入，或正在看別組）'); return; }
+    PHO.busy = true; saveBtn.disabled = true; saveBtn.textContent = '儲存中…';
+    const rd = (v, n = 100) => Math.round(v * n) / n, t = c.fresh ? Date.now() : c.t;
+    const meta = { x: rd(p.x), z: rd(p.z), h: rd(p.h), yaw: rd(Math.atan2(Math.sin(p.yaw), Math.cos(p.yaw)), 1000), pitch: rd(p.pitch, 1000), fov: rd(p.fov, 10), ar: rd(c.ar, 1000), t, cap: capEl.value.trim().slice(0, 30) };
+    try {
+      if (c.fresh) await CL.patch('cgPhotos/' + CS.w + '_' + c.k, { w: CS.w, classId: CS.cls.id, g: CS.g, img: c.img, t });
+      await CL.patch('cgWorks/' + CS.w, { photos: { [c.k]: meta }, classId: CS.cls.id, g: CS.g }, ['photos.' + c.k, 'classId', 'g']);
+      PHO.cache.set(CS.w + '_' + c.k + '_' + t, c.img); PHO.meta[c.k] = meta; PHO.raw = ''; phoPins(); pop(); toast('照片存好了：左右拉動比較改造前後');
+      PHO.cur = null; PHO.k = c.k; phoEnter('view', meta); phoTitle.textContent = (meta.cap || '改造前照片') + '　← 左右拉動比較 →';
+    } catch (e){ toast('儲存失敗：' + (e.status === 401 || e.status === 403 ? '沒有權限（請確認已登入、老師已分組）' : e.message)); }
+    PHO.busy = false; saveBtn.disabled = false; saveBtn.textContent = '儲存';
+  }
+  function phoDel(k){
+    if (!phoMine() || !PHO.meta[k]) return;
+    dialog('刪除這張照片？', '刪掉後全組都看不到，而且不能復原。', [['取消'], ['刪除', 'go', async () => {
+      try { await CL.del('cgPhotos/' + CS.w + '_' + k); await CL.patch('cgWorks/' + CS.w, { photos: {}, classId: CS.cls.id, g: CS.g }, ['photos.' + k, 'classId', 'g']);
+        delete PHO.meta[k]; PHO.raw = ''; phoPins(); if (PHO.mode) phoExit(); if (phoEl.classList.contains('show')) phoList(); toast('已刪除照片'); }
+      catch (e){ toast('刪除失敗：' + e.message); } }]]);
+  }
+  phoSt.querySelectorAll('button[data-a]').forEach((b) => b.onclick = () => { const a = b.dataset.a;
+    if (a === 'x' || a === 'cancel') phoExit();
+    else if (a === 'mix'){ phoSt.classList.toggle('mix'); b.classList.toggle('on', phoSt.classList.contains('mix')); phoLayout(); }
+    else if (a === 'edit'){ const p = PHO.meta[PHO.k]; if (!p || !phoMine()) return; PHO.cur = { k: PHO.k, img: phoIm.src, ar: p.ar, fresh: false, cap: p.cap, t: p.t }; phoAlign(p); }
+    else if (a === 'del') phoDel(PHO.k);
+    else if (a === 'save') phoCommit(); });
+  // 走動按鈕：按一下走半步，按住連續走
+  phoSt.querySelectorAll('button[data-m]').forEach((b) => { const m = b.dataset.m; let t = 0;
+    const step = (k) => phoMove((m === 'f' ? 1 : m === 'b' ? -1 : 0) * k, (m === 'r' ? 1 : m === 'l' ? -1 : 0) * k, (m === 'up' ? 1 : m === 'dn' ? -1 : 0) * k * .5);
+    const stop = () => { clearTimeout(t); PHO.keys.delete(m); };
+    b.addEventListener('pointerdown', (e) => { e.preventDefault(); step(.5); clearTimeout(t); t = setTimeout(() => PHO.keys.add(m), 350); });
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach((ev) => b.addEventListener(ev, stop)); });
+  fovEl.oninput = () => { if (PHO.pose) PHO.pose.fov = +fovEl.value; };
+  opEl.oninput = () => { PHO.op = opEl.value / 100; phoLayout(); };
+  // 舞台上的拖曳：對位＝轉頭（兩指＝視野）；對照＝拉分隔線
+  const phoPt = new Map(); let phoG = null;
+  const phoSplit = (x) => { PHO.split = Math.max(0, Math.min(1, (x - PHO.fl) / PHO.fw)); phoLayout(); };
+  phoSt.addEventListener('pointerdown', (e) => {
+    if (e.target.closest('button, input, .pan')) return; e.preventDefault(); try { phoSt.setPointerCapture(e.pointerId); } catch (er) {}
+    phoPt.set(e.pointerId, { x: e.clientX, y: e.clientY }); if (document.activeElement === capEl) capEl.blur();
+    if (PHO.mode === 'view'){ if (!phoSt.classList.contains('mix')) phoSplit(e.clientX); return; }
+    const P = [...phoPt.values()];
+    phoG = P.length === 1 ? { x: e.clientX, y: e.clientY, yaw: PHO.pose.yaw, pitch: PHO.pose.pitch } : { d: Math.hypot(P[0].x - P[1].x, P[0].y - P[1].y) || 1, fov: PHO.pose.fov };
+  });
+  phoSt.addEventListener('pointermove', (e) => {
+    if (!phoPt.has(e.pointerId)) return; phoPt.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (PHO.mode === 'view'){ if (!phoSt.classList.contains('mix')) phoSplit(e.clientX); return; }
+    if (!phoG) return; const P = [...phoPt.values()];
+    if (phoG.d && P.length >= 2){ PHO.pose.fov = Math.max(15, Math.min(115, phoG.fov * phoG.d / (Math.hypot(P[0].x - P[1].x, P[0].y - P[1].y) || 1))); fovEl.value = PHO.pose.fov; }
+    else if (!phoG.d){ const k = PHO.pose.fov * D2R / PHO.fh; PHO.pose.yaw = phoG.yaw + (e.clientX - phoG.x) * k; PHO.pose.pitch = Math.max(-1.4, Math.min(1.4, phoG.pitch + (e.clientY - phoG.y) * k)); }
+  });
+  const phoUp = (e) => { phoPt.delete(e.pointerId); phoG = null; };
+  phoSt.addEventListener('pointerup', phoUp); phoSt.addEventListener('pointercancel', phoUp);
+  phoSt.addEventListener('wheel', (e) => { e.preventDefault(); if (PHO.mode !== 'align') return; PHO.pose.fov = Math.max(15, Math.min(115, PHO.pose.fov + e.deltaY * .03)); fovEl.value = PHO.pose.fov; }, { passive: false });
+  addEventListener('keydown', (e) => {
+    if (!PHO.mode || cf.classList.contains('show')) return;
+    if (e.target === capEl){ e.stopPropagation(); if (e.key === 'Enter' || e.key === 'Escape') capEl.blur(); return; }
+    const k = e.key.toLowerCase(); e.stopImmediatePropagation();
+    if (k === 'escape'){ phoExit(); return; }
+    if (PHO.mode === 'align' && ['w', 'a', 's', 'd', 'q', 'e', 'shift', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(k)){ PHO.keys.add(k); e.preventDefault(); }
+    if (PHO.mode === 'view' && (k === 'arrowleft' || k === 'arrowright')){ PHO.split = Math.max(0, Math.min(1, PHO.split + (k === 'arrowleft' ? -.05 : .05))); phoLayout(); }
+  }, true);
+  addEventListener('keyup', (e) => PHO.keys.delete(e.key.toLowerCase()), true);
+  addEventListener('blur', () => PHO.keys.clear());
+
   // 建造／瀏覽切換
   function setOn(v){
     ON = v; body.classList.toggle('building', ON); bBuild.classList.toggle('off', !ON); bBuild.textContent = ON ? '🛠 建造中' : '🛠 建造';
@@ -1123,7 +1383,8 @@ export function init(G){
       else pop2.style.display = 'none';
     } else if (pop2.style.display !== 'none') pop2.style.display = 'none';
     if (rmDirty && marks.visible) updMarks();
-    fx.visible = !WALK.on;
+    fx.visible = !WALK.on && !PHO.mode;
+    if (PHO.mode) phoTick();
   };
 
   // ---------- 背景音樂（115/11/06 老師要求）：改造／探勘／展示各一首 CC0 曲（music/README.txt），切換時交叉淡入淡出 ----------
@@ -1182,5 +1443,5 @@ export function init(G){
   const k = Object.keys(S.removed).length;
   if (n || k) toast(`已載入上次的改造：${n} 件物件${k ? `、移除 ${k} 件原有物件` : ""}`);
   rescore();
-  window.__gameState = { S, RM, SURF, CS, MD, SH, join, addPin, setMood, viewGroup, backHome, vote, poster, askReset, doReset, get SC(){ return SC; }, tip, LY, drawLayers, tryPlace, check, select, undo, redo, startPlace, endPlace, setDemolish, pickRm, ground, get sel(){ return sel; }, get TOOL(){ return TOOL; } };   // 測試用
+  window.__gameState = { S, RM, SURF, CS, MD, SH, join, addPin, setMood, viewGroup, backHome, vote, poster, askReset, doReset, get SC(){ return SC; }, tip, LY, drawLayers, tryPlace, check, select, undo, redo, PHO, phoSet, phoOpen, phoAlign, phoCommit, phoExit, phoShrink, phoAdd, startPlace, endPlace, setDemolish, pickRm, ground, get sel(){ return sel; }, get TOOL(){ return TOOL; } };   // 測試用
 }

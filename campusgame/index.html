@@ -795,6 +795,8 @@ rect(14, 0, 19, 24, M.brickPave, .05);
 // --- 資訊館：鮭魚粉色磁磚 5F（老師 115/11/02 照片 081820、081940；2021 年 g059 為夕陽照，看起來偏咖啡色）。正面朝北側草地（從草地看：左邊楔形塔、中間內凹入口、右翼前凸，有頂走廊通往後排教室）；大階梯升上 1.45 m 平台
 (function(){
   const BR = { wall: '#e6b3a5', band: '#dba596', win: 'louver' }, PAR = lam(0xdcab9d), TILE = lam(0xe2ae9f);
+  // 遊戲頁（115/11/10 老師要求資訊館周遭可改造）：周邊設施標成可移除，同一個 key 的一起移走；用字串編號，不影響舊存檔
+  const rk = (key, kind, o) => { o.userData.rm = kind; o.userData.rmKey = key; return o; };
   building(group(88.5, 151), { w: 13, d: 10, floors: 5, roof: 'solar', parapet: PAR, faces: { all: BR } });   // 入口段（內凹）
   building(group(74, 147), { w: 16, d: 10, floors: 5, roof: 'solar', parapet: PAR, faces: { all: BR } });     // 右翼（前凸）
   building(group(99, 162), { w: 10, d: 36, floors: 5, roof: 'solar', parapet: PAR, faces: { all: BR } });     // 左翼（往後）
@@ -824,32 +826,32 @@ rect(14, 0, 19, 24, M.brickPave, .05);
   sign.rotation.y = Math.PI; sign.position.set(88.5, 4.35, 143.68); scene.add(sign);
   [84.5, 88.5, 92.5].forEach(x => box(2.2, 2.5, .2, lam(0x4a3a30), x, PH, 145.95));
   // 右翼前：矮牆高台＋欄杆＋綠色遮陽棚
-  box(14, PH, 3, STEP, 74, 0, 140.5); box(14, .08, .08, lam(0x9aa0a4), 74, PH + .95, 139.1);
-  for (let x = 67.5; x <= 81; x += 2.7) box(.08, .95, .08, lam(0x9aa0a4), x, PH, 139.1);
-  box(13, .15, 1.6, lam(0x3d7a5a), 74, 3.4, 141.2);
+  box(14, PH, 3, STEP, 74, 0, 140.5); rk('info_awning', 'awning', box(14, .08, .08, lam(0x9aa0a4), 74, PH + .95, 139.1));
+  for (let x = 67.5; x <= 81; x += 2.7) rk('info_awning', 'awning', box(.08, .95, .08, lam(0x9aa0a4), x, PH, 139.1));
+  rk('info_awning', 'awning', box(13, .15, 1.6, lam(0x3d7a5a), 74, 3.4, 141.2));
   // 紅色斜屋頂有頂走廊（往西通後排教室）
   // 老師 115/11/02 照片 082202：紅色浪板屋頂、木柱，旁邊一排矮樹籬，地面紅磚
-  for (let x = 55; x <= 64; x += 3){ box(.22, 2.6, .22, M.wood, x, 0, 139.5); box(.22, 3.2, .22, M.wood, x, 0, 143.5); }
+  for (let x = 55; x <= 64; x += 3){ rk('info_corridor', 'corridor', box(.22, 2.6, .22, M.wood, x, 0, 139.5)); rk('info_corridor', 'corridor', box(.22, 3.2, .22, M.wood, x, 0, 143.5)); }
   rect(54, 139, 66, 144, M.brickPave, .055); hedge(54.5, 145, 65.5, 145);
-  const rf = new THREE.Mesh(new THREE.BoxGeometry(13, .2, 5.4), lam(0xa8473a)); rf.position.set(60, 3.05, 141.5); rf.rotation.x = -.14; rf.castShadow = true; scene.add(rf);
+  const rf = new THREE.Mesh(new THREE.BoxGeometry(13, .2, 5.4), lam(0xa8473a)); rf.position.set(60, 3.05, 141.5); rf.rotation.x = -.14; rf.castShadow = true; scene.add(rf); rk('info_corridor', 'corridor', rf);
   // 東側（與網球場之間）：草地＋排水溝，沿牆一條導盲磚坡道，外側粉色磁磚矮牆＋不鏽鋼扶手；坡道轉到南面（後方）沿牆往西（安全點位 2）
   const RW = lam(0xd6a092), RG = lam(0xbdbab2), TAC = lam(0xd9b43a), SSR = lam(0xc9ced2);
   rect(104.2, 146, 106.4, 182.4, RG, .05); rect(105.1, 146, 105.5, 182, TAC, .056);
-  box(.25, .9, 36, RW, 106.5, 0, 164.2); box(.06, .06, 36, SSR, 106.5, 1.05, 164.2);
+  rk('info_rampE', 'ramp', box(.25, .9, 36, RW, 106.5, 0, 164.2)); rk('info_rampE', 'ramp', box(.06, .06, 36, SSR, 106.5, 1.05, 164.2));
   rect(93.5, 180.2, 106.4, 182.4, RG, .05); rect(93.5, 181.1, 105.5, 181.5, TAC, .056);
-  box(12.9, .9, .25, RW, 99.9, 0, 182.5); box(12.9, .06, .06, SSR, 99.9, 1.05, 182.5);
+  rk('info_rampS', 'ramp', box(12.9, .9, .25, RW, 99.9, 0, 182.5)); rk('info_rampS', 'ramp', box(12.9, .06, .06, SSR, 99.9, 1.05, 182.5));
   rect(106.8, 146, 115.8, 182, M.grass, .046);
   // 西側（與泗水園之間，照片 082259、082247）與後方（安全點位 2，照片 082311）：沿資訊館牆腳磁磚花台＋橘色排水管，
   //   外側一道頂上拉刺鐵絲的空心磚牆，牆外是民宅；牆與資訊館之間長滿雜草
   const BW = (() => { const t = blockTex.clone(); t.needsUpdate = true; t.repeat.set(36 / 1.6, 2.2 / .8); return new THREE.MeshLambertMaterial({ map: t }); })();
-  box(.3, 2.2, 38, BW, 63, 0, 169.5); [2.45, 2.7].forEach(y => box(.04, .04, 38, lam(0x6f7276), 63, y, 169.5));
-  for (let z = 151; z <= 188; z += 3) box(.05, .9, .05, lam(0x6f7276), 63, 2.2, z);
-  box(.6, .45, 30, RW, 66.3, 0, 167); box(.25, .25, 30, lam(0xd9662a), 66.7, .45, 167);
+  rk('info_wallW', 'wall', box(.3, 2.2, 38, BW, 63, 0, 169.5)); [2.45, 2.7].forEach(y => rk('info_wallW', 'wall', box(.04, .04, 38, lam(0x6f7276), 63, y, 169.5)));
+  for (let z = 151; z <= 188; z += 3) rk('info_wallW', 'wall', box(.05, .9, .05, lam(0x6f7276), 63, 2.2, z));
+  rk('info_planter', 'planter', box(.6, .45, 30, RW, 66.3, 0, 167)); rk('info_planter', 'planter', box(.25, .25, 30, lam(0xd9662a), 66.7, .45, 167));
   const WEED = lam(0x6a9440);
   [[64.4, 152, 186], [94, 183.2, 106]].forEach(([a, b, c], k) => { for (let t = b; t < c; t += 1.7){ const w = new THREE.Mesh(new THREE.SphereGeometry(.9, 8, 6), WEED); w.scale.y = .6;
-    if (k === 0) w.position.set(a + Math.sin(t) * .6, .35, t); else w.position.set(t, .35, a - 1.5 + Math.sin(t) * .4); scene.add(w); } });
-  const tank = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 2.6, 14), lam(0xd9b8a0)); tank.position.set(88, 4.3, 185.5); scene.add(tank);   // 資訊館正後方、圍牆內的水塔（照片 082311；老師 115/11/02 確認）
-  [[87.3, 184.8], [88.7, 184.8], [87.3, 186.2], [88.7, 186.2]].forEach(([x, z]) => box(.1, 3, .1, lam(0x8a8f93), x, 0, z));
+    if (k === 0) w.position.set(a + Math.sin(t) * .6, .35, t); else w.position.set(t, .35, a - 1.5 + Math.sin(t) * .4); scene.add(w); rk(k === 0 ? 'info_weedW' : 'info_weedS', 'weed', w); } });
+  const tank = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 2.6, 14), lam(0xd9b8a0)); tank.position.set(88, 4.3, 185.5); scene.add(tank); rk('info_tank', 'tank', tank);   // 資訊館正後方、圍牆內的水塔（照片 082311；老師 115/11/02 確認）
+  [[87.3, 184.8], [88.7, 184.8], [87.3, 186.2], [88.7, 186.2]].forEach(([x, z]) => rk('info_tank', 'tank', box(.1, 3, .1, lam(0x8a8f93), x, 0, z)));
   addLabel('資訊館', 88, 24, 155);
 })();
 
@@ -1124,7 +1126,7 @@ const SMALL_PATH = [[122, 40], [145, 46], [170, 55], [186, 68], [194, 80]];
   scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(74.8, .07, 112.5), new THREE.Vector3(74.8, .07, 120)]), M.line));
   // ③ 直道南側（司令台兩邊）：兩邊壓石頭的淺灰水泥窄路（g041），東段一路接到活動中心門前
   path([[80, 123.2], [104, 123.2]], 1.4, CON); path([[142, 123.2], [185, 123.2]], 1.4, CON);
-  for (let x = 80.5; x < 185; x += 1.6) if (x < 103 || x > 142) [122.2, 124.2].forEach(z => { const r = new THREE.Mesh(new THREE.DodecahedronGeometry(.28), M.concrete); r.position.set(x + (z > 123 ? .8 : 0), .12, z); r.scale.y = .6; scene.add(r); });
+  for (let x = 80.5; x < 185; x += 1.6) if (x < 103 || x > 142) [122.2, 124.2].forEach(z => { const r = new THREE.Mesh(new THREE.DodecahedronGeometry(.28), M.concrete); r.position.set(x + (z > 123 ? .8 : 0), .12, z); r.scale.y = .6; scene.add(r); r.userData.rm = 'rock'; r.userData.rmKey = x < 120 ? 'rock_pathW' : 'rock_pathE'; });
   // ④ 司令台周圍與西側往資訊館的棋盤格紅磚帶（g041、g065、360 照校內03）
   rect(117, 120.5, 141, 133, M.brickPave, .06);
   rect(113, 129, 120, 142, M.brickPave, .06);
@@ -1145,7 +1147,7 @@ const SMALL_PATH = [[122, 40], [145, 46], [170, 55], [186, 68], [194, 80]];
   box(2, .9, 5, RAMP, 105.5, 0, 125.85);                           // 中間平台
   box(11.5, .9, 1.4, RAMP, 112.25, 0, 125.85);                     // 兩段之間的實心坡體
   ramp(106.5, .9, 118, 1.8, 124.4, 1.5);
-  for (let x = 106; x < 118; x += 1.3){ const r = new THREE.Mesh(new THREE.DodecahedronGeometry(.45), lam(0xa9a79f)); r.position.set(x, .25, 128.7); r.scale.y = .7; scene.add(r); }
+  for (let x = 106; x < 118; x += 1.3){ const r = new THREE.Mesh(new THREE.DodecahedronGeometry(.45), lam(0xa9a79f)); r.position.set(x, .25, 128.7); r.scale.y = .7; scene.add(r); r.userData.rm = 'rock'; r.userData.rmKey = 'rock_ramp'; }
   // ⑤ 司令台往東到活動中心（Google 衛星圖、360 照校內01/09）：跑道外側是草地＋一排大樹，球場邊一道矮樹籬；
   //    南直道往東延伸一小段紅色跑道到活動中心西南角；活動中心西面（面操場）到跑道彎道之間是一整片灰綠色 PU 地坪＋白色箭頭與虛線（老師 115/11/02 照片 081333、081902、081336）
   flat([[137, 120.3], [137, 132], [190, 132], [207.3, 86.4], [192, 92], [178, 104], [160, 120.3]], M.grass, .045);
@@ -1474,8 +1476,11 @@ function rmSet(rec, hide){
 // 學生可以放東西的高台表面（M3）：資訊館入口平台（PH 1.45 m）、司令台台面（台基 1.8 m，扣掉後牆與兩端側牆）
 const SURF = [
   { name: '資訊館平台', y: 1.45, x0: 79.2, x1: 96.8, z0: 140.2, z1: 145.8, clear: 3 },
+  { name: '資訊館右翼平台', y: 1.45, x0: 67.2, x1: 79, z0: 139.3, z1: 141.9, clear: 1.8 },   // 115/11/10：遮陽棚下的矮牆高台
   { name: '司令台', y: 1.8, x0: 121.9, x1: 136.1, z0: 121.7, z1: 129.9, clear: 2.8 }
 ];
+// 不能放東西的實心矮設施（115/11/10）：高度不到 3 m 不在 occBoxes 裡，以前東西會直接埋進去
+const SOLID = [{ name: '資訊館大階梯', x0: 80, x1: 101.5, z0: 137.1, z1: 140.2 }];
 
 /* ================= 同材質合併 =================
    原本約兩三千個物件、每個各畫一次；手機繪圖晶片負擔太重。
@@ -1575,7 +1580,7 @@ console.log(`[可拆] ${RM.length} 件：` + Object.entries(rmCount).map(([k, n]
 
 /* ================= 校園改造遊戲：建造模式（game.js，M2） =================
    學生擺放的物件在合併段之後才建立，不參與同材質合併；繪圖迴圈每幀呼叫 window.__gameTick() */
-window.__game = { scene, camera, controls, renderer, occBoxes, BOUND, QL, MOBILE, WALK, toast, groundAt, exitWalk, RM, rmSet, SURF, PTS, DARK, app };
+window.__game = { scene, camera, controls, renderer, occBoxes, BOUND, QL, MOBILE, WALK, toast, groundAt, exitWalk, RM, rmSet, SURF, SOLID, PTS, DARK, app };
 import('./game.js').then((m) => m.init(window.__game)).catch((e) => { console.error(e); toast('建造模式載入失敗：' + e.message); });
 
 /* ================= 長出動畫（遊戲頁 M8，115/11/05） =================

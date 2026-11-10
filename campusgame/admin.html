@@ -302,9 +302,30 @@ $('bWorks').onclick = async () => {
   $('works').textContent = '讀取中…';
   const out = [];
   for (let g = 1; g <= k; g++){ try { const d = await C.getDoc('cgWorks/' + C.workId(CUR.id, g)); const it = d ? Object.keys(d.data.items || {}).length : 0, rm = d ? Object.keys(d.data.removed || {}).length : 0;
-    out.push(`第 ${g} 組：${it} 件${rm ? `、移除 ${rm}` : ''}${d && d.data.theme ? `「${esc(d.data.theme)}」` : ''}`); } catch (e){ out.push(`第 ${g} 組：讀取失敗`); } }
+    const ph = d ? Object.keys(d.data.photos || {}).filter((s) => /^p[1-6]$/.test(s)).sort() : [];
+    out.push(`第 ${g} 組：${it} 件${rm ? `、移除 ${rm}` : ''}${d && d.data.theme ? `「${esc(d.data.theme)}」` : ''}${ph.length ? `　<button class="phb" data-g="${g}" data-s="${ph.join(',')}">📷 改造前照片 ${ph.length} 張</button><span class="phs" id="phs${g}"></span>` : ''}`); } catch (e){ out.push(`第 ${g} 組：讀取失敗`); } }
   $('works').innerHTML = out.join('<br>');
+  $('works').querySelectorAll('.phb').forEach((b) => b.onclick = () => showPhotos(+b.dataset.g, b.dataset.s.split(',')));
 };
+// 改造前照片（115/11/10）：點開才讀圖（每張約 100–500 KB）；不合適的可以刪掉（按兩次）
+async function showPhotos(g, slots){
+  const box = $('phs' + g), w = C.workId(CUR.id, g); box.textContent = ' 讀取中…';
+  const wd = await C.getDoc('cgWorks/' + w).catch(() => null), meta = wd && wd.data.photos || {};
+  box.textContent = '';
+  for (const s of slots){
+    const d = await C.getDoc('cgPhotos/' + w + '_' + s).catch(() => null), src = d && typeof d.data.img === 'string' && d.data.img.startsWith('data:image/jpeg;base64,') ? d.data.img : '';
+    const f = document.createElement('span'); f.style.cssText = 'display:inline-block;margin:6px 8px 0 0;vertical-align:top;text-align:center;font-size:12px';
+    f.innerHTML = `<img alt="" style="display:block;height:120px;border-radius:6px;background:#ddd;cursor:zoom-in"><span></span><br><button>刪除</button>`;
+    const im = f.querySelector('img'); if (src){ im.src = src; im.onclick = () => { const v = open('', '_blank'); if (v){ const i = v.document.createElement('img'); i.src = src; i.style.maxWidth = '100%'; v.document.body.appendChild(i); } }; }
+    f.querySelector('span').textContent = (meta[s] && meta[s].cap) || (src ? '（沒有說明）' : '（圖檔不見了）');
+    const b = f.querySelector('button');
+    b.onclick = async () => {
+      if (!b.classList.contains('arm')){ b.classList.add('arm'); b.textContent = '確定刪除？'; setTimeout(() => { b.classList.remove('arm'); b.textContent = '刪除'; }, 3500); return; }
+      try { await C.del('cgPhotos/' + w + '_' + s); await C.patch('cgWorks/' + w, { photos: {} }, ['photos.' + s]); f.remove(); } catch (e){ b.textContent = '刪除失敗'; }
+    };
+    box.appendChild(f);
+  }
+}
 
 // ---------- 刪除班級（按兩次） ----------
 $('bDel').onclick = async () => {
@@ -314,7 +335,8 @@ $('bDel').onclick = async () => {
   try {
     const k = Math.max(CUR.data.groups || 0, ...ROSTER.map((r) => r.g || 0));
     const moods = await C.query('cgMoods', 'classId', CUR.id).catch(() => []), votes = await C.query('cgVotes', 'classId', CUR.id).catch(() => []);
-    await C.commit([...moods.map((m) => ({ path: 'cgMoods/' + m.id, del: true })), ...votes.map((m) => ({ path: 'cgVotes/' + m.id, del: true })), ...ROSTER.map((r) => ({ path: 'cgRoster/' + r.email, del: true })), ...Array.from({ length: k }, (_, i) => ({ path: 'cgWorks/' + C.workId(CUR.id, i + 1), del: true })), { path: 'cgClasses/' + CUR.id, del: true }]);
+    await C.commit([...moods.map((m) => ({ path: 'cgMoods/' + m.id, del: true })), ...votes.map((m) => ({ path: 'cgVotes/' + m.id, del: true })), ...ROSTER.map((r) => ({ path: 'cgRoster/' + r.email, del: true })), ...Array.from({ length: k }, (_, i) => ({ path: 'cgWorks/' + C.workId(CUR.id, i + 1), del: true })),
+      ...Array.from({ length: k * 6 }, (_, i) => ({ path: 'cgPhotos/' + C.workId(CUR.id, Math.floor(i / 6) + 1) + '_p' + (i % 6 + 1), del: true })), { path: 'cgClasses/' + CUR.id, del: true }]);
     say('delMsg', '已刪除。', 'ok'); CUR = null; $('detail').classList.add('hidden'); $('pick').classList.remove('hidden'); await loadClasses();
   } catch (e){ say('delMsg', '刪除失敗：' + e.message, 'err'); }
   b.disabled = false; b.classList.remove('arm'); b.textContent = '刪除班級';
