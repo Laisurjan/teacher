@@ -942,7 +942,9 @@ export function init(G){
   if (!started){ renderStart(true); stEl.classList.add('show'); }
   (async () => { let on = CL.MOCK; try { on = on || localStorage.getItem('campusgame-login') === '1'; } catch (e) {}
     if (on && await CL.restore()) await join(false); else loginLabel();
-    renderStart(); })();
+    renderStart();
+    const coId = new URLSearchParams(location.search).get('co');   // 老師從後台「看這班的全班共創校園」開過來
+    if (coId && CL.me() && CL.me().admin){ try { const c = await CL.getDoc('cgClasses/' + coId); if (c){ startGo(); coOpen({ id: c.id, ...c.data }); } else toast('找不到這個班級'); } catch (e){ toast('讀取班級失敗：' + e.message); } } })();
 
   // ---------- 心情釘（M6，規格書 §7.1） ----------
   const MD = { id: '', pins: {}, all: [], need: [], open: false, allowed: false, sel: null, t: 0, busy: false };
@@ -1073,7 +1075,8 @@ export function init(G){
   const showPhase = () => CS.cls && !CS.demo && CS.cls.phase === 'show';
   function plansClass(){
 
-    if (!showPhase() && SH.view) backHome();
+    if (!showPhase() && SH.view && !CO.teacher) backHome();
+    if (CO.on && !CO.teacher && !CS.cls.coOpen) backHome();   // 老師收回開放
     if (showPhase() && !SH.vid){ const m = CL.me(); SH.vid = CL.voteId(CS.cls.id, m.uid); CL.getDoc('cgVotes/' + SH.vid).then((d) => { SH.votes = d && d.data.v || {}; renderPlans(); }).catch(() => {}); }
     if (plans.classList.contains('show')) renderPlans();
   }
@@ -1082,12 +1085,18 @@ export function init(G){
     { const sp = PTS.find((p) => p[0] === S.site), se = plans.querySelector('.site');
       se.innerHTML = `<span>📍 主要改造點：${sp ? sp[0] + '. ' + sp[2] : '還沒選'}</span>${SH.view ? '' : `<button>${sp ? '更換' : '選擇'}</button>`}`;
       const sb = se.querySelector('button'); if (sb) sb.onclick = () => { plans.classList.remove('show'); siteOpen(); }; }
+    if (!showPhase() && CL.me() && CL.me().admin){
+      listEl.innerHTML = '<h4>老師：看一個班的「全班共創校園」</h4><select style="width:100%;font:inherit;font-size:14px;font-weight:800;padding:8px;border:1px solid var(--line);border-radius:9px;background:var(--btn);color:var(--ink)"><option value="">讀取班級中…</option></select><button class="pb go" data-a="tco">🏫 開啟（唯讀，不影響學生）</button><p style="color:var(--sub);margin:6px 0 0">學生要等老師在後台勾選「開放全班共創校園給學生看」，而且階段是「展示」才看得到。</p>';
+      const sel = listEl.querySelector('select'), fill = (L) => { sel.innerHTML = L.length ? L.map((c) => `<option value="${c.id}">${c.data.year || ''} ${String(c.data.name || c.id).replace(/[<>&]/g, '')}（${c.data.groups || 0} 組）</option>`).join('') : '<option value="">還沒有班級</option>'; };
+      if (CO.list) fill(CO.list); else CL.list('cgClasses').then((L) => { CO.list = L.sort((a, b) => a.id.localeCompare(b.id)); fill(CO.list); }).catch(() => { sel.innerHTML = '<option value="">讀取失敗</option>'; });
+      listEl.querySelector('[data-a="tco"]').onclick = () => { const c = (CO.list || []).find((x) => x.id === sel.value); if (c) coOpen({ id: c.id, ...c.data }); };
+      return; }
     if (!showPhase()){ listEl.innerHTML = CS.cls && !CS.demo ? '<p style="color:var(--sub)">老師把階段切到「展示」後，這裡會列出全班各組的方案，可以走進去看、投票。</p>' : ''; return; }
     const k = CS.cls.groups || 0, V = CS.cls.votesShown && CS.cls.votes || null;
-    listEl.innerHTML = `<button class="pb go" data-a="co">🏫 全班共創校園（每個改造點選一組、投票）</button><h4>全班方案（點一下走進去看${V ? '・已公布票數' : '・每組可投一票，不能投自己組'}）</h4>` + Array.from({ length: k }, (_, i) => i + 1).map((g) =>
+    listEl.innerHTML = `${CS.cls.coOpen ? '<button class="pb go" data-a="co">🏫 全班共創校園（每個改造點選一組、投票）</button>' : ''}<h4>全班方案（點一下走進去看${V ? '・已公布票數' : '・每組可投一票，不能投自己組'}）</h4>` + Array.from({ length: k }, (_, i) => i + 1).map((g) =>
       `<button class="pb${g === CS.g ? ' me' : ''}${(SH.view || CS.g) === g ? ' on' : ''}" data-g="${g}">第 ${g} 組${g === CS.g ? '（我們）' : ''}<small>${V ? `👍 ${V['g' + g] || 0}` : SH.votes['g' + g] ? '已投 👍' : ''}</small></button>`).join('');
     listEl.querySelectorAll('.pb[data-g]').forEach((b) => b.onclick = () => viewGroup(+b.dataset.g));
-    listEl.querySelector('[data-a="co"]').onclick = () => coOpen();
+    { const cb = listEl.querySelector('[data-a="co"]'); if (cb) cb.onclick = () => coOpen(); }
   }
   function setState(d){
     const items = d.items || {}, removed = d.removed || {};
@@ -1115,7 +1124,7 @@ export function init(G){
     setState(st || {}); phoSet(st && st.photos); renderPlans(); if (CS.w) schedulePush(300); toast('回到我們組');
   }
   function renderView(){
-    if (CO.on){ viewEl.innerHTML = '🏫 全班共創校園・唯讀 <button class="home">回我們組</button>'; viewEl.querySelector('.home').onclick = backHome; return; }
+    if (CO.on){ viewEl.innerHTML = `🏫 全班共創校園${CO.teacher ? '・' + String(CO.cls.name || '').replace(/[<>&]/g, '') : ''}・唯讀 <button class="home">${CO.teacher ? '回示範模式' : '回我們組'}</button>`; viewEl.querySelector('.home').onclick = backHome; return; }
     const g = SH.view, on = !!SH.votes['g' + g];
     viewEl.innerHTML = `👀 第 ${g} 組的方案${viewTheme ? `：「${viewTheme.replace(/[<>&]/g, '')}」` : ''}・唯讀 <button class="vote${on ? ' on' : ''}">${on ? '✔ 已投「我願意在這裡待」' : '👍 我願意在這裡待'}</button><button class="home">回我們組</button>`;
     viewEl.querySelector('.home').onclick = backHome;
@@ -1132,7 +1141,7 @@ export function init(G){
   async function poster(){
     const W = 1080, H = 1920, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const x = cv.getContext('2d');
     const F = (w, s) => `${w} ${s}px "Noto Sans TC","Microsoft JhengHei","PingFang TC",sans-serif`;
-    const g = SH.view || CS.g, title = CS.cls ? (CS.demo ? '老師示範' : CO.on ? `${CS.cls.year} 學年 ${CS.cls.name}・全班共創校園` : `${CS.cls.year} 學年 ${CS.cls.name}・第 ${g} 組`) : '我的方案', theme = SH.view ? viewTheme : (themeEl.value.trim() || CS.theme || '');
+    const g = SH.view || CS.g, title = CS.cls ? (CS.demo ? '老師示範' : CO.on ? `${CO.cls.year} 學年 ${CO.cls.name}・全班共創校園` : `${CS.cls.year} 學年 ${CS.cls.name}・第 ${g} 組`) : '我的方案', theme = SH.view ? viewTheme : (themeEl.value.trim() || CS.theme || '');
     toast('海報產生中…');
     // 3D 截圖：暫時改畫布大小與相機，畫完立刻複製，再還原
     const sv = { p: camera.position.clone(), t: controls.target.clone(), fov: camera.fov, asp: camera.aspect, size: renderer.getSize(new THREE.Vector2()), pr: renderer.getPixelRatio(), fx: fx.visible, lay: lay.visible };
@@ -1218,7 +1227,7 @@ export function init(G){
   }
 
   // ---------- 全班共創校園（115/11/10 試做）：每個改造點放進一組的方案；同一點有多組時可切換比較並投票，老師公布後留下得票最高的 ----------
-  const CO = { on: false, docs: {}, sites: [], pick: {} }, CO_R = 50;
+  const CO = { on: false, docs: {}, sites: [], pick: {}, cls: null, g: 0, teacher: false }, CO_R = 50;   // cls／g：正在看哪一班、自己是第幾組（老師看班級時 g＝0、teacher＝true，不能投票）
   const coEl = document.createElement('div'); coEl.id = 'gCo'; body.appendChild(coEl);
   coEl.addEventListener('pointerdown', (e) => e.stopPropagation());
   const ptOf = (x, z) => { let b = 0, bd = CO_R; for (const p of PTS){ const d = Math.hypot(p[4] - x, p[5] - z); if (d <= bd){ bd = d; b = p[0]; } } return b; };   // 這個位置算哪個危險點的範圍（50 m 內最近的）
@@ -1227,15 +1236,16 @@ export function init(G){
     for (const v of Object.values(d.items || {})){ const n = ptOf(+v.x, +v.z); if (n) c[n] = (c[n] || 0) + 1; }
     const top = Object.entries(c).sort((a, b) => b[1] - a[1])[0]; return top ? +top[0] : 0;
   }
-  async function coOpen(){
-    if (!showPhase()){ toast('老師把階段切到「展示」後才能看全班共創校園'); return; }
+  async function coOpen(cls){   // cls：老師從後台（?co=班級 id）或示範模式的「📋 方案」指定的班級；學生不給，看自己班
+    if (cls){ CO.cls = cls; CO.g = 0; CO.teacher = true; }
+    else { if (!showPhase() || !CS.cls.coOpen){ toast('老師開放後才能看全班共創校園'); return; } CO.cls = CS.cls; CO.g = CS.g; CO.teacher = false; }
     toast('載入全班的方案…');
-    const docs = await Promise.all(Array.from({ length: CS.cls.groups || 0 }, (_, i) => CL.getDoc('cgWorks/' + CL.workId(CS.cls.id, i + 1)).catch(() => null)));
+    const docs = await Promise.all(Array.from({ length: CO.cls.groups || 0 }, (_, i) => CL.getDoc('cgWorks/' + CL.workId(CO.cls.id, i + 1)).catch(() => null)));
     CO.docs = {}; const by = {};
     docs.forEach((d, i) => { if (!d || !Object.keys(d.data.items || {}).length) return; const n = guessSite(d.data); if (!n) return; CO.docs[i + 1] = d.data; (by[n] = by[n] || []).push(i + 1); });
     CO.sites = PTS.filter((p) => by[p[0]]).map((p) => ({ n: p[0], title: p[2], x: p[4], z: p[5], gs: by[p[0]] }));
     if (!CO.sites.length){ toast('還沒有任何一組放了東西'); return; }
-    const win = CS.cls.votesShown && CS.cls.coWin || {};
+    const win = CO.cls.votesShown && CO.cls.coWin || {};
     CO.pick = {}; CO.sites.forEach((s) => { const w = +win['s' + s.n], m = +SH.votes['s' + s.n]; CO.pick[s.n] = s.gs.includes(w) ? w : s.gs.includes(m) ? m : s.gs[0]; });
     if (PHO.mode) phoExit();
     if (!SH.view){ endPlace(); deselect(); setDemolish(false); if (TOOL === 'mood') setMood(null); SH.stash = { items: deep(S.items), removed: { ...S.removed }, photos: deep(PHO.meta), site: S.site, base: S.base }; }
@@ -1247,17 +1257,17 @@ export function init(G){
     for (const s of CO.sites){ const g = CO.pick[s.n], d = CO.docs[g]; if (!d) continue;
       for (const [u, v] of Object.entries(d.items || {})) if (ptOf(+v.x, +v.z) === s.n) items['g' + g + '_' + u] = v;
       for (const id of Object.keys(d.removed || {})){ const r = RMI.get(id); if (!r) continue; const c = r.box.getCenter(new THREE.Vector3()); if (ptOf(c.x, c.z) === s.n) removed[id] = true; }
-      for (const [k, p] of Object.entries(d.photos || {})) if (/^p[1-6]$/.test(k) && p && ptOf(+p.x, +p.z) === s.n) photos['g' + g + k] = { ...p, w: CL.workId(CS.cls.id, g), slot: k };
+      for (const [k, p] of Object.entries(d.photos || {})) if (/^p[1-6]$/.test(k) && p && ptOf(+p.x, +p.z) === s.n) photos['g' + g + k] = { ...p, w: CL.workId(CO.cls.id, g), slot: k };
     }
     setState({ items, removed }); phoSet(photos);
   }
   function coRender(){
-    const shown = !!CS.cls.votesShown, tally = shown && CS.cls.coVotes || {}, win = shown && CS.cls.coWin || {};
-    coEl.innerHTML = `<h3>🏫 全班共創校園</h3><p>每個改造點放進<b>一組</b>的方案。同一個點有好幾組時，點組別切換比較，再投給你覺得最好的一組（不能投自己組）。${shown ? '<b>老師已公布：🏆 是得票最高的方案。</b>' : '老師公布後，得票最高的會留在全班的校園裡。'}</p>`
+    const shown = !!CO.cls.votesShown, tally = shown && CO.cls.coVotes || {}, win = shown && CO.cls.coWin || {};
+    coEl.innerHTML = `<h3>🏫 全班共創校園${CO.teacher ? '・' + (CO.cls.name || '') : ''}</h3><p>每個改造點放進<b>一組</b>的方案。同一個點有好幾組時，點組別切換比較${CO.teacher ? '（老師檢視：不能投票）。' : '，再投給你覺得最好的一組（不能投自己組）。'}${shown ? '<b>老師已公布：🏆 是得票最高的方案。</b>' : '老師公布後，得票最高的會留在全班的校園裡。'}</p>`
       + CO.sites.map((s) => { const cur = CO.pick[s.n], mine = +SH.votes['s' + s.n] || 0, many = s.gs.length > 1;
         return `<div class="cs"><b data-n="${s.n}">${s.n}. ${s.title}<small>${many ? s.gs.length + ' 組競選' : '只有一組'}</small></b><div class="cg">${s.gs.map((g) => { const t = (tally['s' + s.n] || {})['g' + g];
-          return `<button data-n="${s.n}" data-g="${g}" class="${g === cur ? 'on' : ''}">${+win['s' + s.n] === g ? '🏆 ' : ''}第 ${g} 組${g === CS.g ? '（我們）' : ''}${shown && many ? `　👍 ${t || 0}` : ''}</button>`; }).join('')}</div>`
-          + (many && cur !== CS.g ? `<button class="cv${mine === cur ? ' on' : ''}" data-v="${s.n}">${mine === cur ? `✔ 已投第 ${cur} 組（再按收回）` : `👍 這個點投給第 ${cur} 組`}</button>` : '') + '</div>'; }).join('');
+          return `<button data-n="${s.n}" data-g="${g}" class="${g === cur ? 'on' : ''}">${+win['s' + s.n] === g ? '🏆 ' : ''}第 ${g} 組${g === CO.g ? '（我們）' : ''}${shown && many ? `　👍 ${t || 0}` : ''}</button>`; }).join('')}</div>`
+          + (many && cur !== CO.g && !CO.teacher ? `<button class="cv${mine === cur ? ' on' : ''}" data-v="${s.n}">${mine === cur ? `✔ 已投第 ${cur} 組（再按收回）` : `👍 這個點投給第 ${cur} 組`}</button>` : '') + '</div>'; }).join('');
     coEl.querySelectorAll('.cs b').forEach((b) => b.onclick = () => coFly(+b.dataset.n));
     coEl.querySelectorAll('.cg button').forEach((b) => b.onclick = () => coPick(+b.dataset.n, +b.dataset.g));
     coEl.querySelectorAll('.cv').forEach((b) => b.onclick = () => coVote(+b.dataset.v, CO.pick[+b.dataset.v]));
@@ -1265,9 +1275,9 @@ export function init(G){
   function coFly(n){ const s = CO.sites.find((o) => o.n === n); if (s && !WALK.on && window.setView) window.setView(s.x - 16, 40, s.z + 46, s.x, 0, s.z); }
   function coPick(n, g){ if (!CO.on) return; CO.pick[n] = g; coApply(); coRender(); coFly(n); }
   async function coVote(n, g){
-    if (g === CS.g){ toast('不能投自己組'); return; }
+    if (g === CO.g){ toast('不能投自己組'); return; }
     const k = 's' + n, old = SH.votes[k]; if (+old === g) delete SH.votes[k]; else SH.votes[k] = g; coRender();
-    try { await CL.patch('cgVotes/' + SH.vid, { classId: CS.cls.id, g: CS.g, v: SH.votes }, ['classId', 'g', 'v']); toast(+old === g ? '收回了這一票' : `這個點投給第 ${g} 組`); }
+    try { await CL.patch('cgVotes/' + SH.vid, { classId: CO.cls.id, g: CO.g, v: SH.votes }, ['classId', 'g', 'v']); toast(+old === g ? '收回了這一票' : `這個點投給第 ${g} 組`); }
     catch (e){ if (old === undefined) delete SH.votes[k]; else SH.votes[k] = old; coRender(); toast('投票失敗：' + e.message); }
   }
 

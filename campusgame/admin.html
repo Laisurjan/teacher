@@ -84,6 +84,7 @@ td button{min-height:30px;padding:3px 9px;font-size:13px}
         <label>預算 <input id="iBudget" type="number" min="100" max="9999" step="50" style="width:90px"> 點</label>
         <label>階段 <select id="iPhase"><option value="build">改造（建造）</option><option value="explore">探勘（放心情釘）</option><option value="show">展示（看各組、投票）</option></select></label>
         <label><input id="iMoodOpen" type="checkbox"> 開放全班心情熱區給學生看</label>
+        <label><input id="iCoOpen" type="checkbox"> 開放「全班共創校園」給學生看（階段要是「展示」）</label>
         <button id="bSave">儲存設定</button>
       </div>
       <div id="setMsg" class="msg"></div>
@@ -115,7 +116,7 @@ td button{min-height:30px;padding:3px 9px;font-size:13px}
       <p class="muted">紅圈數字是學校安全地圖的 8 個危險點。學生端要等你勾選「開放全班心情熱區」並儲存後才看得到彙整；學生的安心分也會改用全班「怕／暗／想躲」的位置計算。</p>
 
       <h3>展示投票（「我願意在這裡待」，每人每組一票、不能投自己組）</h3>
-      <div class="row"><button id="bVotes">重新整理票數</button><button id="bPub" class="pri">公布結果給學生看</button><button id="bUnpub">收回公布</button></div>
+      <div class="row"><button id="bCoView" title="老師隨時可以看，不必先開放給學生">🏫 看這班的全班共創校園</button><button id="bVotes">重新整理票數</button><button id="bPub" class="pri">公布結果給學生看</button><button id="bUnpub">收回公布</button></div>
       <div id="votes" class="muted" style="margin-top:6px"></div>
       <div id="voteMsg" class="msg"></div>
 
@@ -193,7 +194,7 @@ async function pickClass(id){
   $('classes').querySelectorAll('li').forEach((li) => li.classList.toggle('on', li.dataset.id === id));
   $('detail').classList.remove('hidden'); $('pick').classList.add('hidden');
   $('dTitle').textContent = `${CUR.data.year} 學年 ${CUR.data.name}`;
-  $('iBudget').value = CUR.data.budget && (CUR.data.b2 || CUR.data.budget !== 1000) ? CUR.data.budget : 2000;   // 115/11/10 預設改 2000；之前建的班存的 1000 是舊預設，一律當 2000 $('iPhase').value = CUR.data.phase || 'build'; $('iSize').value = CUR.data.groupSize || 4; $('iMoodOpen').checked = !!CUR.data.moodOpen;
+  $('iBudget').value = CUR.data.budget && (CUR.data.b2 || CUR.data.budget !== 1000) ? CUR.data.budget : 2000; $('iPhase').value = CUR.data.phase || 'build'; $('iSize').value = CUR.data.groupSize || 4; $('iMoodOpen').checked = !!CUR.data.moodOpen; $('iCoOpen').checked = !!CUR.data.coOpen;   // 預算：115/11/10 預設改 2000；之前建的班存的 1000 是舊預設，一律當 2000
   $('tImport').value = ''; $('prev').textContent = ''; $('bImport').disabled = true; PREVIEW = null;
   ['setMsg', 'groupMsg', 'delMsg'].forEach((m) => say(m, '')); $('works').textContent = '';
   await loadRoster(); loadMoods(); loadVotes(); say('voteMsg', '');
@@ -219,8 +220,8 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 
 // ---------- 設定 ----------
 $('bSave').onclick = async () => {
-  const budget = Math.max(100, Math.min(9999, Math.round(+$('iBudget').value || 2000))), phase = $('iPhase').value, moodOpen = $('iMoodOpen').checked;
-  try { await C.patch('cgClasses/' + CUR.id, { budget, b2: 1, phase, moodOpen }, ['budget', 'b2', 'phase', 'moodOpen']); Object.assign(CUR.data, { budget, b2: 1, phase, moodOpen });
+  const budget = Math.max(100, Math.min(9999, Math.round(+$('iBudget').value || 2000))), phase = $('iPhase').value, moodOpen = $('iMoodOpen').checked, coOpen = $('iCoOpen').checked;
+  try { await C.patch('cgClasses/' + CUR.id, { budget, b2: 1, phase, moodOpen, coOpen }, ['budget', 'b2', 'phase', 'moodOpen', 'coOpen']); Object.assign(CUR.data, { budget, b2: 1, phase, moodOpen, coOpen });
     say('setMsg', '已儲存。學生端約 30 秒內會更新' + (phase === 'explore' ? '（工具列出現「心情釘」）' : '') + '。', 'ok'); }
   catch (e){ say('setMsg', '儲存失敗：' + e.message, 'err'); }
 };
@@ -378,6 +379,7 @@ async function loadVotes(){
     + '<br><b>全班共創校園（同一個改造點選一組）</b>：' + (Object.keys(CO_TALLY).length ? Object.keys(CO_TALLY).sort().map((s) => `${PT_NAME[s.slice(1)]}：` + Object.entries(CO_TALLY[s]).sort((a, b) => b[1] - a[1]).map(([g, n]) => `第 ${g.slice(1)} 組 ${n} 票`).join('、') + `（🏆 第 ${CO_WIN[s]} 組）`).join('；') : '還沒有人投');
 }
 $('bVotes').onclick = loadVotes;
+$('bCoView').onclick = () => open('./index.html?start=0&co=' + encodeURIComponent(CUR.id) + (C.MOCK ? '&cgmock=1' : ''), '_blank');   // 115/11/10：老師檢視該班的共創校園（唯讀）
 $('bPub').onclick = async () => { await loadVotes(); try { await C.patch('cgClasses/' + CUR.id, { votes: TALLY, votesShown: true, coVotes: CO_TALLY, coWin: CO_WIN }, ['votes', 'votesShown', 'coVotes', 'coWin']); CUR.data.votes = TALLY; CUR.data.votesShown = true; await loadVotes(); say('voteMsg', '已公布，學生端約 30 秒內看得到各組票數。', 'ok'); } catch (e){ say('voteMsg', '公布失敗：' + e.message, 'err'); } };
 $('bUnpub').onclick = async () => { try { await C.patch('cgClasses/' + CUR.id, { votesShown: false }, ['votesShown']); CUR.data.votesShown = false; await loadVotes(); say('voteMsg', '已收回公布。', 'ok'); } catch (e){ say('voteMsg', '收回失敗：' + e.message, 'err'); } };
 
