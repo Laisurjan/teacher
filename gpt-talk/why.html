@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>遊戲不是重點</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --page:#f2f3f5; --card:#ffffff; --ink:#1d2433; --muted:#5a6475; --line:#dde1e7;
+  --blue:#2b6fd6; --orange:#ff6b3d; --yellow:#ffc928; --green:#22a36a;
+  --blue-l:#e6efff; --orange-l:#ffece5; --yellow-l:#fff6d6; --green-l:#e2f7ee;
+  --sans:"Noto Sans TC","Microsoft JhengHei",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:#d9dce1;overflow:hidden;position:fixed;inset:0;overscroll-behavior:none;color:var(--ink);font-family:var(--sans);font-weight:600;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center center;overflow:hidden;background:var(--page)}
+#stage.zs{transition:transform .3s ease}
+.s{position:absolute;inset:0;padding:96px 120px 80px;opacity:0;visibility:hidden;transition:opacity .5s ease,visibility 0s .5s}
+.s.on{opacity:1;visibility:visible;transition:opacity .5s ease}
+
+/* 頁首：章節標籤＋以終為始進度條 */
+.tag{display:inline-flex;align-items:center;gap:14px;font-size:30px;font-weight:700;color:var(--muted);margin-bottom:18px}
+.tag i{display:inline-block;width:18px;height:18px;border-radius:50%}
+h1{font-size:76px;font-weight:900;line-height:1.25;letter-spacing:.01em}
+h1 em{font-style:normal;color:var(--blue)}
+.lead{font-size:38px;color:var(--muted);margin-top:22px;line-height:1.55}
+.flow{position:absolute;right:120px;top:100px;display:flex;gap:10px}
+.flow b{font-size:22px;font-weight:700;padding:6px 16px;border-radius:30px;background:#e4e7ec;color:#8a93a3}
+.flow b.on{background:var(--ink);color:#fff}
+
+.card{background:var(--card);border-radius:22px;box-shadow:0 6px 20px rgba(30,40,60,.08);padding:36px 40px}
+.grid{display:grid;gap:30px;margin-top:56px}
+.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+.card h3{font-size:50px;font-weight:900;margin-bottom:20px}
+.card p{font-size:40px;line-height:1.6;color:#34405a}
+.r4 .card{padding:28px 40px}.r4 .card p{font-size:36px}.r4 .card h3{font-size:46px;margin-bottom:10px}
+.tall .card{padding:48px 50px;min-height:330px}
+.bar-o{border-top:12px solid var(--orange)}.bar-b{border-top:12px solid var(--blue)}
+.bar-y{border-top:12px solid var(--yellow)}.bar-g{border-top:12px solid var(--green)}
+.note{position:absolute;left:120px;right:120px;bottom:70px;font-size:36px;line-height:1.5;padding:26px 36px;border-radius:18px;background:var(--card);border-left:14px solid var(--blue)}
+.note.o{border-left-color:var(--orange)}.note.g{border-left-color:var(--green)}.note.y{border-left-color:var(--yellow)}
+.pg{position:absolute;right:46px;bottom:26px;font-size:22px;color:#9aa2b1}
+.shot{border-radius:18px;box-shadow:0 8px 26px rgba(30,40,60,.16);background:#fff;overflow:hidden;border:2px solid var(--line)}
+.shot img{display:block;width:100%}
+
+/* 封面 */
+.cover{display:flex;flex-direction:column;justify-content:center;padding-left:160px}
+.cover h1{font-size:118px;line-height:1.2}
+.cover .lead{font-size:44px;margin-top:34px}
+.cover .meta{margin-top:70px;font-size:30px;color:var(--muted)}
+.dots{position:absolute;right:150px;top:50%;transform:translateY(-50%);display:grid;grid-template-columns:repeat(2,150px);gap:26px}
+.dots span{width:150px;height:150px;border-radius:34px}
+
+/* 以終為始：倒推箭頭 */
+.back{display:flex;align-items:stretch;gap:0;margin-top:70px}
+.back .card{flex:1;position:relative;padding:50px 44px;min-height:440px}
+.back .num{font-size:96px;font-weight:900;line-height:1;margin-bottom:18px}
+.back .arr{width:110px;display:flex;align-items:center;justify-content:center;font-size:70px;color:#a8b0bd}
+
+/* 提示句 */
+.prompt{margin-top:50px;display:flex;flex-direction:column;gap:22px}
+.prompt div{display:flex;gap:28px;align-items:flex-start;background:var(--card);border-radius:18px;padding:26px 34px;font-size:36px;line-height:1.55}
+.prompt b{flex:none;width:210px;font-size:36px;font-weight:900;padding:6px 0;text-align:center;border-radius:12px;color:#fff}
+
+/* 左右分欄 */
+.split{display:grid;grid-template-columns:1.05fr 1fr;gap:60px;margin-top:50px;align-items:start}
+ul.pts{list-style:none;display:flex;flex-direction:column;gap:22px}
+ul.pts li{font-size:38px;line-height:1.5;padding-left:52px;position:relative}
+ul.pts li::before{content:"";position:absolute;left:0;top:14px;width:28px;height:28px;border-radius:8px;background:var(--orange)}
+ul.pts.g li::before{background:var(--green)}
+.big{font-size:52px;font-weight:900;line-height:1.35;margin-bottom:30px}
+
+/* 選項示範 */
+.opt{display:flex;flex-direction:column;gap:16px;margin-top:14px}
+.opt div{font-size:32px;line-height:1.45;padding:18px 24px;border:2px solid var(--line);border-radius:14px;background:#fafbfc}
+.opt div b{color:var(--blue);margin-right:12px}
+.quote{font-size:34px;line-height:1.65;background:var(--card);border-radius:18px;padding:34px 40px;border-left:14px solid var(--orange)}
+.quote small{display:block;font-size:26px;color:var(--muted);margin-bottom:12px}
+.cap{font-size:30px;color:var(--muted);line-height:1.5;margin-top:22px}
+.cap b{color:var(--orange)}
+
+/* 時間線 */
+.tl{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;margin-top:70px}
+.tl .card{padding:40px}
+.tl .t{font-size:30px;color:var(--muted)}
+.tl .n{font-size:58px;font-weight:900;margin:8px 0 18px}
+.tl .score{display:inline-block;font-size:30px;font-weight:900;padding:6px 20px;border-radius:30px;margin-top:20px}
+
+/* 帶走的模板 */
+.tpl{background:var(--card);border-radius:22px;padding:44px 50px;border:4px dashed #b9c3d3}
+.tpl p{font-size:36px;line-height:1.55;margin:14px 0}
+.tpl b{color:var(--blue)}
+.steps{counter-reset:k;list-style:none;display:flex;flex-direction:column;gap:44px;margin-top:20px}
+.steps li{counter-increment:k;font-size:42px;line-height:1.45;display:flex;gap:24px;align-items:flex-start}
+.steps li::before{content:counter(k);flex:none;width:64px;height:64px;border-radius:50%;background:var(--blue);color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:36px}
+
+.shotw{position:relative}
+.mk{position:absolute;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;background:var(--orange);color:#fff;font-size:36px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 6px rgba(255,107,61,.3),0 4px 10px rgba(0,0,0,.25)}
+.pr{background:var(--card);border-radius:22px;padding:36px 46px;margin-top:34px;border:4px dashed #b9c3d3}
+.pr p{font-size:31px;line-height:1.6;margin:6px 0;color:#1d2433}
+.pr b{color:var(--blue)}
+.pr.l p{font-size:35px}
+.pr.xl p{font-size:40px;margin:12px 0}
+.camera{display:inline-block;font-size:24px;font-weight:700;padding:4px 16px;border-radius:20px;background:var(--blue-l);color:var(--blue);margin-left:16px;vertical-align:middle}
+.node{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:44px;position:relative}
+.node .card{padding:30px 30px;position:relative}
+.node .k{font-size:28px;color:var(--muted)}
+.node .nm{font-size:60px;font-weight:900;margin:6px 0 18px}
+.node dl{font-size:33px;line-height:1.45}
+.node dt{color:var(--muted);font-size:26px;margin-top:16px}
+.node dd{margin:0;color:#1d2433}
+.stat{display:flex;gap:24px;margin-top:10px}
+.stat div{flex:1;background:var(--card);border-radius:18px;padding:22px 26px}
+.stat b{display:block;font-size:56px;font-weight:900;color:var(--green)}
+.stat span{font-size:28px;color:var(--muted)}
+.ring{position:absolute;border:6px solid var(--orange);border-radius:14px;box-shadow:0 0 0 5px rgba(255,107,61,.22)}
+.legend{list-style:none;display:flex;flex-direction:column;gap:26px}
+.legend li{display:flex;gap:22px;align-items:flex-start;font-size:36px;line-height:1.5}
+.legend li b.n{flex:none;width:56px;height:56px;border-radius:50%;background:var(--orange);color:#fff;font-size:32px;display:flex;align-items:center;justify-content:center}
+.legend small{display:block;font-size:28px;color:var(--muted);margin-top:4px}
+.todo{display:inline-block;font-size:24px;font-weight:700;padding:4px 14px;border-radius:20px;background:var(--yellow-l);color:#a07800;margin-left:12px;vertical-align:middle}
+.ok{display:inline-block;font-size:24px;font-weight:700;padding:4px 14px;border-radius:20px;background:var(--green-l);color:#17804f;margin-left:12px;vertical-align:middle}
+.chain{display:flex;align-items:stretch;gap:0;margin-top:40px}
+.chain .card{flex:1;padding:30px 26px;text-align:center}
+.chain .card p{font-size:32px}
+.chain .arr{width:60px;display:flex;align-items:center;justify-content:center;font-size:48px;color:#a8b0bd}
+#unzoom{position:fixed;z-index:20;display:none;font:700 18px var(--sans);background:var(--orange);color:#fff;border:none;border-radius:24px;padding:10px 20px;cursor:pointer}
+body.zoomed #unzoom{display:block}
+
+.qr{width:470px;height:470px;background:#fff;border-radius:28px;padding:30px;box-shadow:0 6px 20px rgba(30,40,60,.1)}
+.qr img{width:100%;height:100%;display:block}
+.url{font-size:40px;font-weight:900;margin-top:40px;color:var(--blue);white-space:nowrap}
+.big4{display:grid;grid-template-columns:repeat(4,1fr);gap:30px;margin-top:70px}
+.big4 .card{padding:50px 36px;text-align:center;min-height:330px}
+.big4 b{display:block;font-size:124px;font-weight:900;line-height:1.1}
+.big4 span{display:block;font-size:44px;color:var(--muted);margin-top:14px}
+.big4 small{display:block;font-size:28px;margin-top:10px}
+.tb{width:100%;border-collapse:separate;border-spacing:0;margin-top:46px;background:var(--card);border-radius:22px;overflow:hidden;box-shadow:0 6px 20px rgba(30,40,60,.08)}
+.tb th{font-size:32px;color:var(--muted);text-align:left;padding:24px 34px;background:#e9ecf1}
+.tb td{font-size:40px;padding:26px 34px;border-top:2px solid var(--line);vertical-align:middle}
+.tb td small{display:block;font-size:28px;color:var(--muted);margin-top:6px}
+.tb tr.hl td{background:var(--green-l)}
+.say{margin-top:60px;font-size:120px;font-weight:900;line-height:1.3;color:var(--orange);padding-left:60px;border-left:22px solid var(--orange)}
+.src{font-size:28px!important;color:var(--muted)!important;margin-top:20px}
+.vs{display:flex;align-items:stretch;margin-top:70px}
+.vs .card{flex:1;padding:50px 50px;min-height:360px}
+.vs .arr{width:120px;display:flex;align-items:center;justify-content:center;font-size:80px;color:#a8b0bd}
+.vs .k{font-size:34px;color:var(--muted);margin-bottom:22px}
+.vs .v{font-size:62px;font-weight:900;line-height:1.4}
+.num{font-size:60px;font-weight:900}.num.g{color:var(--green)}.num.o{color:var(--orange)}
+.subj h3 span{font-size:28px;font-weight:700;color:var(--muted);margin-left:18px;padding:4px 16px;border-radius:20px;background:#eef0f4;vertical-align:middle}
+.go{position:absolute;left:120px;right:120px;bottom:70px;display:block;text-align:center;font-size:44px;font-weight:900;color:#fff;background:var(--blue);border-radius:22px;padding:30px;text-decoration:none}
+</style>
+</head>
+<body>
+<div id="stage">
+
+<!-- 1 封面 -->
+<section class="s cover on">
+  <div class="tag"><i style="background:var(--orange)"></i>交通安全教學社群</div>
+  <h1>做交通遊戲的<br><em>代價與反思</em></h1>
+  <p class="lead">製作過程、課堂實測，以及之後想清楚的幾件事</p>
+  <p class="meta">花蓮高商｜115 學年 11 月 18 日</p>
+  <div class="dots"><span style="background:var(--orange)"></span><span style="background:var(--yellow)"></span><span style="background:var(--green)"></span><span style="background:var(--blue)"></span></div>
+</section>
+
+<!-- 2 先玩 -->
+<section class="s">
+  <div class="tag"><i style="background:var(--green)"></i>先玩 3 分鐘</div>
+  <h1>花蓮 Good Traffic Auto</h1>
+  <div class="split" style="grid-template-columns:470px 1fr;gap:80px;margin-top:36px;align-items:center">
+    <div>
+      <div class="qr"><img src="img/qr_gta.svg" alt="遊戲網址 QR code"></div>
+    </div>
+    <div>
+      <ol class="steps" style="gap:30px;margin-top:0">
+        <li>手機掃 QR，直向拿著</li>
+        <li>按 PRESS START →「自由騎」</li>
+        <li>拇指往上推前進，左右撥選路口</li>
+        <li>畫面變慢時，2 秒內按一個大按鈕</li>
+      </ol>
+      <p class="url">hlbh-good-traffic.web.app</p>
+    </div>
+  </div>
+  <div class="note g">花商周邊 3 公里真實街道：路網、114 年事故、取締點、台鐵時刻表都是真實資料。</div>
+</section>
+
+<!-- 3 遊戲畫面 -->
+<section class="s">
+  <div class="tag"><i style="background:var(--green)"></i>遊戲在練什麼</div>
+  <h1>遇到狀況時，學生有 2 秒可以決定</h1>
+  <div class="split" style="grid-template-columns:1150px 1fr;gap:50px;margin-top:40px;align-items:center">
+    <div class="shot"><img src="img/gta_play.jpg" alt="遊戲畫面：外送機車與切西瓜事件"></div>
+    <ul class="pts">
+      <li>外送機車從後方高速鑽過來</li>
+      <li>對向車左轉切西瓜</li>
+      <li>結果用停止距離計算，時速越快、反應越慢，就越可能停不住</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 4 代價：大數字 -->
+<section class="s">
+  <div class="flow"><b class="on">代價</b><b>新鮮感</b><b>成就感</b><b>紙本做不到</b></div>
+  <div class="tag"><i style="background:var(--orange)"></i>代價</div>
+  <h1>製作兩個遊戲花了多少時間和費用</h1>
+  <div class="big4">
+    <div class="card bar-o"><b>114</b><span>次對話</span></div>
+    <div class="card bar-y"><b>約 19</b><span>小時<small>AI 動工時間</small></span></div>
+    <div class="card bar-b"><b>12</b><span>天</span></div>
+    <div class="card bar-g"><b>20</b><span>美元／月<small>Claude Pro，約新台幣 650 元</small></span></div>
+  </div>
+  <div class="note o">對話＝我送出的訊息；AI 動工＝從我送出到 AI 做完的時間。我自己想、試玩的時間另計。</div>
+</section>
+
+<!-- 5 代價：明細 -->
+<section class="s">
+  <div class="flow"><b class="on">代價</b><b>新鮮感</b><b>成就感</b><b>紙本做不到</b></div>
+  <div class="tag"><i style="background:var(--orange)"></i>代價明細</div>
+  <h1>新版做得比較快，是因為沿用了舊版的資料</h1>
+  <table class="tb">
+    <tr><th>作品</th><th>期間</th><th>對話次數</th><th>AI 動工</th></tr>
+    <tr><td>上學路上<small>第一版：資料、計畫、多人連線、學習單</small></td><td>10 月 18 日–27 日</td><td>66 次</td><td>約 10.0 小時</td></tr>
+    <tr><td>花蓮 Good Traffic Auto<small>沿用上學路上的路網、事故與風險模型</small></td><td>10 月 28 日晚–29 日下午</td><td>48 次</td><td>約 9.4 小時</td></tr>
+    <tr class="hl"><td>免費 GPT 做教學遊戲<small>等一下要分享的</small></td><td>10 月 29 日</td><td>25 次</td><td>約 1.8 小時</td></tr>
+  </table>
+  <div class="note y">以上不包含我自己試玩、手機測試、上課實測和構思的時間。</div>
+</section>
+
+<!-- 6 代價：額度 -->
+<section class="s">
+  <div class="flow"><b class="on">代價</b><b>新鮮感</b><b>成就感</b><b>紙本做不到</b></div>
+  <div class="tag"><i style="background:var(--orange)"></i>代價</div>
+  <h1>比起月費，更花成本的是時間</h1>
+  <div class="grid g2 tall">
+    <div class="card bar-o"><h3>額度用完要等</h3><p>做到半夜時主要模型的額度用完了，只能先換另一個模型繼續做，等凌晨四點額度重置。</p></div>
+    <div class="card bar-b"><h3>反覆試玩與修改</h3><p>例如速度太慢、看不懂往哪走、手機上很難轉彎、做對選擇還是被撞，這些問題都是我自己試玩後才發現，再請 AI 修改。</p></div>
+  </div>
+  <div class="note">既然要花這麼多時間，動手之前值得先想清楚：學生玩完之後，能留下什麼？</div>
+</section>
+
+<!-- 7 課堂實測 -->
+<section class="s">
+  <div class="flow"><b>代價</b><b class="on">新鮮感</b><b>成就感</b><b>紙本做不到</b></div>
+  <div class="tag"><i style="background:var(--yellow)"></i>課堂實測｜商一乙、資二乙，各約兩節</div>
+  <h1>課堂上為了寫學習單，學生需要反覆玩</h1>
+  <div class="say">「還要再來一次喔？<br>好麻煩！」</div>
+  <p class="lead" style="margin-top:40px">學生會配合，但一邊操作一邊碎念。</p>
+  <div class="note o">第一次玩時學生很投入，但反覆玩幾次之後，新鮮感消退的速度比我預期快很多。</div>
+</section>
+
+<!-- 8 研究 -->
+<section class="s">
+  <div class="flow"><b>代價</b><b class="on">新鮮感</b><b>成就感</b><b>紙本做不到</b></div>
+  <div class="tag"><i style="background:var(--yellow)"></i>研究也這樣說</div>
+  <h1>研究也發現，遊戲的新鮮感會消退</h1>
+  <div class="grid g2 tall" style="margin-top:46px">
+    <div class="card bar-y"><h3>新奇效應</h3><p>追蹤 14 週的遊戲化課程：效果大約幾週後開始下滑，學生習慣之後才部分回升。</p><p class="src">Rodrigues 等，2022，<i>International Journal of Educational Technology in Higher Education</i></p></div>
+    <div class="card bar-o"><h3>徽章與排行榜</h3><p>追蹤一學期：用徽章、排行榜的班級，內在動機與期末考成績反而比較低。</p><p class="src">Hanus &amp; Fox，2015，<i>Computers &amp; Education</i></p></div>
+  </div>
+  <div class="note">研究觀察到的是幾週內的變化，而我在課堂上看到的，是兩節課之內就明顯下降。</div>
+</section>
+
+<!-- 9 成就感 -->
+<section class="s">
+  <div class="flow"><b>代價</b><b>新鮮感</b><b class="on">成就感</b><b>紙本做不到</b></div>
+  <div class="tag"><i style="background:var(--green)"></i>那什麼留得住？</div>
+  <h1>比較能留住學生的，是<em>學會之後的成就感</em></h1>
+  <div class="vs">
+    <div class="card"><p class="k">留不住的</p><p class="v" style="color:var(--muted)">分數、稱號、徽章<br>畫面很炫</p></div>
+    <div class="arr">→</div>
+    <div class="card bar-g"><p class="k">留得住的</p><p class="v">「剛剛我減速，<br>所以停住了」</p></div>
+  </div>
+  <div class="note g">心理學的自我決定論把它叫做「勝任感」：覺得自己有能力做到，是持續投入的來源之一（Ryan &amp; Deci，2000）。</div>
+</section>
+
+<!-- 10 設計例子 -->
+<section class="s">
+  <div class="flow"><b>代價</b><b>新鮮感</b><b class="on">成就感</b><b>紙本做不到</b></div>
+  <div class="tag"><i style="background:var(--green)"></i>設計上怎麼做</div>
+  <h1>讓做對選擇的學生，真的能平安抵達</h1>
+  <div class="split" style="grid-template-columns:1fr 1fr;gap:50px;margin-top:50px">
+    <div class="card bar-o"><h3>改版前</h3><p>選了安全的做法，還是常常被撞。</p><p style="margin-top:18px;color:var(--orange)">學生容易覺得，學了也沒有用。</p></div>
+    <div class="card bar-g"><h3>改版後（模擬數據）</h3><p>每次都選對：出事約 <b class="num g">6–9%</b></p><p>選錯或來不及：<b class="num o">60%</b> 以上</p><p style="margin-top:12px;font-size:34px;color:var(--muted)">出事會說明：哪個決定、哪個時速可以避免</p></div>
+  </div>
+  <div class="note">仍保留少量意外：守法還是出事時，會得到稱號「今天不是你的天」，提醒學生路上還有其他用路人。</div>
+</section>
+
+<!-- 11 紙本做不到 -->
+<section class="s">
+  <div class="flow"><b>代價</b><b>新鮮感</b><b>成就感</b><b class="on">紙本做不到</b></div>
+  <div class="tag"><i style="background:var(--blue)"></i>所以，做之前先問</div>
+  <h1>這個內容，紙本和講解<em>做不到</em>什麼？</h1>
+  <div class="grid g4 r4" style="margin-top:50px">
+    <div class="card bar-o"><h3>時間壓力</h3><p>紙本可以慢慢想，現場往往只有幾秒</p></div>
+    <div class="card bar-y"><h3>延遲後果</h3><p>選錯當下看不出問題，之後才出現影響</p></div>
+    <div class="card bar-g"><h3>安全地失敗</h3><p>現實中不能拿安全來試錯，遊戲裡可以重來</p></div>
+    <div class="card bar-b"><h3>換位思考</h3><p>扮演另一個角色，體會不同的處境</p></div>
+  </div>
+  <div class="note o">如果用選擇題就能檢測，通常不需要特地做成遊戲。</div>
+</section>
+
+<!-- 13 鋪墊 -->
+<section class="s">
+  <div class="tag"><i style="background:var(--green)"></i>接下來</div>
+  <h1>教學遊戲不一定要做得這麼大</h1>
+  <p class="lead">只針對紙本做不到的那一段，做成 10 分鐘玩得完的小遊戲，玩完再回到課堂學習。<br>這樣的規模，用<b style="color:var(--ink)">免費版 GPT</b>在一節備課時間內就做得出來。</p>
+  <div class="grid g3" style="margin-top:56px">
+    <div class="card bar-o"><h3>先想終點</h3><p>學生下課要能說出哪一句話？</p></div>
+    <div class="card bar-y"><h3>再想兩難</h3><p>哪個選擇最能逼出這句話？</p></div>
+    <div class="card bar-b"><h3>才交給 AI</h3><p>寫進提示句，自己玩、故意選錯。</p></div>
+  </div>
+  <a class="go" href="index.html">接著看：免費版 GPT 也能做教學遊戲 →</a>
+</section>
+
+<div class="pg" id="pg"></div>
+</div>
+<button id="unzoom">還原</button>
+
+<script>
+/* ===== 縮放到視窗（沿用晉文公簡報的做法） ===== */
+const stage=document.getElementById('stage');
+function VV(){const v=window.visualViewport;
+  if(v)return{x:v.offsetLeft,y:v.offsetTop,w:v.width,h:v.height,s:v.scale||1};
+  return{x:0,y:0,w:innerWidth,h:innerHeight,s:1};}
+let Z=1,TX=0,TY=0;const baseK=()=>{const v=VV();return Math.min(v.w/1920,v.h/1080);};
+const unz=document.getElementById('unzoom');
+function clampZ(){const k=baseK();Z=Math.max(1,Math.min(5,Z));
+  const mx=1920*k*(Z-1)/2,my=1080*k*(Z-1)/2;TX=Math.max(-mx,Math.min(mx,TX));TY=Math.max(-my,Math.min(my,TY));}
+let lastFit='';
+function fit(){clampZ();const v=VV();
+  const key=[v.x,v.y,v.w,v.h,v.s,Z,TX,TY].map(n=>Math.round(n*100)).join();if(key===lastFit)return;lastFit=key;
+  stage.style.left=(v.x+v.w/2)+'px';stage.style.top=(v.y+v.h/2)+'px';
+  stage.style.transform=`translate(-50%,-50%) translate(${TX}px,${TY}px) scale(${baseK()*Z})`;
+  unz.style.left=(v.x+v.w-12/v.s)+'px';unz.style.top=(v.y+v.h-12/v.s)+'px';unz.style.transform=`translate(-100%,-100%) scale(${1/v.s})`;
+  document.body.classList.toggle('zoomed',Z>1);}
+(()=>{const m=document.querySelector('meta[name=viewport]'),c=m.content;m.content=c+', maximum-scale=1';setTimeout(()=>{m.content=c;fit();},300);})();
+addEventListener('resize',fit);addEventListener('orientationchange',()=>setTimeout(fit,300));
+if(window.visualViewport)visualViewport.addEventListener('resize',fit);
+fit();
+const CX=()=>{const v=VV();return v.x+v.w/2},CY=()=>{const v=VV();return v.y+v.h/2};
+
+/* ===== 觸控放大：雙指縮放、單指拖曳；放大時不換頁 ===== */
+const zoomed=()=>Z>1;
+function unzoom(){stage.classList.add('zs');Z=1;TX=TY=0;fit();setTimeout(()=>stage.classList.remove('zs'),320);}
+function zoomAt(px,py,z){const k=baseK(),cx=CX(),cy=CY();
+  const ux=(px-cx-TX)/(k*Z),uy=(py-cy-TY)/(k*Z);
+  Z=Math.max(1,Math.min(5,z));TX=px-cx-ux*k*Z;TY=py-cy-uy*k*Z;fit();}
+const pts=new Map();let g=null,moved=false,blockUntil=0,lastTap=0;
+addEventListener('pointerdown',e=>{
+  if(e.target.id==='unzoom')return;
+  const P0={x:e.clientX,y:e.clientY};pts.set(e.pointerId,P0);
+  if(pts.size===1){moved=false;g={x:P0.x,y:P0.y,tx:TX,ty:TY};}
+  if(pts.size===2){moved=true;const[a,b]=[...pts.values()];
+    const mx=(a.x+b.x)/2,my=(a.y+b.y)/2,k=baseK();
+    g={pinch:1,d:Math.hypot(a.x-b.x,a.y-b.y)||1,z:Z,ux:(mx-CX()-TX)/(k*Z),uy:(my-CY()-TY)/(k*Z)};}
+});
+addEventListener('pointermove',e=>{
+  if(!pts.has(e.pointerId)||!g)return;const P1={x:e.clientX,y:e.clientY};pts.set(e.pointerId,P1);
+  if(g.pinch&&pts.size>=2){const[a,b]=[...pts.values()];const k0=baseK();
+    Z=Math.max(1,Math.min(5,g.z*Math.hypot(a.x-b.x,a.y-b.y)/g.d));const k=k0*Z;
+    TX=(a.x+b.x)/2-CX()-g.ux*k;TY=(a.y+b.y)/2-CY()-g.uy*k;fit();}
+  else if(!g.pinch){const dx=P1.x-g.x,dy=P1.y-g.y;
+    if(Math.hypot(dx,dy)>10)moved=true;
+    if(moved&&zoomed()){TX=g.tx+dx;TY=g.ty+dy;fit();}}
+});
+function up(e){
+  if(!pts.delete(e.pointerId))return;
+  if(moved||g&&g.pinch)blockUntil=Date.now()+400;
+  if(pts.size===0){
+    if(g&&g.pinch&&Z<1.08)unzoom();
+    else if(!moved&&zoomed()){const t=Date.now();if(t-lastTap<350){unzoom();lastTap=0;}else lastTap=t;}
+    g=null;}
+  else if(pts.size===1){const[a]=[...pts.values()];g={x:a.x,y:a.y,tx:TX,ty:TY};}
+}
+addEventListener('pointerup',up);addEventListener('pointercancel',up);
+addEventListener('click',e=>{if(e.target.id==='unzoom')return;if(zoomed()||Date.now()<blockUntil){e.stopPropagation();e.preventDefault();}},true);
+addEventListener('wheel',e=>{if(!e.ctrlKey&&!zoomed())return;e.preventDefault();
+  if(e.ctrlKey)zoomAt(e.clientX,e.clientY,Z*Math.exp(-e.deltaY/200));else{TX-=e.deltaX;TY-=e.deltaY;fit();}
+  if(Z<1.02)unzoom();},{passive:false});
+['gesturestart','gesturechange','gestureend'].forEach(t=>addEventListener(t,e=>e.preventDefault()));
+addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+unz.addEventListener('click',e=>{e.stopPropagation();unzoom();});
+
+/* ===== 換頁：→／空白鍵下一頁，←上一頁，點畫面左 1/4 上一頁，F 全螢幕 ===== */
+const S=[...document.querySelectorAll('.s')],pg=document.getElementById('pg');
+let cur=0;
+function show(i){cur=Math.max(0,Math.min(S.length-1,i));S.forEach((s,k)=>s.classList.toggle('on',k===cur));
+  pg.textContent=(cur+1)+' / '+S.length;try{history.replaceState(null,'','#'+(cur+1));}catch(e){}}
+addEventListener('keydown',e=>{
+  if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();show(cur+1);}
+  else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();show(cur-1);}
+  else if(e.key==='Home')show(0);else if(e.key==='End')show(S.length-1);
+  else if(e.key==='Escape'&&zoomed())unzoom();
+  else if(e.key==='f'||e.key==='F'){if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();}
+});
+addEventListener('click',e=>{if(e.target.id==='unzoom'||e.target.closest('a'))return;const v=VV();show(e.clientX<v.x+v.w/4?cur-1:cur+1);});
+show((parseInt(location.hash.slice(1))||1)-1);
+</script>
+</body>
+</html>
